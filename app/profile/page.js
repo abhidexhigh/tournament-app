@@ -188,7 +188,7 @@ export default function ProfilePage() {
                       </p>
                       {!user.gameId && (
                         <p className="text-gray-400 text-sm mt-1">
-                          Click "Edit Game ID" to add your game ID
+                          Click &quot;Edit Game ID&quot; to add your game ID
                         </p>
                       )}
                     </div>

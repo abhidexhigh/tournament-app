@@ -288,7 +288,7 @@ export default function LoginPage() {
               >
                 {isLogin ? (
                   <>
-                    Don't have an account?{" "}
+                    Don&apos;t have an account?{" "}
                     <span className="text-gold font-bold">Sign up</span>
                   </>
                 ) : (
