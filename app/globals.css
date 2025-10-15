@@ -1,0 +1,81 @@
+@import "tailwindcss";
+
+@theme inline {
+  /* Dark theme colors */
+  --color-dark-primary: #0a0a0f;
+  --color-dark-secondary: #13131a;
+  --color-dark-card: #1a1a24;
+  
+  /* Golden theme colors */
+  --color-gold-light: #ffd700;
+  --color-gold: #ffb800;
+  --color-gold-dark: #d4af37;
+  
+  /* Accent colors */
+  --color-accent-purple: #8b5cf6;
+  --color-accent-blue: #3b82f6;
+}
+
+:root {
+  --background: #0a0a0f;
+  --foreground: #ffffff;
+  --gold-gradient: linear-gradient(135deg, #ffd700, #ffb800, #d4af37);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Custom scrollbar styling */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #13131a;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #d4af37;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #ffb800;
+}
+
+/* Golden gradient text utility */
+.text-gold-gradient {
+  background: linear-gradient(135deg, #ffd700, #ffb800, #d4af37);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Golden gradient background utility */
+.bg-gold-gradient {
+  background: linear-gradient(135deg, #ffd700, #ffb800, #d4af37);
+}
+
+/* Glassmorphism effect */
+.glass-effect {
+  background: rgba(26, 26, 36, 0.7);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+/* Golden glow effect */
+.glow-gold {
+  box-shadow: 0 0 20px rgba(255, 184, 0, 0.3);
+}
+
+.glow-gold-hover:hover {
+  box-shadow: 0 0 30px rgba(255, 184, 0, 0.5);
+  transform: translateY(-2px);
+  transition: all 0.3s ease;
+}
