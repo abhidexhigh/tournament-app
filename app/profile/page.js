@@ -14,7 +14,9 @@ export default function ProfilePage() {
   const { data: session, status } = useSession();
   const router = useRouter();
   const [gameId, setGameId] = useState("");
+  const [rank, setRank] = useState("");
   const [isEditing, setIsEditing] = useState(false);
+  const [isEditingRank, setIsEditingRank] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [message, setMessage] = useState({ type: "", text: "" });
 
@@ -28,53 +30,79 @@ export default function ProfilePage() {
 
     if (user) {
       setGameId(user.gameId || "");
+      setRank(user.rank || "");
     }
   }, [user, status, router]);
 
-  const handleSave = async () => {
+  const handleSave = async (field) => {
     if (!user) return;
 
     setIsLoading(true);
     setMessage({ type: "", text: "" });
 
     try {
+      const updateData =
+        field === "gameId" ? { gameId: gameId.trim() } : { rank: rank };
+
       const response = await fetch(`/api/users/${user.id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-          gameId: gameId.trim(),
-        }),
+        body: JSON.stringify(updateData),
       });
 
       const data = await response.json();
 
       if (data.success) {
         updateUser(data.data);
-        setIsEditing(false);
-        setMessage({ type: "success", text: "Game ID updated successfully!" });
+        if (field === "gameId") {
+          setIsEditing(false);
+          setMessage({
+            type: "success",
+            text: "Game ID updated successfully!",
+          });
+        } else {
+          setIsEditingRank(false);
+          setMessage({ type: "success", text: "Rank updated successfully!" });
+        }
       } else {
         setMessage({
           type: "error",
-          text: data.error || "Failed to update game ID",
+          text: data.error || `Failed to update ${field}`,
         });
       }
     } catch (error) {
-      console.error("Error updating game ID:", error);
+      console.error(`Error updating ${field}:`, error);
       setMessage({
         type: "error",
-        text: "Failed to update game ID. Please try again.",
+        text: `Failed to update ${field}. Please try again.`,
       });
     } finally {
       setIsLoading(false);
     }
   };
 
-  const handleCancel = () => {
-    setGameId(user?.gameId || "");
-    setIsEditing(false);
+  const handleCancel = (field) => {
+    if (field === "gameId") {
+      setGameId(user?.gameId || "");
+      setIsEditing(false);
+    } else {
+      setRank(user?.rank || "");
+      setIsEditingRank(false);
+    }
     setMessage({ type: "", text: "" });
+  };
+
+  const getRankColor = (rank) => {
+    const colors = {
+      Silver: "text-gray-400",
+      Gold: "text-yellow-400",
+      Platinum: "text-blue-400",
+      Diamond: "text-purple-400",
+      Master: "text-red-400",
+    };
+    return colors[rank] || "text-gray-300";
   };
 
   if (status === "loading" || !user) {
@@ -124,6 +152,12 @@ export default function ProfilePage() {
                     <span className="text-gold">Diamonds:</span> {user.diamonds}
                   </p>
                   <p>
+                    <span className="text-gold">Rank:</span>{" "}
+                    <span className={getRankColor(user.rank)}>
+                      {user.rank || "Not set"}
+                    </span>
+                  </p>
+                  <p>
                     <span className="text-gold">Member since:</span>{" "}
                     {new Date(user.created_at).toLocaleDateString()}
                   </p>
@@ -166,14 +200,14 @@ export default function ProfilePage() {
                       />
                       <div className="flex space-x-3">
                         <Button
-                          onClick={handleSave}
+                          onClick={() => handleSave("gameId")}
                           disabled={isLoading}
                           className="flex-1"
                         >
                           {isLoading ? "Saving..." : "Save Changes"}
                         </Button>
                         <Button
-                          onClick={handleCancel}
+                          onClick={() => handleCancel("gameId")}
                           variant="outline"
                           className="flex-1"
                         >
@@ -220,6 +254,93 @@ export default function ProfilePage() {
                       • This ID will be visible to other players in tournaments
                     </li>
                     <li>• You can change your game ID at any time</li>
+                  </ul>
+                </div>
+              </div>
+            </Card>
+
+            {/* Rank Settings */}
+            <Card className="p-6 mt-6">
+              <div className="flex items-center justify-between mb-6">
+                <h3 className="text-xl font-bold text-white">Rank Settings</h3>
+                {!isEditingRank && (
+                  <Button
+                    onClick={() => setIsEditingRank(true)}
+                    variant="outline"
+                    size="sm"
+                  >
+                    Edit Rank
+                  </Button>
+                )}
+              </div>
+
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-2">
+                    Current Rank
+                  </label>
+                  {isEditingRank ? (
+                    <div className="space-y-4">
+                      <select
+                        value={rank}
+                        onChange={(e) => setRank(e.target.value)}
+                        className="w-full bg-dark-card border border-gold-dark/30 rounded-lg px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-gold focus:border-transparent"
+                      >
+                        <option value="">Select your rank</option>
+                        <option value="Silver">Silver</option>
+                        <option value="Gold">Gold</option>
+                        <option value="Platinum">Platinum</option>
+                        <option value="Diamond">Diamond</option>
+                        <option value="Master">Master</option>
+                      </select>
+                      <div className="flex space-x-3">
+                        <Button
+                          onClick={() => handleSave("rank")}
+                          disabled={isLoading}
+                          className="flex-1"
+                        >
+                          {isLoading ? "Saving..." : "Save Changes"}
+                        </Button>
+                        <Button
+                          onClick={() => handleCancel("rank")}
+                          variant="outline"
+                          className="flex-1"
+                        >
+                          Cancel
+                        </Button>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="bg-dark-card border border-gold-dark/30 rounded-lg p-4">
+                      <p className={`text-lg ${getRankColor(user.rank)}`}>
+                        {user.rank || "No rank set"}
+                      </p>
+                      {!user.rank && (
+                        <p className="text-gray-400 text-sm mt-1">
+                          Click &quot;Edit Rank&quot; to set your rank
+                        </p>
+                      )}
+                    </div>
+                  )}
+                </div>
+
+                {/* Rank Help Text */}
+                <div className="bg-dark-card border border-gold-dark/20 rounded-lg p-4">
+                  <h4 className="text-gold font-medium mb-2">About Ranks</h4>
+                  <ul className="text-sm text-gray-300 space-y-1">
+                    <li>
+                      • Your rank determines which tournaments you can join
+                    </li>
+                    <li>
+                      • Higher ranks can join tournaments with lower minimum
+                      rank requirements
+                    </li>
+                    <li>
+                      • Rank order: Silver → Gold → Platinum → Diamond → Master
+                    </li>
+                    <li>
+                      • You can update your rank as you improve in the game
+                    </li>
                   </ul>
                 </div>
               </div>

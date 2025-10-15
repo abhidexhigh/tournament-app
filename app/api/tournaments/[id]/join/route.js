@@ -50,6 +50,32 @@ export async function POST(request, { params }) {
       );
     }
 
+    // Check if user meets minimum rank requirement
+    if (tournament.min_rank) {
+      const rankOrder = {
+        Silver: 1,
+        Gold: 2,
+        Platinum: 3,
+        Diamond: 4,
+        Master: 5,
+      };
+
+      const userRankLevel = rankOrder[user.rank] || 0;
+      const requiredRankLevel = rankOrder[tournament.min_rank] || 0;
+
+      if (userRankLevel < requiredRankLevel) {
+        return NextResponse.json(
+          {
+            success: false,
+            error: `Insufficient rank! This tournament requires ${
+              tournament.min_rank
+            } rank or higher. Your current rank: ${user.rank || "No rank set"}`,
+          },
+          { status: 400 }
+        );
+      }
+    }
+
     // Check if user has enough diamonds for entry fee
     const entryFee = tournament.entry_fee || 0;
     if (user.diamonds < entryFee) {

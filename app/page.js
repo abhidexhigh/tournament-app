@@ -5,6 +5,8 @@ import Link from "next/link";
 import {
   calculateActualPrizePool,
   getPrizePoolDisplay,
+  getPrizePoolDisplayDual,
+  getEntryFeeDisplayDual,
 } from "./lib/prizeCalculator";
 import { tournamentsApi } from "./lib/api";
 import { getTournamentIcon } from "./lib/iconSelector";
@@ -17,6 +19,7 @@ import CountdownTimer from "./components/CountdownTimer";
 export default function Home() {
   const [tournaments, setTournaments] = useState([]);
   const [activeTab, setActiveTab] = useState("all");
+  const [selectedGame, setSelectedGame] = useState("all");
   const { user, loading: userLoading } = useUser();
 
   useEffect(() => {
@@ -35,9 +38,13 @@ export default function Home() {
   }, []);
 
   const filteredTournaments = tournaments.filter((t) => {
-    if (activeTab === "all") return true;
-    return t.status === activeTab;
+    const statusMatch = activeTab === "all" || t.status === activeTab;
+    const gameMatch = selectedGame === "all" || t.game === selectedGame;
+    return statusMatch && gameMatch;
   });
+
+  // Get unique games for filter
+  const availableGames = [...new Set(tournaments.map((t) => t.game))].sort();
 
   const formatDate = (dateStr) => {
     const date = new Date(dateStr);
@@ -121,7 +128,7 @@ export default function Home() {
         )}
 
         {/* Tabs */}
-        <div className="flex flex-wrap gap-3 mb-8">
+        <div className="flex flex-wrap gap-3 mb-6">
           {[
             { key: "all", label: "All Tournaments" },
             { key: "upcoming", label: "Upcoming" },
@@ -137,6 +144,27 @@ export default function Home() {
             </Button>
           ))}
         </div>
+
+        {/* Game Filter */}
+        {availableGames.length > 1 && (
+          <div className="mb-8">
+            <div className="flex items-center gap-3 mb-4">
+              <span className="text-gray-300 font-medium">Filter by Game:</span>
+              <select
+                value={selectedGame}
+                onChange={(e) => setSelectedGame(e.target.value)}
+                className="bg-dark-card border border-gold-dark/30 rounded-lg px-4 py-2 text-white focus:outline-none focus:ring-2 focus:ring-gold focus:border-transparent"
+              >
+                <option value="all">All Games</option>
+                {availableGames.map((game) => (
+                  <option key={game} value={game}>
+                    {game}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+        )}
 
         {/* Tournament Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -197,9 +225,23 @@ export default function Home() {
                   <div className="flex items-center justify-between text-sm">
                     <span className="text-gray-400">💰 Entry Fee</span>
                     <span className="text-white font-medium">
-                      {tournament.entry_fee
-                        ? `${tournament.entry_fee} 💎`
-                        : "Free"}
+                      {tournament.entry_fee ? (
+                        <span>
+                          ${getEntryFeeDisplayDual(tournament).usd} USD
+                          <br />
+                          <span className="text-gold text-xs">
+                            ({getEntryFeeDisplayDual(tournament).diamonds} 💎)
+                          </span>
+                        </span>
+                      ) : (
+                        "Free"
+                      )}
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-gray-400">🏆 Min Rank</span>
+                    <span className="text-white font-medium">
+                      {tournament.min_rank || "Any"}
                     </span>
                   </div>
                 </div>
@@ -209,11 +251,14 @@ export default function Home() {
                   <div className="flex items-center justify-between mb-2">
                     <span className="text-gray-400 text-sm">Prize Pool</span>
                     <div className="flex items-center space-x-2">
-                      <span className="text-gold text-xl">💎</span>
+                      <span className="text-gold text-xl">💰</span>
                       <span className="text-gold font-bold text-lg">
-                        {getPrizePoolDisplay(tournament)}
+                        ${getPrizePoolDisplayDual(tournament).usd} USD
                       </span>
                     </div>
+                  </div>
+                  <div className="text-gold text-sm text-right">
+                    ({getPrizePoolDisplayDual(tournament).diamonds} 💎)
                   </div>
                   {(tournament.prize_pool_type ?? tournament.prizePoolType) ===
                     "entry-based" && (

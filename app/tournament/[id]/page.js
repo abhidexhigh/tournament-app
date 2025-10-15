@@ -15,6 +15,8 @@ import {
   calculateActualPrizePool,
   calculatePrizes,
   getPrizePoolDisplay,
+  getPrizePoolDisplayDual,
+  getEntryFeeDisplayDual,
 } from "../../lib/prizeCalculator";
 import { tournamentsApi } from "../../lib/api";
 import { getTournamentIcon } from "../../lib/iconSelector";
@@ -255,7 +257,9 @@ export default function TournamentDetailsPage() {
                   disabled={loading}
                 >
                   {tournament.entry_fee
-                    ? `Join Tournament (${tournament.entry_fee} 💎)`
+                    ? `Join Tournament ($${
+                        getEntryFeeDisplayDual(tournament).usd
+                      } USD)`
                     : "Join Tournament (Free)"}
                 </Button>
               )}
@@ -303,13 +307,32 @@ export default function TournamentDetailsPage() {
             <div>
               <p className="text-gray-400 text-sm mb-1">💰 Entry Fee</p>
               <p className="text-white font-medium">
-                {tournament.entry_fee ? `${tournament.entry_fee} 💎` : "Free"}
+                {tournament.entry_fee ? (
+                  <span>
+                    ${getEntryFeeDisplayDual(tournament).usd} USD
+                    <br />
+                    <span className="text-gold text-sm">
+                      ({getEntryFeeDisplayDual(tournament).diamonds} 💎)
+                    </span>
+                  </span>
+                ) : (
+                  "Free"
+                )}
+              </p>
+            </div>
+            <div>
+              <p className="text-gray-400 text-sm mb-1">🏆 Min Rank</p>
+              <p className="text-white font-medium">
+                {tournament.min_rank || "Any"}
               </p>
             </div>
             <div>
               <p className="text-gray-400 text-sm mb-1">💎 Prize Pool</p>
               <p className="text-gold font-bold text-lg">
-                {getPrizePoolDisplay(tournament)}
+                ${getPrizePoolDisplayDual(tournament).usd} USD
+              </p>
+              <p className="text-gold text-sm">
+                ({getPrizePoolDisplayDual(tournament).diamonds} 💎)
               </p>
               {(tournament.prize_pool_type ?? tournament.prizePoolType) ===
                 "entry-based" && (
@@ -343,7 +366,10 @@ export default function TournamentDetailsPage() {
                     </div>
                   </div>
                   <p className="text-gold font-bold text-xl">
-                    {prizes.first.toLocaleString()} 💎
+                    ${Math.floor(prizes.first / 100).toLocaleString()} USD
+                  </p>
+                  <p className="text-gold text-sm">
+                    ({prizes.first.toLocaleString()} 💎)
                   </p>
                 </div>
                 <div className="flex items-center justify-between p-4 bg-dark-secondary rounded-lg border border-gold-dark/20">
@@ -359,7 +385,10 @@ export default function TournamentDetailsPage() {
                     </div>
                   </div>
                   <p className="text-gold font-bold text-xl">
-                    {prizes.second.toLocaleString()} 💎
+                    ${Math.floor(prizes.second / 100).toLocaleString()} USD
+                  </p>
+                  <p className="text-gold text-sm">
+                    ({prizes.second.toLocaleString()} 💎)
                   </p>
                 </div>
                 <div className="flex items-center justify-between p-4 bg-dark-secondary rounded-lg border border-gold-dark/20">
@@ -375,7 +404,10 @@ export default function TournamentDetailsPage() {
                     </div>
                   </div>
                   <p className="text-gold font-bold text-xl">
-                    {prizes.third.toLocaleString()} 💎
+                    ${Math.floor(prizes.third / 100).toLocaleString()} USD
+                  </p>
+                  <p className="text-gold text-sm">
+                    ({prizes.third.toLocaleString()} 💎)
                   </p>
                 </div>
               </div>
@@ -479,9 +511,16 @@ export default function TournamentDetailsPage() {
                         #{index + 1}
                       </span>
                       <span className="text-2xl">{participant.avatar}</span>
-                      <span className="text-white font-medium flex-1">
-                        {participant.username}
-                      </span>
+                      <div className="flex-1">
+                        <span className="text-white font-medium block">
+                          {participant.username}
+                        </span>
+                        {participant.rank && (
+                          <span className="text-gray-400 text-sm">
+                            {participant.rank} Rank
+                          </span>
+                        )}
+                      </div>
                       {participant.id ===
                         (tournament.host_id ?? tournament.hostId) && (
                         <Badge variant="primary" size="sm">

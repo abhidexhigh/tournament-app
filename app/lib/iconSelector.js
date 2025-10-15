@@ -1,9 +1,29 @@
 // Utility function to select tournament icons programmatically
 export function selectTournamentIcon(tournamentData) {
-  const { title, prizePoolType, maxPlayers, entryFee } = tournamentData;
+  const { title, prizePoolType, maxPlayers, entryFee, game } = tournamentData;
+
+  // Game-specific icons
+  const gameIcons = {
+    "Force of Rune": ["🔮", "✨", "🌟", "💫", "⚔️", "🛡️"],
+    "League of Legends": ["⚔️", "🏆", "👑", "💎", "⚡", "🔥"],
+    "Dota 2": ["🗡️", "🏰", "👑", "💎", "⚡", "🔥"],
+    "Counter-Strike 2": ["🔫", "💣", "🎯", "⚡", "🔥", "💎"],
+    Valorant: ["🎯", "💎", "⚡", "🔥", "🏆", "👑"],
+    "Apex Legends": ["🏹", "💥", "⚡", "🔥", "🎯", "💎"],
+    Fortnite: ["🏗️", "💥", "⚡", "🔥", "🎯", "🏆"],
+    "Rocket League": ["🚗", "⚽", "🏆", "💎", "⚡", "🔥"],
+    "Overwatch 2": ["🎯", "💥", "⚡", "🔥", "🏆", "👑"],
+    "Call of Duty: Warzone": ["🔫", "💣", "🎯", "⚡", "🔥", "💎"],
+    Other: ["🎮", "🏆", "⚔️", "🔥", "🎯", "👾"],
+  };
 
   // Icon selection based on tournament characteristics
   const iconRules = [
+    // Game-specific icons (highest priority)
+    {
+      condition: (data) => data.game && gameIcons[data.game],
+      icons: gameIcons[game] || gameIcons["Other"],
+    },
     // High prize pool tournaments
     {
       condition: (data) => data.prizePool >= 50000,
@@ -93,6 +113,7 @@ export function getTournamentIcon(tournament) {
   // Otherwise, generate one based on tournament data
   return selectTournamentIcon({
     title: tournament.title,
+    game: tournament.game,
     prizePoolType: tournament.prize_pool_type || tournament.prizePoolType,
     maxPlayers: tournament.max_players || tournament.maxPlayers,
     entryFee: tournament.entry_fee || tournament.entryFee,

@@ -18,10 +18,11 @@ function CreateTournamentContent() {
   const [errors, setErrors] = useState({});
   const [formData, setFormData] = useState({
     title: "",
-    game: "Force of Rune", // Fixed game name
+    game: "", // Game selection
     date: "",
     time: "",
     maxPlayers: "",
+    minRank: "", // Minimum rank required
     prizePoolType: "fixed", // "fixed" or "entry-based"
     prizePool: "",
     prizeSplitFirst: 50,
@@ -62,6 +63,10 @@ function CreateTournamentContent() {
       newErrors.title = "Tournament title is required";
     }
 
+    if (!formData.game) {
+      newErrors.game = "Game selection is required";
+    }
+
     if (!formData.date) {
       newErrors.date = "Tournament date is required";
     } else {
@@ -84,11 +89,15 @@ function CreateTournamentContent() {
       newErrors.maxPlayers = "Maximum 1000 players allowed";
     }
 
+    if (!formData.minRank) {
+      newErrors.minRank = "Minimum rank is required";
+    }
+
     const prizePool = parseInt(formData.prizePool);
-    if (!formData.prizePool || prizePool < 100) {
-      newErrors.prizePool = "Minimum prize pool is 100 diamonds";
-    } else if (prizePool > 1000000) {
-      newErrors.prizePool = "Maximum prize pool is 1,000,000 diamonds";
+    if (!formData.prizePool || prizePool < 1) {
+      newErrors.prizePool = "Minimum prize pool is $1 USD";
+    } else if (prizePool > 10000) {
+      newErrors.prizePool = "Maximum prize pool is $10,000 USD";
     }
 
     const totalSplit =
@@ -123,15 +132,19 @@ function CreateTournamentContent() {
         date: formData.date,
         time: formData.time,
         max_players: parseInt(formData.maxPlayers),
+        min_rank: formData.minRank,
         prize_pool_type: formData.prizePoolType,
-        prize_pool: parseInt(formData.prizePool),
+        prize_pool: parseInt(formData.prizePool) * 100, // Convert USD to diamonds
+        prize_pool_usd: parseInt(formData.prizePool), // Store USD amount
         prize_split_first: formData.prizeSplitFirst,
         prize_split_second: formData.prizeSplitSecond,
         prize_split_third: formData.prizeSplitThird,
-        entry_fee: parseInt(formData.entryFee),
+        entry_fee: parseInt(formData.entryFee) * 100, // Convert USD to diamonds
+        entry_fee_usd: parseInt(formData.entryFee), // Store USD amount
         rules: formData.rules,
         image: selectTournamentIcon({
           title: formData.title,
+          game: formData.game,
           prizePoolType: formData.prizePoolType,
           maxPlayers: parseInt(formData.maxPlayers),
           entryFee: parseInt(formData.entryFee),
@@ -175,6 +188,41 @@ function CreateTournamentContent() {
         {/* Form */}
         <Card>
           <form onSubmit={handleSubmit} className="space-y-6">
+            {/* Game Selection */}
+            <div>
+              <label className="block text-sm font-medium text-gray-300 mb-3">
+                Game <span className="text-gold">*</span>
+              </label>
+              <select
+                name="game"
+                value={formData.game}
+                onChange={handleInputChange}
+                className="w-full bg-dark-card border border-gold-dark/30 rounded-lg px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-gold focus:border-transparent"
+                required
+              >
+                <option value="">Select a game</option>
+                <option value="Force of Rune">Force of Rune</option>
+                <option value="League of Legends">League of Legends</option>
+                <option value="Dota 2">Dota 2</option>
+                <option value="Counter-Strike 2">Counter-Strike 2</option>
+                <option value="Valorant">Valorant</option>
+                <option value="Apex Legends">Apex Legends</option>
+                <option value="Fortnite">Fortnite</option>
+                <option value="Rocket League">Rocket League</option>
+                <option value="Overwatch 2">Overwatch 2</option>
+                <option value="Call of Duty: Warzone">
+                  Call of Duty: Warzone
+                </option>
+                <option value="Other">Other</option>
+              </select>
+              {errors.game && (
+                <p className="mt-2 text-sm text-red-400">{errors.game}</p>
+              )}
+              <p className="mt-2 text-sm text-gray-400">
+                💡 Choose the game for your tournament
+              </p>
+            </div>
+
             {/* Tournament Title */}
             <Input
               label="Tournament Title"
@@ -186,17 +234,6 @@ function CreateTournamentContent() {
               error={errors.title}
               required
             />
-
-            {/* Game Info (Fixed) */}
-            <div className="p-4 bg-dark-secondary rounded-lg border border-gold-dark/30">
-              <div className="flex items-center space-x-3">
-                <span className="text-3xl">🎮</span>
-                <div>
-                  <p className="text-gray-400 text-sm">Game</p>
-                  <p className="text-gold font-bold text-lg">Force of Rune</p>
-                </div>
-              </div>
-            </div>
 
             {/* Date and Time */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -234,6 +271,33 @@ function CreateTournamentContent() {
               error={errors.maxPlayers}
               required
             />
+
+            {/* Minimum Rank Required */}
+            <div>
+              <label className="block text-sm font-medium text-gray-300 mb-3">
+                Minimum Rank Required <span className="text-gold">*</span>
+              </label>
+              <select
+                name="minRank"
+                value={formData.minRank}
+                onChange={handleInputChange}
+                className="w-full bg-dark-card border border-gold-dark/30 rounded-lg px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-gold focus:border-transparent"
+                required
+              >
+                <option value="">Select minimum rank</option>
+                <option value="Silver">Silver</option>
+                <option value="Gold">Gold</option>
+                <option value="Platinum">Platinum</option>
+                <option value="Diamond">Diamond</option>
+                <option value="Master">Master</option>
+              </select>
+              {errors.minRank && (
+                <p className="mt-2 text-sm text-red-400">{errors.minRank}</p>
+              )}
+              <p className="mt-2 text-sm text-gray-400">
+                💡 Only players with this rank or higher can join the tournament
+              </p>
+            </div>
 
             {/* Prize Pool Type */}
             <div>
@@ -288,15 +352,15 @@ function CreateTournamentContent() {
               <Input
                 label={
                   formData.prizePoolType === "fixed"
-                    ? "Prize Pool (Diamonds)"
-                    : "Maximum Prize Pool (Diamonds)"
+                    ? "Prize Pool (USD)"
+                    : "Maximum Prize Pool (USD)"
                 }
                 name="prizePool"
                 type="number"
                 value={formData.prizePool}
                 onChange={handleInputChange}
-                placeholder="e.g., 50000"
-                icon="💎"
+                placeholder="e.g., 500"
+                icon="💰"
                 error={errors.prizePool}
                 required
               />
@@ -307,36 +371,54 @@ function CreateTournamentContent() {
                   {formData.maxPlayers && formData.prizePool && (
                     <span className="block mt-1 text-gold">
                       Example: If 50 players join out of {formData.maxPlayers},
-                      prize will be{" "}
+                      prize will be $
                       {Math.floor(
                         (50 / parseInt(formData.maxPlayers)) *
                           parseInt(formData.prizePool)
                       ).toLocaleString()}{" "}
-                      diamonds
+                      USD (
+                      {(
+                        Math.floor(
+                          (50 / parseInt(formData.maxPlayers)) *
+                            parseInt(formData.prizePool)
+                        ) * 100
+                      ).toLocaleString()}{" "}
+                      💎)
                     </span>
                   )}
                 </p>
               )}
+              <p className="mt-2 text-sm text-gray-400">
+                💡 1 USD = 100 Diamonds
+              </p>
             </div>
 
             {/* Entry Fee */}
-            <Input
-              label="Entry Fee (Diamonds)"
-              name="entryFee"
-              type="number"
-              value={formData.entryFee}
-              onChange={handleInputChange}
-              placeholder="e.g., 100"
-              icon="💰"
-              min="0"
-              max="10000"
-              error={errors.entryFee}
-              required
-            />
-            <p className="mt-2 text-sm text-gray-400">
-              💡 Players will need to pay this amount to join the tournament.
-              Set to 0 for free entry.
-            </p>
+            <div>
+              <Input
+                label="Entry Fee (USD)"
+                name="entryFee"
+                type="number"
+                value={formData.entryFee}
+                onChange={handleInputChange}
+                placeholder="e.g., 1"
+                icon="💰"
+                min="0"
+                max="100"
+                error={errors.entryFee}
+                required
+              />
+              <p className="mt-2 text-sm text-gray-400">
+                💡 Players will need to pay this amount to join the tournament.
+                Set to 0 for free entry.
+                {formData.entryFee > 0 && (
+                  <span className="block mt-1 text-gold">
+                    Entry fee: ${formData.entryFee} USD (
+                    {(formData.entryFee * 100).toLocaleString()} 💎)
+                  </span>
+                )}
+              </p>
+            </div>
 
             {/* Prize Split */}
             <div>

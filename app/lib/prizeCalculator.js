@@ -76,3 +76,52 @@ export const getPrizePoolDisplay = (tournament) => {
 
   return actualPrizePool.toLocaleString();
 };
+
+/**
+ * Get prize pool display with both USD and diamonds
+ * @param {Object} tournament - Tournament object
+ * @returns {Object} - Display object with USD and diamond amounts
+ */
+export const getPrizePoolDisplayDual = (tournament) => {
+  if (!tournament) return { usd: "0", diamonds: "0" };
+
+  const actualPrizePool = calculateActualPrizePool(tournament);
+  const usdAmount =
+    tournament.prize_pool_usd || Math.floor(actualPrizePool / 100);
+  const diamondAmount = actualPrizePool;
+
+  if (tournament.prize_pool_type === "entry-based") {
+    const participantCount = tournament.participants?.length || 0;
+    const maxPrizePool = tournament.prize_pool;
+    const maxUsdAmount =
+      tournament.prize_pool_usd || Math.floor(maxPrizePool / 100);
+
+    return {
+      usd: `${usdAmount.toLocaleString()} / ${maxUsdAmount.toLocaleString()}`,
+      diamonds: `${diamondAmount.toLocaleString()} / ${maxPrizePool.toLocaleString()}`,
+    };
+  }
+
+  return {
+    usd: usdAmount.toLocaleString(),
+    diamonds: diamondAmount.toLocaleString(),
+  };
+};
+
+/**
+ * Get entry fee display with both USD and diamonds
+ * @param {Object} tournament - Tournament object
+ * @returns {Object} - Display object with USD and diamond amounts
+ */
+export const getEntryFeeDisplayDual = (tournament) => {
+  if (!tournament) return { usd: "0", diamonds: "0" };
+
+  const entryFee = tournament.entry_fee || 0;
+  const usdAmount = tournament.entry_fee_usd || Math.floor(entryFee / 100);
+  const diamondAmount = entryFee;
+
+  return {
+    usd: usdAmount.toLocaleString(),
+    diamonds: diamondAmount.toLocaleString(),
+  };
+};
