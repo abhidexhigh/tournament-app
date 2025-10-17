@@ -336,6 +336,7 @@ export default function LoginPage() {
               >
                 Login as ProGamerYT
               </Button>
+              .;
               <Button
                 variant="secondary"
                 size="sm"

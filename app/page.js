@@ -11,6 +11,7 @@ import {
 import { tournamentsApi } from "./lib/api";
 import { getTournamentIcon } from "./lib/iconSelector";
 import { useUser } from "./contexts/UserContext";
+import { getClanById, initializeClans } from "./lib/clans";
 import Button from "./components/Button";
 import Card from "./components/Card";
 import Badge from "./components/Badge";
@@ -21,6 +22,11 @@ export default function Home() {
   const [activeTab, setActiveTab] = useState("all");
   const [selectedGame, setSelectedGame] = useState("all");
   const { user, loading: userLoading } = useUser();
+
+  // Initialize clans
+  useEffect(() => {
+    initializeClans();
+  }, []);
 
   useEffect(() => {
     const loadData = async () => {
@@ -189,7 +195,15 @@ export default function Home() {
                 <h3 className="text-xl font-bold text-white mb-2 group-hover:text-gold transition-colors duration-300">
                   {tournament.title}
                 </h3>
-                <p className="text-gray-400 text-sm mb-4">{tournament.game}</p>
+                <div className="flex items-center gap-2 mb-4">
+                  <p className="text-gray-400 text-sm">{tournament.game}</p>
+                  {(tournament.tournament_type ?? tournament.tournamentType) ===
+                    "clan_battle" && (
+                    <Badge variant="warning" size="sm">
+                      ⚔️ Clan Battle
+                    </Badge>
+                  )}
+                </div>
 
                 {/* Countdown Timer for Upcoming Tournaments */}
                 {tournament.status === "upcoming" && (
@@ -244,6 +258,57 @@ export default function Home() {
                       {tournament.min_rank || "Any"}
                     </span>
                   </div>
+
+                  {/* Clan Battle Information */}
+                  {(tournament.tournament_type ?? tournament.tournamentType) ===
+                    "clan_battle" && (
+                    <>
+                      <div className="flex items-center justify-between text-sm">
+                        <span className="text-gray-400">🎯 Mode</span>
+                        <span className="text-white font-medium">
+                          {(tournament.clan_battle_mode ??
+                            tournament.clanBattleMode) === "auto_division"
+                            ? "Auto-Division"
+                            : "Clan Selection"}
+                        </span>
+                      </div>
+                      {(tournament.clan_battle_mode ??
+                        tournament.clanBattleMode) === "clan_selection" && (
+                        <>
+                          <div className="flex items-center justify-between text-sm">
+                            <span className="text-gray-400">🏰 Clan 1</span>
+                            <span className="text-white font-medium text-xs">
+                              {tournament.clan1_id
+                                ? (() => {
+                                    const clan = getClanById(
+                                      tournament.clan1_id
+                                    );
+                                    return clan
+                                      ? `${clan.emblem} ${clan.name}`
+                                      : "TBD";
+                                  })()
+                                : "TBD"}
+                            </span>
+                          </div>
+                          <div className="flex items-center justify-between text-sm">
+                            <span className="text-gray-400">🏰 Clan 2</span>
+                            <span className="text-white font-medium text-xs">
+                              {tournament.clan2_id
+                                ? (() => {
+                                    const clan = getClanById(
+                                      tournament.clan2_id
+                                    );
+                                    return clan
+                                      ? `${clan.emblem} ${clan.name}`
+                                      : "TBD";
+                                  })()
+                                : "TBD"}
+                            </span>
+                          </div>
+                        </>
+                      )}
+                    </>
+                  )}
                 </div>
 
                 {/* Prize Pool */}

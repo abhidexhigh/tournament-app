@@ -57,6 +57,11 @@ export function selectTournamentIcon(tournamentData) {
         data.title.toLowerCase().includes("grand"),
       icons: ["🏆", "👑", "⭐", "💎"],
     },
+    // Clan Battle tournaments
+    {
+      condition: (data) => data.tournamentType === "clan_battle",
+      icons: ["⚔️", "🏰", "🛡️", "👥", "🔥", "⚡"],
+    },
     // Battle/Arena tournaments
     {
       condition: (data) =>

@@ -23,6 +23,12 @@ import { getTournamentIcon } from "../../lib/iconSelector";
 import { getUserById } from "../../lib/auth";
 import { refreshUserFromAPI } from "../../lib/authHelpers";
 import { useUser } from "../../contexts/UserContext";
+import {
+  getClanById,
+  initializeClans,
+  canUserJoinClanBattle,
+  getUserClan,
+} from "../../lib/clans";
 
 export default function TournamentDetailsPage() {
   const params = useParams();
@@ -39,6 +45,12 @@ export default function TournamentDetailsPage() {
     third: "",
   });
   const [errors, setErrors] = useState({});
+  const [clan1, setClan1] = useState(null);
+  const [clan2, setClan2] = useState(null);
+
+  useEffect(() => {
+    initializeClans();
+  }, []);
 
   useEffect(() => {
     const loadData = async () => {
@@ -52,6 +64,19 @@ export default function TournamentDetailsPage() {
             getUserById(pId)
           );
           setParticipants(participantsList.filter((p) => p !== null));
+
+          // Load clan information for clan battle tournaments
+          if (
+            tournamentData.tournament_type === "clan_battle" &&
+            tournamentData.clan_battle_mode === "clan_selection"
+          ) {
+            if (tournamentData.clan1_id) {
+              setClan1(getClanById(tournamentData.clan1_id));
+            }
+            if (tournamentData.clan2_id) {
+              setClan2(getClanById(tournamentData.clan2_id));
+            }
+          }
         }
       } catch (error) {
         console.error("Failed to load tournament:", error);
@@ -84,6 +109,29 @@ export default function TournamentDetailsPage() {
     if (user.type !== "player") {
       alert("Only players can join tournaments!");
       return;
+    }
+
+    // Check clan membership for clan battle tournaments
+    if (tournament.tournament_type === "clan_battle") {
+      if (tournament.clan_battle_mode === "clan_selection") {
+        const userClan = getUserClan(user.id);
+        if (!userClan) {
+          alert("You must be a member of a clan to join this tournament!");
+          return;
+        }
+
+        const isEligibleClan =
+          userClan.id === tournament.clan1_id ||
+          userClan.id === tournament.clan2_id;
+        if (!isEligibleClan) {
+          const clan1Name = clan1 ? clan1.name : "Unknown";
+          const clan2Name = clan2 ? clan2.name : "Unknown";
+          alert(
+            `You can only join this tournament if you're a member of ${clan1Name} or ${clan2Name}!`
+          );
+          return;
+        }
+      }
     }
 
     setLoading(true);
@@ -227,7 +275,15 @@ export default function TournamentDetailsPage() {
                 <h1 className="text-4xl font-bold text-gold-gradient mb-2">
                   {tournament.title}
                 </h1>
-                <p className="text-gray-400 text-lg mb-3">{tournament.game}</p>
+                <div className="flex items-center gap-3 mb-3">
+                  <p className="text-gray-400 text-lg">{tournament.game}</p>
+                  {(tournament.tournament_type ?? tournament.tournamentType) ===
+                    "clan_battle" && (
+                    <Badge variant="warning" size="md">
+                      ⚔️ Clan Battle
+                    </Badge>
+                  )}
+                </div>
                 <Badge
                   variant={tournament.status}
                   size="lg"
@@ -250,6 +306,50 @@ export default function TournamentDetailsPage() {
 
             {/* Action Buttons */}
             <div className="flex flex-col gap-2">
+              {/* Clan Information for Join Button */}
+              {canJoin && tournament.tournament_type === "clan_battle" && (
+                <div className="mb-4 p-3 bg-dark-secondary rounded-lg border border-gold-dark/30">
+                  {tournament.clan_battle_mode === "clan_selection" ? (
+                    <div>
+                      <p className="text-gold text-sm font-medium mb-2">
+                        🏰 Clan Battle - Selected Clans
+                      </p>
+                      <div className="space-y-1">
+                        {clan1 && (
+                          <p className="text-white text-sm">
+                            {clan1.emblem}{" "}
+                            <span className="font-medium">
+                              {clan1.name} [{clan1.tag}]
+                            </span>
+                          </p>
+                        )}
+                        {clan2 && (
+                          <p className="text-white text-sm">
+                            {clan2.emblem}{" "}
+                            <span className="font-medium">
+                              {clan2.name} [{clan2.tag}]
+                            </span>
+                          </p>
+                        )}
+                      </div>
+                      <p className="text-gray-400 text-xs mt-2">
+                        Only members of these clans can join this tournament
+                      </p>
+                    </div>
+                  ) : (
+                    <div>
+                      <p className="text-gold text-sm font-medium mb-1">
+                        🎯 Auto-Division Clan Battle
+                      </p>
+                      <p className="text-gray-400 text-xs">
+                        Players will be automatically divided into 2 balanced
+                        teams
+                      </p>
+                    </div>
+                  )}
+                </div>
+              )}
+
               {canJoin && (
                 <Button
                   variant="primary"
@@ -326,6 +426,17 @@ export default function TournamentDetailsPage() {
                 {tournament.min_rank || "Any"}
               </p>
             </div>
+
+            {/* Tournament Type Information */}
+            <div>
+              <p className="text-gray-400 text-sm mb-1">🎮 Tournament Type</p>
+              <p className="text-white font-medium">
+                {(tournament.tournament_type ?? tournament.tournamentType) ===
+                "clan_battle"
+                  ? "⚔️ Clan Battle"
+                  : "🏆 Regular Tournament"}
+              </p>
+            </div>
             <div>
               <p className="text-gray-400 text-sm mb-1">💎 Prize Pool</p>
               <p className="text-gold font-bold text-lg">
@@ -341,8 +452,137 @@ export default function TournamentDetailsPage() {
                 </p>
               )}
             </div>
+
+            {/* Clan Battle Information */}
+            {(tournament.tournament_type ?? tournament.tournamentType) ===
+              "clan_battle" && (
+              <>
+                <div>
+                  <p className="text-gray-400 text-sm mb-1">
+                    ⚔️ Tournament Type
+                  </p>
+                  <p className="text-white font-medium">Clan Battle</p>
+                </div>
+                <div>
+                  <p className="text-gray-400 text-sm mb-1">🎯 Battle Mode</p>
+                  <p className="text-white font-medium">
+                    {(tournament.clan_battle_mode ??
+                      tournament.clanBattleMode) === "auto_division"
+                      ? "Auto-Division"
+                      : "Clan Selection"}
+                  </p>
+                </div>
+                {(tournament.clan_battle_mode ?? tournament.clanBattleMode) ===
+                  "clan_selection" && (
+                  <>
+                    <div>
+                      <p className="text-gray-400 text-sm mb-1">🏰 Clan 1</p>
+                      <p className="text-white font-medium">
+                        {clan1
+                          ? `${clan1.emblem} ${clan1.name} [${clan1.tag}]`
+                          : "Not specified"}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-gray-400 text-sm mb-1">🏰 Clan 2</p>
+                      <p className="text-white font-medium">
+                        {clan2
+                          ? `${clan2.emblem} ${clan2.name} [${clan2.tag}]`
+                          : "Not specified"}
+                      </p>
+                    </div>
+                  </>
+                )}
+              </>
+            )}
           </div>
         </Card>
+
+        {/* Tournament Type Details Card */}
+        {(tournament.tournament_type ?? tournament.tournamentType) ===
+          "clan_battle" && (
+          <Card className="mb-8">
+            <h2 className="text-2xl font-bold text-gold mb-4 flex items-center gap-2">
+              ⚔️ Clan Battle Details
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <p className="text-gray-400 text-sm mb-2">Battle Mode</p>
+                <p className="text-white font-medium text-lg">
+                  {(tournament.clan_battle_mode ??
+                    tournament.clanBattleMode) === "auto_division"
+                    ? "🎯 Auto-Division"
+                    : "👥 Clan Selection"}
+                </p>
+                <p className="text-gray-500 text-sm mt-1">
+                  {(tournament.clan_battle_mode ??
+                    tournament.clanBattleMode) === "auto_division"
+                    ? "Players will be automatically divided into 2 balanced teams of 30 each"
+                    : "Host has selected specific clans to compete against each other"}
+                </p>
+              </div>
+
+              {(tournament.clan_battle_mode ?? tournament.clanBattleMode) ===
+                "clan_selection" && (
+                <div>
+                  <p className="text-gray-400 text-sm mb-2">Competing Clans</p>
+                  <div className="space-y-3">
+                    {clan1 && (
+                      <div className="flex items-center gap-3 p-3 bg-dark-secondary rounded-lg border border-gold-dark/30">
+                        <span className="text-2xl">{clan1.emblem}</span>
+                        <div>
+                          <p className="text-white font-medium">
+                            {clan1.name} [{clan1.tag}]
+                          </p>
+                          <p className="text-gray-400 text-sm">
+                            {clan1.description}
+                          </p>
+                          <p className="text-gold text-xs">
+                            Level {clan1.level} • {clan1.wins}W-{clan1.losses}L
+                          </p>
+                        </div>
+                      </div>
+                    )}
+                    {clan2 && (
+                      <div className="flex items-center gap-3 p-3 bg-dark-secondary rounded-lg border border-gold-dark/30">
+                        <span className="text-2xl">{clan2.emblem}</span>
+                        <div>
+                          <p className="text-white font-medium">
+                            {clan2.name} [{clan2.tag}]
+                          </p>
+                          <p className="text-gray-400 text-sm">
+                            {clan2.description}
+                          </p>
+                          <p className="text-gold text-xs">
+                            Level {clan2.level} • {clan2.wins}W-{clan2.losses}L
+                          </p>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              <div className="md:col-span-2">
+                <p className="text-gray-400 text-sm mb-2">Team Structure</p>
+                <p className="text-white">
+                  {(tournament.clan_battle_mode ??
+                    tournament.clanBattleMode) === "auto_division"
+                    ? `Up to ${
+                        tournament.max_players ?? tournament.maxPlayers
+                      } players will be divided into 2 teams of ${Math.floor(
+                        (tournament.max_players ?? tournament.maxPlayers) / 2
+                      )} each`
+                    : `Each clan can have up to ${
+                        tournament.max_players ?? tournament.maxPlayers
+                      } players (${
+                        (tournament.max_players ?? tournament.maxPlayers) * 2
+                      } total max)`}
+                </p>
+              </div>
+            </div>
+          </Card>
+        )}
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Left Column */}

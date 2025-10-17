@@ -178,5 +178,14 @@
     "description": "Entry fee for Entry Fee Testing",
     "tournament_id": "tournament_1760355857248_kjpdzef0k",
     "created_at": "2025-10-13T11:52:34.994Z"
+  },
+  {
+    "id": "transaction_1760685578281_k69nzrcdw",
+    "user_id": "player1",
+    "type": "tournament_entry",
+    "amount": -1000,
+    "description": "Entry fee for Clan Battle Clan Selection",
+    "tournament_id": "tournament_1760685533808_5ymj5akou",
+    "created_at": "2025-10-17T07:19:38.281Z"
   }
 ]

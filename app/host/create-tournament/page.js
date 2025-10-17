@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import ProtectedRoute from "../../components/ProtectedRoute";
 import Button from "../../components/Button";
@@ -11,6 +11,7 @@ import Card from "../../components/Card";
 import { tournamentsApi } from "../../lib/api";
 import { selectTournamentIcon } from "../../lib/iconSelector";
 import { useUser } from "../../contexts/UserContext";
+import { getClanOptions, initializeClans } from "../../lib/clans";
 
 function CreateTournamentContent() {
   const { user } = useUser();
@@ -19,6 +20,10 @@ function CreateTournamentContent() {
   const [formData, setFormData] = useState({
     title: "",
     game: "", // Game selection
+    tournamentType: "regular", // "regular" or "clan_battle"
+    clanBattleMode: "auto_division", // "auto_division" or "clan_selection"
+    clan1_id: "", // First clan ID for clan selection mode
+    clan2_id: "", // Second clan ID for clan selection mode
     date: "",
     time: "",
     maxPlayers: "",
@@ -32,7 +37,15 @@ function CreateTournamentContent() {
     rules: "",
   });
 
+  const [clanOptions, setClanOptions] = useState([]);
+
   const router = useRouter();
+
+  // Initialize clans on component mount
+  useEffect(() => {
+    initializeClans();
+    setClanOptions(getClanOptions());
+  }, []);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -85,8 +98,38 @@ function CreateTournamentContent() {
     const maxPlayers = parseInt(formData.maxPlayers);
     if (!formData.maxPlayers || maxPlayers < 2) {
       newErrors.maxPlayers = "At least 2 players required";
+    } else if (formData.tournamentType === "clan_battle") {
+      if (formData.clanBattleMode === "auto_division" && maxPlayers > 60) {
+        newErrors.maxPlayers =
+          "Maximum 60 players allowed for auto-division clan battle";
+      } else if (
+        formData.clanBattleMode === "clan_selection" &&
+        maxPlayers > 30
+      ) {
+        newErrors.maxPlayers =
+          "Maximum 30 players per clan allowed for clan selection mode";
+      }
     } else if (maxPlayers > 1000) {
       newErrors.maxPlayers = "Maximum 1000 players allowed";
+    }
+
+    // Clan battle specific validations
+    if (formData.tournamentType === "clan_battle") {
+      if (formData.clanBattleMode === "clan_selection") {
+        if (!formData.clan1_id) {
+          newErrors.clan1_id = "First clan is required";
+        }
+        if (!formData.clan2_id) {
+          newErrors.clan2_id = "Second clan is required";
+        }
+        if (
+          formData.clan1_id &&
+          formData.clan2_id &&
+          formData.clan1_id === formData.clan2_id
+        ) {
+          newErrors.clan2_id = "Clans must be different";
+        }
+      }
     }
 
     if (!formData.minRank) {
@@ -129,6 +172,21 @@ function CreateTournamentContent() {
       const tournamentData = {
         title: formData.title,
         game: formData.game,
+        tournament_type: formData.tournamentType,
+        clan_battle_mode:
+          formData.tournamentType === "clan_battle"
+            ? formData.clanBattleMode
+            : null,
+        clan1_id:
+          formData.tournamentType === "clan_battle" &&
+          formData.clanBattleMode === "clan_selection"
+            ? formData.clan1_id
+            : null,
+        clan2_id:
+          formData.tournamentType === "clan_battle" &&
+          formData.clanBattleMode === "clan_selection"
+            ? formData.clan2_id
+            : null,
         date: formData.date,
         time: formData.time,
         max_players: parseInt(formData.maxPlayers),
@@ -149,6 +207,7 @@ function CreateTournamentContent() {
           maxPlayers: parseInt(formData.maxPlayers),
           entryFee: parseInt(formData.entryFee),
           prizePool: parseInt(formData.prizePool),
+          tournamentType: formData.tournamentType,
         }),
         host_id: user.id,
       };
@@ -223,6 +282,166 @@ function CreateTournamentContent() {
               </p>
             </div>
 
+            {/* Tournament Type */}
+            <div>
+              <label className="block text-sm font-medium text-gray-300 mb-3">
+                Tournament Type <span className="text-gold">*</span>
+              </label>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <button
+                  type="button"
+                  onClick={() =>
+                    setFormData({ ...formData, tournamentType: "regular" })
+                  }
+                  className={`p-4 rounded-lg border-2 transition-all duration-300 text-left ${
+                    formData.tournamentType === "regular"
+                      ? "border-gold bg-gold/10"
+                      : "border-gold-dark/30 hover:border-gold/50"
+                  }`}
+                >
+                  <div className="flex items-center space-x-3 mb-2">
+                    <span className="text-2xl">🏆</span>
+                    <p className="text-white font-bold">FOR Chess</p>
+                  </div>
+                  <p className="text-gray-400 text-sm">
+                    Tournament for individual players
+                  </p>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() =>
+                    setFormData({ ...formData, tournamentType: "clan_battle" })
+                  }
+                  className={`p-4 rounded-lg border-2 transition-all duration-300 text-left ${
+                    formData.tournamentType === "clan_battle"
+                      ? "border-gold bg-gold/10"
+                      : "border-gold-dark/30 hover:border-gold/50"
+                  }`}
+                >
+                  <div className="flex items-center space-x-3 mb-2">
+                    <span className="text-2xl">⚔️</span>
+                    <p className="text-white font-bold">Clan Battle</p>
+                  </div>
+                  <p className="text-gray-400 text-sm">
+                    Team-based tournament with clan vs clan battles
+                  </p>
+                </button>
+              </div>
+            </div>
+
+            {/* Clan Battle Mode Selection */}
+            {formData.tournamentType === "clan_battle" && (
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-3">
+                  Clan Battle Mode <span className="text-gold">*</span>
+                </label>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setFormData({
+                        ...formData,
+                        clanBattleMode: "auto_division",
+                      })
+                    }
+                    className={`p-4 rounded-lg border-2 transition-all duration-300 text-left ${
+                      formData.clanBattleMode === "auto_division"
+                        ? "border-gold bg-gold/10"
+                        : "border-gold-dark/30 hover:border-gold/50"
+                    }`}
+                  >
+                    <div className="flex items-center space-x-3 mb-2">
+                      <span className="text-2xl">🎯</span>
+                      <p className="text-white font-bold">Auto-Division</p>
+                    </div>
+                    <p className="text-gray-400 text-sm">
+                      Up to 60 players join, system divides into 2 teams of 30
+                    </p>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setFormData({
+                        ...formData,
+                        clanBattleMode: "clan_selection",
+                      })
+                    }
+                    className={`p-4 rounded-lg border-2 transition-all duration-300 text-left ${
+                      formData.clanBattleMode === "clan_selection"
+                        ? "border-gold bg-gold/10"
+                        : "border-gold-dark/30 hover:border-gold/50"
+                    }`}
+                  >
+                    <div className="flex items-center space-x-3 mb-2">
+                      <span className="text-2xl">👥</span>
+                      <p className="text-white font-bold">Clan Selection</p>
+                    </div>
+                    <p className="text-gray-400 text-sm">
+                      Host selects 2 specific clans (max 30 players each)
+                    </p>
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* Clan Selection Fields */}
+            {formData.tournamentType === "clan_battle" &&
+              formData.clanBattleMode === "clan_selection" && (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-300 mb-3">
+                      First Clan <span className="text-gold">*</span>
+                    </label>
+                    <select
+                      name="clan1_id"
+                      value={formData.clan1_id}
+                      onChange={handleInputChange}
+                      className="w-full bg-dark-card border border-gold-dark/30 rounded-lg px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-gold focus:border-transparent"
+                      required
+                    >
+                      <option value="">Select first clan</option>
+                      {clanOptions.map((option) => (
+                        <option key={option.value} value={option.value}>
+                          {option.label}
+                        </option>
+                      ))}
+                    </select>
+                    {errors.clan1_id && (
+                      <p className="mt-2 text-sm text-red-400">
+                        {errors.clan1_id}
+                      </p>
+                    )}
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-300 mb-3">
+                      Second Clan <span className="text-gold">*</span>
+                    </label>
+                    <select
+                      name="clan2_id"
+                      value={formData.clan2_id}
+                      onChange={handleInputChange}
+                      className="w-full bg-dark-card border border-gold-dark/30 rounded-lg px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-gold focus:border-transparent"
+                      required
+                    >
+                      <option value="">Select second clan</option>
+                      {clanOptions.map((option) => (
+                        <option key={option.value} value={option.value}>
+                          {option.label}
+                        </option>
+                      ))}
+                    </select>
+                    {errors.clan2_id && (
+                      <p className="mt-2 text-sm text-red-400">
+                        {errors.clan2_id}
+                      </p>
+                    )}
+                  </div>
+                </div>
+              )}
+
             {/* Tournament Title */}
             <Input
               label="Tournament Title"
@@ -261,16 +480,43 @@ function CreateTournamentContent() {
 
             {/* Max Players */}
             <Input
-              label="Maximum Players"
+              label={
+                formData.tournamentType === "clan_battle"
+                  ? formData.clanBattleMode === "auto_division"
+                    ? "Maximum Players (60 max)"
+                    : "Maximum Players per Clan (30 max)"
+                  : "Maximum Players"
+              }
               name="maxPlayers"
               type="number"
               value={formData.maxPlayers}
               onChange={handleInputChange}
-              placeholder="e.g., 100"
+              placeholder={
+                formData.tournamentType === "clan_battle"
+                  ? formData.clanBattleMode === "auto_division"
+                    ? "e.g., 60"
+                    : "e.g., 30"
+                  : "e.g., 100"
+              }
               icon="👥"
               error={errors.maxPlayers}
               required
+              max={
+                formData.tournamentType === "clan_battle"
+                  ? formData.clanBattleMode === "auto_division"
+                    ? 60
+                    : 30
+                  : 1000
+              }
             />
+            {formData.tournamentType === "clan_battle" && (
+              <p className="mt-2 text-sm text-gray-400">
+                💡{" "}
+                {formData.clanBattleMode === "auto_division"
+                  ? "System will automatically divide players into 2 teams of 30 each"
+                  : "Each clan can have up to 30 players (60 total players max)"}
+              </p>
+            )}
 
             {/* Minimum Rank Required */}
             <div>
