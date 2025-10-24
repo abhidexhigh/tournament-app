@@ -187,5 +187,29 @@
     "description": "Entry fee for Clan Battle Clan Selection",
     "tournament_id": "tournament_1760685533808_5ymj5akou",
     "created_at": "2025-10-17T07:19:38.281Z"
+  },
+  {
+    "id": "transaction_1761299455935_ikntc7mjc",
+    "user_id": "player1",
+    "type": "wallet_topup",
+    "amount": 5,
+    "description": "Wallet top-up: $5 USD via Stripe",
+    "tournament_id": null,
+    "payment_id": "pi_3SLhdySA1CggwQAX1xi1j07q",
+    "payment_method": "stripe",
+    "currency": "usd",
+    "created_at": "2025-10-24T09:50:55.935Z"
+  },
+  {
+    "id": "transaction_1761300009565_a7lya8hw7",
+    "user_id": "player1",
+    "type": "wallet_topup",
+    "amount": 5,
+    "description": "Wallet top-up: $5 USD via Stripe",
+    "tournament_id": null,
+    "payment_id": "pi_3SLhmtSA1CggwQAX0rsSWtYj",
+    "payment_method": "stripe",
+    "currency": "usd",
+    "created_at": "2025-10-24T10:00:09.565Z"
   }
 ]

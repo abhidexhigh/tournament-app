@@ -9,7 +9,8 @@
     "gameId": "ProGamerYT#1234",
     "rank": "Diamond",
     "created_at": "2025-01-01T00:00:00.000Z",
-    "updated_at": "2025-10-13T11:44:17.253Z"
+    "updated_at": "2025-10-13T11:44:17.253Z",
+    "usd_balance": 0
   },
   {
     "id": "host2",
@@ -21,7 +22,8 @@
     "gameId": "GamingKing#5678",
     "rank": "Master",
     "created_at": "2025-01-01T00:00:00.000Z",
-    "updated_at": "2025-01-01T00:00:00.000Z"
+    "updated_at": "2025-01-01T00:00:00.000Z",
+    "usd_balance": 0
   },
   {
     "id": "player1",
@@ -32,10 +34,21 @@
     "avatar": "🥷",
     "gameId": "ShadowNinja#9999",
     "rank": "Gold",
-    "clan_id": "clan_1",
-    "clan_role": "leader",
+    "clans": [
+      {
+        "clan_id": "clan_1",
+        "role": "leader",
+        "joined_at": "2025-01-01T00:00:00.000Z"
+      },
+      {
+        "clan_id": "clan_5",
+        "role": "member",
+        "joined_at": "2025-02-15T00:00:00.000Z"
+      }
+    ],
     "created_at": "2025-01-01T00:00:00.000Z",
-    "updated_at": "2025-10-17T07:19:38.281Z"
+    "updated_at": "2025-10-24T10:00:09.562Z",
+    "usd_balance": 10
   },
   {
     "id": "player2",
@@ -46,10 +59,21 @@
     "avatar": "⚡",
     "gameId": "ThunderStrike#1111",
     "rank": "Platinum",
-    "clan_id": "clan_1",
-    "clan_role": "member",
+    "clans": [
+      {
+        "clan_id": "clan_1",
+        "role": "member",
+        "joined_at": "2025-01-01T00:00:00.000Z"
+      },
+      {
+        "clan_id": "clan_5",
+        "role": "member",
+        "joined_at": "2025-03-01T00:00:00.000Z"
+      }
+    ],
     "created_at": "2025-01-01T00:00:00.000Z",
-    "updated_at": "2025-01-01T00:00:00.000Z"
+    "updated_at": "2025-01-01T00:00:00.000Z",
+    "usd_balance": 0
   },
   {
     "id": "player3",
@@ -60,10 +84,16 @@
     "avatar": "🔥",
     "gameId": "FireMage#2222",
     "rank": "Silver",
-    "clan_id": "clan_1",
-    "clan_role": "member",
+    "clans": [
+      {
+        "clan_id": "clan_1",
+        "role": "member",
+        "joined_at": "2025-01-01T00:00:00.000Z"
+      }
+    ],
     "created_at": "2025-01-01T00:00:00.000Z",
-    "updated_at": "2025-01-01T00:00:00.000Z"
+    "updated_at": "2025-01-01T00:00:00.000Z",
+    "usd_balance": 0
   },
   {
     "id": "player4",
@@ -74,10 +104,21 @@
     "avatar": "❄️",
     "gameId": "IceWarrior#3333",
     "rank": "Diamond",
-    "clan_id": "clan_2",
-    "clan_role": "leader",
+    "clans": [
+      {
+        "clan_id": "clan_2",
+        "role": "leader",
+        "joined_at": "2025-01-01T00:00:00.000Z"
+      },
+      {
+        "clan_id": "clan_4",
+        "role": "member",
+        "joined_at": "2025-02-20T00:00:00.000Z"
+      }
+    ],
     "created_at": "2025-01-01T00:00:00.000Z",
-    "updated_at": "2025-01-01T00:00:00.000Z"
+    "updated_at": "2025-01-01T00:00:00.000Z",
+    "usd_balance": 0
   },
   {
     "id": "player5",
@@ -88,10 +129,21 @@
     "avatar": "🌪️",
     "gameId": "StormRider#4444",
     "rank": "Platinum",
-    "clan_id": "clan_2",
-    "clan_role": "member",
+    "clans": [
+      {
+        "clan_id": "clan_2",
+        "role": "member",
+        "joined_at": "2025-01-01T00:00:00.000Z"
+      },
+      {
+        "clan_id": "clan_6",
+        "role": "member",
+        "joined_at": "2025-03-10T00:00:00.000Z"
+      }
+    ],
     "created_at": "2025-01-01T00:00:00.000Z",
-    "updated_at": "2025-01-01T00:00:00.000Z"
+    "updated_at": "2025-01-01T00:00:00.000Z",
+    "usd_balance": 0
   },
   {
     "id": "player6",
@@ -102,10 +154,21 @@
     "avatar": "⚡",
     "gameId": "LightningBolt#5555",
     "rank": "Master",
-    "clan_id": "clan_3",
-    "clan_role": "leader",
+    "clans": [
+      {
+        "clan_id": "clan_3",
+        "role": "leader",
+        "joined_at": "2025-01-01T00:00:00.000Z"
+      },
+      {
+        "clan_id": "clan_1",
+        "role": "member",
+        "joined_at": "2025-02-01T00:00:00.000Z"
+      }
+    ],
     "created_at": "2025-01-01T00:00:00.000Z",
-    "updated_at": "2025-01-01T00:00:00.000Z"
+    "updated_at": "2025-01-01T00:00:00.000Z",
+    "usd_balance": 0
   },
   {
     "id": "player7",
@@ -116,10 +179,16 @@
     "avatar": "💨",
     "gameId": "WindWalker#6666",
     "rank": "Gold",
-    "clan_id": "clan_3",
-    "clan_role": "member",
+    "clans": [
+      {
+        "clan_id": "clan_3",
+        "role": "member",
+        "joined_at": "2025-01-01T00:00:00.000Z"
+      }
+    ],
     "created_at": "2025-01-01T00:00:00.000Z",
-    "updated_at": "2025-01-01T00:00:00.000Z"
+    "updated_at": "2025-01-01T00:00:00.000Z",
+    "usd_balance": 0
   },
   {
     "id": "player8",
@@ -130,10 +199,21 @@
     "avatar": "🧊",
     "gameId": "FrostGuardian#7777",
     "rank": "Diamond",
-    "clan_id": "clan_4",
-    "clan_role": "leader",
+    "clans": [
+      {
+        "clan_id": "clan_4",
+        "role": "leader",
+        "joined_at": "2025-01-01T00:00:00.000Z"
+      },
+      {
+        "clan_id": "clan_2",
+        "role": "member",
+        "joined_at": "2025-02-25T00:00:00.000Z"
+      }
+    ],
     "created_at": "2025-01-01T00:00:00.000Z",
-    "updated_at": "2025-01-01T00:00:00.000Z"
+    "updated_at": "2025-01-01T00:00:00.000Z",
+    "usd_balance": 0
   },
   {
     "id": "player9",
@@ -144,10 +224,21 @@
     "avatar": "🔥",
     "gameId": "PhoenixRising#8888",
     "rank": "Platinum",
-    "clan_id": "clan_5",
-    "clan_role": "leader",
+    "clans": [
+      {
+        "clan_id": "clan_5",
+        "role": "leader",
+        "joined_at": "2025-01-01T00:00:00.000Z"
+      },
+      {
+        "clan_id": "clan_6",
+        "role": "member",
+        "joined_at": "2025-03-05T00:00:00.000Z"
+      }
+    ],
     "created_at": "2025-01-01T00:00:00.000Z",
-    "updated_at": "2025-01-01T00:00:00.000Z"
+    "updated_at": "2025-01-01T00:00:00.000Z",
+    "usd_balance": 0
   },
   {
     "id": "player10",
@@ -158,9 +249,20 @@
     "avatar": "🌩️",
     "gameId": "StormMaster#9999",
     "rank": "Master",
-    "clan_id": "clan_6",
-    "clan_role": "leader",
+    "clans": [
+      {
+        "clan_id": "clan_6",
+        "role": "leader",
+        "joined_at": "2025-01-01T00:00:00.000Z"
+      },
+      {
+        "clan_id": "clan_3",
+        "role": "member",
+        "joined_at": "2025-02-10T00:00:00.000Z"
+      }
+    ],
     "created_at": "2025-01-01T00:00:00.000Z",
-    "updated_at": "2025-01-01T00:00:00.000Z"
+    "updated_at": "2025-01-01T00:00:00.000Z",
+    "usd_balance": 0
   }
 ]

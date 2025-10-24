@@ -1,24 +1,31 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useUser } from "../contexts/UserContext";
 import { useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import Card from "../components/Card";
 import Button from "../components/Button";
 import Input from "../components/Input";
 import Badge from "../components/Badge";
+import TopupModal from "../components/TopupModal";
+import { getUserClans } from "../lib/dataLoader";
 
 export default function ProfilePage() {
   const { user, updateUser, refreshUser } = useUser();
   const { data: session, status } = useSession();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [gameId, setGameId] = useState("");
   const [rank, setRank] = useState("");
   const [isEditing, setIsEditing] = useState(false);
   const [isEditingRank, setIsEditingRank] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [message, setMessage] = useState({ type: "", text: "" });
+  const [userClans, setUserClans] = useState([]);
+  const [showTopupModal, setShowTopupModal] = useState(false);
+  const [paymentProcessing, setPaymentProcessing] = useState(false);
+  const [processedSessions, setProcessedSessions] = useState(new Set());
 
   useEffect(() => {
     if (status === "loading") return;
@@ -31,8 +38,105 @@ export default function ProfilePage() {
     if (user) {
       setGameId(user.gameId || "");
       setRank(user.rank || "");
+
+      // Load user's clan memberships
+      const loadClanData = async () => {
+        try {
+          const clans = await getUserClans(user.id);
+          setUserClans(clans);
+        } catch (error) {
+          console.error("Error loading clan data:", error);
+          setUserClans([]);
+        }
+      };
+
+      loadClanData();
     }
   }, [user, status, router]);
+
+  // Handle Stripe payment redirects
+  useEffect(() => {
+    const paymentStatus = searchParams.get("payment");
+    const sessionId = searchParams.get("session_id");
+
+    // Handle cancelled payment
+    if (paymentStatus === "cancelled" && !processedSessions.has("cancelled")) {
+      setProcessedSessions((prev) => new Set(prev).add("cancelled"));
+      setMessage({
+        type: "error",
+        text: "Payment was cancelled. No charges were made.",
+      });
+      router.replace("/profile");
+      return;
+    }
+
+    // Handle successful payment
+    if (
+      paymentStatus === "success" &&
+      sessionId &&
+      user &&
+      !processedSessions.has(sessionId) &&
+      !paymentProcessing
+    ) {
+      // Mark this session as being processed
+      setProcessedSessions((prev) => new Set(prev).add(sessionId));
+      setPaymentProcessing(true);
+
+      // Clear URL immediately to prevent re-processing
+      router.replace("/profile");
+
+      // Process the payment
+      const processPayment = async () => {
+        try {
+          const response = await fetch("/api/stripe/verify-payment", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ sessionId }),
+          });
+
+          const data = await response.json();
+
+          if (data.success) {
+            // Update user context with new balance
+            updateUser(data.data.user);
+            const currency = data.data.currency === "usd" ? "USD" : "Diamonds";
+            const symbol = data.data.currency === "usd" ? "$" : "💎";
+            setMessage({
+              type: "success",
+              text: `Successfully added ${symbol}${data.data.amount} ${currency} to your wallet!`,
+            });
+            // Refresh user data
+            await refreshUser();
+          } else {
+            setMessage({
+              type: "error",
+              text: data.error || "Failed to process payment",
+            });
+          }
+        } catch (error) {
+          console.error("Payment verification error:", error);
+          setMessage({
+            type: "error",
+            text: "Failed to verify payment. Please contact support.",
+          });
+        } finally {
+          setPaymentProcessing(false);
+        }
+      };
+
+      processPayment();
+    }
+  }, [
+    searchParams,
+    user,
+    processedSessions,
+    paymentProcessing,
+    updateUser,
+    refreshUser,
+    router,
+  ]);
 
   const handleSave = async (field) => {
     if (!user) return;
@@ -105,12 +209,14 @@ export default function ProfilePage() {
     return colors[rank] || "text-gray-300";
   };
 
-  if (status === "loading" || !user) {
+  if (status === "loading" || !user || paymentProcessing) {
     return (
       <div className="min-h-screen bg-dark-primary flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gold mx-auto mb-4"></div>
-          <p className="text-gray-300">Loading profile...</p>
+          <p className="text-gray-300">
+            {paymentProcessing ? "Processing payment..." : "Loading profile..."}
+          </p>
         </div>
       </div>
     );
@@ -128,6 +234,27 @@ export default function ProfilePage() {
             Manage your account settings and game information
           </p>
         </div>
+
+        {/* Payment Success/Error Message */}
+        {message.text && (
+          <div
+            className={`mb-6 p-4 rounded-lg ${
+              message.type === "success"
+                ? "bg-green-900/20 border border-green-500/30 text-green-300"
+                : "bg-red-900/20 border border-red-500/30 text-red-300"
+            }`}
+          >
+            <div className="flex items-center justify-between">
+              <span>{message.text}</span>
+              <button
+                onClick={() => setMessage({ type: "", text: "" })}
+                className="text-gray-400 hover:text-white ml-4"
+              >
+                ✕
+              </button>
+            </div>
+          </div>
+        )}
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Profile Information */}
@@ -149,7 +276,14 @@ export default function ProfilePage() {
                     <span className="text-gold">Email:</span> {user.email}
                   </p>
                   <p>
-                    <span className="text-gold">Diamonds:</span> {user.diamonds}
+                    <span className="text-gold">USD Balance:</span>{" "}
+                    <span className="text-green-400 font-semibold">
+                      ${user.usd_balance?.toFixed(2) || "0.00"}
+                    </span>
+                  </p>
+                  <p>
+                    <span className="text-gold">Diamonds:</span>{" "}
+                    <span className="font-semibold">{user.diamonds} 💎</span>
                   </p>
                   <p>
                     <span className="text-gold">Rank:</span>{" "}
@@ -161,6 +295,17 @@ export default function ProfilePage() {
                     <span className="text-gold">Member since:</span>{" "}
                     {new Date(user.created_at).toLocaleDateString()}
                   </p>
+                </div>
+
+                {/* Top Up Button */}
+                <div className="mt-6">
+                  <Button
+                    onClick={() => setShowTopupModal(true)}
+                    className="w-full"
+                    variant="primary"
+                  >
+                    💰 Top Up Wallet
+                  </Button>
                 </div>
               </div>
             </Card>
@@ -348,6 +493,109 @@ export default function ProfilePage() {
           </div>
         </div>
 
+        {/* Clan Memberships */}
+        {user.type === "player" && (
+          <div className="mt-8">
+            <Card className="p-6">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-xl font-bold text-white flex items-center gap-2">
+                  🏰 Clan Memberships
+                </h3>
+                <Button
+                  onClick={async () => {
+                    try {
+                      const clans = await getUserClans(user.id);
+                      setUserClans(clans);
+                    } catch (error) {
+                      console.error("Error refreshing clan data:", error);
+                    }
+                  }}
+                  variant="outline"
+                  size="sm"
+                >
+                  🔄 Refresh
+                </Button>
+              </div>
+
+              {userClans.length === 0 ? (
+                <div className="text-center py-8">
+                  <div className="text-4xl mb-4">🏰</div>
+                  <p className="text-gray-300 text-lg mb-2">
+                    No Clan Memberships
+                  </p>
+                  <p className="text-gray-400">
+                    You are not currently a member of any clans. Join clans to
+                    participate in clan battle tournaments!
+                  </p>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {userClans.map((clan, index) => (
+                    <div
+                      key={clan.id}
+                      className="bg-dark-card border border-gold-dark/30 rounded-lg p-4 hover:border-gold/50 transition-colors duration-300"
+                    >
+                      <div className="flex items-center gap-3 mb-3">
+                        <span className="text-2xl">{clan.emblem}</span>
+                        <div>
+                          <h4 className="text-white font-bold text-lg">
+                            {clan.name}
+                          </h4>
+                          <p className="text-gray-400 text-sm">[{clan.tag}]</p>
+                        </div>
+                      </div>
+
+                      <div className="space-y-2 mb-3">
+                        <p className="text-gray-300 text-sm">
+                          {clan.description}
+                        </p>
+                        <div className="flex items-center justify-between text-sm">
+                          <span className="text-gold">Level {clan.level}</span>
+                          <span className="text-gray-400">
+                            {clan.wins}W-{clan.losses}L
+                          </span>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center justify-between">
+                        <Badge
+                          variant={clan.role === "leader" ? "gold" : "blue"}
+                          size="sm"
+                        >
+                          {clan.role === "leader" ? "👑 Leader" : "👤 Member"}
+                        </Badge>
+                        <span className="text-gray-400 text-xs">
+                          Joined {new Date(clan.joined_at).toLocaleDateString()}
+                        </span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              <div className="mt-6 bg-dark-card border border-gold-dark/20 rounded-lg p-4">
+                <h4 className="text-gold font-medium mb-2">
+                  About Clan Memberships
+                </h4>
+                <ul className="text-sm text-gray-300 space-y-1">
+                  <li>
+                    • You can be a member of multiple clans simultaneously
+                  </li>
+                  <li>• Each clan has different roles: Leader or Member</li>
+                  <li>
+                    • Clan memberships allow you to join clan battle tournaments
+                  </li>
+                  <li>• Leaders have special privileges in their clans</li>
+                  <li>
+                    • Your primary clan is shown first (usually where
+                    you&apos;re a leader)
+                  </li>
+                </ul>
+              </div>
+            </Card>
+          </div>
+        )}
+
         {/* Additional Information */}
         <div className="mt-8">
           <Card className="p-6">
@@ -364,9 +612,19 @@ export default function ProfilePage() {
                 </p>
               </div>
               <div>
-                <h4 className="text-gold font-medium mb-2">Diamond Balance</h4>
+                <h4 className="text-gold font-medium mb-2">Wallet Balances</h4>
                 <p className="text-gray-300">
-                  {user.diamonds} diamonds available for tournament entry fees
+                  <span className="text-green-400 font-semibold">
+                    ${user.usd_balance?.toFixed(2) || "0.00"} USD
+                  </span>
+                  {" & "}
+                  <span className="font-semibold">
+                    {user.diamonds} 💎 Diamonds
+                  </span>
+                  <br />
+                  <span className="text-sm">
+                    Available for tournament entries and fees
+                  </span>
                 </p>
               </div>
               <div>
@@ -382,6 +640,13 @@ export default function ProfilePage() {
             </div>
           </Card>
         </div>
+
+        {/* Topup Modal */}
+        <TopupModal
+          isOpen={showTopupModal}
+          onClose={() => setShowTopupModal(false)}
+          user={user}
+        />
       </div>
     </div>
   );

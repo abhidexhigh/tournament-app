@@ -15,19 +15,34 @@ export default function TransactionHistory({ transactions = [] }) {
     });
   };
 
-  const getTransactionIcon = (type) => {
+  const getTransactionIcon = (type, currency) => {
+    if (type === "wallet_topup") {
+      return currency === "usd" ? "💵" : "💎";
+    }
     const icons = {
       prize_won: "🏆",
       tournament_creation: "➖",
       tournament_join: "✓",
       wallet_add: "➕",
       wallet_subtract: "➖",
+      tournament_entry: "🎮",
     };
     return icons[type] || "💎";
   };
 
-  const getTransactionColor = (amount) => {
+  const getTransactionColor = (amount, currency) => {
+    if (currency === "usd") {
+      return amount > 0 ? "text-green-400" : "text-red-400";
+    }
     return amount > 0 ? "text-green-400" : "text-red-400";
+  };
+
+  const formatAmount = (amount, currency) => {
+    const prefix = amount > 0 ? "+" : "";
+    if (currency === "usd") {
+      return `${prefix}$${Math.abs(amount).toFixed(2)}`;
+    }
+    return `${prefix}${amount.toLocaleString()} 💎`;
   };
 
   if (transactions.length === 0) {
@@ -55,7 +70,7 @@ export default function TransactionHistory({ transactions = [] }) {
           >
             <div className="flex items-center space-x-4 flex-1">
               <div className="text-3xl">
-                {getTransactionIcon(transaction.type)}
+                {getTransactionIcon(transaction.type, transaction.currency)}
               </div>
               <div className="flex-1">
                 <p className="text-white font-medium">
@@ -69,12 +84,15 @@ export default function TransactionHistory({ transactions = [] }) {
             <div className="text-right">
               <p
                 className={`text-xl font-bold ${getTransactionColor(
-                  transaction.amount
+                  transaction.amount,
+                  transaction.currency
                 )}`}
               >
-                {transaction.amount > 0 ? "+" : ""}
-                {transaction.amount.toLocaleString()} 💎
+                {formatAmount(transaction.amount, transaction.currency)}
               </p>
+              {transaction.currency === "usd" && (
+                <p className="text-xs text-gray-500">USD</p>
+              )}
             </div>
           </div>
         ))}

@@ -11,7 +11,12 @@ import {
 import { tournamentsApi } from "./lib/api";
 import { getTournamentIcon } from "./lib/iconSelector";
 import { useUser } from "./contexts/UserContext";
-import { getClanById, initializeClans } from "./lib/clans";
+import { getClanById } from "./lib/dataLoader";
+import {
+  calculateClanBattlePrizeDistribution,
+  formatPrizeAmount,
+  formatPrizeWithDiamonds,
+} from "./lib/clanPrizeDistribution";
 import Button from "./components/Button";
 import Card from "./components/Card";
 import Badge from "./components/Badge";
@@ -21,18 +26,39 @@ export default function Home() {
   const [tournaments, setTournaments] = useState([]);
   const [activeTab, setActiveTab] = useState("all");
   const [selectedGame, setSelectedGame] = useState("all");
+  const [clanData, setClanData] = useState({});
   const { user, loading: userLoading } = useUser();
 
   // Initialize clans
-  useEffect(() => {
-    initializeClans();
-  }, []);
+  // Removed initializeClans since we're now using dataLoader
 
   useEffect(() => {
     const loadData = async () => {
       try {
         const tournamentsData = await tournamentsApi.getAll();
         setTournaments(tournamentsData);
+
+        // Load clan data for clan battle tournaments
+        const clanIds = new Set();
+        tournamentsData.forEach((tournament) => {
+          if (
+            tournament.tournament_type === "clan_battle" &&
+            tournament.clan_battle_mode === "clan_selection"
+          ) {
+            if (tournament.clan1_id) clanIds.add(tournament.clan1_id);
+            if (tournament.clan2_id) clanIds.add(tournament.clan2_id);
+          }
+        });
+
+        // Load all unique clan IDs
+        const clanPromises = Array.from(clanIds).map(async (clanId) => {
+          const clan = await getClanById(clanId);
+          return [clanId, clan];
+        });
+
+        const clanResults = await Promise.all(clanPromises);
+        const clanMap = Object.fromEntries(clanResults);
+        setClanData(clanMap);
       } catch (error) {
         console.error("Failed to load tournaments:", error);
         // Show empty state if API fails
@@ -280,12 +306,10 @@ export default function Home() {
                             <span className="text-white font-medium text-xs">
                               {tournament.clan1_id
                                 ? (() => {
-                                    const clan = getClanById(
-                                      tournament.clan1_id
-                                    );
+                                    const clan = clanData[tournament.clan1_id];
                                     return clan
                                       ? `${clan.emblem} ${clan.name}`
-                                      : "TBD";
+                                      : "Loading...";
                                   })()
                                 : "TBD"}
                             </span>
@@ -295,18 +319,92 @@ export default function Home() {
                             <span className="text-white font-medium text-xs">
                               {tournament.clan2_id
                                 ? (() => {
-                                    const clan = getClanById(
-                                      tournament.clan2_id
-                                    );
+                                    const clan = clanData[tournament.clan2_id];
                                     return clan
                                       ? `${clan.emblem} ${clan.name}`
-                                      : "TBD";
+                                      : "Loading...";
                                   })()
                                 : "TBD"}
                             </span>
                           </div>
                         </>
                       )}
+
+                      {/* Prize Distribution Preview */}
+                      <div className="mt-3 pt-3 border-t border-gray-700">
+                        <div className="text-xs text-gray-400 mb-2">
+                          🏆 Prize Distribution
+                        </div>
+                        <div className="grid grid-cols-2 gap-2 text-xs">
+                          <div className="flex justify-between">
+                            <span className="text-gray-400">1st:</span>
+                            <span className="text-gold font-semibold">
+                              {(() => {
+                                const maxPlayers =
+                                  tournament.max_players ||
+                                  tournament.maxPlayers ||
+                                  30;
+                                // Use USD value for calculation, fallback to diamonds converted to USD
+                                const prizePoolUsd =
+                                  tournament.prize_pool_usd ||
+                                  (tournament.prize_pool ||
+                                    tournament.prizePool ||
+                                    0) / 100;
+
+                                if (prizePoolUsd <= 0) return "$0 (0 💎)";
+
+                                const teamSize =
+                                  tournament.clan_battle_mode ===
+                                  "auto_division"
+                                    ? Math.floor(maxPlayers / 2)
+                                    : maxPlayers / 2;
+                                const distribution =
+                                  calculateClanBattlePrizeDistribution(
+                                    prizePoolUsd,
+                                    teamSize
+                                  );
+                                return formatPrizeWithDiamonds(
+                                  distribution.topPerformers[0]?.prize || 0
+                                );
+                              })()}
+                            </span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-gray-400">Team:</span>
+                            <span className="text-gold font-semibold">
+                              {(() => {
+                                const maxPlayers =
+                                  tournament.max_players ||
+                                  tournament.maxPlayers ||
+                                  30;
+                                // Use USD value for calculation, fallback to diamonds converted to USD
+                                const prizePoolUsd =
+                                  tournament.prize_pool_usd ||
+                                  (tournament.prize_pool ||
+                                    tournament.prizePool ||
+                                    0) / 100;
+
+                                if (prizePoolUsd <= 0) return "$0 (0 💎)";
+
+                                const teamSize =
+                                  tournament.clan_battle_mode ===
+                                  "auto_division"
+                                    ? Math.floor(maxPlayers / 2)
+                                    : maxPlayers / 2;
+                                const distribution =
+                                  calculateClanBattlePrizeDistribution(
+                                    prizePoolUsd,
+                                    teamSize
+                                  );
+                                return formatPrizeWithDiamonds(
+                                  distribution.remainingMembers
+                                    ?.individualPrize || 0
+                                );
+                              })()}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
                     </>
                   )}
                 </div>

@@ -25,10 +25,24 @@ import { refreshUserFromAPI } from "../../lib/authHelpers";
 import { useUser } from "../../contexts/UserContext";
 import {
   getClanById,
-  initializeClans,
   canUserJoinClanBattle,
   getUserClan,
-} from "../../lib/clans";
+  getUserClans,
+} from "../../lib/dataLoader";
+import {
+  calculateClanBattlePrizeDistribution,
+  formatPrizeAmount,
+  formatPrizeWithDiamonds,
+} from "../../lib/clanPrizeDistribution";
+import {
+  generateRandomLeaderboard,
+  generateClanBattleLeaderboard,
+  generateRegularLeaderboard,
+  getPerformanceBadgeColor,
+  getPerformanceEmoji,
+  formatScore,
+  getPositionSuffix,
+} from "../../lib/leaderboardGenerator";
 
 export default function TournamentDetailsPage() {
   const params = useParams();
@@ -47,10 +61,10 @@ export default function TournamentDetailsPage() {
   const [errors, setErrors] = useState({});
   const [clan1, setClan1] = useState(null);
   const [clan2, setClan2] = useState(null);
+  const [prizeDistribution, setPrizeDistribution] = useState(null);
+  const [leaderboard, setLeaderboard] = useState([]);
 
-  useEffect(() => {
-    initializeClans();
-  }, []);
+  // Removed initializeClans since we're now using dataLoader
 
   useEffect(() => {
     const loadData = async () => {
@@ -60,10 +74,19 @@ export default function TournamentDetailsPage() {
 
         if (tournamentData) {
           // Load participants
-          const participantsList = tournamentData.participants.map((pId) =>
-            getUserById(pId)
+          const participantsList = await Promise.all(
+            tournamentData.participants.map((pId) => getUserById(pId))
           );
-          setParticipants(participantsList.filter((p) => p !== null));
+          const validParticipants = participantsList.filter(
+            (p) => p !== null && p !== undefined && p.id
+          );
+          console.log(
+            "Loaded participants:",
+            validParticipants.length,
+            "out of",
+            tournamentData.participants.length
+          );
+          setParticipants(validParticipants);
 
           // Load clan information for clan battle tournaments
           if (
@@ -71,10 +94,74 @@ export default function TournamentDetailsPage() {
             tournamentData.clan_battle_mode === "clan_selection"
           ) {
             if (tournamentData.clan1_id) {
-              setClan1(getClanById(tournamentData.clan1_id));
+              const clan1Data = await getClanById(tournamentData.clan1_id);
+              setClan1(clan1Data);
             }
             if (tournamentData.clan2_id) {
-              setClan2(getClanById(tournamentData.clan2_id));
+              const clan2Data = await getClanById(tournamentData.clan2_id);
+              setClan2(clan2Data);
+            }
+          }
+
+          // Calculate prize distribution for clan battle tournaments
+          if (tournamentData.tournament_type === "clan_battle") {
+            const maxPlayers =
+              tournamentData.maxPlayers || tournamentData.max_players || 30;
+            // Use USD value for calculation, fallback to diamonds converted to USD
+            const prizePoolUsd =
+              tournamentData.prize_pool_usd ||
+              (tournamentData.prize_pool || tournamentData.prizePool || 0) /
+                100;
+
+            // Only calculate if we have valid data
+            if (prizePoolUsd > 0 && maxPlayers > 0) {
+              const teamSize =
+                tournamentData.clan_battle_mode === "auto_division"
+                  ? Math.floor(maxPlayers / 2)
+                  : maxPlayers / 2; // For clan selection, each clan gets half
+
+              const distribution = calculateClanBattlePrizeDistribution(
+                prizePoolUsd,
+                teamSize
+              );
+              setPrizeDistribution(distribution);
+            } else {
+              console.warn("Invalid tournament data for prize calculation:", {
+                prizePoolUsd,
+                maxPlayers,
+                tournamentData,
+              });
+              setPrizeDistribution(null);
+            }
+          }
+
+          // Generate leaderboard for completed tournaments
+          if (
+            tournamentData.status === "completed" &&
+            tournamentData.participants &&
+            tournamentData.participants.length > 0
+          ) {
+            // Generate leaderboard using the already filtered valid participants
+            if (validParticipants.length > 0) {
+              let generatedLeaderboard = [];
+
+              if (tournamentData.tournament_type === "clan_battle") {
+                // For clan battle, show only winning team players
+                const winningTeam = tournamentData.winning_team || "clan1"; // Default to clan1 if not specified
+                generatedLeaderboard = generateClanBattleLeaderboard(
+                  tournamentData,
+                  validParticipants.map((p) => p.id),
+                  winningTeam
+                );
+              } else {
+                // For regular tournaments, show all players
+                generatedLeaderboard = generateRegularLeaderboard(
+                  tournamentData,
+                  validParticipants.map((p) => p.id)
+                );
+              }
+
+              setLeaderboard(generatedLeaderboard);
             }
           }
         }
@@ -114,21 +201,28 @@ export default function TournamentDetailsPage() {
     // Check clan membership for clan battle tournaments
     if (tournament.tournament_type === "clan_battle") {
       if (tournament.clan_battle_mode === "clan_selection") {
-        const userClan = getUserClan(user.id);
-        if (!userClan) {
-          alert("You must be a member of a clan to join this tournament!");
-          return;
-        }
+        try {
+          const userClans = await getUserClans(user.id);
+          if (userClans.length === 0) {
+            alert("You must be a member of a clan to join this tournament!");
+            return;
+          }
 
-        const isEligibleClan =
-          userClan.id === tournament.clan1_id ||
-          userClan.id === tournament.clan2_id;
-        if (!isEligibleClan) {
-          const clan1Name = clan1 ? clan1.name : "Unknown";
-          const clan2Name = clan2 ? clan2.name : "Unknown";
-          alert(
-            `You can only join this tournament if you're a member of ${clan1Name} or ${clan2Name}!`
+          const isEligibleClan = userClans.some(
+            (clan) =>
+              clan.id === tournament.clan1_id || clan.id === tournament.clan2_id
           );
+          if (!isEligibleClan) {
+            const clan1Name = clan1 ? clan1.name : "Unknown";
+            const clan2Name = clan2 ? clan2.name : "Unknown";
+            alert(
+              `You can only join this tournament if you're a member of ${clan1Name} or ${clan2Name}!`
+            );
+            return;
+          }
+        } catch (error) {
+          console.error("Error checking clan membership:", error);
+          alert("Error checking clan membership. Please try again.");
           return;
         }
       }
@@ -146,10 +240,13 @@ export default function TournamentDetailsPage() {
       // Refresh user data from API to get updated diamond balance
       await refreshUser();
 
-      const participantsList = updatedTournament.participants.map((pId) =>
-        getUserById(pId)
+      const participantsList = await Promise.all(
+        updatedTournament.participants.map((pId) => getUserById(pId))
       );
-      setParticipants(participantsList.filter((p) => p !== null));
+      const validParticipants = participantsList.filter(
+        (p) => p !== null && p !== undefined && p.id
+      );
+      setParticipants(validParticipants);
 
       alert("Successfully joined the tournament! 🎉");
     } catch (error) {
@@ -251,10 +348,12 @@ export default function TournamentDetailsPage() {
       (tournament.max_players ?? tournament.maxPlayers);
 
   const prizes = calculatePrizes(tournament);
-  const participantOptions = participants.map((p) => ({
-    value: p.id,
-    label: `${p.avatar} ${p.username}`,
-  }));
+  const participantOptions = participants
+    .filter((p) => p && p.id) // Filter out null/undefined participants
+    .map((p) => ({
+      value: p.id,
+      label: `${p.avatar} ${p.username}`,
+    }));
 
   return (
     <div className="min-h-screen py-8 px-4 sm:px-6 lg:px-8">
@@ -453,6 +552,136 @@ export default function TournamentDetailsPage() {
               )}
             </div>
 
+            {/* Clan Battle Prize Distribution */}
+            {(tournament.tournament_type ?? tournament.tournamentType) ===
+              "clan_battle" && (
+              <div className="col-span-2 md:col-span-4">
+                <div className="bg-dark-card border border-gold-dark/30 rounded-lg p-4">
+                  <h3 className="text-gold font-bold text-lg mb-4 flex items-center gap-2">
+                    🏆 Clan Battle Prize Distribution
+                  </h3>
+
+                  {prizeDistribution ? (
+                    <>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        {/* Top Performers */}
+                        <div>
+                          <h4 className="text-white font-semibold mb-3 flex items-center gap-2">
+                            🥇 Top Performers (20%)
+                          </h4>
+                          <div className="space-y-2">
+                            {prizeDistribution.topPerformers.map(
+                              (performer, index) => (
+                                <div
+                                  key={index}
+                                  className="flex items-center justify-between bg-dark-primary/50 rounded-lg p-3"
+                                >
+                                  <div className="flex items-center gap-3">
+                                    <span className="text-2xl">
+                                      {index === 0
+                                        ? "🥇"
+                                        : index === 1
+                                        ? "🥈"
+                                        : "🥉"}
+                                    </span>
+                                    <div>
+                                      <p className="text-white font-medium">
+                                        {performer.position}
+                                        {performer.position === 1
+                                          ? "st"
+                                          : performer.position === 2
+                                          ? "nd"
+                                          : "rd"}{" "}
+                                        Place
+                                      </p>
+                                      <p className="text-gray-400 text-sm">
+                                        {performer.percentage}% of total
+                                      </p>
+                                    </div>
+                                  </div>
+                                  <div className="text-right">
+                                    <p className="text-gold font-bold text-lg">
+                                      {formatPrizeWithDiamonds(performer.prize)}
+                                    </p>
+                                  </div>
+                                </div>
+                              )
+                            )}
+                          </div>
+                        </div>
+
+                        {/* Team Members */}
+                        <div>
+                          <h4 className="text-white font-semibold mb-3 flex items-center gap-2">
+                            👥 Team Members (80%)
+                          </h4>
+                          <div className="bg-dark-primary/50 rounded-lg p-4">
+                            <div className="flex items-center justify-between mb-2">
+                              <span className="text-white font-medium">
+                                {prizeDistribution.remainingMembers.count}{" "}
+                                Members
+                              </span>
+                              <span className="text-gold font-bold text-lg">
+                                {formatPrizeWithDiamonds(
+                                  prizeDistribution.remainingMembers
+                                    .individualPrize
+                                )}{" "}
+                                each
+                              </span>
+                            </div>
+                            <p className="text-gray-400 text-sm">
+                              Equal distribution of 80% total prize pool
+                            </p>
+                            <div className="mt-3 pt-3 border-t border-gray-600">
+                              <div className="flex justify-between text-sm">
+                                <span className="text-gray-400">
+                                  Total for team members:
+                                </span>
+                                <span className="text-gold font-semibold">
+                                  {formatPrizeWithDiamonds(
+                                    prizeDistribution.remainingMembers
+                                      .totalPrize
+                                  )}
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Summary */}
+                      <div className="mt-4 pt-4 border-t border-gold-dark/30">
+                        <div className="flex justify-between items-center">
+                          <span className="text-white font-semibold">
+                            Total Prize Pool:
+                          </span>
+                          <span className="text-gold font-bold text-xl">
+                            {formatPrizeWithDiamonds(
+                              prizeDistribution.totalPrize
+                            )}
+                          </span>
+                        </div>
+                        <p className="text-gray-400 text-sm mt-1">
+                          Winning team receives 100% of the prize pool
+                        </p>
+                      </div>
+                    </>
+                  ) : (
+                    <div className="text-center py-8">
+                      <div className="text-4xl mb-4">🏆</div>
+                      <p className="text-gray-300 text-lg mb-2">
+                        Prize Distribution Loading
+                      </p>
+                      <p className="text-gray-400">
+                        Prize distribution details will be available once
+                        tournament data is loaded.
+                      </p>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+
             {/* Clan Battle Information */}
             {(tournament.tournament_type ?? tournament.tournamentType) ===
               "clan_battle" && (
@@ -587,71 +816,74 @@ export default function TournamentDetailsPage() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Left Column */}
           <div className="lg:col-span-2 space-y-8">
-            {/* Prize Distribution */}
-            <Card>
-              <h2 className="text-2xl font-bold text-gold mb-4">
-                💎 Prize Distribution
-              </h2>
-              <div className="space-y-3">
-                <div className="flex items-center justify-between p-4 bg-dark-secondary rounded-lg border border-gold/30">
-                  <div className="flex items-center space-x-3">
-                    <span className="text-3xl">🥇</span>
-                    <div>
-                      <p className="text-white font-bold">1st Place</p>
-                      <p className="text-gray-400 text-sm">
-                        {tournament.prize_split_first ??
-                          tournament.prizeSplit?.first}
-                        % of prize pool
-                      </p>
+            {/* Prize Distribution - Only show for regular tournaments */}
+            {(tournament.tournament_type ?? tournament.tournamentType) !==
+              "clan_battle" && (
+              <Card>
+                <h2 className="text-2xl font-bold text-gold mb-4">
+                  💎 Prize Distribution
+                </h2>
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between p-4 bg-dark-secondary rounded-lg border border-gold/30">
+                    <div className="flex items-center space-x-3">
+                      <span className="text-3xl">🥇</span>
+                      <div>
+                        <p className="text-white font-bold">1st Place</p>
+                        <p className="text-gray-400 text-sm">
+                          {tournament.prize_split_first ??
+                            tournament.prizeSplit?.first}
+                          % of prize pool
+                        </p>
+                      </div>
                     </div>
+                    <p className="text-gold font-bold text-xl">
+                      ${Math.floor(prizes.first / 100).toLocaleString()} USD
+                    </p>
+                    <p className="text-gold text-sm">
+                      ({prizes.first.toLocaleString()} 💎)
+                    </p>
                   </div>
-                  <p className="text-gold font-bold text-xl">
-                    ${Math.floor(prizes.first / 100).toLocaleString()} USD
-                  </p>
-                  <p className="text-gold text-sm">
-                    ({prizes.first.toLocaleString()} 💎)
-                  </p>
-                </div>
-                <div className="flex items-center justify-between p-4 bg-dark-secondary rounded-lg border border-gold-dark/20">
-                  <div className="flex items-center space-x-3">
-                    <span className="text-3xl">🥈</span>
-                    <div>
-                      <p className="text-white font-bold">2nd Place</p>
-                      <p className="text-gray-400 text-sm">
-                        {tournament.prize_split_second ??
-                          tournament.prizeSplit?.second}
-                        % of prize pool
-                      </p>
+                  <div className="flex items-center justify-between p-4 bg-dark-secondary rounded-lg border border-gold-dark/20">
+                    <div className="flex items-center space-x-3">
+                      <span className="text-3xl">🥈</span>
+                      <div>
+                        <p className="text-white font-bold">2nd Place</p>
+                        <p className="text-gray-400 text-sm">
+                          {tournament.prize_split_second ??
+                            tournament.prizeSplit?.second}
+                          % of prize pool
+                        </p>
+                      </div>
                     </div>
+                    <p className="text-gold font-bold text-xl">
+                      ${Math.floor(prizes.second / 100).toLocaleString()} USD
+                    </p>
+                    <p className="text-gold text-sm">
+                      ({prizes.second.toLocaleString()} 💎)
+                    </p>
                   </div>
-                  <p className="text-gold font-bold text-xl">
-                    ${Math.floor(prizes.second / 100).toLocaleString()} USD
-                  </p>
-                  <p className="text-gold text-sm">
-                    ({prizes.second.toLocaleString()} 💎)
-                  </p>
-                </div>
-                <div className="flex items-center justify-between p-4 bg-dark-secondary rounded-lg border border-gold-dark/20">
-                  <div className="flex items-center space-x-3">
-                    <span className="text-3xl">🥉</span>
-                    <div>
-                      <p className="text-white font-bold">3rd Place</p>
-                      <p className="text-gray-400 text-sm">
-                        {tournament.prize_split_third ??
-                          tournament.prizeSplit?.third}
-                        % of prize pool
-                      </p>
+                  <div className="flex items-center justify-between p-4 bg-dark-secondary rounded-lg border border-gold-dark/20">
+                    <div className="flex items-center space-x-3">
+                      <span className="text-3xl">🥉</span>
+                      <div>
+                        <p className="text-white font-bold">3rd Place</p>
+                        <p className="text-gray-400 text-sm">
+                          {tournament.prize_split_third ??
+                            tournament.prizeSplit?.third}
+                          % of prize pool
+                        </p>
+                      </div>
                     </div>
+                    <p className="text-gold font-bold text-xl">
+                      ${Math.floor(prizes.third / 100).toLocaleString()} USD
+                    </p>
+                    <p className="text-gold text-sm">
+                      ({prizes.third.toLocaleString()} 💎)
+                    </p>
                   </div>
-                  <p className="text-gold font-bold text-xl">
-                    ${Math.floor(prizes.third / 100).toLocaleString()} USD
-                  </p>
-                  <p className="text-gold text-sm">
-                    ({prizes.third.toLocaleString()} 💎)
-                  </p>
                 </div>
-              </div>
-            </Card>
+              </Card>
+            )}
 
             {/* Tournament Rules */}
             <Card>
@@ -660,6 +892,126 @@ export default function TournamentDetailsPage() {
                 {tournament.rules}
               </p>
             </Card>
+
+            {/* Leaderboard for Completed Tournaments */}
+            {tournament.status === "completed" && leaderboard.length > 0 && (
+              <Card glass>
+                <h2 className="text-2xl font-bold text-gold-gradient mb-6">
+                  {tournament.tournament_type === "clan_battle" ? (
+                    <>
+                      ⚔️ Winning Team Leaderboard
+                      {tournament.winning_team && (
+                        <div className="text-sm text-gray-400 mt-1">
+                          {tournament.winning_team === tournament.clan1_id &&
+                          clan1
+                            ? clan1.name
+                            : tournament.winning_team === tournament.clan2_id &&
+                              clan2
+                            ? clan2.name
+                            : "Winning Team"}
+                        </div>
+                      )}
+                    </>
+                  ) : (
+                    "🏆 Final Leaderboard"
+                  )}
+                </h2>
+                <div className="space-y-3">
+                  {leaderboard.map((entry, index) => {
+                    const participant = participants.find(
+                      (p) => p && p.id === entry.playerId
+                    );
+                    if (!participant) {
+                      console.warn(
+                        "Participant not found for leaderboard entry:",
+                        entry.playerId,
+                        "Available participants:",
+                        participants.map((p) => p?.id)
+                      );
+                      return null;
+                    }
+
+                    return (
+                      <div
+                        key={entry.playerId}
+                        className={`flex items-center justify-between p-4 rounded-lg border ${
+                          entry.position === 1
+                            ? "bg-gradient-to-r from-yellow-400/20 to-yellow-600/20 border-yellow-400/50"
+                            : entry.position === 2
+                            ? "bg-gradient-to-r from-gray-300/20 to-gray-500/20 border-gray-300/50"
+                            : entry.position === 3
+                            ? "bg-gradient-to-r from-orange-400/20 to-orange-600/20 border-orange-400/50"
+                            : "bg-dark-secondary/50 border-gray-600/30"
+                        }`}
+                      >
+                        <div className="flex items-center space-x-4">
+                          <div className="flex items-center space-x-2">
+                            <span className="text-2xl font-bold text-gold min-w-[3rem]">
+                              {entry.position === 1
+                                ? "🥇"
+                                : entry.position === 2
+                                ? "🥈"
+                                : entry.position === 3
+                                ? "🥉"
+                                : `#${entry.position}`}
+                            </span>
+                            <div className="text-center">
+                              <div className="text-3xl">
+                                {participant.avatar}
+                              </div>
+                            </div>
+                          </div>
+                          <div>
+                            <p className="text-white font-bold text-lg">
+                              {participant.username}
+                            </p>
+                            <div className="flex items-center space-x-4 text-sm text-gray-400">
+                              <span>Score: {formatScore(entry.score)}</span>
+                              <span>K/D: {entry.kdRatio}</span>
+                              <span>Kills: {entry.kills}</span>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="text-right">
+                          <div
+                            className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold ${getPerformanceBadgeColor(
+                              entry.performance
+                            )}`}
+                          >
+                            <span className="mr-1">
+                              {getPerformanceEmoji(entry.performance)}
+                            </span>
+                            {entry.performance.charAt(0).toUpperCase() +
+                              entry.performance.slice(1)}
+                          </div>
+                          {entry.position <= 3 && (
+                            <div className="mt-2 text-gold font-bold">
+                              {entry.position}
+                              {getPositionSuffix(entry.position)} Place
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+
+                {/* Tournament Type Specific Info */}
+                {tournament.tournament_type === "clan_battle" && (
+                  <div className="mt-6 p-4 bg-blue-500/10 rounded-lg border border-blue-500/30">
+                    <div className="flex items-center space-x-2 text-blue-300">
+                      <span className="text-xl">⚔️</span>
+                      <p className="font-semibold">Clan Battle Results</p>
+                    </div>
+                    <p className="text-gray-300 text-sm mt-2">
+                      Only the winning team members are shown in this
+                      leaderboard. The winning team receives the full prize pool
+                      distribution.
+                    </p>
+                  </div>
+                )}
+              </Card>
+            )}
 
             {/* Winners (if completed) */}
             {tournament.status === "completed" && tournament.winners && (
@@ -742,33 +1094,35 @@ export default function TournamentDetailsPage() {
                 </div>
               ) : (
                 <div className="space-y-2 max-h-96 overflow-y-auto">
-                  {participants.map((participant, index) => (
-                    <div
-                      key={participant.id}
-                      className="flex items-center space-x-3 p-3 bg-dark-secondary rounded-lg"
-                    >
-                      <span className="text-gray-400 text-sm w-6">
-                        #{index + 1}
-                      </span>
-                      <span className="text-2xl">{participant.avatar}</span>
-                      <div className="flex-1">
-                        <span className="text-white font-medium block">
-                          {participant.username}
+                  {participants
+                    .filter((participant) => participant && participant.id) // Filter out null/undefined participants
+                    .map((participant, index) => (
+                      <div
+                        key={participant.id}
+                        className="flex items-center space-x-3 p-3 bg-dark-secondary rounded-lg"
+                      >
+                        <span className="text-gray-400 text-sm w-6">
+                          #{index + 1}
                         </span>
-                        {participant.rank && (
-                          <span className="text-gray-400 text-sm">
-                            {participant.rank} Rank
+                        <span className="text-2xl">{participant.avatar}</span>
+                        <div className="flex-1">
+                          <span className="text-white font-medium block">
+                            {participant.username}
                           </span>
+                          {participant.rank && (
+                            <span className="text-gray-400 text-sm">
+                              {participant.rank} Rank
+                            </span>
+                          )}
+                        </div>
+                        {participant.id ===
+                          (tournament.host_id ?? tournament.hostId) && (
+                          <Badge variant="primary" size="sm">
+                            Host
+                          </Badge>
                         )}
                       </div>
-                      {participant.id ===
-                        (tournament.host_id ?? tournament.hostId) && (
-                        <Badge variant="primary" size="sm">
-                          Host
-                        </Badge>
-                      )}
-                    </div>
-                  ))}
+                    ))}
                 </div>
               )}
             </Card>
