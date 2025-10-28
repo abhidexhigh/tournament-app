@@ -101,11 +101,26 @@ function ProfileContent() {
           if (data.success) {
             // Update user context with new balance
             updateUser(data.data.user);
-            const currency = data.data.currency === "usd" ? "USD" : "Diamonds";
-            const symbol = data.data.currency === "usd" ? "$" : "💎";
+
+            let successMessage;
+            if (data.data.currency === "tickets") {
+              const ticketNames = {
+                ticket_010: "$0.10",
+                ticket_100: "$1.00",
+                ticket_1000: "$10.00",
+              };
+              const ticketName = ticketNames[data.data.ticket_type] || "";
+              successMessage = `Successfully added ${data.data.amount}x ${ticketName} tickets! 🎫`;
+            } else {
+              const currency =
+                data.data.currency === "usd" ? "USD" : "Diamonds";
+              const symbol = data.data.currency === "usd" ? "$" : "💎";
+              successMessage = `Successfully added ${symbol}${data.data.amount} ${currency} to your wallet!`;
+            }
+
             setMessage({
               type: "success",
-              text: `Successfully added ${symbol}${data.data.amount} ${currency} to your wallet!`,
+              text: successMessage,
             });
             // Refresh user data
             await refreshUser();
@@ -275,6 +290,31 @@ function ProfileContent() {
                   <p>
                     <span className="text-gold">Email:</span> {user.email}
                   </p>
+                  <div className="bg-dark-card border border-purple-500/30 rounded-lg p-3 my-2">
+                    <p className="text-purple-400 font-medium mb-2 text-xs">
+                      🎫 Tickets:
+                    </p>
+                    <div className="grid grid-cols-3 gap-2 text-xs">
+                      <div>
+                        <span className="text-gray-400">$0.10:</span>
+                        <span className="ml-1 font-semibold text-white">
+                          {user.tickets?.ticket_010 || 0}
+                        </span>
+                      </div>
+                      <div>
+                        <span className="text-gray-400">$1.00:</span>
+                        <span className="ml-1 font-semibold text-white">
+                          {user.tickets?.ticket_100 || 0}
+                        </span>
+                      </div>
+                      <div>
+                        <span className="text-gray-400">$10.00:</span>
+                        <span className="ml-1 font-semibold text-white">
+                          {user.tickets?.ticket_1000 || 0}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
                   <p>
                     <span className="text-gold">USD Balance:</span>{" "}
                     <span className="text-green-400 font-semibold">
@@ -612,8 +652,15 @@ function ProfileContent() {
                 </p>
               </div>
               <div>
-                <h4 className="text-gold font-medium mb-2">Wallet Balances</h4>
+                <h4 className="text-gold font-medium mb-2">Wallet & Tickets</h4>
                 <p className="text-gray-300">
+                  <span className="text-purple-400 font-semibold">
+                    {(user.tickets?.ticket_010 || 0) +
+                      (user.tickets?.ticket_100 || 0) +
+                      (user.tickets?.ticket_1000 || 0)}{" "}
+                    🎫 Tickets
+                  </span>
+                  <br />
                   <span className="text-green-400 font-semibold">
                     ${user.usd_balance?.toFixed(2) || "0.00"} USD
                   </span>
@@ -623,7 +670,7 @@ function ProfileContent() {
                   </span>
                   <br />
                   <span className="text-sm">
-                    Available for tournament entries and fees
+                    Use tickets or wallet for tournament entries
                   </span>
                 </p>
               </div>

@@ -5,6 +5,7 @@ import {
   getPackageById,
   calculateTotalDiamonds,
   calculateTotalUSD,
+  isTicketPackage,
   isUSDPackage,
 } from "../../../lib/stripe";
 
@@ -34,23 +35,42 @@ export async function POST(request) {
       );
     }
 
+    const isTickets = isTicketPackage(packageId);
     const isUSD = isUSDPackage(packageId);
-    const totalAmount = isUSD
-      ? calculateTotalUSD(packageData)
-      : calculateTotalDiamonds(packageData);
-    const bonusText = packageData.bonus ? ` + ${packageData.bonus} Bonus` : "";
 
-    const productName = isUSD
-      ? `$${packageData.amount} USD${bonusText}`
-      : `${packageData.diamonds} Diamonds${bonusText}`;
+    let totalAmount, productName, productDescription, productImage, currency;
 
-    const productDescription = isUSD
-      ? `${packageData.label} - $${totalAmount} Total USD`
-      : `${packageData.label} - ${totalAmount} Total Diamonds`;
-
-    const productImage = isUSD
-      ? "https://img.icons8.com/fluency/96/000000/money.png"
-      : "https://img.icons8.com/fluency/96/000000/diamond.png";
+    if (isTickets) {
+      totalAmount = packageData.quantity;
+      productName = `${
+        packageData.quantity
+      }x $${packageData.ticket_value.toFixed(2)} Tickets`;
+      productDescription = `${packageData.label} - Save ${(
+        ((packageData.total_value - packageData.price) /
+          packageData.total_value) *
+        100
+      ).toFixed(0)}%`;
+      productImage = "https://img.icons8.com/fluency/96/000000/ticket.png";
+      currency = "tickets";
+    } else if (isUSD) {
+      totalAmount = calculateTotalUSD(packageData);
+      const bonusText = packageData.bonus
+        ? ` + ${packageData.bonus} Bonus`
+        : "";
+      productName = `$${packageData.amount} USD${bonusText}`;
+      productDescription = `${packageData.label} - $${totalAmount} Total USD`;
+      productImage = "https://img.icons8.com/fluency/96/000000/money.png";
+      currency = "usd";
+    } else {
+      totalAmount = calculateTotalDiamonds(packageData);
+      const bonusText = packageData.bonus
+        ? ` + ${packageData.bonus} Bonus`
+        : "";
+      productName = `${packageData.diamonds} Diamonds${bonusText}`;
+      productDescription = `${packageData.label} - ${totalAmount} Total Diamonds`;
+      productImage = "https://img.icons8.com/fluency/96/000000/diamond.png";
+      currency = "diamonds";
+    }
 
     // Create Stripe checkout session
     const session = await stripe.checkout.sessions.create({
@@ -77,7 +97,8 @@ export async function POST(request) {
         userId: userId,
         packageId: packageId,
         amount: totalAmount.toString(),
-        currency: isUSD ? "usd" : "diamonds",
+        currency: currency,
+        ticket_type: isTickets ? packageId : null,
       },
       billing_address_collection: "auto",
     });

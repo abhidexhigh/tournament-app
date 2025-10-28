@@ -17,7 +17,9 @@ export default function TransactionHistory({ transactions = [] }) {
 
   const getTransactionIcon = (type, currency) => {
     if (type === "wallet_topup") {
-      return currency === "usd" ? "💵" : "💎";
+      if (currency === "tickets") return "🎫";
+      if (currency === "usd") return "💵";
+      return "💎";
     }
     const icons = {
       prize_won: "🏆",
@@ -26,6 +28,7 @@ export default function TransactionHistory({ transactions = [] }) {
       wallet_add: "➕",
       wallet_subtract: "➖",
       tournament_entry: "🎮",
+      ticket_use: "🎫",
     };
     return icons[type] || "💎";
   };
@@ -37,8 +40,17 @@ export default function TransactionHistory({ transactions = [] }) {
     return amount > 0 ? "text-green-400" : "text-red-400";
   };
 
-  const formatAmount = (amount, currency) => {
+  const formatAmount = (amount, currency, ticketType) => {
     const prefix = amount > 0 ? "+" : "";
+    if (currency === "tickets") {
+      const ticketNames = {
+        ticket_010: "$0.10",
+        ticket_100: "$1.00",
+        ticket_1000: "$10.00",
+      };
+      const ticketName = ticketNames[ticketType] || "";
+      return `${prefix}${Math.abs(amount)}x ${ticketName} 🎫`;
+    }
     if (currency === "usd") {
       return `${prefix}$${Math.abs(amount).toFixed(2)}`;
     }
@@ -88,10 +100,17 @@ export default function TransactionHistory({ transactions = [] }) {
                   transaction.currency
                 )}`}
               >
-                {formatAmount(transaction.amount, transaction.currency)}
+                {formatAmount(
+                  transaction.amount,
+                  transaction.currency,
+                  transaction.ticket_type
+                )}
               </p>
-              {transaction.currency === "usd" && (
-                <p className="text-xs text-gray-500">USD</p>
+              {(transaction.currency === "usd" ||
+                transaction.currency === "tickets") && (
+                <p className="text-xs text-gray-500">
+                  {transaction.currency === "usd" ? "USD" : "Tickets"}
+                </p>
               )}
             </div>
           </div>

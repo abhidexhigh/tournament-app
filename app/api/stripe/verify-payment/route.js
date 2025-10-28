@@ -30,8 +30,9 @@ export async function POST(request) {
     }
 
     // Get metadata
-    const { userId, amount, currency } = session.metadata;
+    const { userId, amount, currency, ticket_type } = session.metadata;
     const amountToAdd = parseFloat(amount);
+    const isTickets = currency === "tickets";
     const isUSD = currency === "usd";
 
     // Check if this payment has already been processed (idempotency)
@@ -63,25 +64,54 @@ export async function POST(request) {
       );
     }
 
-    // Update user's balance (USD or Diamonds)
-    const updateData = isUSD
-      ? { usd_balance: (user.usd_balance || 0) + amountToAdd }
-      : { diamonds: user.diamonds + amountToAdd };
+    // Update user's balance (Tickets, USD, or Diamonds)
+    let updateData;
+    if (isTickets) {
+      const currentTickets = user.tickets || {
+        ticket_010: 0,
+        ticket_100: 0,
+        ticket_1000: 0,
+      };
+      updateData = {
+        tickets: {
+          ...currentTickets,
+          [ticket_type]: (currentTickets[ticket_type] || 0) + amountToAdd,
+        },
+      };
+    } else if (isUSD) {
+      updateData = { usd_balance: (user.usd_balance || 0) + amountToAdd };
+    } else {
+      updateData = { diamonds: user.diamonds + amountToAdd };
+    }
 
     const updatedUser = usersDb.update(userId, updateData);
 
     // Create transaction record
+    let description;
+    if (isTickets) {
+      const ticketNames = {
+        ticket_010: "$0.10",
+        ticket_100: "$1.00",
+        ticket_1000: "$10.00",
+      };
+      const ticketName = ticketNames[ticket_type] || "";
+      description = `Bought ${amountToAdd}x ${ticketName} tickets via Stripe`;
+    } else if (isUSD) {
+      description = `Wallet top-up: $${amountToAdd} USD via Stripe`;
+    } else {
+      description = `Wallet top-up: ${amountToAdd} diamonds via Stripe`;
+    }
+
     const transaction = transactionsDb.create({
       user_id: userId,
       type: "wallet_topup",
       amount: amountToAdd,
-      description: isUSD
-        ? `Wallet top-up: $${amountToAdd} USD via Stripe`
-        : `Wallet top-up: ${amountToAdd} diamonds via Stripe`,
+      description: description,
       tournament_id: null,
       payment_id: session.payment_intent,
       payment_method: "stripe",
       currency: currency,
+      ticket_type: ticket_type || null,
     });
 
     return NextResponse.json({

@@ -211,5 +211,18 @@
     "payment_method": "stripe",
     "currency": "usd",
     "created_at": "2025-10-24T10:00:09.565Z"
+  },
+  {
+    "id": "transaction_1761377874067_c8307z9s9",
+    "user_id": "player1",
+    "type": "wallet_topup",
+    "amount": 10,
+    "description": "Bought 10x $1.00 tickets via Stripe",
+    "tournament_id": null,
+    "payment_id": "pi_3SM22kSA1CggwQAX1Ee0xx6t",
+    "payment_method": "stripe",
+    "currency": "tickets",
+    "ticket_type": "ticket_100",
+    "created_at": "2025-10-25T07:37:54.067Z"
   }
 ]

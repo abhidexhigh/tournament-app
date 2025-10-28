@@ -10,6 +10,40 @@ export const getStripe = () => {
   return stripePromise;
 };
 
+// Ticket packages - For game company tournaments (10% discount)
+export const TICKET_PACKAGES = [
+  {
+    id: "ticket_010",
+    ticket_value: 0.1,
+    quantity: 10,
+    total_value: 1.0,
+    price: 0.9, // 10% discount
+    label: "$0.10 Tickets",
+    popular: false,
+    currency: "tickets",
+  },
+  {
+    id: "ticket_100",
+    ticket_value: 1.0,
+    quantity: 10,
+    total_value: 10.0,
+    price: 9.0, // 10% discount
+    label: "$1.00 Tickets",
+    popular: true,
+    currency: "tickets",
+  },
+  {
+    id: "ticket_1000",
+    ticket_value: 10.0,
+    quantity: 10,
+    total_value: 100.0,
+    price: 90.0, // 10% discount
+    label: "$10.00 Tickets",
+    popular: false,
+    currency: "tickets",
+  },
+];
+
 // USD packages - Direct USD top-up
 export const USD_PACKAGES = [
   {
@@ -118,8 +152,11 @@ export const DIAMOND_PACKAGES = [
   },
 ];
 
-// Get package by ID (searches both USD and Diamond packages)
+// Get package by ID (searches USD, Diamond, and Ticket packages)
 export const getPackageById = (packageId) => {
+  const ticketPackage = TICKET_PACKAGES.find((pkg) => pkg.id === packageId);
+  if (ticketPackage) return ticketPackage;
+
   const usdPackage = USD_PACKAGES.find((pkg) => pkg.id === packageId);
   if (usdPackage) return usdPackage;
 
@@ -137,7 +174,11 @@ export const calculateTotalUSD = (packageData) => {
   return packageData.amount + (packageData.bonus || 0);
 };
 
-// Check if package is USD or Diamond
+// Check package type
+export const isTicketPackage = (packageId) => {
+  return packageId.startsWith("ticket_");
+};
+
 export const isUSDPackage = (packageId) => {
   return packageId.startsWith("usd_");
 };

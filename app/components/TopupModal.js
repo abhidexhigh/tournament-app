@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import {
+  TICKET_PACKAGES,
   USD_PACKAGES,
   DIAMOND_PACKAGES,
   calculateTotalDiamonds,
@@ -14,7 +15,7 @@ export default function TopupModal({ isOpen, onClose, user }) {
   const [selectedPackage, setSelectedPackage] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [activeTab, setActiveTab] = useState("usd"); // 'usd' or 'diamonds'
+  const [activeTab, setActiveTab] = useState("tickets"); // 'tickets', 'usd' or 'diamonds'
 
   if (!isOpen) return null;
 
@@ -57,7 +58,12 @@ export default function TopupModal({ isOpen, onClose, user }) {
     }
   };
 
-  const currentPackages = activeTab === "usd" ? USD_PACKAGES : DIAMOND_PACKAGES;
+  const currentPackages =
+    activeTab === "tickets"
+      ? TICKET_PACKAGES
+      : activeTab === "usd"
+      ? USD_PACKAGES
+      : DIAMOND_PACKAGES;
 
   return (
     <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
@@ -83,19 +89,30 @@ export default function TopupModal({ isOpen, onClose, user }) {
           </div>
 
           {/* Current Balance */}
-          <div className="grid grid-cols-2 gap-4 mb-6">
-            <div className="bg-gradient-to-r from-green-500/10 to-green-600/10 border border-green-500/30 rounded-lg p-4">
+          <div className="grid grid-cols-3 gap-3 mb-6">
+            <div className="bg-gradient-to-r from-purple-500/10 to-purple-600/10 border border-purple-500/30 rounded-lg p-3">
               <div className="text-center">
-                <p className="text-gray-300 mb-1 text-sm">USD Balance</p>
-                <p className="text-2xl font-bold text-green-400">
+                <p className="text-gray-300 mb-1 text-xs">Tickets</p>
+                <p className="text-xl font-bold text-purple-400">
+                  {(user?.tickets?.ticket_010 || 0) +
+                    (user?.tickets?.ticket_100 || 0) +
+                    (user?.tickets?.ticket_1000 || 0)}{" "}
+                  🎫
+                </p>
+              </div>
+            </div>
+            <div className="bg-gradient-to-r from-green-500/10 to-green-600/10 border border-green-500/30 rounded-lg p-3">
+              <div className="text-center">
+                <p className="text-gray-300 mb-1 text-xs">USD</p>
+                <p className="text-xl font-bold text-green-400">
                   ${user?.usd_balance?.toFixed(2) || "0.00"}
                 </p>
               </div>
             </div>
-            <div className="bg-gradient-to-r from-gold/10 to-gold-dark/10 border border-gold/30 rounded-lg p-4">
+            <div className="bg-gradient-to-r from-gold/10 to-gold-dark/10 border border-gold/30 rounded-lg p-3">
               <div className="text-center">
-                <p className="text-gray-300 mb-1 text-sm">Diamond Balance</p>
-                <p className="text-2xl font-bold text-gold">
+                <p className="text-gray-300 mb-1 text-xs">Diamonds</p>
+                <p className="text-xl font-bold text-gold">
                   {user?.diamonds || 0} 💎
                 </p>
               </div>
@@ -105,26 +122,37 @@ export default function TopupModal({ isOpen, onClose, user }) {
           {/* Tabs */}
           <div className="flex gap-2 mb-6">
             <button
+              onClick={() => setActiveTab("tickets")}
+              disabled={loading}
+              className={`flex-1 py-3 px-4 rounded-lg font-semibold transition-all duration-300 text-sm ${
+                activeTab === "tickets"
+                  ? "bg-gradient-to-r from-purple-500 to-purple-600 text-white shadow-lg"
+                  : "bg-dark-card text-gray-400 hover:text-white border border-purple-500/30"
+              }`}
+            >
+              🎫 Buy Tickets
+            </button>
+            <button
               onClick={() => setActiveTab("usd")}
               disabled={loading}
-              className={`flex-1 py-3 px-6 rounded-lg font-semibold transition-all duration-300 ${
+              className={`flex-1 py-3 px-4 rounded-lg font-semibold transition-all duration-300 text-sm ${
                 activeTab === "usd"
                   ? "bg-gradient-to-r from-green-500 to-green-600 text-white shadow-lg"
                   : "bg-dark-card text-gray-400 hover:text-white border border-green-500/30"
               }`}
             >
-              💵 Top Up USD
+              💵 USD
             </button>
             <button
               onClick={() => setActiveTab("diamonds")}
               disabled={loading}
-              className={`flex-1 py-3 px-6 rounded-lg font-semibold transition-all duration-300 ${
+              className={`flex-1 py-3 px-4 rounded-lg font-semibold transition-all duration-300 text-sm ${
                 activeTab === "diamonds"
                   ? "bg-gradient-to-r from-gold to-gold-dark text-dark-primary shadow-lg"
                   : "bg-dark-card text-gray-400 hover:text-white border border-gold/30"
               }`}
             >
-              💎 Top Up Diamonds
+              💎 Diamonds
             </button>
           </div>
 
@@ -138,21 +166,45 @@ export default function TopupModal({ isOpen, onClose, user }) {
           {/* Package Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {currentPackages.map((pkg) => {
+              const isTickets = activeTab === "tickets";
               const isUSD = activeTab === "usd";
-              const total = isUSD
-                ? calculateTotalUSD(pkg)
-                : calculateTotalDiamonds(pkg);
+              const isDiamonds = activeTab === "diamonds";
+
+              let total,
+                displayAmount,
+                icon,
+                colorClass,
+                borderClass,
+                popularBorder,
+                popularShadow;
+
+              if (isTickets) {
+                total = pkg.quantity;
+                displayAmount = pkg.quantity;
+                icon = "🎫";
+                colorClass = "text-purple-400";
+                borderClass = "border-purple-500/30 hover:border-purple-500/50";
+                popularBorder = "border-purple-500";
+                popularShadow = "shadow-purple-500/20";
+              } else if (isUSD) {
+                total = calculateTotalUSD(pkg);
+                displayAmount = pkg.amount;
+                icon = "💵";
+                colorClass = "text-green-400";
+                borderClass = "border-green-500/30 hover:border-green-500/50";
+                popularBorder = "border-green-500";
+                popularShadow = "shadow-green-500/20";
+              } else {
+                total = calculateTotalDiamonds(pkg);
+                displayAmount = pkg.diamonds;
+                icon = "💎";
+                colorClass = "text-gold";
+                borderClass = "border-gold-dark/30 hover:border-gold/50";
+                popularBorder = "border-gold";
+                popularShadow = "shadow-gold/20";
+              }
+
               const isLoading = loading && selectedPackage === pkg.id;
-              const displayAmount = isUSD ? pkg.amount : pkg.diamonds;
-              const icon = isUSD ? "💵" : "💎";
-              const colorClass = isUSD ? "text-green-400" : "text-gold";
-              const borderClass = isUSD
-                ? "border-green-500/30 hover:border-green-500/50"
-                : "border-gold-dark/30 hover:border-gold/50";
-              const popularBorder = isUSD ? "border-green-500" : "border-gold";
-              const popularShadow = isUSD
-                ? "shadow-green-500/20"
-                : "shadow-gold/20";
 
               return (
                 <div
@@ -181,33 +233,64 @@ export default function TopupModal({ isOpen, onClose, user }) {
                   {/* Package Details */}
                   <div className="text-center mb-4">
                     <div className="text-4xl mb-3">{icon}</div>
-                    <h3 className="text-2xl font-bold text-white mb-1">
-                      {isUSD ? "$" : ""}
-                      {displayAmount.toLocaleString()}
-                      {isUSD ? "" : " 💎"}
-                    </h3>
-                    {pkg.bonus && (
-                      <p className={`${colorClass} text-sm font-medium mb-2`}>
-                        + {isUSD ? "$" : ""}
-                        {pkg.bonus.toLocaleString()}
-                        {isUSD ? "" : " 💎"} Bonus 🎁
-                      </p>
-                    )}
-                    {!pkg.popular && (
-                      <p className="text-gray-400 text-sm mb-2">{pkg.label}</p>
+                    {isTickets ? (
+                      <>
+                        <h3 className="text-2xl font-bold text-white mb-1">
+                          {pkg.quantity}x ${pkg.ticket_value.toFixed(2)}
+                        </h3>
+                        <p className="text-gray-400 text-sm mb-2">
+                          {pkg.label}
+                        </p>
+                        <p className={`${colorClass} text-sm font-medium`}>
+                          Value: ${pkg.total_value.toFixed(2)}
+                        </p>
+                      </>
+                    ) : (
+                      <>
+                        <h3 className="text-2xl font-bold text-white mb-1">
+                          {isUSD ? "$" : ""}
+                          {displayAmount.toLocaleString()}
+                          {isUSD ? "" : " 💎"}
+                        </h3>
+                        {pkg.bonus && (
+                          <p
+                            className={`${colorClass} text-sm font-medium mb-2`}
+                          >
+                            + {isUSD ? "$" : ""}
+                            {pkg.bonus.toLocaleString()}
+                            {isUSD ? "" : " 💎"} Bonus 🎁
+                          </p>
+                        )}
+                        {!pkg.popular && (
+                          <p className="text-gray-400 text-sm mb-2">
+                            {pkg.label}
+                          </p>
+                        )}
+                      </>
                     )}
                   </div>
 
                   {/* Total */}
-                  {pkg.bonus && (
+                  {(pkg.bonus || isTickets) && (
                     <div className="bg-dark-primary/50 rounded-lg p-2 mb-4">
                       <p className="text-center text-gray-300 text-sm">
-                        Total:{" "}
-                        <span className={`${colorClass} font-bold`}>
-                          {isUSD ? "$" : ""}
-                          {total.toLocaleString()}
-                          {isUSD ? "" : " 💎"}
-                        </span>
+                        {isTickets ? (
+                          <>
+                            <span className="text-green-500 font-bold">
+                              Save ${(pkg.total_value - pkg.price).toFixed(2)}
+                            </span>
+                            <span className="text-gray-400"> (10% off)</span>
+                          </>
+                        ) : (
+                          <>
+                            Total:{" "}
+                            <span className={`${colorClass} font-bold`}>
+                              {isUSD ? "$" : ""}
+                              {total.toLocaleString()}
+                              {isUSD ? "" : " 💎"}
+                            </span>
+                          </>
+                        )}
                       </p>
                     </div>
                   )}
