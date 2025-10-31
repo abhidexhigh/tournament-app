@@ -12,6 +12,7 @@ import { tournamentsApi } from "../../lib/api";
 import { selectTournamentIcon } from "../../lib/iconSelector";
 import { useUser } from "../../contexts/UserContext";
 import { getClanOptions, initializeClans } from "../../lib/clans";
+import { getEntryPriceOptions } from "../../lib/ticketConfig";
 
 function CreateTournamentContent() {
   const { user } = useUser();
@@ -21,6 +22,7 @@ function CreateTournamentContent() {
     title: "",
     game: "", // Game selection
     tournamentType: "regular", // "regular" or "clan_battle"
+    acceptsTickets: false, // Whether tournament accepts ticket payments
     clanBattleMode: "auto_division", // "auto_division" or "clan_selection"
     clan1_id: "", // First clan ID for clan selection mode
     clan2_id: "", // Second clan ID for clan selection mode
@@ -173,6 +175,7 @@ function CreateTournamentContent() {
         title: formData.title,
         game: formData.game,
         tournament_type: formData.tournamentType,
+        accepts_tickets: formData.acceptsTickets,
         clan_battle_mode:
           formData.tournamentType === "clan_battle"
             ? formData.clanBattleMode
@@ -197,15 +200,15 @@ function CreateTournamentContent() {
         prize_split_first: formData.prizeSplitFirst,
         prize_split_second: formData.prizeSplitSecond,
         prize_split_third: formData.prizeSplitThird,
-        entry_fee: parseInt(formData.entryFee) * 100, // Convert USD to diamonds
-        entry_fee_usd: parseInt(formData.entryFee), // Store USD amount
+        entry_fee: parseFloat(formData.entryFee) * 100, // Convert USD to diamonds
+        entry_fee_usd: parseFloat(formData.entryFee), // Store USD amount
         rules: formData.rules,
         image: selectTournamentIcon({
           title: formData.title,
           game: formData.game,
           prizePoolType: formData.prizePoolType,
           maxPlayers: parseInt(formData.maxPlayers),
-          entryFee: parseInt(formData.entryFee),
+          entryFee: parseFloat(formData.entryFee),
           prizePool: parseInt(formData.prizePool),
           tournamentType: formData.tournamentType,
         }),
@@ -301,10 +304,10 @@ function CreateTournamentContent() {
                 >
                   <div className="flex items-center space-x-3 mb-2">
                     <span className="text-2xl">🏆</span>
-                    <p className="text-white font-bold">FOR Chess</p>
+                    <p className="text-white font-bold">Regular</p>
                   </div>
                   <p className="text-gray-400 text-sm">
-                    Tournament for individual players
+                    Standard tournament for individual players
                   </p>
                 </button>
 
@@ -328,6 +331,33 @@ function CreateTournamentContent() {
                   </p>
                 </button>
               </div>
+            </div>
+
+            {/* Accept Ticket Payments Toggle */}
+            <div className="bg-purple-500/5 border border-purple-500/30 rounded-lg p-4">
+              <label className="flex items-center cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={formData.acceptsTickets}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      acceptsTickets: e.target.checked,
+                      entryFee: 0,
+                    })
+                  }
+                  className="w-5 h-5 text-purple-500 bg-dark-card border-purple-500/30 rounded focus:ring-purple-500 focus:ring-2"
+                />
+                <div className="ml-3">
+                  <span className="text-white font-medium">
+                    🎫 Accept Ticket Payments
+                  </span>
+                  <p className="text-sm text-gray-400 mt-1">
+                    Allow players to join using tickets with fixed entry fees
+                    ($0.10, $1.00, $10.00)
+                  </p>
+                </div>
+              </label>
             </div>
 
             {/* Clan Battle Mode Selection */}
@@ -639,32 +669,77 @@ function CreateTournamentContent() {
               </p>
             </div>
 
-            {/* Entry Fee */}
-            <div>
-              <Input
-                label="Entry Fee (USD)"
-                name="entryFee"
-                type="number"
-                value={formData.entryFee}
-                onChange={handleInputChange}
-                placeholder="e.g., 1"
-                icon="💰"
-                min="0"
-                max="100"
-                error={errors.entryFee}
-                required
-              />
-              <p className="mt-2 text-sm text-gray-400">
-                💡 Players will need to pay this amount to join the tournament.
-                Set to 0 for free entry.
-                {formData.entryFee > 0 && (
-                  <span className="block mt-1 text-gold">
-                    Entry fee: ${formData.entryFee} USD (
-                    {(formData.entryFee * 100).toLocaleString()} 💎)
-                  </span>
-                )}
-              </p>
-            </div>
+            {/* Entry Fee - Conditional UI based on acceptsTickets */}
+            {formData.acceptsTickets ? (
+              /* Fixed Entry Price Options for Ticket-Based Entry */
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-3">
+                  Entry Fee <span className="text-gold">*</span>
+                </label>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  {getEntryPriceOptions().map((option) => (
+                    <button
+                      key={option.value}
+                      type="button"
+                      onClick={() =>
+                        setFormData({ ...formData, entryFee: option.value })
+                      }
+                      className={`p-4 rounded-lg border-2 transition-all duration-300 text-left relative ${
+                        formData.entryFee === option.value
+                          ? "border-purple-500 bg-purple-500/10"
+                          : "border-purple-500/30 hover:border-purple-500/50"
+                      }`}
+                    >
+                      {option.popular && (
+                        <span className="absolute -top-2 -right-2 bg-gold text-dark-primary text-xs font-bold px-2 py-1 rounded-full">
+                          Popular
+                        </span>
+                      )}
+                      <div className="flex items-center space-x-3 mb-2">
+                        <span className="text-2xl">🎫</span>
+                        <p className="text-white font-bold">{option.label}</p>
+                      </div>
+                      <p className="text-purple-400 text-sm mb-1">
+                        {option.description}
+                      </p>
+                      <p className="text-gray-400 text-xs">
+                        {option.diamonds_equivalent} 💎 equivalent
+                      </p>
+                    </button>
+                  ))}
+                </div>
+                <p className="mt-2 text-sm text-gray-400">
+                  💡 Players can use matching tickets or pay with diamonds/USD
+                </p>
+              </div>
+            ) : (
+              /* Manual Entry Fee Input for Regular Entry */
+              <div>
+                <Input
+                  label="Entry Fee (USD)"
+                  name="entryFee"
+                  type="number"
+                  value={formData.entryFee}
+                  onChange={handleInputChange}
+                  placeholder="e.g., 1"
+                  icon="💰"
+                  min="0"
+                  max="100"
+                  error={errors.entryFee}
+                  required
+                />
+                <p className="mt-2 text-sm text-gray-400">
+                  💡 Players will need to pay this amount to join the
+                  tournament. Set to 0 for free entry.
+                  {formData.entryFee > 0 && (
+                    <span className="block mt-1 text-gold">
+                      Entry fee: ${formData.entryFee} USD (
+                      {(formData.entryFee * 100).toLocaleString()} 💎)
+                    </span>
+                  )}
+                </p>
+              </div>
+            )}
 
             {/* Prize Split */}
             <div>

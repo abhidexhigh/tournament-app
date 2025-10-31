@@ -9,6 +9,7 @@ import Button from "../components/Button";
 import Input from "../components/Input";
 import Badge from "../components/Badge";
 import TopupModal from "../components/TopupModal";
+import { getTicketName } from "../lib/ticketConfig";
 import { getUserClans } from "../lib/dataLoader";
 
 function ProfileContent() {
@@ -104,12 +105,7 @@ function ProfileContent() {
 
             let successMessage;
             if (data.data.currency === "tickets") {
-              const ticketNames = {
-                ticket_010: "$0.10",
-                ticket_100: "$1.00",
-                ticket_1000: "$10.00",
-              };
-              const ticketName = ticketNames[data.data.ticket_type] || "";
+              const ticketName = getTicketName(data.data.ticket_type);
               successMessage = `Successfully added ${data.data.amount}x ${ticketName} tickets! 🎫`;
             } else {
               const currency =

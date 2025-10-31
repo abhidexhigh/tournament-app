@@ -1,6 +1,7 @@
 "use client";
 
 import Card from "./Card";
+import { getTicketName } from "../lib/ticketConfig";
 import Badge from "./Badge";
 
 export default function TransactionHistory({ transactions = [] }) {
@@ -43,12 +44,7 @@ export default function TransactionHistory({ transactions = [] }) {
   const formatAmount = (amount, currency, ticketType) => {
     const prefix = amount > 0 ? "+" : "";
     if (currency === "tickets") {
-      const ticketNames = {
-        ticket_010: "$0.10",
-        ticket_100: "$1.00",
-        ticket_1000: "$10.00",
-      };
-      const ticketName = ticketNames[ticketType] || "";
+      const ticketName = getTicketName(ticketType);
       return `${prefix}${Math.abs(amount)}x ${ticketName} 🎫`;
     }
     if (currency === "usd") {

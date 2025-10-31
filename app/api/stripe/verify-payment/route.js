@@ -2,6 +2,7 @@
 import { NextResponse } from "next/server";
 import Stripe from "stripe";
 import { usersDb, transactionsDb } from "../../../lib/database";
+import { getTicketName } from "../../../lib/ticketConfig";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
   apiVersion: "2024-11-20.acacia",
@@ -89,12 +90,7 @@ export async function POST(request) {
     // Create transaction record
     let description;
     if (isTickets) {
-      const ticketNames = {
-        ticket_010: "$0.10",
-        ticket_100: "$1.00",
-        ticket_1000: "$10.00",
-      };
-      const ticketName = ticketNames[ticket_type] || "";
+      const ticketName = getTicketName(ticket_type);
       description = `Bought ${amountToAdd}x ${ticketName} tickets via Stripe`;
     } else if (isUSD) {
       description = `Wallet top-up: $${amountToAdd} USD via Stripe`;

@@ -1,5 +1,6 @@
 // Stripe configuration and utilities
 import { loadStripe } from "@stripe/stripe-js";
+import { getTicketPackages } from "./ticketConfig";
 
 // Initialize Stripe on client side
 let stripePromise;
@@ -10,39 +11,8 @@ export const getStripe = () => {
   return stripePromise;
 };
 
-// Ticket packages - For game company tournaments (10% discount)
-export const TICKET_PACKAGES = [
-  {
-    id: "ticket_010",
-    ticket_value: 0.1,
-    quantity: 10,
-    total_value: 1.0,
-    price: 0.9, // 10% discount
-    label: "$0.10 Tickets",
-    popular: false,
-    currency: "tickets",
-  },
-  {
-    id: "ticket_100",
-    ticket_value: 1.0,
-    quantity: 10,
-    total_value: 10.0,
-    price: 9.0, // 10% discount
-    label: "$1.00 Tickets",
-    popular: true,
-    currency: "tickets",
-  },
-  {
-    id: "ticket_1000",
-    ticket_value: 10.0,
-    quantity: 10,
-    total_value: 100.0,
-    price: 90.0, // 10% discount
-    label: "$10.00 Tickets",
-    popular: false,
-    currency: "tickets",
-  },
-];
+// Ticket packages - Imported from central config
+export const TICKET_PACKAGES = getTicketPackages();
 
 // USD packages - Direct USD top-up
 export const USD_PACKAGES = [

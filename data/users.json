@@ -40,7 +40,7 @@
     "username": "ShadowNinja",
     "email": "shadow@player.com",
     "type": "player",
-    "diamonds": 800,
+    "diamonds": 700,
     "avatar": "🥷",
     "gameId": "ShadowNinja#9999",
     "rank": "Gold",
@@ -57,7 +57,7 @@
       }
     ],
     "created_at": "2025-01-01T00:00:00.000Z",
-    "updated_at": "2025-10-25T07:37:54.065Z",
+    "updated_at": "2025-10-31T09:56:26.990Z",
     "usd_balance": 10,
     "tickets": {
       "ticket_010": 0,
@@ -87,11 +87,11 @@
       }
     ],
     "created_at": "2025-01-01T00:00:00.000Z",
-    "updated_at": "2025-01-01T00:00:00.000Z",
+    "updated_at": "2025-10-31T10:05:17.055Z",
     "usd_balance": 0,
     "tickets": {
       "ticket_010": 0,
-      "ticket_100": 0,
+      "ticket_100": 10,
       "ticket_1000": 0
     }
   },

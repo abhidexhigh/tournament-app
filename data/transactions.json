@@ -224,5 +224,28 @@
     "currency": "tickets",
     "ticket_type": "ticket_100",
     "created_at": "2025-10-25T07:37:54.067Z"
+  },
+  {
+    "id": "transaction_1761904586991_tg5a83h8w",
+    "user_id": "player1",
+    "type": "tournament_entry",
+    "amount": -100,
+    "description": "Entry fee for Ticket Based Match",
+    "tournament_id": "tournament_1761904351401_oiz4cb0sb",
+    "currency": "diamonds",
+    "created_at": "2025-10-31T09:56:26.991Z"
+  },
+  {
+    "id": "transaction_1761905117057_v31315xyf",
+    "user_id": "player2",
+    "type": "wallet_topup",
+    "amount": 10,
+    "description": "Bought 10x $1.00 tickets via Stripe",
+    "tournament_id": null,
+    "payment_id": "pi_3SOFChSA1CggwQAX1T9McyU4",
+    "payment_method": "stripe",
+    "currency": "tickets",
+    "ticket_type": "ticket_100",
+    "created_at": "2025-10-31T10:05:17.057Z"
   }
 ]

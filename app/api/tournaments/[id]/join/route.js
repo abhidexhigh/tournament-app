@@ -5,6 +5,11 @@ import {
   usersDb,
   transactionsDb,
 } from "../../../../lib/database";
+import {
+  getTicketValue,
+  getTicketName,
+  validateTicketMatch,
+} from "../../../../lib/ticketConfig";
 
 // POST /api/tournaments/[id]/join - Join tournament
 export async function POST(request, { params }) {
@@ -80,12 +85,9 @@ export async function POST(request, { params }) {
     const entryFee = tournament.entry_fee || 0;
     const entryFeeUSD = tournament.entry_fee_usd || 0;
 
-    // Validate payment method for company tournaments
+    // Validate payment method for ticket-based tournaments
     if (payment_method === "tickets") {
-      if (
-        tournament.tournament_type !== "company_tournament" ||
-        !tournament.accepts_tickets
-      ) {
+      if (!tournament.accepts_tickets) {
         return NextResponse.json(
           {
             success: false,
@@ -106,14 +108,8 @@ export async function POST(request, { params }) {
       }
 
       // Check if ticket value matches entry fee
-      const ticketValues = {
-        ticket_010: 0.1,
-        ticket_100: 1.0,
-        ticket_1000: 10.0,
-      };
-
-      const ticketValue = ticketValues[ticket_type];
-      if (ticketValue !== entryFeeUSD) {
+      if (!validateTicketMatch(ticket_type, entryFeeUSD)) {
+        const ticketValue = getTicketValue(ticket_type);
         return NextResponse.json(
           {
             success: false,
@@ -126,15 +122,11 @@ export async function POST(request, { params }) {
       // Check if user has the ticket
       const userTickets = user.tickets || {};
       if (!userTickets[ticket_type] || userTickets[ticket_type] < 1) {
-        const ticketNames = {
-          ticket_010: "$0.10",
-          ticket_100: "$1.00",
-          ticket_1000: "$10.00",
-        };
+        const ticketName = getTicketName(ticket_type);
         return NextResponse.json(
           {
             success: false,
-            error: `You don't have any ${ticketNames[ticket_type]} tickets!`,
+            error: `You don't have any ${ticketName} tickets!`,
           },
           { status: 400 }
         );
@@ -179,16 +171,12 @@ export async function POST(request, { params }) {
         });
 
         // Add transaction record
-        const ticketNames = {
-          ticket_010: "$0.10",
-          ticket_100: "$1.00",
-          ticket_1000: "$10.00",
-        };
+        const ticketName = getTicketName(ticket_type);
         transactionsDb.create({
           user_id: user_id,
           type: "ticket_use",
           amount: -1,
-          description: `Used 1x ${ticketNames[ticket_type]} ticket for ${tournament.title}`,
+          description: `Used 1x ${ticketName} ticket for ${tournament.title}`,
           tournament_id: id,
           currency: "tickets",
           ticket_type: ticket_type,

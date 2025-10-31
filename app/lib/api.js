@@ -117,10 +117,13 @@ export const tournamentsApi = {
   },
 
   // Join tournament
-  join: async (id, userId) => {
+  join: async (id, userId, paymentData = {}) => {
     const response = await apiRequest(`/tournaments/${id}/join`, {
       method: "POST",
-      body: JSON.stringify({ user_id: userId }),
+      body: JSON.stringify({
+        user_id: userId,
+        ...paymentData,
+      }),
     });
     return response.data;
   },
