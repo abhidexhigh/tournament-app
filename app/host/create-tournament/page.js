@@ -98,21 +98,33 @@ function CreateTournamentContent() {
     }
 
     const maxPlayers = parseInt(formData.maxPlayers);
-    if (!formData.maxPlayers || maxPlayers < 2) {
-      newErrors.maxPlayers = "At least 2 players required";
-    } else if (formData.tournamentType === "clan_battle") {
-      if (formData.clanBattleMode === "auto_division" && maxPlayers > 60) {
+
+    // Validation for Regular tournaments
+    if (formData.tournamentType === "regular") {
+      if (!formData.maxPlayers || maxPlayers < 12) {
         newErrors.maxPlayers =
-          "Maximum 60 players allowed for auto-division clan battle";
-      } else if (
-        formData.clanBattleMode === "clan_selection" &&
-        maxPlayers > 30
-      ) {
+          "Minimum 12 players required for regular tournaments";
+      } else if (maxPlayers > 100) {
         newErrors.maxPlayers =
-          "Maximum 30 players per clan allowed for clan selection mode";
+          "Maximum 100 players allowed for regular tournaments";
       }
-    } else if (maxPlayers > 1000) {
-      newErrors.maxPlayers = "Maximum 1000 players allowed";
+    }
+
+    // Validation for Clan Battle tournaments
+    else if (formData.tournamentType === "clan_battle") {
+      // Both modes now ask for players per clan (not total)
+      if (!formData.maxPlayers || maxPlayers < 8) {
+        newErrors.maxPlayers = "Minimum 8 players per clan required";
+      } else if (maxPlayers > 30) {
+        newErrors.maxPlayers = "Maximum 30 players per clan allowed";
+      }
+    }
+
+    // Fallback validation
+    else {
+      if (!formData.maxPlayers || maxPlayers < 2) {
+        newErrors.maxPlayers = "At least 2 players required";
+      }
     }
 
     // Clan battle specific validations
@@ -509,44 +521,51 @@ function CreateTournamentContent() {
             </div>
 
             {/* Max Players */}
-            <Input
-              label={
-                formData.tournamentType === "clan_battle"
-                  ? formData.clanBattleMode === "auto_division"
-                    ? "Maximum Players (60 max)"
-                    : "Maximum Players per Clan (30 max)"
-                  : "Maximum Players"
-              }
-              name="maxPlayers"
-              type="number"
-              value={formData.maxPlayers}
-              onChange={handleInputChange}
-              placeholder={
-                formData.tournamentType === "clan_battle"
-                  ? formData.clanBattleMode === "auto_division"
-                    ? "e.g., 60"
-                    : "e.g., 30"
-                  : "e.g., 100"
-              }
-              icon="👥"
-              error={errors.maxPlayers}
-              required
-              max={
-                formData.tournamentType === "clan_battle"
-                  ? formData.clanBattleMode === "auto_division"
-                    ? 60
-                    : 30
-                  : 1000
-              }
-            />
-            {formData.tournamentType === "clan_battle" && (
+            <div>
+              <Input
+                label={
+                  formData.tournamentType === "clan_battle"
+                    ? "Maximum Players per Clan (8-30)"
+                    : "Maximum Players (12-100)"
+                }
+                name="maxPlayers"
+                type="number"
+                value={formData.maxPlayers}
+                onChange={handleInputChange}
+                placeholder={
+                  formData.tournamentType === "clan_battle"
+                    ? "e.g., 20 (8-30 per clan)"
+                    : "e.g., 50 (12-100)"
+                }
+                icon="👥"
+                error={errors.maxPlayers}
+                required
+                min={
+                  formData.tournamentType === "regular"
+                    ? 12
+                    : formData.tournamentType === "clan_battle"
+                    ? 8
+                    : 2
+                }
+                max={
+                  formData.tournamentType === "regular"
+                    ? 100
+                    : formData.tournamentType === "clan_battle"
+                    ? 30
+                    : 1000
+                }
+              />
               <p className="mt-2 text-sm text-gray-400">
                 💡{" "}
-                {formData.clanBattleMode === "auto_division"
-                  ? "System will automatically divide players into 2 teams of 30 each"
-                  : "Each clan can have up to 30 players (60 total players max)"}
+                {formData.tournamentType === "regular"
+                  ? "Regular tournaments require 12-100 players for competitive matches"
+                  : formData.tournamentType === "clan_battle"
+                  ? formData.clanBattleMode === "auto_division"
+                    ? "Auto-Division: 8-30 players per clan (system divides into 2 teams, total 16-60 players)"
+                    : "Clan Selection: 8-30 players per clan (2 clans compete, total 16-60 players)"
+                  : "Maximum number of players who can join this tournament"}
               </p>
-            )}
+            </div>
 
             {/* Minimum Rank Required */}
             <div>

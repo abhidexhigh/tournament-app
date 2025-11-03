@@ -212,9 +212,16 @@ export default function Home() {
                   <div className="text-5xl">
                     {getTournamentIcon(tournament)}
                   </div>
-                  <Badge variant={tournament.status} className="capitalize">
-                    {tournament.status}
-                  </Badge>
+                  <div className="flex items-center gap-2">
+                    {tournament.status === "ongoing" && (
+                      <Badge variant="primary" className="">
+                        1 Slot available
+                      </Badge>
+                    )}
+                    <Badge variant={tournament.status} className="!capitalize">
+                      {tournament.status}
+                    </Badge>
+                  </div>
                 </div>
 
                 {/* Tournament Info */}
