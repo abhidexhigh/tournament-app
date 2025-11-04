@@ -78,18 +78,37 @@ export const usersApi = {
   },
 };
 
+// Helper function to format tournament dates
+const formatTournamentDates = (tournament) => {
+  if (!tournament) return tournament;
+
+  // Ensure date is in YYYY-MM-DD format
+  if (tournament.date) {
+    if (tournament.date instanceof Date) {
+      tournament.date = tournament.date.toISOString().split("T")[0];
+    } else if (
+      typeof tournament.date === "string" &&
+      tournament.date.includes("T")
+    ) {
+      tournament.date = tournament.date.split("T")[0];
+    }
+  }
+
+  return tournament;
+};
+
 // Tournaments API functions
 export const tournamentsApi = {
   // Get all tournaments
   getAll: async () => {
     const response = await apiRequest("/tournaments");
-    return response.data;
+    return response.data.map(formatTournamentDates);
   },
 
   // Get tournament by ID
   getById: async (id) => {
     const response = await apiRequest(`/tournaments/${id}`);
-    return response.data;
+    return formatTournamentDates(response.data);
   },
 
   // Get tournaments by host ID

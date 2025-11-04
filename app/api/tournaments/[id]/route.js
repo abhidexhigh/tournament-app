@@ -6,7 +6,7 @@ import { tournamentsDb } from "../../../lib/database";
 export async function GET(request, { params }) {
   try {
     const { id } = await params;
-    const tournament = tournamentsDb.getById(id);
+    const tournament = await tournamentsDb.getById(id);
 
     if (!tournament) {
       return NextResponse.json(
@@ -30,7 +30,7 @@ export async function PUT(request, { params }) {
     const { id } = await params;
     const body = await request.json();
 
-    const updatedTournament = tournamentsDb.update(id, body);
+    const updatedTournament = await tournamentsDb.update(id, body);
 
     if (!updatedTournament) {
       return NextResponse.json(

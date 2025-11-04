@@ -6,7 +6,7 @@ import { usersDb } from "../../../lib/database";
 export async function GET(request, { params }) {
   try {
     const { id } = await params;
-    const user = usersDb.getById(id);
+    const user = await usersDb.getById(id);
 
     if (!user) {
       return NextResponse.json(
@@ -30,7 +30,7 @@ export async function PUT(request, { params }) {
     const { id } = await params;
     const body = await request.json();
 
-    const updatedUser = usersDb.update(id, body);
+    const updatedUser = await usersDb.update(id, body);
 
     if (!updatedUser) {
       return NextResponse.json(
@@ -62,7 +62,7 @@ export async function PATCH(request, { params }) {
       );
     }
 
-    const updatedUser = usersDb.updateDiamonds(id, amount);
+    const updatedUser = await usersDb.updateDiamonds(id, amount);
 
     if (!updatedUser) {
       return NextResponse.json(

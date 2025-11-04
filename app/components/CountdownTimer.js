@@ -13,7 +13,41 @@ export default function CountdownTimer({ date, time, className = "" }) {
 
   useEffect(() => {
     const calculateTimeLeft = () => {
-      const tournamentDateTime = new Date(`${date}T${time}`);
+      // Validate inputs
+      if (!date || !time) {
+        return {
+          days: 0,
+          hours: 0,
+          minutes: 0,
+          seconds: 0,
+          isExpired: true,
+        };
+      }
+
+      // Handle both Date objects and string dates from PostgreSQL
+      let dateStr = date;
+      if (date instanceof Date) {
+        // Convert Date object to YYYY-MM-DD format
+        dateStr = date.toISOString().split("T")[0];
+      } else if (typeof date === "string" && date.includes("T")) {
+        // Handle full ISO string - extract just the date part
+        dateStr = date.split("T")[0];
+      }
+
+      const tournamentDateTime = new Date(`${dateStr}T${time}`);
+
+      // Check if date is valid
+      if (isNaN(tournamentDateTime.getTime())) {
+        console.error("Invalid tournament date/time:", { date, time, dateStr });
+        return {
+          days: 0,
+          hours: 0,
+          minutes: 0,
+          seconds: 0,
+          isExpired: true,
+        };
+      }
+
       const now = new Date();
       const difference = tournamentDateTime.getTime() - now.getTime();
 

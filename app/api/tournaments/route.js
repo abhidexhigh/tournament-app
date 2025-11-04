@@ -5,7 +5,7 @@ import { tournamentsDb, usersDb, transactionsDb } from "../../lib/database";
 // GET /api/tournaments - Get all tournaments
 export async function GET() {
   try {
-    const tournaments = tournamentsDb.getAll();
+    const tournaments = await tournamentsDb.getAll();
     return NextResponse.json({ success: true, data: tournaments });
   } catch (error) {
     return NextResponse.json(
@@ -55,7 +55,7 @@ export async function POST(request) {
     }
 
     // Check if host exists
-    const host = usersDb.getById(host_id);
+    const host = await usersDb.getById(host_id);
     if (!host) {
       return NextResponse.json(
         { success: false, error: "Host not found" },
@@ -91,7 +91,7 @@ export async function POST(request) {
     };
 
     // Create tournament
-    const newTournament = tournamentsDb.create(tournamentData);
+    const newTournament = await tournamentsDb.create(tournamentData);
 
     return NextResponse.json(
       { success: true, data: newTournament },

@@ -10,9 +10,9 @@ export async function GET(request) {
 
     let transactions;
     if (userId) {
-      transactions = transactionsDb.getByUserId(userId);
+      transactions = await transactionsDb.getByUserId(userId);
     } else {
-      transactions = transactionsDb.getAll();
+      transactions = await transactionsDb.getAll();
     }
 
     return NextResponse.json({ success: true, data: transactions });
@@ -46,7 +46,7 @@ export async function POST(request) {
       tournament_id: tournament_id || null,
     };
 
-    const newTransaction = transactionsDb.create(transactionData);
+    const newTransaction = await transactionsDb.create(transactionData);
 
     return NextResponse.json(
       { success: true, data: newTransaction },

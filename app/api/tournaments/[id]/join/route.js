@@ -25,7 +25,7 @@ export async function POST(request, { params }) {
       );
     }
 
-    const tournament = tournamentsDb.getById(id);
+    const tournament = await tournamentsDb.getById(id);
     if (!tournament) {
       return NextResponse.json(
         { success: false, error: "Tournament not found" },
@@ -40,7 +40,7 @@ export async function POST(request, { params }) {
       );
     }
 
-    const user = usersDb.getById(user_id);
+    const user = await usersDb.getById(user_id);
     if (!user) {
       return NextResponse.json(
         { success: false, error: "User not found" },
@@ -157,13 +157,13 @@ export async function POST(request, { params }) {
 
     try {
       // Add participant to tournament
-      const updatedTournament = tournamentsDb.addParticipant(id, user_id);
+      const updatedTournament = await tournamentsDb.addParticipant(id, user_id);
 
       // Deduct entry fee based on payment method
       if (payment_method === "tickets" && entryFee > 0) {
         // Deduct ticket
         const currentTickets = user.tickets || {};
-        usersDb.update(user_id, {
+        await usersDb.update(user_id, {
           tickets: {
             ...currentTickets,
             [ticket_type]: currentTickets[ticket_type] - 1,
@@ -172,7 +172,7 @@ export async function POST(request, { params }) {
 
         // Add transaction record
         const ticketName = getTicketName(ticket_type);
-        transactionsDb.create({
+        await transactionsDb.create({
           user_id: user_id,
           type: "ticket_use",
           amount: -1,
@@ -183,12 +183,12 @@ export async function POST(request, { params }) {
         });
       } else if (payment_method === "usd" && entryFeeUSD > 0) {
         // Deduct USD
-        usersDb.update(user_id, {
+        await usersDb.update(user_id, {
           usd_balance: (user.usd_balance || 0) - entryFeeUSD,
         });
 
         // Add transaction record
-        transactionsDb.create({
+        await transactionsDb.create({
           user_id: user_id,
           type: "tournament_entry",
           amount: -entryFeeUSD,
@@ -198,10 +198,10 @@ export async function POST(request, { params }) {
         });
       } else if (entryFee > 0) {
         // Deduct diamonds (default)
-        usersDb.updateDiamonds(user_id, -entryFee);
+        await usersDb.updateDiamonds(user_id, -entryFee);
 
         // Add transaction record
-        transactionsDb.create({
+        await transactionsDb.create({
           user_id: user_id,
           type: "tournament_entry",
           amount: -entryFee,

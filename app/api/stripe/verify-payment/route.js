@@ -37,13 +37,14 @@ export async function POST(request) {
     const isUSD = currency === "usd";
 
     // Check if this payment has already been processed (idempotency)
-    const existingTransaction = transactionsDb
-      .getAll()
-      .find((txn) => txn.payment_id === session.payment_intent);
+    const allTransactions = await transactionsDb.getAll();
+    const existingTransaction = allTransactions.find(
+      (txn) => txn.payment_id === session.payment_intent
+    );
 
     if (existingTransaction) {
       // Payment already processed, return success with existing data
-      const user = usersDb.getById(userId);
+      const user = await usersDb.getById(userId);
       return NextResponse.json({
         success: true,
         data: {
@@ -57,7 +58,7 @@ export async function POST(request) {
     }
 
     // Get user
-    const user = usersDb.getById(userId);
+    const user = await usersDb.getById(userId);
     if (!user) {
       return NextResponse.json(
         { success: false, error: "User not found" },
@@ -85,7 +86,7 @@ export async function POST(request) {
       updateData = { diamonds: user.diamonds + amountToAdd };
     }
 
-    const updatedUser = usersDb.update(userId, updateData);
+    const updatedUser = await usersDb.update(userId, updateData);
 
     // Create transaction record
     let description;
@@ -98,7 +99,7 @@ export async function POST(request) {
       description = `Wallet top-up: ${amountToAdd} diamonds via Stripe`;
     }
 
-    const transaction = transactionsDb.create({
+    const transaction = await transactionsDb.create({
       user_id: userId,
       type: "wallet_topup",
       amount: amountToAdd,

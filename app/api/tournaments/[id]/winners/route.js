@@ -21,7 +21,7 @@ export async function POST(request, { params }) {
       );
     }
 
-    const tournament = tournamentsDb.getById(id);
+    const tournament = await tournamentsDb.getById(id);
     if (!tournament) {
       return NextResponse.json(
         { success: false, error: "Tournament not found" },
@@ -50,12 +50,12 @@ export async function POST(request, { params }) {
     const prizes = calculatePrizes(tournament);
 
     // Update tournament with winners
-    const updatedTournament = tournamentsDb.declareWinners(id, winners);
+    const updatedTournament = await tournamentsDb.declareWinners(id, winners);
 
     // Distribute prizes
     if (winners.first && prizes.first > 0) {
-      usersDb.updateDiamonds(winners.first, prizes.first);
-      transactionsDb.create({
+      await usersDb.updateDiamonds(winners.first, prizes.first);
+      await transactionsDb.create({
         user_id: winners.first,
         type: "prize_win",
         amount: prizes.first,
@@ -65,8 +65,8 @@ export async function POST(request, { params }) {
     }
 
     if (winners.second && prizes.second > 0) {
-      usersDb.updateDiamonds(winners.second, prizes.second);
-      transactionsDb.create({
+      await usersDb.updateDiamonds(winners.second, prizes.second);
+      await transactionsDb.create({
         user_id: winners.second,
         type: "prize_win",
         amount: prizes.second,
@@ -76,8 +76,8 @@ export async function POST(request, { params }) {
     }
 
     if (winners.third && prizes.third > 0) {
-      usersDb.updateDiamonds(winners.third, prizes.third);
-      transactionsDb.create({
+      await usersDb.updateDiamonds(winners.third, prizes.third);
+      await transactionsDb.create({
         user_id: winners.third,
         type: "prize_win",
         amount: prizes.third,

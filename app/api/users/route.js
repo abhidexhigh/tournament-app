@@ -5,7 +5,7 @@ import { usersDb } from "../../lib/database";
 // GET /api/users - Get all users
 export async function GET() {
   try {
-    const users = usersDb.getAll();
+    const users = await usersDb.getAll();
     return NextResponse.json({ success: true, data: users });
   } catch (error) {
     return NextResponse.json(
@@ -30,7 +30,7 @@ export async function POST(request) {
     }
 
     // Check if user already exists
-    const existingUser = usersDb.getByEmail(email);
+    const existingUser = await usersDb.getByEmail(email);
     if (existingUser) {
       return NextResponse.json(
         { success: false, error: "User with this email already exists" },
@@ -49,7 +49,7 @@ export async function POST(request) {
       avatar: avatar || (type === "host" ? "👑" : "🎮"),
     };
 
-    const newUser = usersDb.create(userData);
+    const newUser = await usersDb.create(userData);
 
     return NextResponse.json({ success: true, data: newUser }, { status: 201 });
   } catch (error) {

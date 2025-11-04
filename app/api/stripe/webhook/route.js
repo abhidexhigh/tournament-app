@@ -46,15 +46,15 @@ export async function POST(request) {
           const diamondsToAdd = parseInt(diamonds);
 
           // Get user
-          const user = usersDb.getById(userId);
+          const user = await usersDb.getById(userId);
           if (user) {
             // Update user's diamond balance
-            usersDb.update(userId, {
+            await usersDb.update(userId, {
               diamonds: user.diamonds + diamondsToAdd,
             });
 
             // Create transaction record
-            transactionsDb.create({
+            await transactionsDb.create({
               user_id: userId,
               type: "wallet_topup",
               amount: diamondsToAdd,
