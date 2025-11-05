@@ -6,15 +6,15 @@ import { runScheduler } from "../../../lib/automatedTournaments";
  * GET /api/cron/scheduler
  * Background job to run the automated tournament scheduler
  * This should be called periodically (e.g., every 5 minutes) by a cron service
- * 
+ *
  * For Vercel, you can use Vercel Cron Jobs:
  * https://vercel.com/docs/cron-jobs
- * 
+ *
  * Add to vercel.json:
  * {
  *   "crons": [{
  *     "path": "/api/cron/scheduler",
- *     "schedule": "*/5 * * * *"
+ *     "schedule": "every 5 minutes"
  *   }]
  * }
  */
@@ -60,4 +60,3 @@ export async function GET(request) {
 export async function POST(request) {
   return GET(request);
 }
-
