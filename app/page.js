@@ -198,247 +198,347 @@ export default function Home() {
           </div>
         )}
 
-        {/* Tournament Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {/* Tournament List - Vertical View */}
+        <div className="space-y-4">
           {filteredTournaments.map((tournament) => (
             <Link
               key={tournament.id}
               href={`/tournament/${tournament.id}`}
               className="block"
             >
-              <Card hover className="h-full group glow-gold-hover">
-                {/* Tournament Icon */}
-                <div className="flex items-start justify-between mb-4">
-                  <div className="text-5xl">
-                    {getTournamentIcon(tournament)}
-                  </div>
-                  <div className="flex items-center gap-2">
-                    {tournament.status === "ongoing" && (
-                      <Badge variant="primary" className="">
-                        1 Slot available
-                      </Badge>
-                    )}
-                    <Badge variant={tournament.status} className="!capitalize">
-                      {tournament.status}
-                    </Badge>
-                  </div>
-                </div>
+              <div className="tournament-card group relative">
+                <div className="status-stripe" />
 
-                {/* Tournament Info */}
-                <h3 className="text-xl font-bold text-white mb-2 group-hover:text-gold transition-colors duration-300">
-                  {tournament.title}
-                </h3>
-                <div className="flex items-center gap-2 mb-4">
-                  <p className="text-gray-400 text-sm">{tournament.game}</p>
-                  {(tournament.tournament_type ?? tournament.tournamentType) ===
-                    "clan_battle" && (
-                    <Badge variant="warning" size="sm">
-                      ⚔️ Clan Battle
-                    </Badge>
-                  )}
-                </div>
-
-                {/* Countdown Timer for Upcoming Tournaments */}
-                {tournament.status === "upcoming" && (
-                  <div className="mb-4 p-3 bg-dark-secondary rounded-lg border border-gold-dark/30">
-                    <CountdownTimer
-                      date={tournament.date}
-                      time={tournament.time}
-                    />
-                  </div>
-                )}
-
-                {/* Details Grid */}
-                <div className="space-y-3 mb-4">
-                  <div className="flex items-center justify-between text-sm">
-                    <span className="text-gray-400">📅 Date</span>
-                    <span className="text-white font-medium">
-                      {formatDate(tournament.date)}
-                    </span>
-                  </div>
-                  <div className="flex items-center justify-between text-sm">
-                    <span className="text-gray-400">⏰ Time</span>
-                    <span className="text-white font-medium">
-                      {tournament.time}
-                    </span>
-                  </div>
-                  <div className="flex items-center justify-between text-sm">
-                    <span className="text-gray-400">👥 Players</span>
-                    <span className="text-white font-medium">
-                      {tournament.participants.length}/
-                      {tournament.max_players ?? tournament.maxPlayers}
-                    </span>
-                  </div>
-                  <div className="flex items-center justify-between text-sm">
-                    <span className="text-gray-400">💰 Entry Fee</span>
-                    <span className="text-white font-medium">
-                      {tournament.entry_fee ? (
-                        <span>
-                          ${getEntryFeeDisplayDual(tournament).usd} USD
-                          <br />
-                          <span className="text-gold text-xs">
-                            ({getEntryFeeDisplayDual(tournament).diamonds} 💎)
-                          </span>
-                        </span>
-                      ) : (
-                        "Free"
-                      )}
-                    </span>
-                  </div>
-                  <div className="flex items-center justify-between text-sm">
-                    <span className="text-gray-400">🏆 Min Rank</span>
-                    <span className="text-white font-medium">
-                      {tournament.min_rank || "Any"}
-                    </span>
-                  </div>
-
-                  {/* Clan Battle Information */}
-                  {(tournament.tournament_type ?? tournament.tournamentType) ===
-                    "clan_battle" && (
-                    <>
-                      <div className="flex items-center justify-between text-sm">
-                        <span className="text-gray-400">🎯 Mode</span>
-                        <span className="text-white font-medium">
-                          {(tournament.clan_battle_mode ??
-                            tournament.clanBattleMode) === "auto_division"
-                            ? "Auto-Division"
-                            : "Clan Selection"}
-                        </span>
-                      </div>
-                      {(tournament.clan_battle_mode ??
-                        tournament.clanBattleMode) === "clan_selection" && (
-                        <>
-                          <div className="flex items-center justify-between text-sm">
-                            <span className="text-gray-400">🏰 Clan 1</span>
-                            <span className="text-white font-medium text-xs">
-                              {tournament.clan1_id
-                                ? (() => {
-                                    const clan = clanData[tournament.clan1_id];
-                                    return clan
-                                      ? `${clan.emblem} ${clan.name}`
-                                      : "Loading...";
-                                  })()
-                                : "TBD"}
-                            </span>
-                          </div>
-                          <div className="flex items-center justify-between text-sm">
-                            <span className="text-gray-400">🏰 Clan 2</span>
-                            <span className="text-white font-medium text-xs">
-                              {tournament.clan2_id
-                                ? (() => {
-                                    const clan = clanData[tournament.clan2_id];
-                                    return clan
-                                      ? `${clan.emblem} ${clan.name}`
-                                      : "Loading...";
-                                  })()
-                                : "TBD"}
-                            </span>
-                          </div>
-                        </>
-                      )}
-
-                      {/* Prize Distribution Preview */}
-                      <div className="mt-3 pt-3 border-t border-gray-700">
-                        <div className="text-xs text-gray-400 mb-2">
-                          🏆 Prize Distribution
-                        </div>
-                        <div className="grid grid-cols-2 gap-2 text-xs">
-                          <div className="flex justify-between">
-                            <span className="text-gray-400">1st:</span>
-                            <span className="text-gold font-semibold">
-                              {(() => {
-                                const maxPlayers =
-                                  tournament.max_players ||
-                                  tournament.maxPlayers ||
-                                  30;
-                                // Use USD value for calculation, fallback to diamonds converted to USD
-                                const prizePoolUsd =
-                                  tournament.prize_pool_usd ||
-                                  (tournament.prize_pool ||
-                                    tournament.prizePool ||
-                                    0) / 100;
-
-                                if (prizePoolUsd <= 0) return "$0 (0 💎)";
-
-                                const teamSize =
-                                  tournament.clan_battle_mode ===
-                                  "auto_division"
-                                    ? Math.floor(maxPlayers / 2)
-                                    : maxPlayers / 2;
-                                const distribution =
-                                  calculateClanBattlePrizeDistribution(
-                                    prizePoolUsd,
-                                    teamSize
-                                  );
-                                return formatPrizeWithDiamonds(
-                                  distribution.topPerformers[0]?.prize || 0
-                                );
-                              })()}
-                            </span>
-                          </div>
-                          <div className="flex justify-between">
-                            <span className="text-gray-400">Team:</span>
-                            <span className="text-gold font-semibold">
-                              {(() => {
-                                const maxPlayers =
-                                  tournament.max_players ||
-                                  tournament.maxPlayers ||
-                                  30;
-                                // Use USD value for calculation, fallback to diamonds converted to USD
-                                const prizePoolUsd =
-                                  tournament.prize_pool_usd ||
-                                  (tournament.prize_pool ||
-                                    tournament.prizePool ||
-                                    0) / 100;
-
-                                if (prizePoolUsd <= 0) return "$0 (0 💎)";
-
-                                const teamSize =
-                                  tournament.clan_battle_mode ===
-                                  "auto_division"
-                                    ? Math.floor(maxPlayers / 2)
-                                    : maxPlayers / 2;
-                                const distribution =
-                                  calculateClanBattlePrizeDistribution(
-                                    prizePoolUsd,
-                                    teamSize
-                                  );
-                                return formatPrizeWithDiamonds(
-                                  distribution.remainingMembers
-                                    ?.individualPrize || 0
-                                );
-                              })()}
-                            </span>
-                          </div>
-                        </div>
-                      </div>
-                    </>
-                  )}
-                </div>
-
-                {/* Prize Pool */}
-                <div className="pt-4 border-t border-gold-dark/30">
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-gray-400 text-sm">Prize Pool</span>
-                    <div className="flex items-center space-x-2">
-                      <span className="text-gold text-xl">💰</span>
-                      <span className="text-gold font-bold text-lg">
-                        ${getPrizePoolDisplayDual(tournament).usd} USD
+                <div className="flex flex-col md:flex-row md:items-center gap-6 p-6">
+                  {/* Left Section - Icon and Main Info */}
+                  <div className="flex items-start md:items-center gap-4 flex-1 min-w-0">
+                    <div className="tournament-icon flex-shrink-0">
+                      <span className="text-4xl">
+                        {getTournamentIcon(tournament)}
                       </span>
                     </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-3 mb-3 flex-wrap">
+                        <h3 className="text-2xl md:text-3xl font-extrabold text-white group-hover:text-gold transition-colors duration-300 tracking-tight">
+                          {tournament.title}
+                        </h3>
+                        <Badge
+                          variant={tournament.status}
+                          className="!capitalize text-xs font-semibold"
+                        >
+                          {tournament.status}
+                        </Badge>
+                      </div>
+
+                      {/* Game Name - Highlighted */}
+                      <div className="flex items-center gap-2 flex-wrap mb-3">
+                        <div className="px-3 py-1.5 bg-gradient-to-r from-gold/20 to-gold/5 border border-gold/30 rounded-lg">
+                          <span className="text-gold font-bold text-base flex items-center gap-2">
+                            🎮 {tournament.game}
+                          </span>
+                        </div>
+                        {tournament.is_automated && (
+                          <Badge
+                            variant="primary"
+                            size="sm"
+                            className="font-semibold animate-pulse"
+                          >
+                            ⚡ Auto Match
+                          </Badge>
+                        )}
+                        {(tournament.tournament_type ??
+                          tournament.tournamentType) === "clan_battle" && (
+                          <Badge
+                            variant="warning"
+                            size="sm"
+                            className="font-semibold"
+                          >
+                            ⚔️ Clan Battle
+                          </Badge>
+                        )}
+                        {tournament.status === "ongoing" &&
+                          !tournament.is_automated && (
+                            <Badge
+                              variant="primary"
+                              size="sm"
+                              className="animate-pulse font-semibold"
+                            >
+                              🔥 1 Slot Left
+                            </Badge>
+                          )}
+                      </div>
+
+                      {/* Info Pills - Enhanced */}
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <div className="flex items-center gap-1.5 px-3 py-1.5 bg-white/5 rounded-lg border border-white/10 hover:border-gold/30 transition-colors">
+                          <span className="text-gold text-sm">👥</span>
+                          <span className="text-white font-semibold text-sm">
+                            {tournament.participants.length}/
+                            {tournament.max_players ?? tournament.maxPlayers}
+                          </span>
+                          <span className="text-gray-400 text-xs">players</span>
+                        </div>
+                        <div className="flex items-center gap-1.5 px-3 py-1.5 bg-white/5 rounded-lg border border-white/10 hover:border-gold/30 transition-colors">
+                          <span className="text-blue-400 text-sm">📅</span>
+                          <span className="text-white font-medium text-sm">
+                            {formatDate(tournament.date)}
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-1.5 px-3 py-1.5 bg-white/5 rounded-lg border border-white/10 hover:border-gold/30 transition-colors">
+                          <span className="text-purple-400 text-sm">⏰</span>
+                          <span className="text-white font-medium text-sm">
+                            {tournament.time}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
                   </div>
-                  <div className="text-gold text-sm text-right">
-                    ({getPrizePoolDisplayDual(tournament).diamonds} 💎)
-                  </div>
-                  {(tournament.prize_pool_type ?? tournament.prizePoolType) ===
-                    "entry-based" && (
-                    <div className="text-xs text-gray-500">
-                      Entry-based • {tournament.participants.length}/
-                      {tournament.max_players ?? tournament.maxPlayers} players
+
+                  {/* Center Section - Countdown Timer */}
+                  {tournament.status === "upcoming" && (
+                    <div className="flex items-center justify-center">
+                      <div className="countdown-wrapper">
+                        <CountdownTimer
+                          date={tournament.date}
+                          time={tournament.time}
+                        />
+                      </div>
                     </div>
                   )}
+
+                  {/* Right Section - Prize Pool */}
+                  <div className="flex-shrink-0">
+                    <div className="prize-display text-center">
+                      <div className="flex items-center justify-center gap-2 mb-1">
+                        <span className="text-gold text-3xl">💰</span>
+                        <div className="text-left">
+                          <div className="text-gold font-bold text-2xl">
+                            ${getPrizePoolDisplayDual(tournament).usd}
+                          </div>
+                          <div className="text-gold-dark text-sm">
+                            {getPrizePoolDisplayDual(tournament).diamonds} 💎
+                          </div>
+                        </div>
+                      </div>
+                      {(tournament.prize_pool_type ??
+                        tournament.prizePoolType) === "entry-based" && (
+                        <div className="text-xs text-gray-500 mt-2">
+                          Entry-based
+                        </div>
+                      )}
+                    </div>
+                  </div>
                 </div>
-              </Card>
+
+                {/* Additional Details - Shown on Hover */}
+                <div className="overflow-hidden max-h-0 group-hover:max-h-[600px] transition-all duration-500">
+                  <div className="info-grid px-6 pb-6 opacity-0 transform translate-y-[-10px] group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-500 ease-in-out">
+                    <div className="info-item group/fee relative overflow-hidden">
+                      <div className="absolute inset-0 bg-gradient-to-r from-gold/5 to-transparent opacity-0 group-hover/fee:opacity-100 transition-opacity" />
+                      <div className="relative flex items-center gap-3 w-full">
+                        <div className="flex-shrink-0 w-10 h-10 rounded-lg bg-gradient-to-br from-gold/20 to-gold/5 flex items-center justify-center border border-gold/30">
+                          <span className="text-xl">💰</span>
+                        </div>
+                        <div className="flex-1">
+                          <div className="text-xs font-semibold text-gold uppercase tracking-wider mb-0.5">
+                            Entry Fee
+                          </div>
+                          <div className="text-white font-bold text-base">
+                            {tournament.entry_fee ? (
+                              <div className="flex items-baseline gap-1 flex-wrap">
+                                <span className="text-white">
+                                  ${getEntryFeeDisplayDual(tournament).usd}
+                                </span>
+                                <span className="text-gray-400 text-xs">
+                                  USD
+                                </span>
+                                <span className="text-gold text-sm ml-1">
+                                  ({getEntryFeeDisplayDual(tournament).diamonds}{" "}
+                                  💎)
+                                </span>
+                              </div>
+                            ) : (
+                              <span className="text-green-400 font-bold">
+                                Free Entry!
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="info-item group/rank relative overflow-hidden">
+                      <div className="absolute inset-0 bg-gradient-to-r from-purple-500/5 to-transparent opacity-0 group-hover/rank:opacity-100 transition-opacity" />
+                      <div className="relative flex items-center gap-3 w-full">
+                        <div className="flex-shrink-0 w-10 h-10 rounded-lg bg-gradient-to-br from-purple-500/20 to-purple-500/5 flex items-center justify-center border border-purple-500/30">
+                          <span className="text-xl">🏆</span>
+                        </div>
+                        <div className="flex-1">
+                          <div className="text-xs font-semibold text-gold uppercase tracking-wider mb-0.5">
+                            Minimum Rank
+                          </div>
+                          <div className="text-white font-bold text-base">
+                            {tournament.min_rank ? (
+                              <span className="text-white">
+                                {tournament.min_rank}
+                              </span>
+                            ) : (
+                              <span className="text-green-400">
+                                Open to All
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Clan Battle Information */}
+                    {(tournament.tournament_type ??
+                      tournament.tournamentType) === "clan_battle" && (
+                      <>
+                        <div className="info-item">
+                          <span className="text-gold">🎯</span>
+                          <div className="flex-1">
+                            <div className="text-xs text-gray-400">
+                              Battle Mode
+                            </div>
+                            <div className="text-white font-medium text-sm">
+                              {(tournament.clan_battle_mode ??
+                                tournament.clanBattleMode) === "auto_division"
+                                ? "Auto-Division"
+                                : "Clan Selection"}
+                            </div>
+                          </div>
+                        </div>
+                        {(tournament.clan_battle_mode ??
+                          tournament.clanBattleMode) === "clan_selection" && (
+                          <>
+                            <div className="info-item">
+                              <span className="text-gold">🏰</span>
+                              <div className="flex-1">
+                                <div className="text-xs text-gray-400">
+                                  Clan 1
+                                </div>
+                                <div className="text-white font-medium text-sm">
+                                  {tournament.clan1_id
+                                    ? (() => {
+                                        const clan =
+                                          clanData[tournament.clan1_id];
+                                        return clan
+                                          ? `${clan.emblem} ${clan.name}`
+                                          : "Loading...";
+                                      })()
+                                    : "TBD"}
+                                </div>
+                              </div>
+                            </div>
+                            <div className="info-item">
+                              <span className="text-gold">🏰</span>
+                              <div className="flex-1">
+                                <div className="text-xs text-gray-400">
+                                  Clan 2
+                                </div>
+                                <div className="text-white font-medium text-sm">
+                                  {tournament.clan2_id
+                                    ? (() => {
+                                        const clan =
+                                          clanData[tournament.clan2_id];
+                                        return clan
+                                          ? `${clan.emblem} ${clan.name}`
+                                          : "Loading...";
+                                      })()
+                                    : "TBD"}
+                                </div>
+                              </div>
+                            </div>
+                          </>
+                        )}
+
+                        {/* Prize Distribution Preview */}
+                        <div className="col-span-full mt-2 pt-3 border-t border-gold-dark/20">
+                          <div className="text-xs text-gray-400 mb-3 font-semibold">
+                            🏆 Prize Distribution
+                          </div>
+                          <div className="grid grid-cols-2 gap-3">
+                            <div className="info-item">
+                              <div className="flex-1">
+                                <div className="text-xs text-gray-400">
+                                  1st Place
+                                </div>
+                                <div className="text-gold font-semibold text-sm">
+                                  {(() => {
+                                    const maxPlayers =
+                                      tournament.max_players ||
+                                      tournament.maxPlayers ||
+                                      30;
+                                    const prizePoolUsd =
+                                      tournament.prize_pool_usd ||
+                                      (tournament.prize_pool ||
+                                        tournament.prizePool ||
+                                        0) / 100;
+
+                                    if (prizePoolUsd <= 0) return "$0 (0 💎)";
+
+                                    const teamSize =
+                                      tournament.clan_battle_mode ===
+                                      "auto_division"
+                                        ? Math.floor(maxPlayers / 2)
+                                        : maxPlayers / 2;
+                                    const distribution =
+                                      calculateClanBattlePrizeDistribution(
+                                        prizePoolUsd,
+                                        teamSize
+                                      );
+                                    return formatPrizeWithDiamonds(
+                                      distribution.topPerformers[0]?.prize || 0
+                                    );
+                                  })()}
+                                </div>
+                              </div>
+                            </div>
+                            <div className="info-item">
+                              <div className="flex-1">
+                                <div className="text-xs text-gray-400">
+                                  Team Members
+                                </div>
+                                <div className="text-gold font-semibold text-sm">
+                                  {(() => {
+                                    const maxPlayers =
+                                      tournament.max_players ||
+                                      tournament.maxPlayers ||
+                                      30;
+                                    const prizePoolUsd =
+                                      tournament.prize_pool_usd ||
+                                      (tournament.prize_pool ||
+                                        tournament.prizePool ||
+                                        0) / 100;
+
+                                    if (prizePoolUsd <= 0) return "$0 (0 💎)";
+
+                                    const teamSize =
+                                      tournament.clan_battle_mode ===
+                                      "auto_division"
+                                        ? Math.floor(maxPlayers / 2)
+                                        : maxPlayers / 2;
+                                    const distribution =
+                                      calculateClanBattlePrizeDistribution(
+                                        prizePoolUsd,
+                                        teamSize
+                                      );
+                                    return formatPrizeWithDiamonds(
+                                      distribution.remainingMembers
+                                        ?.individualPrize || 0
+                                    );
+                                  })()}
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </>
+                    )}
+                  </div>
+                </div>
+              </div>
             </Link>
           ))}
         </div>

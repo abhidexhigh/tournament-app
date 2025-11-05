@@ -46,6 +46,8 @@ export default function Navbar() {
                   href={
                     user.type === "host"
                       ? "/host/dashboard"
+                      : user.type === "game_owner"
+                      ? "/admin/dashboard"
                       : "/player/dashboard"
                   }
                   className={`text-sm font-medium transition-colors duration-300 ${
@@ -54,7 +56,7 @@ export default function Navbar() {
                       : "text-gray-300 hover:text-gold"
                   }`}
                 >
-                  Dashboard
+                  {user.type === "game_owner" ? "Admin Dashboard" : "Dashboard"}
                 </Link>
 
                 <div className="flex items-center space-x-4 border-l border-gold-dark/30 pl-6">
@@ -157,12 +159,14 @@ export default function Navbar() {
                   href={
                     user.type === "host"
                       ? "/host/dashboard"
+                      : user.type === "game_owner"
+                      ? "/admin/dashboard"
                       : "/player/dashboard"
                   }
                   className="block text-gray-300 hover:text-gold py-2 transition-colors duration-300"
                   onClick={() => setIsMenuOpen(false)}
                 >
-                  Dashboard
+                  {user.type === "game_owner" ? "Admin Dashboard" : "Dashboard"}
                 </Link>
 
                 <div className="pt-3 border-t border-gold-dark/30 space-y-3">

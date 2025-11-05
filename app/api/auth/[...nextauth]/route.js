@@ -1,6 +1,7 @@
 import NextAuth from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import CredentialsProvider from "next-auth/providers/credentials";
+import { pool } from "../../../lib/database";
 
 export const authOptions = {
   providers: [
@@ -11,24 +12,63 @@ export const authOptions = {
     CredentialsProvider({
       name: "Credentials",
       credentials: {
-        email: { label: "Email", type: "email" },
+        username: { label: "Username", type: "text" },
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
-        // This is where you would verify credentials against your database
-        // For now, we'll check against localStorage mock data on the client side
-        // In a real app, this would be a database query
+        try {
+          if (!credentials?.username || !credentials?.password) {
+            return null;
+          }
 
-        if (credentials?.email && credentials?.password) {
-          // Return a user object
-          // Note: In production, verify password hash
-          return {
-            id: credentials.email,
-            email: credentials.email,
-            name: credentials.email.split("@")[0],
-          };
+          // Check for game owner (admin) first
+          if (
+            credentials.username === "admin" &&
+            credentials.password === "password"
+          ) {
+            const result = await pool.query(
+              "SELECT * FROM users WHERE username = $1 AND type = $2",
+              ["admin", "game_owner"]
+            );
+
+            if (result.rows.length > 0) {
+              const user = result.rows[0];
+              return {
+                id: user.id,
+                email: user.email,
+                name: user.username,
+                type: user.type,
+                diamonds: user.diamonds,
+                avatar: user.avatar,
+              };
+            }
+          }
+
+          // Check for regular users by username
+          const result = await pool.query(
+            "SELECT * FROM users WHERE username = $1",
+            [credentials.username]
+          );
+
+          if (result.rows.length > 0) {
+            const user = result.rows[0];
+            // In production, verify password hash here
+            return {
+              id: user.id,
+              email: user.email,
+              name: user.username,
+              type: user.type,
+              diamonds: user.diamonds,
+              avatar: user.avatar,
+              rank: user.rank,
+            };
+          }
+
+          return null;
+        } catch (error) {
+          console.error("Auth error:", error);
+          return null;
         }
-        return null;
       },
     }),
   ],
@@ -38,6 +78,10 @@ export const authOptions = {
         token.id = user.id;
         token.email = user.email;
         token.name = user.name;
+        token.type = user.type;
+        token.diamonds = user.diamonds;
+        token.avatar = user.avatar;
+        token.rank = user.rank;
         token.provider = account?.provider;
       }
       return token;
@@ -47,6 +91,10 @@ export const authOptions = {
         session.user.id = token.id;
         session.user.email = token.email;
         session.user.name = token.name;
+        session.user.type = token.type;
+        session.user.diamonds = token.diamonds;
+        session.user.avatar = token.avatar;
+        session.user.rank = token.rank;
         session.user.provider = token.provider;
       }
       return session;

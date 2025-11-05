@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "migrate": "node migrate-to-postgres.js"
+    "migrate": "node migrate-to-postgres.js",
+    "init-auto-tournaments": "node scripts/init-automated-tournaments.js"
   },
   "dependencies": {
     "@stripe/stripe-js": "^8.1.0",

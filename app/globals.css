@@ -79,3 +79,147 @@ body {
   transform: translateY(-2px);
   transition: all 0.3s ease;
 }
+
+/* OPTION 1: Elevated Card with Top Accent */
+.tournament-card {
+  position: relative;
+  background: #1a1a24;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 2px 4px rgba(0, 0, 0, 0.06);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
+}
+
+.tournament-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #ffd700, #ffb800, #ffd700);
+  background-size: 200% 100%;
+  animation: shimmer 3s ease-in-out infinite;
+}
+
+@keyframes shimmer {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+.tournament-card:hover {
+  box-shadow: 
+    0 20px 25px -5px rgba(0, 0, 0, 0.2),
+    0 10px 10px -5px rgba(0, 0, 0, 0.04),
+    0 0 40px rgba(255, 184, 0, 0.15);
+  transform: translateY(-8px);
+}
+
+.tournament-card:hover::before {
+  height: 5px;
+  box-shadow: 0 0 20px rgba(255, 184, 0, 0.6);
+}
+
+/* Status indicator stripe */
+.status-stripe {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 4px;
+  height: 50px;
+  background: linear-gradient(to bottom, rgba(255, 184, 0, 0.8), rgba(255, 184, 0, 0.2));
+  border-radius: 2px;
+  opacity: 0.5;
+  transition: opacity 0.3s ease;
+}
+
+.tournament-card:hover .status-stripe {
+  opacity: 1;
+  box-shadow: 0 0 10px rgba(255, 184, 0, 0.5);
+}
+
+/* Icon glow effect with circular container */
+.tournament-icon {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 80px;
+  height: 80px;
+  background: radial-gradient(circle, rgba(255, 184, 0, 0.1) 0%, rgba(255, 184, 0, 0.02) 70%);
+  border-radius: 50%;
+  border: 2px solid rgba(255, 184, 0, 0.2);
+  transition: all 0.4s ease;
+}
+
+.tournament-card:hover .tournament-icon {
+  transform: scale(1.1) rotate(5deg);
+  border-color: rgba(255, 184, 0, 0.5);
+  box-shadow: 0 0 30px rgba(255, 184, 0, 0.3);
+  background: radial-gradient(circle, rgba(255, 184, 0, 0.15) 0%, rgba(255, 184, 0, 0.03) 70%);
+}
+
+/* Prize display box - Elevated Mini Card */
+.prize-display {
+  position: relative;
+  padding: 20px;
+  background: linear-gradient(135deg, #13131a 0%, #1a1a24 100%);
+  border: 1px solid rgba(255, 184, 0, 0.2);
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.tournament-card:hover .prize-display {
+  background: linear-gradient(135deg, #1a1a24 0%, #13131a 100%);
+  border-color: rgba(255, 184, 0, 0.4);
+  box-shadow: 
+    0 8px 15px rgba(0, 0, 0, 0.2),
+    0 0 25px rgba(255, 184, 0, 0.15),
+    inset 0 1px 0 rgba(255, 184, 0, 0.1);
+  transform: translateY(-4px);
+}
+
+/* Info grid styling */
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 12px;
+  padding: 16px;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 8px;
+  border: 1px solid rgba(255, 184, 0, 0.1);
+}
+
+.info-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px;
+  background: rgba(26, 26, 36, 0.5);
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  transition: all 0.2s ease;
+}
+
+.info-item:hover {
+  background: rgba(255, 184, 0, 0.08);
+  border-color: rgba(255, 184, 0, 0.2);
+  transform: translateX(4px);
+}
+
+/* Countdown timer wrapper */
+.countdown-wrapper {
+  padding: 14px 24px;
+  background: linear-gradient(135deg, rgba(255, 184, 0, 0.1) 0%, rgba(255, 184, 0, 0.05) 100%);
+  border: 2px solid rgba(255, 184, 0, 0.25);
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.tournament-card:hover .countdown-wrapper {
+  border-color: rgba(255, 184, 0, 0.5);
+  background: linear-gradient(135deg, rgba(255, 184, 0, 0.15) 0%, rgba(255, 184, 0, 0.08) 100%);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15), 0 0 20px rgba(255, 184, 0, 0.2);
+}
