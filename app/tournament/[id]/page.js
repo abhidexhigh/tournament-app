@@ -1098,6 +1098,11 @@ export default function TournamentDetailsPage() {
       label: "📜 Rules",
       content: renderRulesTab(),
     },
+    {
+      id: "stream",
+      label: "📺 Stream",
+      content: <div>Stream</div>,
+    },
   ];
 
   return (
