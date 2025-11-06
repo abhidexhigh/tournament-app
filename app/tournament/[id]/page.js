@@ -10,6 +10,7 @@ import Badge from "../../components/Badge";
 import Input from "../../components/Input";
 import Select from "../../components/Select";
 import CountdownTimer from "../../components/CountdownTimer";
+import Tabs from "../../components/Tabs";
 import { getCurrentUser } from "../../lib/auth";
 import {
   calculateActualPrizePool,
@@ -43,6 +44,7 @@ import {
   formatScore,
   getPositionSuffix,
 } from "../../lib/leaderboardGenerator";
+import matchesData from "../../../data/matches.json";
 
 export default function TournamentDetailsPage() {
   const params = useParams();
@@ -65,6 +67,7 @@ export default function TournamentDetailsPage() {
   const [leaderboard, setLeaderboard] = useState([]);
   const [paymentMethod, setPaymentMethod] = useState("diamonds"); // "diamonds", "usd", or "tickets"
   const [selectedTicketType, setSelectedTicketType] = useState(null); // ticket_010, ticket_100, ticket_1000
+  const [selectedMatch, setSelectedMatch] = useState(null); // For matches tab
 
   // Removed initializeClans since we're now using dataLoader
 
@@ -372,8 +375,749 @@ export default function TournamentDetailsPage() {
       label: `${p.avatar} ${p.username}`,
     }));
 
+  // Tab render functions
+  function renderOverviewTab() {
+    return (
+      <div className="space-y-8">
+        {/* Tournament Info Grid */}
+        <Card>
+          <h2 className="text-2xl font-bold text-gold mb-6">
+            Tournament Information
+          </h2>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+            <div>
+              <p className="text-gray-400 text-sm mb-1">📅 Date</p>
+              <p className="text-white font-medium">
+                {formatDate(tournament.date)}
+              </p>
+            </div>
+            <div>
+              <p className="text-gray-400 text-sm mb-1">⏰ Time</p>
+              <p className="text-white font-medium">{tournament.time}</p>
+            </div>
+            <div>
+              <p className="text-gray-400 text-sm mb-1">👥 Players</p>
+              <p className="text-white font-medium">
+                {tournament.participants.length} /{" "}
+                {tournament.max_players ?? tournament.maxPlayers}
+              </p>
+            </div>
+            <div>
+              <p className="text-gray-400 text-sm mb-1">💰 Entry Fee</p>
+              <p className="text-white font-medium">
+                {tournament.entry_fee ? (
+                  <span>
+                    ${getEntryFeeDisplayDual(tournament).usd} USD
+                    <br />
+                    <span className="text-gold text-sm">
+                      ({getEntryFeeDisplayDual(tournament).diamonds} 💎)
+                    </span>
+                  </span>
+                ) : (
+                  "Free"
+                )}
+              </p>
+            </div>
+            <div>
+              <p className="text-gray-400 text-sm mb-1">🏆 Min Rank</p>
+              <p className="text-white font-medium">
+                {tournament.min_rank || "Any"}
+              </p>
+            </div>
+            <div>
+              <p className="text-gray-400 text-sm mb-1">🎮 Tournament Type</p>
+              <p className="text-white font-medium">
+                {(tournament.tournament_type ?? tournament.tournamentType) ===
+                "clan_battle"
+                  ? "⚔️ Clan Battle"
+                  : "🏆 Regular Tournament"}
+              </p>
+            </div>
+            <div className="col-span-2">
+              <p className="text-gray-400 text-sm mb-1">💎 Prize Pool</p>
+              <p className="text-gold font-bold text-lg">
+                ${getPrizePoolDisplayDual(tournament).usd} USD
+              </p>
+              <p className="text-gold text-sm">
+                ({getPrizePoolDisplayDual(tournament).diamonds} 💎)
+              </p>
+              {(tournament.prize_pool_type ?? tournament.prizePoolType) ===
+                "entry-based" && (
+                <p className="text-xs text-gray-500 mt-1">
+                  Entry-based • Scales with participants
+                </p>
+              )}
+            </div>
+
+            {/* Clan Battle Info */}
+            {(tournament.tournament_type ?? tournament.tournamentType) ===
+              "clan_battle" && (
+              <>
+                <div>
+                  <p className="text-gray-400 text-sm mb-1">🎯 Battle Mode</p>
+                  <p className="text-white font-medium">
+                    {(tournament.clan_battle_mode ??
+                      tournament.clanBattleMode) === "auto_division"
+                      ? "Auto-Division"
+                      : "Clan Selection"}
+                  </p>
+                </div>
+                {(tournament.clan_battle_mode ?? tournament.clanBattleMode) ===
+                  "clan_selection" && (
+                  <>
+                    <div>
+                      <p className="text-gray-400 text-sm mb-1">🏰 Clan 1</p>
+                      <p className="text-white font-medium">
+                        {clan1
+                          ? `${clan1.emblem} ${clan1.name} [${clan1.tag}]`
+                          : "Not specified"}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-gray-400 text-sm mb-1">🏰 Clan 2</p>
+                      <p className="text-white font-medium">
+                        {clan2
+                          ? `${clan2.emblem} ${clan2.name} [${clan2.tag}]`
+                          : "Not specified"}
+                      </p>
+                    </div>
+                  </>
+                )}
+              </>
+            )}
+          </div>
+        </Card>
+
+        {/* Prize Distribution - Regular Tournaments */}
+        {(tournament.tournament_type ?? tournament.tournamentType) !==
+          "clan_battle" && (
+          <Card>
+            <h2 className="text-2xl font-bold text-gold mb-4">
+              💎 Prize Distribution
+            </h2>
+            <div className="space-y-3">
+              <div className="flex items-center justify-between p-4 bg-dark-secondary rounded-lg border border-gold/30">
+                <div className="flex items-center space-x-3">
+                  <span className="text-3xl">🥇</span>
+                  <div>
+                    <p className="text-white font-bold">1st Place</p>
+                    <p className="text-gray-400 text-sm">
+                      {tournament.prize_split_first ??
+                        tournament.prizeSplit?.first}
+                      % of prize pool
+                    </p>
+                  </div>
+                </div>
+                <div className="text-right">
+                  <p className="text-gold font-bold text-xl">
+                    ${Math.floor(prizes.first / 100).toLocaleString()} USD
+                  </p>
+                  <p className="text-gold text-sm">
+                    ({prizes.first.toLocaleString()} 💎)
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-center justify-between p-4 bg-dark-secondary rounded-lg border border-gold-dark/20">
+                <div className="flex items-center space-x-3">
+                  <span className="text-3xl">🥈</span>
+                  <div>
+                    <p className="text-white font-bold">2nd Place</p>
+                    <p className="text-gray-400 text-sm">
+                      {tournament.prize_split_second ??
+                        tournament.prizeSplit?.second}
+                      % of prize pool
+                    </p>
+                  </div>
+                </div>
+                <div className="text-right">
+                  <p className="text-gold font-bold text-xl">
+                    ${Math.floor(prizes.second / 100).toLocaleString()} USD
+                  </p>
+                  <p className="text-gold text-sm">
+                    ({prizes.second.toLocaleString()} 💎)
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-center justify-between p-4 bg-dark-secondary rounded-lg border border-gold-dark/20">
+                <div className="flex items-center space-x-3">
+                  <span className="text-3xl">🥉</span>
+                  <div>
+                    <p className="text-white font-bold">3rd Place</p>
+                    <p className="text-gray-400 text-sm">
+                      {tournament.prize_split_third ??
+                        tournament.prizeSplit?.third}
+                      % of prize pool
+                    </p>
+                  </div>
+                </div>
+                <div className="text-right">
+                  <p className="text-gold font-bold text-xl">
+                    ${Math.floor(prizes.third / 100).toLocaleString()} USD
+                  </p>
+                  <p className="text-gold text-sm">
+                    ({prizes.third.toLocaleString()} 💎)
+                  </p>
+                </div>
+              </div>
+            </div>
+          </Card>
+        )}
+
+        {/* Clan Battle Prize Distribution */}
+        {(tournament.tournament_type ?? tournament.tournamentType) ===
+          "clan_battle" && (
+          <Card>
+            <div>
+              <h3 className="text-gold font-bold text-lg mb-4 flex items-center gap-2">
+                🏆 Clan Battle Prize Distribution
+              </h3>
+
+              {prizeDistribution ? (
+                <>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {/* Top Performers */}
+                    <div>
+                      <h4 className="text-white font-semibold mb-3 flex items-center gap-2">
+                        🥇 Top Performers (20%)
+                      </h4>
+                      <div className="space-y-2">
+                        {prizeDistribution.topPerformers.map(
+                          (performer, index) => (
+                            <div
+                              key={index}
+                              className="flex items-center justify-between bg-dark-primary/50 rounded-lg p-3"
+                            >
+                              <div className="flex items-center gap-3">
+                                <span className="text-2xl">
+                                  {index === 0
+                                    ? "🥇"
+                                    : index === 1
+                                    ? "🥈"
+                                    : "🥉"}
+                                </span>
+                                <div>
+                                  <p className="text-white font-medium">
+                                    {performer.position}
+                                    {performer.position === 1
+                                      ? "st"
+                                      : performer.position === 2
+                                      ? "nd"
+                                      : "rd"}{" "}
+                                    Place
+                                  </p>
+                                  <p className="text-gray-400 text-sm">
+                                    {performer.percentage}% of total
+                                  </p>
+                                </div>
+                              </div>
+                              <div className="text-right">
+                                <p className="text-gold font-bold text-lg">
+                                  {formatPrizeWithDiamonds(performer.prize)}
+                                </p>
+                              </div>
+                            </div>
+                          )
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Team Members */}
+                    <div>
+                      <h4 className="text-white font-semibold mb-3 flex items-center gap-2">
+                        👥 Team Members (80%)
+                      </h4>
+                      <div className="bg-dark-primary/50 rounded-lg p-4">
+                        <div className="flex items-center justify-between mb-2">
+                          <span className="text-white font-medium">
+                            {prizeDistribution.remainingMembers.count} Members
+                          </span>
+                          <span className="text-gold font-bold text-lg">
+                            {formatPrizeWithDiamonds(
+                              prizeDistribution.remainingMembers.individualPrize
+                            )}{" "}
+                            each
+                          </span>
+                        </div>
+                        <p className="text-gray-400 text-sm">
+                          Equal distribution of 80% total prize pool
+                        </p>
+                        <div className="mt-3 pt-3 border-t border-gray-600">
+                          <div className="flex justify-between text-sm">
+                            <span className="text-gray-400">
+                              Total for team members:
+                            </span>
+                            <span className="text-gold font-semibold">
+                              {formatPrizeWithDiamonds(
+                                prizeDistribution.remainingMembers.totalPrize
+                              )}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Summary */}
+                  <div className="mt-4 pt-4 border-t border-gold-dark/30">
+                    <div className="flex justify-between items-center">
+                      <span className="text-white font-semibold">
+                        Total Prize Pool:
+                      </span>
+                      <span className="text-gold font-bold text-xl">
+                        {formatPrizeWithDiamonds(prizeDistribution.totalPrize)}
+                      </span>
+                    </div>
+                    <p className="text-gray-400 text-sm mt-1">
+                      Winning team receives 100% of the prize pool
+                    </p>
+                  </div>
+                </>
+              ) : (
+                <div className="text-center py-8">
+                  <div className="text-4xl mb-4">🏆</div>
+                  <p className="text-gray-300 text-lg mb-2">
+                    Prize Distribution Loading
+                  </p>
+                  <p className="text-gray-400">
+                    Prize distribution details will be available once tournament
+                    data is loaded.
+                  </p>
+                </div>
+              )}
+            </div>
+          </Card>
+        )}
+
+        {/* Clan Battle Details Card */}
+        {(tournament.tournament_type ?? tournament.tournamentType) ===
+          "clan_battle" && (
+          <Card>
+            <h2 className="text-2xl font-bold text-gold mb-4 flex items-center gap-2">
+              ⚔️ Clan Battle Details
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <p className="text-gray-400 text-sm mb-2">Battle Mode</p>
+                <p className="text-white font-medium text-lg">
+                  {(tournament.clan_battle_mode ??
+                    tournament.clanBattleMode) === "auto_division"
+                    ? "🎯 Auto-Division"
+                    : "👥 Clan Selection"}
+                </p>
+                <p className="text-gray-500 text-sm mt-1">
+                  {(tournament.clan_battle_mode ??
+                    tournament.clanBattleMode) === "auto_division"
+                    ? "Players will be automatically divided into 2 balanced teams of 30 each"
+                    : "Host has selected specific clans to compete against each other"}
+                </p>
+              </div>
+
+              {(tournament.clan_battle_mode ?? tournament.clanBattleMode) ===
+                "clan_selection" && (
+                <div>
+                  <p className="text-gray-400 text-sm mb-2">Competing Clans</p>
+                  <div className="space-y-3">
+                    {clan1 && (
+                      <div className="flex items-center gap-3 p-3 bg-dark-secondary rounded-lg border border-gold-dark/30">
+                        <span className="text-2xl">{clan1.emblem}</span>
+                        <div>
+                          <p className="text-white font-medium">
+                            {clan1.name} [{clan1.tag}]
+                          </p>
+                          <p className="text-gray-400 text-sm">
+                            {clan1.description}
+                          </p>
+                          <p className="text-gold text-xs">
+                            Level {clan1.level} • {clan1.wins}W-{clan1.losses}L
+                          </p>
+                        </div>
+                      </div>
+                    )}
+                    {clan2 && (
+                      <div className="flex items-center gap-3 p-3 bg-dark-secondary rounded-lg border border-gold-dark/30">
+                        <span className="text-2xl">{clan2.emblem}</span>
+                        <div>
+                          <p className="text-white font-medium">
+                            {clan2.name} [{clan2.tag}]
+                          </p>
+                          <p className="text-gray-400 text-sm">
+                            {clan2.description}
+                          </p>
+                          <p className="text-gold text-xs">
+                            Level {clan2.level} • {clan2.wins}W-{clan2.losses}L
+                          </p>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              <div className="md:col-span-2">
+                <p className="text-gray-400 text-sm mb-2">Team Structure</p>
+                <p className="text-white">
+                  {(tournament.clan_battle_mode ??
+                    tournament.clanBattleMode) === "auto_division"
+                    ? `Up to ${
+                        tournament.max_players ?? tournament.maxPlayers
+                      } players will be divided into 2 teams of ${Math.floor(
+                        (tournament.max_players ?? tournament.maxPlayers) / 2
+                      )} each`
+                    : `Each clan can have up to ${
+                        tournament.max_players ?? tournament.maxPlayers
+                      } players (${
+                        (tournament.max_players ?? tournament.maxPlayers) * 2
+                      } total max)`}
+                </p>
+              </div>
+            </div>
+          </Card>
+        )}
+      </div>
+    );
+  }
+
+  function renderMatchesTab() {
+    // Use static matches data from JSON file
+    const staticMatches = matchesData.matches;
+
+    // Set the first match as selected by default if none is selected
+    if (!selectedMatch && staticMatches.length > 0) {
+      setSelectedMatch(staticMatches[0]);
+    }
+
+    return (
+      <div className="space-y-8">
+        {/* Past Matches Section - Two Column Layout */}
+        {staticMatches.length > 0 ? (
+          <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
+            {/* Left Side - Match List */}
+            <div className="lg:col-span-2">
+              <Card>
+                <div className="flex items-center justify-between mb-6">
+                  <h3 className="text-xl font-bold text-gold-gradient">
+                    🎮 Past Matches
+                  </h3>
+                  <div className="bg-gold/20 px-3 py-1 rounded-full">
+                    <span className="text-gold font-semibold text-sm">
+                      {staticMatches.length} Total
+                    </span>
+                  </div>
+                </div>
+                <div className="space-y-4 max-h-[700px] overflow-y-auto pr-2 custom-scrollbar">
+                  {staticMatches.map((match, index) => (
+                    <button
+                      key={match.id}
+                      onClick={() => setSelectedMatch(match)}
+                      className={`w-full text-left relative overflow-hidden rounded-xl transition-all duration-300 transform hover:scale-[1.02] ${
+                        selectedMatch?.id === match.id
+                          ? "ring-2 ring-gold shadow-lg shadow-gold/30"
+                          : "hover:shadow-xl"
+                      }`}
+                    >
+                      {/* Background gradient */}
+                      <div
+                        className={`absolute inset-0 ${
+                          selectedMatch?.id === match.id
+                            ? "bg-gradient-to-br from-gold/20 via-gold/10 to-transparent"
+                            : "bg-gradient-to-br from-dark-card via-dark-secondary to-dark-card"
+                        }`}
+                      />
+
+                      {/* Content */}
+                      <div className="relative p-4">
+                        {/* Match number badge */}
+                        <div className="absolute top-3 right-3">
+                          <div className="bg-gold/20 backdrop-blur-sm px-2 py-1 rounded-lg border border-gold/30">
+                            <span className="text-gold font-bold text-xs">
+                              #{index + 1}
+                            </span>
+                          </div>
+                        </div>
+
+                        {/* Match title */}
+                        <h4
+                          className={`font-bold mb-3 pr-12 ${
+                            selectedMatch?.id === match.id
+                              ? "text-gold text-lg"
+                              : "text-white text-base"
+                          }`}
+                        >
+                          {match.title}
+                        </h4>
+
+                        {/* Match info grid */}
+                        <div className="space-y-2">
+                          {/* Date and time */}
+                          <div className="flex items-center space-x-2 text-sm">
+                            <div className="flex items-center space-x-1 text-gray-400">
+                              <span>📅</span>
+                              <span className="font-medium">{match.date}</span>
+                            </div>
+                          </div>
+
+                          <div className="flex items-center space-x-2 text-sm text-gray-400">
+                            <span>⏰</span>
+                            <span>
+                              {match.startTime} - {match.endTime}
+                            </span>
+                          </div>
+
+                          {/* Stats row */}
+                          <div className="flex items-center justify-between pt-2 border-t border-gray-700/50">
+                            <div className="flex items-center space-x-3">
+                              <div className="flex items-center space-x-1">
+                                <span className="text-blue-400">👥</span>
+                                <span className="text-blue-300 font-semibold text-sm">
+                                  {match.participants}
+                                </span>
+                              </div>
+                              <div
+                                className={`px-2 py-1 rounded-md text-xs font-bold ${
+                                  selectedMatch?.id === match.id
+                                    ? "bg-green-500/20 text-green-400"
+                                    : "bg-gray-700/50 text-gray-400"
+                                }`}
+                              >
+                                COMPLETED
+                              </div>
+                            </div>
+
+                            {/* Prize pool */}
+                            <div className="flex items-center space-x-1">
+                              <span className="text-gold text-lg">💎</span>
+                              <span className="text-gold font-bold text-sm">
+                                {match.prizePool.toLocaleString()}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Selected indicator */}
+                        {selectedMatch?.id === match.id && (
+                          <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-gold via-yellow-400 to-gold" />
+                        )}
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              </Card>
+            </div>
+
+            {/* Right Side - Match Leaderboard */}
+            <div className="lg:col-span-3">
+              {selectedMatch ? (
+                <Card glass>
+                  <div className="mb-6">
+                    <h3 className="text-2xl font-bold text-gold-gradient mb-2">
+                      {selectedMatch.title}
+                    </h3>
+                    <div className="flex items-center gap-4 text-sm text-gray-400">
+                      <span>📅 {selectedMatch.date}</span>
+                      <span>
+                        ⏰ {selectedMatch.startTime} - {selectedMatch.endTime}
+                      </span>
+                      <span className="text-gold font-semibold">
+                        💰 {selectedMatch.prizePool.toLocaleString()} 💎
+                      </span>
+                    </div>
+                  </div>
+
+                  <h4 className="text-lg font-bold text-white mb-4">
+                    🏆 Match Results
+                  </h4>
+                  <div className="space-y-3">
+                    {selectedMatch.leaderboard.map((entry) => (
+                      <div
+                        key={entry.playerId}
+                        className={`flex items-center justify-between p-4 rounded-lg border ${
+                          entry.position === 1
+                            ? "bg-gradient-to-r from-yellow-400/20 to-yellow-600/20 border-yellow-400/50"
+                            : entry.position === 2
+                            ? "bg-gradient-to-r from-gray-300/20 to-gray-500/20 border-gray-300/50"
+                            : entry.position === 3
+                            ? "bg-gradient-to-r from-orange-400/20 to-orange-600/20 border-orange-400/50"
+                            : "bg-dark-secondary/50 border-gray-600/30"
+                        }`}
+                      >
+                        <div className="flex items-center space-x-4">
+                          <div className="flex items-center space-x-2">
+                            <span className="text-2xl font-bold text-gold min-w-[3rem]">
+                              {entry.position === 1
+                                ? "🥇"
+                                : entry.position === 2
+                                ? "🥈"
+                                : entry.position === 3
+                                ? "🥉"
+                                : `#${entry.position}`}
+                            </span>
+                            <div className="text-3xl">{entry.avatar}</div>
+                          </div>
+                          <div>
+                            <p className="text-white font-bold text-lg">
+                              {entry.username}
+                            </p>
+                            <div className="flex items-center space-x-4 text-sm text-gray-400">
+                              <span>Score: {entry.score.toLocaleString()}</span>
+                              <span>Kills: {entry.kills}</span>
+                              <span>K/D: {entry.kdRatio}</span>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="text-right">
+                          {entry.prizeAmount > 0 && (
+                            <div className="bg-gold/20 px-4 py-2 rounded-lg border border-gold/40">
+                              <p className="text-gold font-bold text-lg">
+                                +{entry.prizeAmount.toLocaleString()} 💎
+                              </p>
+                              <p className="text-gold/80 text-xs">Prize Won</p>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </Card>
+              ) : (
+                <Card>
+                  <div className="text-center py-12">
+                    <div className="text-6xl mb-4">🎮</div>
+                    <p className="text-gray-400">
+                      Select a match to view the leaderboard
+                    </p>
+                  </div>
+                </Card>
+              )}
+            </div>
+          </div>
+        ) : (
+          <Card>
+            <div className="text-center py-12">
+              <div className="text-6xl mb-4">🏁</div>
+              <h3 className="text-xl font-bold text-white mb-2">
+                No Matches Available
+              </h3>
+              <p className="text-gray-400">
+                Matches will be available once participants join the tournament.
+              </p>
+            </div>
+          </Card>
+        )}
+
+        {/* Additional section for overall tournament stats if needed */}
+      </div>
+    );
+  }
+
+  function renderParticipantsTab() {
+    return (
+      <Card>
+        <h2 className="text-xl font-bold text-gold mb-4">
+          👥 Participants ({participants.length}/
+          {tournament.max_players ?? tournament.maxPlayers})
+        </h2>
+        {participants.length === 0 ? (
+          <div className="text-center py-12">
+            <div className="text-6xl mb-4">👥</div>
+            <p className="text-gray-400 text-lg">No participants yet</p>
+            <p className="text-gray-500 text-sm mt-2">Be the first to join!</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {participants
+              .filter((participant) => participant && participant.id)
+              .map((participant, index) => (
+                <div
+                  key={participant.id}
+                  className="flex items-center space-x-3 p-4 bg-dark-secondary rounded-lg border border-gold-dark/20 hover:border-gold/50 transition-colors"
+                >
+                  <span className="text-gray-400 text-sm font-medium min-w-[2rem]">
+                    #{index + 1}
+                  </span>
+                  <span className="text-3xl">{participant.avatar}</span>
+                  <div className="flex-1">
+                    <p className="text-white font-medium">
+                      {participant.username}
+                    </p>
+                    {participant.rank && (
+                      <p className="text-gray-400 text-sm">
+                        {participant.rank} Rank
+                      </p>
+                    )}
+                  </div>
+                  {participant.id ===
+                    (tournament.host_id ?? tournament.hostId) && (
+                    <Badge variant="primary" size="sm">
+                      Host
+                    </Badge>
+                  )}
+                </div>
+              ))}
+          </div>
+        )}
+      </Card>
+    );
+  }
+
+  function renderRulesTab() {
+    return (
+      <Card>
+        <h2 className="text-2xl font-bold text-gold mb-6">
+          📜 Tournament Rules
+        </h2>
+        <div className="prose prose-invert max-w-none">
+          <p className="text-gray-300 whitespace-pre-wrap text-lg leading-relaxed">
+            {tournament.rules}
+          </p>
+        </div>
+      </Card>
+    );
+  }
+
+  // Define tab content
+  const tabs = [
+    {
+      id: "overview",
+      label: "📊 Overview",
+      content: renderOverviewTab(),
+    },
+    {
+      id: "matches",
+      label: "🎮 Matches",
+      badge: tournament.status === "completed" ? leaderboard.length : null,
+      content: renderMatchesTab(),
+    },
+    {
+      id: "participants",
+      label: "👥 Participants",
+      badge: participants.length,
+      content: renderParticipantsTab(),
+    },
+    {
+      id: "rules",
+      label: "📜 Rules",
+      content: renderRulesTab(),
+    },
+  ];
+
   return (
     <div className="min-h-screen py-8 px-4 sm:px-6 lg:px-8">
+      <style jsx>{`
+        .custom-scrollbar::-webkit-scrollbar {
+          width: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+          background: rgba(0, 0, 0, 0.2);
+          border-radius: 10px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+          background: linear-gradient(180deg, #d4af37, #aa8c2c);
+          border-radius: 10px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+          background: linear-gradient(180deg, #f0c14b, #d4af37);
+        }
+      `}</style>
       <div className="max-w-6xl mx-auto">
         {/* Back Button */}
         <Link href="/" className="inline-block mb-6">
@@ -420,7 +1164,7 @@ export default function TournamentDetailsPage() {
               </div>
             </div>
 
-            {/* Action Buttons */}
+            {/* Action Buttons - Always Visible */}
             <div className="flex flex-col gap-2">
               {/* Clan Information for Join Button */}
               {canJoin && tournament.tournament_type === "clan_battle" && (
@@ -663,651 +1407,10 @@ export default function TournamentDetailsPage() {
               )}
             </div>
           </div>
-
-          {/* Tournament Info Grid */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-            <div>
-              <p className="text-gray-400 text-sm mb-1">📅 Date</p>
-              <p className="text-white font-medium">
-                {formatDate(tournament.date)}
-              </p>
-            </div>
-            <div>
-              <p className="text-gray-400 text-sm mb-1">⏰ Time</p>
-              <p className="text-white font-medium">{tournament.time}</p>
-            </div>
-            <div>
-              <p className="text-gray-400 text-sm mb-1">👥 Players</p>
-              <p className="text-white font-medium">
-                {tournament.participants.length} /{" "}
-                {tournament.max_players ?? tournament.maxPlayers}
-              </p>
-            </div>
-            <div>
-              <p className="text-gray-400 text-sm mb-1">💰 Entry Fee</p>
-              <p className="text-white font-medium">
-                {tournament.entry_fee ? (
-                  <span>
-                    ${getEntryFeeDisplayDual(tournament).usd} USD
-                    <br />
-                    <span className="text-gold text-sm">
-                      ({getEntryFeeDisplayDual(tournament).diamonds} 💎)
-                    </span>
-                  </span>
-                ) : (
-                  "Free"
-                )}
-              </p>
-            </div>
-            <div>
-              <p className="text-gray-400 text-sm mb-1">🏆 Min Rank</p>
-              <p className="text-white font-medium">
-                {tournament.min_rank || "Any"}
-              </p>
-            </div>
-
-            {/* Tournament Type Information */}
-            <div>
-              <p className="text-gray-400 text-sm mb-1">🎮 Tournament Type</p>
-              <p className="text-white font-medium">
-                {(tournament.tournament_type ?? tournament.tournamentType) ===
-                "clan_battle"
-                  ? "⚔️ Clan Battle"
-                  : "🏆 Regular Tournament"}
-              </p>
-            </div>
-            <div>
-              <p className="text-gray-400 text-sm mb-1">💎 Prize Pool</p>
-              <p className="text-gold font-bold text-lg">
-                ${getPrizePoolDisplayDual(tournament).usd} USD
-              </p>
-              <p className="text-gold text-sm">
-                ({getPrizePoolDisplayDual(tournament).diamonds} 💎)
-              </p>
-              {(tournament.prize_pool_type ?? tournament.prizePoolType) ===
-                "entry-based" && (
-                <p className="text-xs text-gray-500 mt-1">
-                  Entry-based • Scales with participants
-                </p>
-              )}
-            </div>
-
-            {/* Clan Battle Prize Distribution */}
-            {(tournament.tournament_type ?? tournament.tournamentType) ===
-              "clan_battle" && (
-              <div className="col-span-2 md:col-span-4">
-                <div className="bg-dark-card border border-gold-dark/30 rounded-lg p-4">
-                  <h3 className="text-gold font-bold text-lg mb-4 flex items-center gap-2">
-                    🏆 Clan Battle Prize Distribution
-                  </h3>
-
-                  {prizeDistribution ? (
-                    <>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        {/* Top Performers */}
-                        <div>
-                          <h4 className="text-white font-semibold mb-3 flex items-center gap-2">
-                            🥇 Top Performers (20%)
-                          </h4>
-                          <div className="space-y-2">
-                            {prizeDistribution.topPerformers.map(
-                              (performer, index) => (
-                                <div
-                                  key={index}
-                                  className="flex items-center justify-between bg-dark-primary/50 rounded-lg p-3"
-                                >
-                                  <div className="flex items-center gap-3">
-                                    <span className="text-2xl">
-                                      {index === 0
-                                        ? "🥇"
-                                        : index === 1
-                                        ? "🥈"
-                                        : "🥉"}
-                                    </span>
-                                    <div>
-                                      <p className="text-white font-medium">
-                                        {performer.position}
-                                        {performer.position === 1
-                                          ? "st"
-                                          : performer.position === 2
-                                          ? "nd"
-                                          : "rd"}{" "}
-                                        Place
-                                      </p>
-                                      <p className="text-gray-400 text-sm">
-                                        {performer.percentage}% of total
-                                      </p>
-                                    </div>
-                                  </div>
-                                  <div className="text-right">
-                                    <p className="text-gold font-bold text-lg">
-                                      {formatPrizeWithDiamonds(performer.prize)}
-                                    </p>
-                                  </div>
-                                </div>
-                              )
-                            )}
-                          </div>
-                        </div>
-
-                        {/* Team Members */}
-                        <div>
-                          <h4 className="text-white font-semibold mb-3 flex items-center gap-2">
-                            👥 Team Members (80%)
-                          </h4>
-                          <div className="bg-dark-primary/50 rounded-lg p-4">
-                            <div className="flex items-center justify-between mb-2">
-                              <span className="text-white font-medium">
-                                {prizeDistribution.remainingMembers.count}{" "}
-                                Members
-                              </span>
-                              <span className="text-gold font-bold text-lg">
-                                {formatPrizeWithDiamonds(
-                                  prizeDistribution.remainingMembers
-                                    .individualPrize
-                                )}{" "}
-                                each
-                              </span>
-                            </div>
-                            <p className="text-gray-400 text-sm">
-                              Equal distribution of 80% total prize pool
-                            </p>
-                            <div className="mt-3 pt-3 border-t border-gray-600">
-                              <div className="flex justify-between text-sm">
-                                <span className="text-gray-400">
-                                  Total for team members:
-                                </span>
-                                <span className="text-gold font-semibold">
-                                  {formatPrizeWithDiamonds(
-                                    prizeDistribution.remainingMembers
-                                      .totalPrize
-                                  )}
-                                </span>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Summary */}
-                      <div className="mt-4 pt-4 border-t border-gold-dark/30">
-                        <div className="flex justify-between items-center">
-                          <span className="text-white font-semibold">
-                            Total Prize Pool:
-                          </span>
-                          <span className="text-gold font-bold text-xl">
-                            {formatPrizeWithDiamonds(
-                              prizeDistribution.totalPrize
-                            )}
-                          </span>
-                        </div>
-                        <p className="text-gray-400 text-sm mt-1">
-                          Winning team receives 100% of the prize pool
-                        </p>
-                      </div>
-                    </>
-                  ) : (
-                    <div className="text-center py-8">
-                      <div className="text-4xl mb-4">🏆</div>
-                      <p className="text-gray-300 text-lg mb-2">
-                        Prize Distribution Loading
-                      </p>
-                      <p className="text-gray-400">
-                        Prize distribution details will be available once
-                        tournament data is loaded.
-                      </p>
-                    </div>
-                  )}
-                </div>
-              </div>
-            )}
-
-            {/* Clan Battle Information */}
-            {(tournament.tournament_type ?? tournament.tournamentType) ===
-              "clan_battle" && (
-              <>
-                <div>
-                  <p className="text-gray-400 text-sm mb-1">
-                    ⚔️ Tournament Type
-                  </p>
-                  <p className="text-white font-medium">Clan Battle</p>
-                </div>
-                <div>
-                  <p className="text-gray-400 text-sm mb-1">🎯 Battle Mode</p>
-                  <p className="text-white font-medium">
-                    {(tournament.clan_battle_mode ??
-                      tournament.clanBattleMode) === "auto_division"
-                      ? "Auto-Division"
-                      : "Clan Selection"}
-                  </p>
-                </div>
-                {(tournament.clan_battle_mode ?? tournament.clanBattleMode) ===
-                  "clan_selection" && (
-                  <>
-                    <div>
-                      <p className="text-gray-400 text-sm mb-1">🏰 Clan 1</p>
-                      <p className="text-white font-medium">
-                        {clan1
-                          ? `${clan1.emblem} ${clan1.name} [${clan1.tag}]`
-                          : "Not specified"}
-                      </p>
-                    </div>
-                    <div>
-                      <p className="text-gray-400 text-sm mb-1">🏰 Clan 2</p>
-                      <p className="text-white font-medium">
-                        {clan2
-                          ? `${clan2.emblem} ${clan2.name} [${clan2.tag}]`
-                          : "Not specified"}
-                      </p>
-                    </div>
-                  </>
-                )}
-              </>
-            )}
-          </div>
         </Card>
 
-        {/* Tournament Type Details Card */}
-        {(tournament.tournament_type ?? tournament.tournamentType) ===
-          "clan_battle" && (
-          <Card className="mb-8">
-            <h2 className="text-2xl font-bold text-gold mb-4 flex items-center gap-2">
-              ⚔️ Clan Battle Details
-            </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
-                <p className="text-gray-400 text-sm mb-2">Battle Mode</p>
-                <p className="text-white font-medium text-lg">
-                  {(tournament.clan_battle_mode ??
-                    tournament.clanBattleMode) === "auto_division"
-                    ? "🎯 Auto-Division"
-                    : "👥 Clan Selection"}
-                </p>
-                <p className="text-gray-500 text-sm mt-1">
-                  {(tournament.clan_battle_mode ??
-                    tournament.clanBattleMode) === "auto_division"
-                    ? "Players will be automatically divided into 2 balanced teams of 30 each"
-                    : "Host has selected specific clans to compete against each other"}
-                </p>
-              </div>
-
-              {(tournament.clan_battle_mode ?? tournament.clanBattleMode) ===
-                "clan_selection" && (
-                <div>
-                  <p className="text-gray-400 text-sm mb-2">Competing Clans</p>
-                  <div className="space-y-3">
-                    {clan1 && (
-                      <div className="flex items-center gap-3 p-3 bg-dark-secondary rounded-lg border border-gold-dark/30">
-                        <span className="text-2xl">{clan1.emblem}</span>
-                        <div>
-                          <p className="text-white font-medium">
-                            {clan1.name} [{clan1.tag}]
-                          </p>
-                          <p className="text-gray-400 text-sm">
-                            {clan1.description}
-                          </p>
-                          <p className="text-gold text-xs">
-                            Level {clan1.level} • {clan1.wins}W-{clan1.losses}L
-                          </p>
-                        </div>
-                      </div>
-                    )}
-                    {clan2 && (
-                      <div className="flex items-center gap-3 p-3 bg-dark-secondary rounded-lg border border-gold-dark/30">
-                        <span className="text-2xl">{clan2.emblem}</span>
-                        <div>
-                          <p className="text-white font-medium">
-                            {clan2.name} [{clan2.tag}]
-                          </p>
-                          <p className="text-gray-400 text-sm">
-                            {clan2.description}
-                          </p>
-                          <p className="text-gold text-xs">
-                            Level {clan2.level} • {clan2.wins}W-{clan2.losses}L
-                          </p>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              )}
-
-              <div className="md:col-span-2">
-                <p className="text-gray-400 text-sm mb-2">Team Structure</p>
-                <p className="text-white">
-                  {(tournament.clan_battle_mode ??
-                    tournament.clanBattleMode) === "auto_division"
-                    ? `Up to ${
-                        tournament.max_players ?? tournament.maxPlayers
-                      } players will be divided into 2 teams of ${Math.floor(
-                        (tournament.max_players ?? tournament.maxPlayers) / 2
-                      )} each`
-                    : `Each clan can have up to ${
-                        tournament.max_players ?? tournament.maxPlayers
-                      } players (${
-                        (tournament.max_players ?? tournament.maxPlayers) * 2
-                      } total max)`}
-                </p>
-              </div>
-            </div>
-          </Card>
-        )}
-
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Left Column */}
-          <div className="lg:col-span-2 space-y-8">
-            {/* Prize Distribution - Only show for regular tournaments */}
-            {(tournament.tournament_type ?? tournament.tournamentType) !==
-              "clan_battle" && (
-              <Card>
-                <h2 className="text-2xl font-bold text-gold mb-4">
-                  💎 Prize Distribution
-                </h2>
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between p-4 bg-dark-secondary rounded-lg border border-gold/30">
-                    <div className="flex items-center space-x-3">
-                      <span className="text-3xl">🥇</span>
-                      <div>
-                        <p className="text-white font-bold">1st Place</p>
-                        <p className="text-gray-400 text-sm">
-                          {tournament.prize_split_first ??
-                            tournament.prizeSplit?.first}
-                          % of prize pool
-                        </p>
-                      </div>
-                    </div>
-                    <p className="text-gold font-bold text-xl">
-                      ${Math.floor(prizes.first / 100).toLocaleString()} USD
-                    </p>
-                    <p className="text-gold text-sm">
-                      ({prizes.first.toLocaleString()} 💎)
-                    </p>
-                  </div>
-                  <div className="flex items-center justify-between p-4 bg-dark-secondary rounded-lg border border-gold-dark/20">
-                    <div className="flex items-center space-x-3">
-                      <span className="text-3xl">🥈</span>
-                      <div>
-                        <p className="text-white font-bold">2nd Place</p>
-                        <p className="text-gray-400 text-sm">
-                          {tournament.prize_split_second ??
-                            tournament.prizeSplit?.second}
-                          % of prize pool
-                        </p>
-                      </div>
-                    </div>
-                    <p className="text-gold font-bold text-xl">
-                      ${Math.floor(prizes.second / 100).toLocaleString()} USD
-                    </p>
-                    <p className="text-gold text-sm">
-                      ({prizes.second.toLocaleString()} 💎)
-                    </p>
-                  </div>
-                  <div className="flex items-center justify-between p-4 bg-dark-secondary rounded-lg border border-gold-dark/20">
-                    <div className="flex items-center space-x-3">
-                      <span className="text-3xl">🥉</span>
-                      <div>
-                        <p className="text-white font-bold">3rd Place</p>
-                        <p className="text-gray-400 text-sm">
-                          {tournament.prize_split_third ??
-                            tournament.prizeSplit?.third}
-                          % of prize pool
-                        </p>
-                      </div>
-                    </div>
-                    <p className="text-gold font-bold text-xl">
-                      ${Math.floor(prizes.third / 100).toLocaleString()} USD
-                    </p>
-                    <p className="text-gold text-sm">
-                      ({prizes.third.toLocaleString()} 💎)
-                    </p>
-                  </div>
-                </div>
-              </Card>
-            )}
-
-            {/* Tournament Rules */}
-            <Card>
-              <h2 className="text-2xl font-bold text-gold mb-4">📜 Rules</h2>
-              <p className="text-gray-300 whitespace-pre-wrap">
-                {tournament.rules}
-              </p>
-            </Card>
-
-            {/* Leaderboard for Completed Tournaments */}
-            {tournament.status === "completed" && leaderboard.length > 0 && (
-              <Card glass>
-                <h2 className="text-2xl font-bold text-gold-gradient mb-6">
-                  {tournament.tournament_type === "clan_battle" ? (
-                    <>
-                      ⚔️ Winning Team Leaderboard
-                      {tournament.winning_team && (
-                        <div className="text-sm text-gray-400 mt-1">
-                          {tournament.winning_team === tournament.clan1_id &&
-                          clan1
-                            ? clan1.name
-                            : tournament.winning_team === tournament.clan2_id &&
-                              clan2
-                            ? clan2.name
-                            : "Winning Team"}
-                        </div>
-                      )}
-                    </>
-                  ) : (
-                    "🏆 Final Leaderboard"
-                  )}
-                </h2>
-                <div className="space-y-3">
-                  {leaderboard.map((entry, index) => {
-                    const participant = participants.find(
-                      (p) => p && p.id === entry.playerId
-                    );
-                    if (!participant) {
-                      console.warn(
-                        "Participant not found for leaderboard entry:",
-                        entry.playerId,
-                        "Available participants:",
-                        participants.map((p) => p?.id)
-                      );
-                      return null;
-                    }
-
-                    return (
-                      <div
-                        key={entry.playerId}
-                        className={`flex items-center justify-between p-4 rounded-lg border ${
-                          entry.position === 1
-                            ? "bg-gradient-to-r from-yellow-400/20 to-yellow-600/20 border-yellow-400/50"
-                            : entry.position === 2
-                            ? "bg-gradient-to-r from-gray-300/20 to-gray-500/20 border-gray-300/50"
-                            : entry.position === 3
-                            ? "bg-gradient-to-r from-orange-400/20 to-orange-600/20 border-orange-400/50"
-                            : "bg-dark-secondary/50 border-gray-600/30"
-                        }`}
-                      >
-                        <div className="flex items-center space-x-4">
-                          <div className="flex items-center space-x-2">
-                            <span className="text-2xl font-bold text-gold min-w-[3rem]">
-                              {entry.position === 1
-                                ? "🥇"
-                                : entry.position === 2
-                                ? "🥈"
-                                : entry.position === 3
-                                ? "🥉"
-                                : `#${entry.position}`}
-                            </span>
-                            <div className="text-center">
-                              <div className="text-3xl">
-                                {participant.avatar}
-                              </div>
-                            </div>
-                          </div>
-                          <div>
-                            <p className="text-white font-bold text-lg">
-                              {participant.username}
-                            </p>
-                            <div className="flex items-center space-x-4 text-sm text-gray-400">
-                              <span>Score: {formatScore(entry.score)}</span>
-                              <span>K/D: {entry.kdRatio}</span>
-                              <span>Kills: {entry.kills}</span>
-                            </div>
-                          </div>
-                        </div>
-                        <div className="text-right">
-                          <div
-                            className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold ${getPerformanceBadgeColor(
-                              entry.performance
-                            )}`}
-                          >
-                            <span className="mr-1">
-                              {getPerformanceEmoji(entry.performance)}
-                            </span>
-                            {entry.performance.charAt(0).toUpperCase() +
-                              entry.performance.slice(1)}
-                          </div>
-                          {entry.position <= 3 && (
-                            <div className="mt-2 text-gold font-bold">
-                              {entry.position}
-                              {getPositionSuffix(entry.position)} Place
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-
-                {/* Tournament Type Specific Info */}
-                {tournament.tournament_type === "clan_battle" && (
-                  <div className="mt-6 p-4 bg-blue-500/10 rounded-lg border border-blue-500/30">
-                    <div className="flex items-center space-x-2 text-blue-300">
-                      <span className="text-xl">⚔️</span>
-                      <p className="font-semibold">Clan Battle Results</p>
-                    </div>
-                    <p className="text-gray-300 text-sm mt-2">
-                      Only the winning team members are shown in this
-                      leaderboard. The winning team receives the full prize pool
-                      distribution.
-                    </p>
-                  </div>
-                )}
-              </Card>
-            )}
-
-            {/* Winners (if completed) */}
-            {tournament.status === "completed" && tournament.winners && (
-              <Card glass>
-                <h2 className="text-2xl font-bold text-gold-gradient mb-6">
-                  🏆 Tournament Winners
-                </h2>
-                <div className="space-y-4">
-                  {tournament.winners.first && (
-                    <div className="flex items-center justify-between p-4 bg-gold/10 rounded-lg border-2 border-gold">
-                      <div className="flex items-center space-x-4">
-                        <span className="text-4xl">🥇</span>
-                        <div>
-                          <p className="text-gold font-bold text-lg">
-                            1st Place
-                          </p>
-                          <p className="text-white">
-                            {getUserById(tournament.winners.first)?.avatar}{" "}
-                            {getUserById(tournament.winners.first)?.username}
-                          </p>
-                        </div>
-                      </div>
-                      <p className="text-gold font-bold text-xl">
-                        +{prizes.first.toLocaleString()} 💎
-                      </p>
-                    </div>
-                  )}
-                  {tournament.winners.second && (
-                    <div className="flex items-center justify-between p-4 bg-gray-500/10 rounded-lg border border-gray-500/30">
-                      <div className="flex items-center space-x-4">
-                        <span className="text-4xl">🥈</span>
-                        <div>
-                          <p className="text-gray-300 font-bold">2nd Place</p>
-                          <p className="text-white">
-                            {getUserById(tournament.winners.second)?.avatar}{" "}
-                            {getUserById(tournament.winners.second)?.username}
-                          </p>
-                        </div>
-                      </div>
-                      <p className="text-gold font-bold text-xl">
-                        +{prizes.second.toLocaleString()} 💎
-                      </p>
-                    </div>
-                  )}
-                  {tournament.winners.third && (
-                    <div className="flex items-center justify-between p-4 bg-orange-500/10 rounded-lg border border-orange-500/30">
-                      <div className="flex items-center space-x-4">
-                        <span className="text-4xl">🥉</span>
-                        <div>
-                          <p className="text-orange-300 font-bold">3rd Place</p>
-                          <p className="text-white">
-                            {getUserById(tournament.winners.third)?.avatar}{" "}
-                            {getUserById(tournament.winners.third)?.username}
-                          </p>
-                        </div>
-                      </div>
-                      <p className="text-gold font-bold text-xl">
-                        +{prizes.third.toLocaleString()} 💎
-                      </p>
-                    </div>
-                  )}
-                </div>
-              </Card>
-            )}
-          </div>
-
-          {/* Right Column - Participants */}
-          <div>
-            <Card className="sticky top-24">
-              <h2 className="text-xl font-bold text-gold mb-4">
-                👥 Participants ({participants.length}/
-                {tournament.max_players ?? tournament.maxPlayers})
-              </h2>
-              {participants.length === 0 ? (
-                <div className="text-center py-8">
-                  <p className="text-gray-400">No participants yet</p>
-                  <p className="text-gray-500 text-sm mt-2">
-                    Be the first to join!
-                  </p>
-                </div>
-              ) : (
-                <div className="space-y-2 max-h-96 overflow-y-auto">
-                  {participants
-                    .filter((participant) => participant && participant.id) // Filter out null/undefined participants
-                    .map((participant, index) => (
-                      <div
-                        key={participant.id}
-                        className="flex items-center space-x-3 p-3 bg-dark-secondary rounded-lg"
-                      >
-                        <span className="text-gray-400 text-sm w-6">
-                          #{index + 1}
-                        </span>
-                        <span className="text-2xl">{participant.avatar}</span>
-                        <div className="flex-1">
-                          <span className="text-white font-medium block">
-                            {participant.username}
-                          </span>
-                          {participant.rank && (
-                            <span className="text-gray-400 text-sm">
-                              {participant.rank} Rank
-                            </span>
-                          )}
-                        </div>
-                        {participant.id ===
-                          (tournament.host_id ?? tournament.hostId) && (
-                          <Badge variant="primary" size="sm">
-                            Host
-                          </Badge>
-                        )}
-                      </div>
-                    ))}
-                </div>
-              )}
-            </Card>
-          </div>
-        </div>
+        {/* Tabbed Content */}
+        <Tabs tabs={tabs} defaultTab="overview" variant="underline" />
 
         {/* Winner Declaration Modal */}
         {showWinnerModal && (
