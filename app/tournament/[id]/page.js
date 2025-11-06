@@ -518,7 +518,8 @@ export default function TournamentDetailsPage() {
                           </p>
                           {user && (
                             <p className="text-xs text-gray-500 mt-1">
-                              Balance: ${user.usd_balance?.toFixed(2) || "0.00"}
+                              Balance: $
+                              {Number(user.usd_balance || 0).toFixed(2)}
                             </p>
                           )}
                         </button>
@@ -539,7 +540,9 @@ export default function TournamentDetailsPage() {
                               <p className="text-white font-bold">Tickets</p>
                             </div>
                             <p className="text-gray-400 text-sm">
-                              ${tournament.entry_fee_usd?.toFixed(2)} ticket
+                              $
+                              {Number(tournament.entry_fee_usd || 0).toFixed(2)}{" "}
+                              ticket
                             </p>
                             {user && (
                               <p className="text-xs text-gray-500 mt-1">
