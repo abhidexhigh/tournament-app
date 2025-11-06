@@ -1090,7 +1090,7 @@ export default function TournamentDetailsPage() {
     {
       id: "participants",
       label: "👥 Participants",
-      badge: participants.length,
+      // badge: participants.length,
       content: renderParticipantsTab(),
     },
     {
