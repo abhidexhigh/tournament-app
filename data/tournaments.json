@@ -21,12 +21,7 @@
     "entry_fee_usd": 1,
     "rules": "No cheating, No teaming, Fair play only. Winners will be selected based on final ranking.",
     "host_id": "host1",
-    "participants": [
-      "player1",
-      "player2",
-      "player3",
-      "player4"
-    ],
+    "participants": ["player1", "player2", "player3", "player4"],
     "winner_first": null,
     "winner_second": null,
     "winner_third": null,
@@ -58,10 +53,7 @@
     "entry_fee_usd": 0.5,
     "rules": "Tournament format: Individual matches. All agents allowed. No exploits or cheating.",
     "host_id": "host2",
-    "participants": [
-      "player1",
-      "player3"
-    ],
+    "participants": ["player1", "player3"],
     "winner_first": null,
     "winner_second": null,
     "winner_third": null,
@@ -93,10 +85,7 @@
     "entry_fee_usd": 2,
     "rules": "Best of 5 matches. All maps in rotation. Fair play enforced.",
     "host_id": "host1",
-    "participants": [
-      "player2",
-      "player4"
-    ],
+    "participants": ["player2", "player4"],
     "winner_first": null,
     "winner_second": null,
     "winner_third": null,
@@ -128,11 +117,7 @@
     "entry_fee_usd": 0,
     "rules": "Solo matches. Skill-based matchmaking. Standard tournament rules apply.",
     "host_id": "host2",
-    "participants": [
-      "player1",
-      "player2",
-      "player3"
-    ],
+    "participants": ["player1", "player2", "player3"],
     "winner_first": "player1",
     "winner_second": "player2",
     "winner_third": "player3",
@@ -164,9 +149,7 @@
     "entry_fee_usd": 1.5,
     "rules": "Battle Royale mode. All legends unlocked. No camping allowed.",
     "host_id": "host1",
-    "participants": [
-      "player4"
-    ],
+    "participants": ["player4"],
     "winner_first": null,
     "winner_second": null,
     "winner_third": null,
@@ -198,12 +181,7 @@
     "entry_fee_usd": 2,
     "rules": "Auto-division clan battle! Up to 60 players will be automatically divided into 2 teams of 30 each. The system will balance teams based on player ranks and experience.",
     "host_id": "host1",
-    "participants": [
-      "player1",
-      "player2",
-      "player3",
-      "player4"
-    ],
+    "participants": ["player1", "player2", "player3", "player4"],
     "winner_first": null,
     "winner_second": null,
     "winner_third": null,
@@ -235,10 +213,7 @@
     "entry_fee_usd": 1,
     "rules": "Auto-division clan battle! Players will be automatically divided into 2 balanced teams. Perfect for open tournaments where anyone can join.",
     "host_id": "host2",
-    "participants": [
-      "player1",
-      "player3"
-    ],
+    "participants": ["player1", "player3"],
     "winner_first": null,
     "winner_second": null,
     "winner_third": null,
@@ -342,9 +317,7 @@
     "entry_fee_usd": 10,
     "rules": "Clan vs Clan battle! Thunder Bolts vs Ice Guardians. Each clan can have up to 30 players. Team coordination and strategy are key to victory.",
     "host_id": "host1",
-    "participants": [
-      "player1"
-    ],
+    "participants": ["player1"],
     "winner_first": null,
     "winner_second": null,
     "winner_third": null,
@@ -460,9 +433,7 @@
     "rules": "Test Test Test Test ",
     "image": "🔮",
     "host_id": "host1",
-    "participants": [
-      "player1"
-    ],
+    "participants": ["player1"],
     "winner_first": null,
     "winner_second": null,
     "winner_third": null,
