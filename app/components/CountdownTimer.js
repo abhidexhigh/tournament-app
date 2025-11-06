@@ -98,11 +98,11 @@ export default function CountdownTimer({ date, time, className = "" }) {
 
   return (
     <div className={`text-gold text-sm font-medium ${className}`}>
-      <div className="flex items-center space-x-1">
+      <div className="flex items-center space-x-1 justify-center sm:justify-start">
         <span className="text-lg">⏰</span>
         <span>Starts in:</span>
       </div>
-      <div className="flex items-center space-x-2 mt-1">
+      <div className="flex items-center space-x-2 mt-1 justify-center sm:justify-start">
         {timeLeft.days > 0 && (
           <div className="flex flex-col items-center">
             <span className="text-white font-bold text-lg">

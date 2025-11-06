@@ -83,7 +83,19 @@ body {
 /* OPTION 1: Elevated Card with Top Accent */
 .tournament-card {
   position: relative;
-  background: #1a1a24;
+  /* background: #1a1a24; */
+  background-image: 
+    linear-gradient(to right, 
+      rgba(26, 26, 36, 1) 0%, 
+      rgba(26, 26, 36, 1) 30%, 
+      rgba(26, 26, 36, 0.9) 50%, 
+      rgba(26, 26, 36, 1) 70%, 
+      rgba(26, 26, 36, 1) 100%),
+    url('/listBg.jpg');
+  background-color: #1a1a24;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
   border-radius: 12px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 2px 4px rgba(0, 0, 0, 0.06);
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
@@ -144,12 +156,26 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 80px;
-  height: 80px;
+  width: 60px;
+  height: 60px;
   background: radial-gradient(circle, rgba(255, 184, 0, 0.1) 0%, rgba(255, 184, 0, 0.02) 70%);
   border-radius: 50%;
   border: 2px solid rgba(255, 184, 0, 0.2);
   transition: all 0.4s ease;
+}
+
+@media (min-width: 640px) {
+  .tournament-icon {
+    width: 70px;
+    height: 70px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .tournament-icon {
+    width: 80px;
+    height: 80px;
+  }
 }
 
 .tournament-card:hover .tournament-icon {
@@ -208,18 +234,27 @@ body {
   transform: translateX(4px);
 }
 
-/* Countdown timer wrapper */
+/* Countdown timer wrapper - Blended seamlessly */
 .countdown-wrapper {
-  padding: 14px 24px;
-  background: linear-gradient(135deg, rgba(255, 184, 0, 0.1) 0%, rgba(255, 184, 0, 0.05) 100%);
-  border: 2px solid rgba(255, 184, 0, 0.25);
-  border-radius: 12px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  padding: 12px 20px;
+  background: transparent;
+  border: none;
+  position: relative;
   transition: all 0.3s ease;
 }
 
-.tournament-card:hover .countdown-wrapper {
-  border-color: rgba(255, 184, 0, 0.5);
-  background: linear-gradient(135deg, rgba(255, 184, 0, 0.15) 0%, rgba(255, 184, 0, 0.08) 100%);
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15), 0 0 20px rgba(255, 184, 0, 0.2);
+.countdown-wrapper::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(255, 184, 0, 0.08) 0%, rgba(255, 184, 0, 0.02) 100%);
+  border-radius: 8px;
+  opacity: 0.5;
+  transition: opacity 0.3s ease;
+  z-index: -1;
+}
+
+.tournament-card:hover .countdown-wrapper::before {
+  opacity: 1;
+  background: linear-gradient(135deg, rgba(255, 184, 0, 0.12) 0%, rgba(255, 184, 0, 0.04) 100%);
 }

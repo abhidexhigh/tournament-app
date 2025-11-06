@@ -1,7 +1,7 @@
 import NextAuth from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import CredentialsProvider from "next-auth/providers/credentials";
-import { pool } from "../../../lib/database";
+import { sql } from "@vercel/postgres";
 
 export const authOptions = {
   providers: [
@@ -12,24 +12,24 @@ export const authOptions = {
     CredentialsProvider({
       name: "Credentials",
       credentials: {
-        username: { label: "Username", type: "text" },
+        email: { label: "Email", type: "email" },
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
         try {
-          if (!credentials?.username || !credentials?.password) {
+          if (!credentials?.email || !credentials?.password) {
             return null;
           }
 
           // Check for game owner (admin) first
           if (
-            credentials.username === "admin" &&
+            credentials.email === "admin@admin.com" &&
             credentials.password === "password"
           ) {
-            const result = await pool.query(
-              "SELECT * FROM users WHERE username = $1 AND type = $2",
-              ["admin", "game_owner"]
-            );
+            const result = await sql`
+              SELECT * FROM users 
+              WHERE email = ${credentials.email} AND type = 'game_owner'
+            `;
 
             if (result.rows.length > 0) {
               const user = result.rows[0];
@@ -44,11 +44,10 @@ export const authOptions = {
             }
           }
 
-          // Check for regular users by username
-          const result = await pool.query(
-            "SELECT * FROM users WHERE username = $1",
-            [credentials.username]
-          );
+          // Check for regular users by email
+          const result = await sql`
+            SELECT * FROM users WHERE email = ${credentials.email}
+          `;
 
           if (result.rows.length > 0) {
             const user = result.rows[0];
