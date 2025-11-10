@@ -314,7 +314,7 @@ function ProfileContent() {
                   <p>
                     <span className="text-gold">USD Balance:</span>{" "}
                     <span className="text-green-400 font-semibold">
-                      ${user.usd_balance?.toFixed(2) || "0.00"}
+                      ${Number(user.usd_balance || 0).toFixed(2)}
                     </span>
                   </p>
                   <p>
@@ -658,7 +658,7 @@ function ProfileContent() {
                   </span>
                   <br />
                   <span className="text-green-400 font-semibold">
-                    ${user.usd_balance?.toFixed(2) || "0.00"} USD
+                    ${Number(user.usd_balance || 0).toFixed(2)} USD
                   </span>
                   {" & "}
                   <span className="font-semibold">

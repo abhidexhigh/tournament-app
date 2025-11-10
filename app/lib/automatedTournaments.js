@@ -290,7 +290,7 @@ export const createAutomatedTournamentData = (
     is_automated: true,
     automated_level: level,
     expires_at: expiryTime.toISOString(),
-    accepts_tickets: false,
+    accepts_tickets: true, // Tournaments must accept tickets
     display_type: "tournament", // Auto-created matches are "Tournaments"
   };
 };
@@ -344,10 +344,10 @@ export const createAutomatedTournament = async (
           id, title, game, tournament_type, date, time, max_players, min_rank,
           prize_pool_type, prize_pool, prize_pool_usd, prize_split_first, 
           prize_split_second, prize_split_third, entry_fee, entry_fee_usd, rules,
-          image, host_id, participants, status, is_automated, automated_level, expires_at, display_type
+          image, host_id, participants, status, is_automated, automated_level, expires_at, display_type, accepts_tickets
         ) VALUES (
           $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17,
-          $18, $19, $20, $21, $22, $23, $24, $25
+          $18, $19, $20, $21, $22, $23, $24, $25, $26
         ) RETURNING id`,
       [
         tournamentData.id,
@@ -375,6 +375,7 @@ export const createAutomatedTournament = async (
         tournamentData.automated_level,
         tournamentData.expires_at,
         tournamentData.display_type,
+        tournamentData.accepts_tickets,
       ]
     );
 
@@ -431,10 +432,10 @@ export const createNextScheduledTournament = async (level, pool) => {
           id, title, game, tournament_type, date, time, max_players, min_rank,
           prize_pool_type, prize_pool, prize_pool_usd, prize_split_first, 
           prize_split_second, prize_split_third, entry_fee, entry_fee_usd, rules,
-          image, host_id, participants, status, is_automated, automated_level, expires_at, display_type
+          image, host_id, participants, status, is_automated, automated_level, expires_at, display_type, accepts_tickets
         ) VALUES (
           $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17,
-          $18, $19, $20, $21, $22, $23, $24, $25
+          $18, $19, $20, $21, $22, $23, $24, $25, $26
         ) RETURNING id`,
       [
         tournamentData.id,
@@ -462,6 +463,7 @@ export const createNextScheduledTournament = async (level, pool) => {
         tournamentData.automated_level,
         tournamentData.expires_at,
         tournamentData.display_type,
+        tournamentData.accepts_tickets,
       ]
     );
 

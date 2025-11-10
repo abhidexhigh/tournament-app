@@ -84,10 +84,29 @@ export async function POST(request, { params }) {
     // Check payment method validity
     const entryFee = tournament.entry_fee || 0;
     const entryFeeUSD = tournament.entry_fee_usd || 0;
+    const requiresPayment = entryFee > 0 || entryFeeUSD > 0;
+
+    // Validate payment method based on display_type
+    // Tournaments can only use tickets, Events can use all three
+    if (tournament.display_type === "tournament") {
+      if (payment_method !== "tickets") {
+        return NextResponse.json(
+          {
+            success: false,
+            error:
+              "Tournaments can only be joined using tickets. Please use tickets to join this tournament.",
+          },
+          { status: 400 }
+        );
+      }
+    }
 
     // Validate payment method for ticket-based tournaments
     if (payment_method === "tickets") {
-      if (!tournament.accepts_tickets) {
+      // Tournaments always accept tickets, Events need accepts_tickets flag
+      const acceptsTickets =
+        tournament.display_type === "tournament" || tournament.accepts_tickets;
+      if (!acceptsTickets) {
         return NextResponse.json(
           {
             success: false,
@@ -97,39 +116,41 @@ export async function POST(request, { params }) {
         );
       }
 
-      if (!ticket_type) {
-        return NextResponse.json(
-          {
-            success: false,
-            error: "Ticket type must be specified for ticket payment.",
-          },
-          { status: 400 }
-        );
-      }
+      if (requiresPayment) {
+        if (!ticket_type) {
+          return NextResponse.json(
+            {
+              success: false,
+              error: "Ticket type must be specified for ticket payment.",
+            },
+            { status: 400 }
+          );
+        }
 
-      // Check if ticket value matches entry fee
-      if (!validateTicketMatch(ticket_type, entryFeeUSD)) {
-        const ticketValue = getTicketValue(ticket_type);
-        return NextResponse.json(
-          {
-            success: false,
-            error: `Entry fee ($${entryFeeUSD}) must match ticket value ($${ticketValue}). Please use the correct ticket type.`,
-          },
-          { status: 400 }
-        );
-      }
+        // Check if ticket value matches entry fee
+        if (!validateTicketMatch(ticket_type, entryFeeUSD)) {
+          const ticketValue = getTicketValue(ticket_type);
+          return NextResponse.json(
+            {
+              success: false,
+              error: `Entry fee ($${entryFeeUSD}) must match ticket value ($${ticketValue}). Please use the correct ticket type.`,
+            },
+            { status: 400 }
+          );
+        }
 
-      // Check if user has the ticket
-      const userTickets = user.tickets || {};
-      if (!userTickets[ticket_type] || userTickets[ticket_type] < 1) {
-        const ticketName = getTicketName(ticket_type);
-        return NextResponse.json(
-          {
-            success: false,
-            error: `You don't have any ${ticketName} tickets!`,
-          },
-          { status: 400 }
-        );
+        // Check if user has the ticket
+        const userTickets = user.tickets || {};
+        if (!userTickets[ticket_type] || userTickets[ticket_type] < 1) {
+          const ticketName = getTicketName(ticket_type);
+          return NextResponse.json(
+            {
+              success: false,
+              error: `You don't have any ${ticketName} tickets!`,
+            },
+            { status: 400 }
+          );
+        }
       }
     } else if (payment_method === "diamonds") {
       // Check if user has enough diamonds for entry fee
@@ -160,7 +181,7 @@ export async function POST(request, { params }) {
       const updatedTournament = await tournamentsDb.addParticipant(id, user_id);
 
       // Deduct entry fee based on payment method
-      if (payment_method === "tickets" && entryFee > 0) {
+      if (payment_method === "tickets" && requiresPayment && ticket_type) {
         // Deduct ticket
         const currentTickets = user.tickets || {};
         await usersDb.update(user_id, {

@@ -111,8 +111,8 @@ export default function Home() {
 
       return (
         isActive &&
-        isAutomated &&
-        isAllowedLevel &&
+        // isAutomated &&
+        // isAllowedLevel &&
         statusMatch &&
         gameMatch &&
         displayTypeMatch

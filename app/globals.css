@@ -184,7 +184,7 @@ body {
 }
 
 .tournament-card:hover .tournament-icon {
-  transform: scale(1.1) rotate(5deg);
+  /* transform: scale(1.1) rotate(5deg); */
   border-color: rgba(255, 184, 0, 0.5);
   box-shadow: 0 0 30px rgba(255, 184, 0, 0.3);
   background: radial-gradient(circle, rgba(255, 184, 0, 0.15) 0%, rgba(255, 184, 0, 0.03) 70%);

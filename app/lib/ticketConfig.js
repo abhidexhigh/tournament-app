@@ -28,6 +28,17 @@ export const TICKET_CONFIG = {
       currency: "tickets",
     },
     {
+      id: "ticket_200",
+      ticket_value: 2.0,
+      quantity: 10,
+      total_value: 20.0,
+      discount_percent: 10,
+      price: 18.0,
+      label: "$2.00 Tickets",
+      popular: false,
+      currency: "tickets",
+    },
+    {
       id: "ticket_1000",
       ticket_value: 10.0,
       quantity: 10,

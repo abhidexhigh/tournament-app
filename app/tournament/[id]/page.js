@@ -68,6 +68,16 @@ export default function TournamentDetailsPage() {
   const [leaderboard, setLeaderboard] = useState([]);
   const [paymentMethod, setPaymentMethod] = useState("diamonds"); // "diamonds", "usd", or "tickets"
   const [selectedTicketType, setSelectedTicketType] = useState(null); // ticket_010, ticket_100, ticket_1000
+
+  // Set default payment method based on display_type
+  useEffect(() => {
+    if (tournament) {
+      // Tournaments can only use tickets, Events can use all three
+      if (tournament.display_type === "tournament") {
+        setPaymentMethod("tickets");
+      }
+    }
+  }, [tournament]);
   const [selectedMatch, setSelectedMatch] = useState(null); // For matches tab
 
   // Removed initializeClans since we're now using dataLoader
@@ -204,8 +214,13 @@ export default function TournamentDetailsPage() {
       return;
     }
 
+    const requiresTicketSelection =
+      paymentMethod === "tickets" &&
+      (Number(tournament.entry_fee || 0) > 0 ||
+        Number(tournament.entry_fee_usd || 0) > 0);
+
     // Validate payment method for ticket-based entry
-    if (paymentMethod === "tickets" && !selectedTicketType) {
+    if (requiresTicketSelection && !selectedTicketType) {
       alert("Please select a ticket type!");
       return;
     }
@@ -247,7 +262,11 @@ export default function TournamentDetailsPage() {
       const paymentData = {
         payment_method: paymentMethod,
       };
-      if (paymentMethod === "tickets" && selectedTicketType) {
+      if (
+        paymentMethod === "tickets" &&
+        selectedTicketType &&
+        requiresTicketSelection
+      ) {
         paymentData.ticket_type = selectedTicketType;
       }
 
@@ -398,115 +417,6 @@ export default function TournamentDetailsPage() {
   function renderOverviewTab() {
     return (
       <div className="space-y-8">
-        {/* Tournament Info Grid */}
-        <Card>
-          <h2 className="text-2xl font-bold text-gold mb-6">
-            Tournament Information
-          </h2>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-            <div>
-              <p className="text-gray-400 text-sm mb-1">📅 Date</p>
-              <p className="text-white font-medium">
-                {formatDate(tournament.date)}
-              </p>
-            </div>
-            <div>
-              <p className="text-gray-400 text-sm mb-1">⏰ Time</p>
-              <p className="text-white font-medium">{tournament.time}</p>
-            </div>
-            <div>
-              <p className="text-gray-400 text-sm mb-1">👥 Players</p>
-              <p className="text-white font-medium">
-                {tournament.participants.length} /{" "}
-                {tournament.max_players ?? tournament.maxPlayers}
-              </p>
-            </div>
-            <div>
-              <p className="text-gray-400 text-sm mb-1">💰 Entry Fee</p>
-              <p className="text-white font-medium">
-                {tournament.entry_fee ? (
-                  <span>
-                    ${getEntryFeeDisplayDual(tournament).usd} USD
-                    <br />
-                    <span className="text-gold text-sm">
-                      ({getEntryFeeDisplayDual(tournament).diamonds} 💎)
-                    </span>
-                  </span>
-                ) : (
-                  "Free"
-                )}
-              </p>
-            </div>
-            <div>
-              <p className="text-gray-400 text-sm mb-1">🏆 Min Rank</p>
-              <p className="text-white font-medium">
-                {tournament.min_rank || "Any"}
-              </p>
-            </div>
-            <div>
-              <p className="text-gray-400 text-sm mb-1">🎮 Tournament Type</p>
-              <p className="text-white font-medium">
-                {(tournament.tournament_type ?? tournament.tournamentType) ===
-                "clan_battle"
-                  ? "⚔️ Clan Battle"
-                  : "🏆 Regular Tournament"}
-              </p>
-            </div>
-            <div className="col-span-2">
-              <p className="text-gray-400 text-sm mb-1">💎 Prize Pool</p>
-              <p className="text-gold font-bold text-lg">
-                ${getPrizePoolDisplayDual(tournament).usd} USD
-              </p>
-              <p className="text-gold text-sm">
-                ({getPrizePoolDisplayDual(tournament).diamonds} 💎)
-              </p>
-              {(tournament.prize_pool_type ?? tournament.prizePoolType) ===
-                "entry-based" && (
-                <p className="text-xs text-gray-500 mt-1">
-                  Entry-based • Scales with participants
-                </p>
-              )}
-            </div>
-
-            {/* Clan Battle Info */}
-            {(tournament.tournament_type ?? tournament.tournamentType) ===
-              "clan_battle" && (
-              <>
-                <div>
-                  <p className="text-gray-400 text-sm mb-1">🎯 Battle Mode</p>
-                  <p className="text-white font-medium">
-                    {(tournament.clan_battle_mode ??
-                      tournament.clanBattleMode) === "auto_division"
-                      ? "Auto-Division"
-                      : "Clan Selection"}
-                  </p>
-                </div>
-                {(tournament.clan_battle_mode ?? tournament.clanBattleMode) ===
-                  "clan_selection" && (
-                  <>
-                    <div>
-                      <p className="text-gray-400 text-sm mb-1">🏰 Clan 1</p>
-                      <p className="text-white font-medium">
-                        {clan1
-                          ? `${clan1.emblem} ${clan1.name} [${clan1.tag}]`
-                          : "Not specified"}
-                      </p>
-                    </div>
-                    <div>
-                      <p className="text-gray-400 text-sm mb-1">🏰 Clan 2</p>
-                      <p className="text-white font-medium">
-                        {clan2
-                          ? `${clan2.emblem} ${clan2.name} [${clan2.tag}]`
-                          : "Not specified"}
-                      </p>
-                    </div>
-                  </>
-                )}
-              </>
-            )}
-          </div>
-        </Card>
-
         {/* Prize Distribution - Regular Tournaments */}
         {(tournament.tournament_type ?? tournament.tournamentType) !==
           "clan_battle" && (
@@ -962,18 +872,22 @@ export default function TournamentDetailsPage() {
                         <div className="flex items-center space-x-4">
                           <div className="flex items-center space-x-2">
                             <span className="text-2xl font-bold text-gold min-w-[3rem]">
-                              {entry.position === 1
-                                ? "🥇"
-                                : entry.position === 2
-                                ? "🥈"
-                                : entry.position === 3
-                                ? "🥉"
-                                : `#${entry.position}`}
+                              {entry.position === 1 ? (
+                                "🥇"
+                              ) : entry.position === 2 ? (
+                                "🥈"
+                              ) : entry.position === 3 ? (
+                                "🥉"
+                              ) : (
+                                <span className="text-sm">
+                                  #{entry.position}
+                                </span>
+                              )}
                             </span>
                             <div className="text-3xl">{entry.avatar}</div>
                           </div>
                           <div>
-                            <p className="text-white font-bold text-lg">
+                            <p className="text-white font-bold text-base">
                               {entry.username}
                             </p>
                             <div className="flex items-center space-x-4 text-sm text-gray-400">
@@ -986,8 +900,9 @@ export default function TournamentDetailsPage() {
                         <div className="text-right">
                           {entry.prizeAmount > 0 && (
                             <div className="bg-gold/20 px-4 py-2 rounded-lg border border-gold/40">
-                              <p className="text-gold font-bold text-lg">
-                                +{entry.prizeAmount.toLocaleString()} 💎
+                              <p className="text-gold font-bold text-base">
+                                +${(entry.prizeAmount / 100).toLocaleString()}{" "}
+                                USD
                               </p>
                               <p className="text-gold/80 text-xs">Prize Won</p>
                             </div>
@@ -1180,15 +1095,17 @@ export default function TournamentDetailsPage() {
                 <h1 className="text-4xl font-bold text-gold-gradient mb-2">
                   {tournament.title}
                 </h1>
-                <div className="flex items-center gap-3 mb-3">
-                  <p className="text-gray-400 text-lg">{tournament.game}</p>
-                  {(tournament.tournament_type ?? tournament.tournamentType) ===
-                    "clan_battle" && (
-                    <Badge variant="warning" size="md">
-                      ⚔️ Clan Battle
-                    </Badge>
-                  )}
-                </div>
+                {!tournament.is_automated && (
+                  <div className="flex items-center gap-3 mb-3">
+                    <p className="text-gray-400 text-lg">{tournament.game}</p>
+                    {(tournament.tournament_type ??
+                      tournament.tournamentType) === "clan_battle" && (
+                      <Badge variant="warning" size="md">
+                        ⚔️ Clan Battle
+                      </Badge>
+                    )}
+                  </div>
+                )}
                 <Badge
                   variant={tournament.status}
                   size="lg"
@@ -1196,60 +1113,6 @@ export default function TournamentDetailsPage() {
                 >
                   {tournament.status}
                 </Badge>
-
-                {/* Countdown Timer for Upcoming Automated Tournaments */}
-                {tournament.status === "upcoming" &&
-                  (tournament.is_automated === true ||
-                    tournament.is_automated === "true") &&
-                  tournament.expires_at && (
-                    <div className="mt-4 p-4 bg-dark-secondary rounded-lg border border-gold-dark/30">
-                      <CountdownTimer
-                        expiresAt={tournament.expires_at}
-                        label="Join before"
-                      />
-                    </div>
-                  )}
-
-                {/* Countdown Timer for Upcoming Non-Automated Tournaments */}
-                {tournament.status === "upcoming" &&
-                  !(
-                    tournament.is_automated === true ||
-                    tournament.is_automated === "true"
-                  ) && (
-                    <div className="mt-4 p-4 bg-dark-secondary rounded-lg border border-gold-dark/30">
-                      <CountdownTimer
-                        date={tournament.date}
-                        time={tournament.time}
-                        label="Starts in"
-                      />
-                    </div>
-                  )}
-
-                {/* Countdown Timer for Ongoing Automated Tournaments */}
-                {tournament.status === "ongoing" &&
-                  (tournament.is_automated === true ||
-                    tournament.is_automated === "true") &&
-                  tournament.expires_at && (
-                    <div className="mt-4 p-4 bg-dark-secondary rounded-lg border border-gold-dark/30">
-                      <CountdownTimer
-                        expiresAt={tournament.expires_at}
-                        label="Join before"
-                      />
-                    </div>
-                  )}
-
-                {/* Show Tournament Started for Ongoing Non-Automated */}
-                {tournament.status === "ongoing" &&
-                  !(
-                    tournament.is_automated === true ||
-                    tournament.is_automated === "true"
-                  ) && (
-                    <div className="mt-4 p-4 bg-dark-secondary rounded-lg border border-gold-dark/30">
-                      <div className="text-red-400 text-sm font-medium text-center">
-                        ⏰ Tournament Started
-                      </div>
-                    </div>
-                  )}
               </div>
             </div>
 
@@ -1307,58 +1170,77 @@ export default function TournamentDetailsPage() {
                       <h4 className="text-white font-medium mb-3">
                         Select Payment Method
                       </h4>
-                      <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                        {/* Diamonds Option */}
-                        <button
-                          type="button"
-                          onClick={() => setPaymentMethod("diamonds")}
-                          className={`p-4 rounded-lg border-2 transition-all duration-300 text-left ${
-                            paymentMethod === "diamonds"
-                              ? "border-gold bg-gold/10"
-                              : "border-gold-dark/30 hover:border-gold/50"
-                          }`}
-                        >
-                          <div className="flex items-center space-x-2 mb-2">
-                            <span className="text-2xl">💎</span>
-                            <p className="text-white font-bold">Diamonds</p>
-                          </div>
-                          <p className="text-gray-400 text-sm">
-                            {getEntryFeeDisplayDual(tournament).diamonds} 💎
+                      {/* Show info message for tournaments */}
+                      {tournament.display_type === "tournament" && (
+                        <div className="mb-3 p-2 bg-blue-500/10 border border-blue-500/30 rounded-lg">
+                          <p className="text-sm text-blue-300">
+                            ⚡ Tournaments can only be joined using tickets
                           </p>
-                          {user && (
-                            <p className="text-xs text-gray-500 mt-1">
-                              Balance: {user.diamonds || 0} 💎
+                        </div>
+                      )}
+                      <div
+                        className={`grid grid-cols-1 gap-3 ${
+                          tournament.display_type === "tournament"
+                            ? "md:grid-cols-1"
+                            : "md:grid-cols-3"
+                        }`}
+                      >
+                        {/* Diamonds Option - Only for Events */}
+                        {tournament.display_type === "event" && (
+                          <button
+                            type="button"
+                            onClick={() => setPaymentMethod("diamonds")}
+                            className={`p-4 rounded-lg border-2 transition-all duration-300 text-left ${
+                              paymentMethod === "diamonds"
+                                ? "border-gold bg-gold/10"
+                                : "border-gold-dark/30 hover:border-gold/50"
+                            }`}
+                          >
+                            <div className="flex items-center space-x-2 mb-2">
+                              <span className="text-2xl">💎</span>
+                              <p className="text-white font-bold">Diamonds</p>
+                            </div>
+                            <p className="text-gray-400 text-sm">
+                              {getEntryFeeDisplayDual(tournament).diamonds} 💎
                             </p>
-                          )}
-                        </button>
+                            {user && (
+                              <p className="text-xs text-gray-500 mt-1">
+                                Balance: {user.diamonds || 0} 💎
+                              </p>
+                            )}
+                          </button>
+                        )}
 
-                        {/* USD Option */}
-                        <button
-                          type="button"
-                          onClick={() => setPaymentMethod("usd")}
-                          className={`p-4 rounded-lg border-2 transition-all duration-300 text-left ${
-                            paymentMethod === "usd"
-                              ? "border-green-500 bg-green-500/10"
-                              : "border-green-500/30 hover:border-green-500/50"
-                          }`}
-                        >
-                          <div className="flex items-center space-x-2 mb-2">
-                            <span className="text-2xl">💵</span>
-                            <p className="text-white font-bold">USD</p>
-                          </div>
-                          <p className="text-gray-400 text-sm">
-                            ${getEntryFeeDisplayDual(tournament).usd}
-                          </p>
-                          {user && (
-                            <p className="text-xs text-gray-500 mt-1">
-                              Balance: $
-                              {Number(user.usd_balance || 0).toFixed(2)}
+                        {/* USD Option - Only for Events */}
+                        {tournament.display_type === "event" && (
+                          <button
+                            type="button"
+                            onClick={() => setPaymentMethod("usd")}
+                            className={`p-4 rounded-lg border-2 transition-all duration-300 text-left ${
+                              paymentMethod === "usd"
+                                ? "border-green-500 bg-green-500/10"
+                                : "border-green-500/30 hover:border-green-500/50"
+                            }`}
+                          >
+                            <div className="flex items-center space-x-2 mb-2">
+                              <span className="text-2xl">💵</span>
+                              <p className="text-white font-bold">USD</p>
+                            </div>
+                            <p className="text-gray-400 text-sm">
+                              ${getEntryFeeDisplayDual(tournament).usd}
                             </p>
-                          )}
-                        </button>
+                            {user && (
+                              <p className="text-xs text-gray-500 mt-1">
+                                Balance: $
+                                {Number(user.usd_balance || 0).toFixed(2)}
+                              </p>
+                            )}
+                          </button>
+                        )}
 
-                        {/* Tickets Option - Only show if tournament accepts tickets */}
-                        {tournament.accepts_tickets && (
+                        {/* Tickets Option - Required for Tournaments, Optional for Events */}
+                        {(tournament.display_type === "tournament" ||
+                          tournament.accepts_tickets) && (
                           <button
                             type="button"
                             onClick={() => setPaymentMethod("tickets")}
@@ -1392,7 +1274,8 @@ export default function TournamentDetailsPage() {
 
                       {/* Ticket Type Selector - Show only when tickets selected */}
                       {paymentMethod === "tickets" &&
-                        tournament.accepts_tickets && (
+                        (tournament.display_type === "tournament" ||
+                          tournament.accepts_tickets) && (
                           <div className="mt-4 p-3 bg-purple-500/5 border border-purple-500/30 rounded-lg">
                             <p className="text-sm text-gray-300 mb-2">
                               Select matching ticket:
@@ -1495,6 +1378,291 @@ export default function TournamentDetailsPage() {
                 <Badge variant="success">You are Registered ✓</Badge>
               )}
             </div>
+          </div>
+          <div className="border-t border-gold-dark/30 pt-4 mt-4">
+            {/* <h2 className="text-xl font-bold text-gold mb-3">
+              Tournament Information
+            </h2> */}
+
+            {/* Main Info Cards Grid */}
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-2 mb-3">
+              {/* Schedule Card */}
+              <div className="flex items-start gap-2 p-2.5 rounded-lg border border-gold-dark/30 bg-gradient-to-br from-dark-secondary/60 to-dark-secondary/30 hover:border-gold/50 transition-all">
+                <div className="flex-shrink-0 w-8 h-8 rounded-md bg-blue-500/20 flex items-center justify-center text-lg">
+                  📅
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-gray-400 text-xs uppercase tracking-wider mb-1">
+                    Schedule
+                  </p>
+                  <p className="text-white font-semibold text-sm leading-tight">
+                    {formatDate(tournament.date)}
+                  </p>
+                  <p className="text-gray-300 text-xs">{tournament.time}</p>
+                </div>
+              </div>
+
+              {/* Players Card */}
+              <div className="flex items-start gap-2 p-2.5 rounded-lg border border-gold-dark/30 bg-gradient-to-br from-dark-secondary/60 to-dark-secondary/30 hover:border-gold/50 transition-all">
+                <div className="flex-shrink-0 w-8 h-8 rounded-md bg-purple-500/20 flex items-center justify-center text-lg">
+                  👥
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-gray-400 text-xs uppercase tracking-wider mb-1">
+                    Players
+                  </p>
+                  <p className="text-white font-semibold text-base">
+                    {tournament.participants.length}
+                    <span className="text-gray-400 text-sm font-normal">
+                      /{tournament.max_players ?? tournament.maxPlayers}
+                    </span>
+                  </p>
+                  <p className="text-gray-300 text-xs">
+                    {(tournament.max_players ?? tournament.maxPlayers) -
+                      tournament.participants.length >
+                    0
+                      ? `${
+                          (tournament.max_players ?? tournament.maxPlayers) -
+                          tournament.participants.length
+                        } left`
+                      : "Full"}
+                  </p>
+                </div>
+              </div>
+
+              {/* Entry Fee Card */}
+              <div className="flex items-start gap-2 p-2.5 rounded-lg border border-gold-dark/30 bg-gradient-to-br from-dark-secondary/60 to-dark-secondary/30 hover:border-gold/50 transition-all">
+                <div className="flex-shrink-0 w-8 h-8 rounded-md bg-green-500/20 flex items-center justify-center text-lg">
+                  💰
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-gray-400 text-xs uppercase tracking-wider mb-1">
+                    Entry Fee
+                  </p>
+                  {tournament.entry_fee ? (
+                    <>
+                      <p className="text-white font-semibold text-base">
+                        ${getEntryFeeDisplayDual(tournament).usd}
+                      </p>
+                      <p className="text-gold text-xs">
+                        {getEntryFeeDisplayDual(tournament).diamonds} 💎
+                      </p>
+                    </>
+                  ) : (
+                    <p className="text-green-400 font-semibold text-base">
+                      Free
+                    </p>
+                  )}
+                </div>
+              </div>
+
+              {/* Tournament Type Card */}
+              <div className="flex items-start gap-2 p-2.5 rounded-lg border border-gold-dark/30 bg-gradient-to-br from-dark-secondary/60 to-dark-secondary/30 hover:border-gold/50 transition-all">
+                <div className="flex-shrink-0 w-8 h-8 rounded-md bg-orange-500/20 flex items-center justify-center text-lg">
+                  {(tournament.tournament_type ?? tournament.tournamentType) ===
+                  "clan_battle"
+                    ? "⚔️"
+                    : "🎮"}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-gray-400 text-xs uppercase tracking-wider mb-1">
+                    Type
+                  </p>
+                  <p className="text-white font-semibold text-sm">
+                    {(tournament.tournament_type ??
+                      tournament.tournamentType) === "clan_battle"
+                      ? "Clan Battle"
+                      : "Regular"}
+                  </p>
+                  <p className="text-gray-300 text-xs">
+                    {tournament.min_rank
+                      ? `Rank ${tournament.min_rank}`
+                      : "Any Rank"}
+                  </p>
+                </div>
+              </div>
+
+              {/* Prize Pool Card - Highlighted */}
+              <div className="flex items-start gap-2 p-2.5 rounded-lg border-2 border-gold/40 bg-gradient-to-br from-gold/20 via-gold/10 to-transparent hover:border-gold/60 transition-all shadow-md shadow-gold/10">
+                <div className="flex-shrink-0 w-8 h-8 rounded-md bg-gold/30 flex items-center justify-center text-lg">
+                  🏆
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-gold/80 text-xs uppercase tracking-wider mb-1 font-semibold">
+                    Prize Pool
+                  </p>
+                  <p className="text-gold font-bold text-base">
+                    ${getPrizePoolDisplayDual(tournament).usd}
+                  </p>
+                  <p className="text-gold/90 text-sm">
+                    {getPrizePoolDisplayDual(tournament).diamonds} 💎
+                  </p>
+                  {(tournament.prize_pool_type ?? tournament.prizePoolType) ===
+                    "entry-based" && (
+                    <p className="text-gold/70 text-xs italic">Entry-based</p>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* Clan Battle Details */}
+            {(tournament.tournament_type ?? tournament.tournamentType) ===
+              "clan_battle" && (
+              <div className="mb-3 p-3 rounded-lg border border-purple-500/30 bg-gradient-to-br from-purple-500/10 via-purple-500/5 to-transparent">
+                <div className="flex items-center gap-2 mb-2">
+                  <div className="w-8 h-8 rounded-md bg-purple-500/20 flex items-center justify-center text-base">
+                    ⚔️
+                  </div>
+                  <h3 className="text-white font-bold text-base">
+                    Clan Battle Details
+                  </h3>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
+                  <div className="p-2.5 rounded-md bg-dark-secondary/50 border border-purple-500/20">
+                    <p className="text-gray-400 text-xs uppercase tracking-wider mb-1">
+                      Battle Mode
+                    </p>
+                    <p className="text-white font-semibold text-sm">
+                      {(tournament.clan_battle_mode ??
+                        tournament.clanBattleMode) === "auto_division"
+                        ? "Auto-Division"
+                        : "Clan Selection"}
+                    </p>
+                  </div>
+                  {(tournament.clan_battle_mode ??
+                    tournament.clanBattleMode) === "clan_selection" && (
+                    <>
+                      <div className="p-2.5 rounded-md bg-dark-secondary/50 border border-purple-500/20">
+                        <p className="text-gray-400 text-xs uppercase tracking-wider mb-1">
+                          Clan 1
+                        </p>
+                        <p className="text-white font-semibold text-sm">
+                          {clan1
+                            ? `${clan1.emblem} ${clan1.name} [${clan1.tag}]`
+                            : "Not specified"}
+                        </p>
+                      </div>
+                      <div className="p-2.5 rounded-md bg-dark-secondary/50 border border-purple-500/20">
+                        <p className="text-gray-400 text-xs uppercase tracking-wider mb-1">
+                          Clan 2
+                        </p>
+                        <p className="text-white font-semibold text-sm">
+                          {clan2
+                            ? `${clan2.emblem} ${clan2.name} [${clan2.tag}]`
+                            : "Not specified"}
+                        </p>
+                      </div>
+                    </>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* Countdown Timer Section */}
+            {(tournament.status === "upcoming" ||
+              tournament.status === "ongoing") && (
+              <div className="mt-3 grid grid-cols-1 lg:grid-cols-3 gap-2">
+                {/* Countdown Timer for Upcoming Automated Tournaments */}
+                {tournament.status === "upcoming" &&
+                  (tournament.is_automated === true ||
+                    tournament.is_automated === "true") &&
+                  tournament.expires_at && (
+                    <>
+                      <div className="lg:col-span-2 p-3 rounded-lg border-2 border-gold/40 bg-gradient-to-br from-gold/20 via-gold/10 to-transparent">
+                        <CountdownTimer
+                          expiresAt={tournament.expires_at}
+                          label="Join before"
+                        />
+                      </div>
+                    </>
+                  )}
+
+                {/* Countdown Timer for Upcoming Non-Automated Tournaments */}
+                {tournament.status === "upcoming" &&
+                  !(
+                    tournament.is_automated === true ||
+                    tournament.is_automated === "true"
+                  ) && (
+                    <>
+                      <div className="lg:col-span-1 flex items-start gap-2 p-2.5 rounded-lg border border-gold-dark/30 bg-gradient-to-br from-dark-secondary/60 to-dark-secondary/30">
+                        <div className="flex-shrink-0 w-8 h-8 rounded-md bg-blue-500/20 flex items-center justify-center text-lg">
+                          ⏰
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-gray-400 text-xs uppercase tracking-wider mb-1">
+                            Starts In
+                          </p>
+                          <p className="text-white font-semibold text-xs">
+                            Scheduled match
+                          </p>
+                        </div>
+                      </div>
+                      <div className="lg:col-span-2 p-3 rounded-lg border-2 border-blue-500/40 bg-gradient-to-br from-blue-500/20 via-blue-500/10 to-transparent">
+                        <CountdownTimer
+                          date={tournament.date}
+                          time={tournament.time}
+                          label="Starts in"
+                        />
+                      </div>
+                    </>
+                  )}
+
+                {/* Countdown Timer for Ongoing Automated Tournaments */}
+                {tournament.status === "ongoing" &&
+                  (tournament.is_automated === true ||
+                    tournament.is_automated === "true") &&
+                  tournament.expires_at && (
+                    <>
+                      <div className="lg:col-span-1 flex items-start gap-2 p-2.5 rounded-lg border border-gold-dark/30 bg-gradient-to-br from-dark-secondary/60 to-dark-secondary/30">
+                        <div className="flex-shrink-0 w-8 h-8 rounded-md bg-green-500/20 flex items-center justify-center text-lg">
+                          ⏰
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-gray-400 text-xs uppercase tracking-wider mb-1">
+                            Late Join
+                          </p>
+                          <p className="text-white font-semibold text-xs">
+                            Time left to join
+                          </p>
+                        </div>
+                      </div>
+                      <div className="lg:col-span-2 p-3 rounded-lg border-2 border-green-500/40 bg-gradient-to-br from-green-500/20 via-green-500/10 to-transparent">
+                        <CountdownTimer
+                          expiresAt={tournament.expires_at}
+                          label="Join before"
+                        />
+                      </div>
+                    </>
+                  )}
+
+                {/* Show Tournament Started for Ongoing Non-Automated */}
+                {tournament.status === "ongoing" &&
+                  !(
+                    tournament.is_automated === true ||
+                    tournament.is_automated === "true"
+                  ) && (
+                    <div className="lg:col-span-3 flex items-start gap-2 p-2.5 rounded-lg border border-red-500/30 bg-gradient-to-br from-red-500/10 via-red-500/5 to-transparent">
+                      <div className="flex-shrink-0 w-8 h-8 rounded-md bg-red-500/20 flex items-center justify-center text-lg">
+                        ⏰
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-gray-400 text-xs uppercase tracking-wider mb-1">
+                          Status
+                        </p>
+                        <div className="flex items-center gap-2">
+                          <div className="h-2 w-2 rounded-full bg-red-400 animate-pulse"></div>
+                          <p className="text-red-400 font-semibold text-sm">
+                            Tournament Started
+                          </p>
+                        </div>
+                        <p className="text-gray-300 text-xs mt-1">
+                          Matches are underway • New entries are closed
+                        </p>
+                      </div>
+                    </div>
+                  )}
+              </div>
+            )}
           </div>
         </Card>
 
