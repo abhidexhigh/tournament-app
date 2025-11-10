@@ -8,7 +8,7 @@
   
   /* Golden theme colors */
   --color-gold-light: #ffd700;
-  --color-gold: #ffb800;
+  --color-gold: #fdf496;
   --color-gold-dark: #d4af37;
   
   /* Accent colors */
@@ -51,7 +51,7 @@ body {
 
 /* Golden gradient text utility */
 .text-gold-gradient {
-  background: linear-gradient(135deg, #ffd700, #ffb800, #d4af37);
+  background: linear-gradient(90deg, #fdf496, #e6d94f);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -59,7 +59,7 @@ body {
 
 /* Golden gradient background utility */
 .bg-gold-gradient {
-  background: linear-gradient(135deg, #ffd700, #ffb800, #d4af37);
+  background: linear-gradient(90deg, #A3713B, #FFF78F, #CFB266);
 }
 
 /* Glassmorphism effect */
@@ -96,7 +96,7 @@ body {
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
-  border-radius: 12px;
+  /* border-radius: 12px; */
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 2px 4px rgba(0, 0, 0, 0.06);
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   overflow: hidden;
@@ -108,10 +108,15 @@ body {
   top: 0;
   left: 0;
   right: 0;
-  height: 4px;
-  background: linear-gradient(90deg, #ffd700, #ffb800, #ffd700);
+  height: 1px;
+  background: linear-gradient(90deg,
+    transparent,
+    #ffb800,
+    transparent,
+    transparent,
+    transparent);
   background-size: 200% 100%;
-  animation: shimmer 3s ease-in-out infinite;
+  /* animation: shimmer 3s ease-in-out infinite; */
 }
 
 @keyframes shimmer {
@@ -128,7 +133,7 @@ body {
 }
 
 .tournament-card:hover::before {
-  height: 5px;
+  height: 2px;
   box-shadow: 0 0 20px rgba(255, 184, 0, 0.6);
 }
 

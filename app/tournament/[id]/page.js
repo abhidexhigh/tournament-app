@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import { useSession } from "next-auth/react";
 import Button from "../../components/Button";
 import Card from "../../components/Card";
@@ -1153,7 +1154,28 @@ export default function TournamentDetailsPage() {
         <Card glass className="mb-8">
           <div className="flex items-start justify-between mb-6">
             <div className="flex items-start space-x-4">
-              <div className="text-6xl">{getTournamentIcon(tournament)}</div>
+              {(() => {
+                const icon = getTournamentIcon(tournament);
+                const isImageUrl =
+                  typeof icon === "string" && icon.startsWith("http");
+
+                if (isImageUrl) {
+                  return (
+                    <div className="flex-shrink-0">
+                      <Image
+                        src={icon}
+                        alt={`${tournament.title} icon`}
+                        width={96}
+                        height={96}
+                        className="w-16 h-16 sm:w-20 sm:h-20 lg:w-24 lg:h-24 object-contain"
+                        unoptimized
+                      />
+                    </div>
+                  );
+                }
+
+                return <div className="text-6xl">{icon}</div>;
+              })()}
               <div>
                 <h1 className="text-4xl font-bold text-gold-gradient mb-2">
                   {tournament.title}

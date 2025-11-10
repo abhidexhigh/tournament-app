@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import {
   calculateActualPrizePool,
   getPrizePoolDisplay,
@@ -89,13 +90,32 @@ export default function Home() {
   }, []);
 
   const filteredTournaments = tournaments.filter((t) => {
+    // Only show active tournaments (upcoming or ongoing)
+    const isActive = t.status === "upcoming" || t.status === "ongoing";
+
+    // Only show automated tournaments with Gold, Platinum, Diamond, or Master levels
+    const isAutomated = t.is_automated === true || t.is_automated === "true";
+    const allowedLevels = ["gold", "platinum", "diamond", "master"];
+    const isAllowedLevel =
+      t.automated_level &&
+      allowedLevels.includes(t.automated_level.toLowerCase());
+
+    // Apply additional filters
     const statusMatch = activeTab === "all" || t.status === activeTab;
     const gameMatch = selectedGame === "all" || t.game === selectedGame;
     const displayTypeMatch =
       displayTypeTab === "all" ||
       (displayTypeTab === "tournaments" && t.display_type === "tournament") ||
       (displayTypeTab === "events" && t.display_type === "event");
-    return statusMatch && gameMatch && displayTypeMatch;
+
+    return (
+      isActive &&
+      isAutomated &&
+      isAllowedLevel &&
+      statusMatch &&
+      gameMatch &&
+      displayTypeMatch
+    );
   });
 
   // Get unique games for filter
@@ -254,17 +274,38 @@ export default function Home() {
               className="block"
             >
               <div className="tournament-card group relative">
-                <div className="status-stripe" />
+                <div className="status-stripe overflow-hidden" />
 
-                <div className="p-4 sm:p-6">
+                <div className="p-4 sm:p-6 border border-[#ffb80033] rounded-lg">
                   {/* Top Row: Title, Status, and Prize */}
-                  <div className="flex flex-col lg:flex-row items-start lg:items-start gap-4">
+                  <div className="flex flex-col lg:flex-row !items-center lg:items-start gap-4">
                     {/* Left Section: Icon + Title + Stats */}
                     <div className="flex items-start gap-3 sm:gap-4 flex-1 min-w-0 w-full">
                       <div className="tournament-icon flex-shrink-0">
-                        <span className="text-4xl sm:text-5xl lg:text-6xl">
-                          {getTournamentIcon(tournament)}
-                        </span>
+                        {(() => {
+                          const icon = getTournamentIcon(tournament);
+                          const isImageUrl =
+                            typeof icon === "string" && icon.startsWith("http");
+
+                          if (isImageUrl) {
+                            return (
+                              <Image
+                                src={icon}
+                                alt={`${tournament.title} icon`}
+                                width={80}
+                                height={80}
+                                className="w-12 h-12 sm:w-16 sm:h-16 lg:w-20 lg:h-20 object-contain"
+                                unoptimized
+                              />
+                            );
+                          }
+
+                          return (
+                            <span className="text-4xl sm:text-5xl lg:text-6xl">
+                              {icon}
+                            </span>
+                          );
+                        })()}
                       </div>
                       <div className="flex-1 min-w-0">
                         {/* Title and Badges */}
@@ -276,7 +317,7 @@ export default function Home() {
 
                         {/* Badges Row */}
                         <div className="flex items-center gap-2 flex-wrap mb-3">
-                          <h3 className="hidden sm:block text-xl sm:text-2xl lg:text-3xl font-black text-white group-hover:text-gold transition-colors duration-300 tracking-tight">
+                          <h3 className="hidden sm:block text-xl sm:text-xl lg:text-2xl font-black text-white group-hover:text-gold transition-colors duration-300 tracking-tight">
                             {tournament.title}
                           </h3>
                           <Badge
@@ -425,19 +466,21 @@ export default function Home() {
                         )}
 
                       {/* Prize Pool */}
-                      <div className="prize-display flex-shrink-0 w-full sm:w-auto">
-                        <div className="text-center sm:text-right">
-                          <div className="text-[10px] sm:text-xs text-gold uppercase font-bold mb-1 tracking-wider">
-                            Prize Pool
-                          </div>
-                          <div className="text-gold font-black text-2xl sm:text-3xl lg:text-4xl leading-none mb-1">
-                            ${getPrizePoolDisplayDual(tournament).usd}
-                          </div>
-                          <div className="text-gold-dark text-xs sm:text-sm font-semibold">
-                            {getPrizePoolDisplayDual(tournament).diamonds} 💎
+                      {tournament?.prize_pool !== 0 && (
+                        <div className="prize-display flex-shrink-0 w-full sm:w-auto">
+                          <div className="text-center sm:text-right">
+                            <div className="text-[10px] sm:text-xs text-gold uppercase font-bold mb-1 tracking-wider">
+                              Prize Pool
+                            </div>
+                            <div className="text-gold font-black text-xl sm:text-2xl lg:text-2xl leading-none mb-1">
+                              ${getPrizePoolDisplayDual(tournament).usd}
+                            </div>
+                            <div className="text-gold-dark text-xs sm:text-sm font-semibold">
+                              {getPrizePoolDisplayDual(tournament).diamonds} 💎
+                            </div>
                           </div>
                         </div>
-                      </div>
+                      )}
                     </div>
                   </div>
                 </div>

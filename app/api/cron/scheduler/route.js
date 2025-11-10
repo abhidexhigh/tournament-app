@@ -20,12 +20,18 @@ import { runScheduler } from "../../../lib/automatedTournaments";
  */
 export async function GET(request) {
   try {
-    // Optional: Add authentication/authorization check
+    // Check if this is a Vercel cron request
+    const vercelCronHeader = request.headers.get("x-vercel-cron");
     const authHeader = request.headers.get("authorization");
     const cronSecret = process.env.CRON_SECRET;
 
-    // If CRON_SECRET is set, verify it
-    if (cronSecret && authHeader !== `Bearer ${cronSecret}`) {
+    // If CRON_SECRET is set and this is NOT a Vercel cron request, verify it
+    // Vercel cron jobs send x-vercel-cron header, so we allow those automatically
+    if (
+      cronSecret &&
+      !vercelCronHeader &&
+      authHeader !== `Bearer ${cronSecret}`
+    ) {
       return NextResponse.json(
         { success: false, error: "Unauthorized" },
         { status: 401 }

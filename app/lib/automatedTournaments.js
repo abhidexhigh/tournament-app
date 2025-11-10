@@ -4,12 +4,15 @@
 const AUTOMATED_LEVELS = {
   gold: {
     name: "Gold",
-    schedule: "hourly", // Every hour (01:00, 02:00, 03:00, etc.)
-    scheduleType: "hourly",
-    duration: 1 * 60 * 60 * 1000, // 1 hour (expires at XX:59)
-    entryFeeUsd: 0.1,
+    schedule: "minutely", // Every minute (for testing - change back to hourly after testing)
+    scheduleType: "minutely",
+    duration: 1 * 60 * 1000, // 1 minute (for testing - change back to 1 hour after testing)
+    entryFeeUsd: 0, // Free entry
     entryFeeDiamonds: 0,
+    prizePoolType: "fixed",
     prizePoolMultiplier: 100,
+    fixedPrizePoolUsd: 10, // Fixed $10 prize pool for free tournaments
+    fixedPrizePoolDiamonds: 1000, // Fixed 1000 diamonds prize pool
     maxPlayers: 100,
     minRank: "Gold",
     icon: "🥇",
@@ -21,6 +24,7 @@ const AUTOMATED_LEVELS = {
     duration: 1 * 60 * 60 * 1000, // 1 hour duration
     entryFeeUsd: 1,
     entryFeeDiamonds: 100,
+    prizePoolType: "fixed",
     prizePoolMultiplier: 100,
     maxPlayers: 100,
     minRank: "Platinum",
@@ -33,6 +37,7 @@ const AUTOMATED_LEVELS = {
     duration: 2 * 60 * 60 * 1000, // 2 hours duration
     entryFeeUsd: 2,
     entryFeeDiamonds: 200,
+    prizePoolType: "fixed",
     prizePoolMultiplier: 100,
     maxPlayers: 100,
     minRank: "Diamond",
@@ -45,6 +50,7 @@ const AUTOMATED_LEVELS = {
     duration: 3 * 60 * 60 * 1000, // 3 hours duration
     entryFeeUsd: 10,
     entryFeeDiamonds: 1000,
+    prizePoolType: "fixed",
     prizePoolMultiplier: 100,
     maxPlayers: 100,
     minRank: "Master",
@@ -81,6 +87,15 @@ export const getNextScheduledTime = (level) => {
   if (!config) return null;
 
   const now = new Date();
+
+  if (config.scheduleType === "minutely") {
+    // Next minute
+    const nextMinute = new Date(now);
+    nextMinute.setMinutes(now.getMinutes() + 1);
+    nextMinute.setSeconds(0);
+    nextMinute.setMilliseconds(0);
+    return nextMinute;
+  }
 
   if (config.scheduleType === "hourly") {
     // Next hour on the hour (e.g., if now is 10:30, next is 11:00)
@@ -144,7 +159,7 @@ export const formatTournamentTitle = (level) => {
   const config = getLevelConfig(level);
   if (!config) return "";
 
-  return `${config.icon} ${config.name} Match - Auto`;
+  return `${config.name} Match - Auto`;
 };
 
 /**
@@ -175,6 +190,11 @@ export const shouldCreateTournament = (level) => {
 
   const now = new Date();
   const currentMinutes = now.getHours() * 60 + now.getMinutes();
+
+  if (config.scheduleType === "minutely") {
+    // Create every minute (cron runs every minute)
+    return true;
+  }
 
   if (config.scheduleType === "hourly") {
     // Create at the start of every hour (XX:00)
@@ -209,9 +229,16 @@ export const createAutomatedTournamentData = (
   if (!config) return null;
 
   const expiryTime = calculateExpiryTime(startTime, level);
-  const prizePoolUsd = config.entryFeeUsd * config.prizePoolMultiplier;
+
+  // Use fixed prize pool for free tournaments, otherwise calculate based on entry fee
+  const prizePoolUsd =
+    config.entryFeeUsd === 0
+      ? config.fixedPrizePoolUsd || 0
+      : config.entryFeeUsd * config.prizePoolMultiplier;
   const prizePoolDiamonds =
-    config.entryFeeDiamonds * config.prizePoolMultiplier;
+    config.entryFeeDiamonds === 0
+      ? config.fixedPrizePoolDiamonds || 0
+      : config.entryFeeDiamonds * config.prizePoolMultiplier;
 
   // Format date and time
   const date = startTime.toISOString().split("T")[0]; // YYYY-MM-DD
@@ -220,8 +247,11 @@ export const createAutomatedTournamentData = (
   const time = `${hours}:${minutes}`;
 
   const durationHours = config.duration / (60 * 60 * 1000);
+  const durationMinutes = config.duration / (60 * 1000);
   let scheduleInfo = "";
-  if (config.scheduleType === "hourly") {
+  if (config.scheduleType === "minutely") {
+    scheduleInfo = "Created every minute (for testing).";
+  } else if (config.scheduleType === "hourly") {
     scheduleInfo = "Created every hour on the hour.";
   } else {
     scheduleInfo = `Scheduled at: ${config.schedule.join(", ")}`;
@@ -236,7 +266,7 @@ export const createAutomatedTournamentData = (
     time,
     max_players: config.maxPlayers,
     min_rank: config.minRank,
-    prize_pool_type: "entry-based",
+    prize_pool_type: config.prizePoolType,
     prize_pool: prizePoolDiamonds, // in diamonds
     prize_pool_usd: prizePoolUsd,
     prize_split_first: PRIZE_DISTRIBUTION.first,
@@ -244,7 +274,15 @@ export const createAutomatedTournamentData = (
     prize_split_third: PRIZE_DISTRIBUTION.third,
     entry_fee: config.entryFeeDiamonds,
     entry_fee_usd: config.entryFeeUsd,
-    rules: `This is an automated ${config.name} level tournament. Only players with ${config.minRank} rank or higher can join. Duration: ${durationHours} hour(s). ${scheduleInfo}`,
+    rules: `This is an automated ${
+      config.name
+    } level tournament. Only players with ${
+      config.minRank
+    } rank or higher can join. Duration: ${
+      config.scheduleType === "minutely"
+        ? `${durationMinutes} minute(s)`
+        : `${durationHours} hour(s)`
+    }. ${scheduleInfo}`,
     image: config.icon,
     host_id: "game_owner_admin",
     participants: [],
@@ -276,13 +314,20 @@ export const createAutomatedTournament = async (
 
   const config = getLevelConfig(level);
 
-  // If no startTime provided and it's hourly, normalize to top of current hour
+  // If no startTime provided, normalize based on schedule type
   let normalizedStartTime = startTime;
-  if (!startTime && config.scheduleType === "hourly") {
+  if (!startTime) {
     normalizedStartTime = new Date();
-    normalizedStartTime.setMinutes(0);
-    normalizedStartTime.setSeconds(0);
-    normalizedStartTime.setMilliseconds(0);
+    if (config.scheduleType === "minutely") {
+      // Normalize to current minute
+      normalizedStartTime.setSeconds(0);
+      normalizedStartTime.setMilliseconds(0);
+    } else if (config.scheduleType === "hourly") {
+      // Normalize to top of current hour
+      normalizedStartTime.setMinutes(0);
+      normalizedStartTime.setSeconds(0);
+      normalizedStartTime.setMilliseconds(0);
+    }
   }
 
   const tournamentData = createAutomatedTournamentData(
