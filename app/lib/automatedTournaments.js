@@ -5,8 +5,8 @@ const AUTOMATED_LEVELS = {
   gold: {
     name: "Gold",
     schedule: "minutely", // Every minute (for testing - change back to hourly after testing)
-    scheduleType: "minutely",
-    duration: 1 * 60 * 1000, // 1 minute (for testing - change back to 1 hour after testing)
+    scheduleType: "hourly",
+    duration: 1 * 60 * 60 * 1000, // 1 hour duration
     entryFeeUsd: 0, // Free entry
     entryFeeDiamonds: 0,
     prizePoolType: "fixed",
