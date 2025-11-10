@@ -4,19 +4,21 @@
 const AUTOMATED_LEVELS = {
   gold: {
     name: "Gold",
-    interval: 1 * 60 * 60 * 1000, // 1 hour in milliseconds
-    duration: 1 * 60 * 60 * 1000, // 1 hour
+    schedule: "hourly", // Every hour (01:00, 02:00, 03:00, etc.)
+    scheduleType: "hourly",
+    duration: 1 * 60 * 60 * 1000, // 1 hour (expires at XX:59)
     entryFeeUsd: 0.1,
-    entryFeeDiamonds: 10, // $0.1 = 10 diamonds (assuming 1 diamond = $0.01)
-    prizePoolMultiplier: 100, // Prize pool = entry fee × 100
+    entryFeeDiamonds: 0,
+    prizePoolMultiplier: 100,
     maxPlayers: 100,
     minRank: "Gold",
     icon: "🥇",
   },
   platinum: {
     name: "Platinum",
-    interval: 2 * 60 * 60 * 1000, // 2 hours
-    duration: 2 * 60 * 60 * 1000, // 2 hours
+    schedule: ["19:30", "20:30", "21:30"], // 7:30 PM, 8:30 PM, 9:30 PM
+    scheduleType: "fixed",
+    duration: 1 * 60 * 60 * 1000, // 1 hour duration
     entryFeeUsd: 1,
     entryFeeDiamonds: 100,
     prizePoolMultiplier: 100,
@@ -26,8 +28,9 @@ const AUTOMATED_LEVELS = {
   },
   diamond: {
     name: "Diamond",
-    interval: 8 * 60 * 60 * 1000, // 8 hours
-    duration: 8 * 60 * 60 * 1000, // 8 hours
+    schedule: ["20:00", "22:00"], // 8:00 PM and 10:00 PM
+    scheduleType: "fixed",
+    duration: 2 * 60 * 60 * 1000, // 2 hours duration
     entryFeeUsd: 2,
     entryFeeDiamonds: 200,
     prizePoolMultiplier: 100,
@@ -37,8 +40,9 @@ const AUTOMATED_LEVELS = {
   },
   master: {
     name: "Master",
-    interval: 24 * 60 * 60 * 1000, // 24 hours
-    duration: 24 * 60 * 60 * 1000, // 24 hours
+    schedule: ["21:00"], // 9:00 PM
+    scheduleType: "fixed",
+    duration: 3 * 60 * 60 * 1000, // 3 hours duration
     entryFeeUsd: 10,
     entryFeeDiamonds: 1000,
     prizePoolMultiplier: 100,
@@ -70,15 +74,55 @@ export const getAllLevels = () => {
 };
 
 /**
- * Calculate when the next tournament should be created
+ * Get next scheduled time for a tournament level
  */
-export const calculateNextTournamentTime = (level) => {
+export const getNextScheduledTime = (level) => {
   const config = getLevelConfig(level);
   if (!config) return null;
 
   const now = new Date();
-  const nextTime = new Date(now.getTime() + config.interval);
-  return nextTime;
+
+  if (config.scheduleType === "hourly") {
+    // Next hour on the hour (e.g., if now is 10:30, next is 11:00)
+    const nextHour = new Date(now);
+    nextHour.setHours(now.getHours() + 1);
+    nextHour.setMinutes(0);
+    nextHour.setSeconds(0);
+    nextHour.setMilliseconds(0);
+    return nextHour;
+  }
+
+  if (config.scheduleType === "fixed") {
+    // Find the next scheduled time for today or tomorrow
+    const times = config.schedule;
+    const currentTime = now.getHours() * 60 + now.getMinutes();
+
+    for (const timeStr of times) {
+      const [hours, minutes] = timeStr.split(":").map(Number);
+      const scheduledMinutes = hours * 60 + minutes;
+
+      if (scheduledMinutes > currentTime) {
+        const nextTime = new Date(now);
+        nextTime.setHours(hours);
+        nextTime.setMinutes(minutes);
+        nextTime.setSeconds(0);
+        nextTime.setMilliseconds(0);
+        return nextTime;
+      }
+    }
+
+    // If no time today, get first time tomorrow
+    const [hours, minutes] = times[0].split(":").map(Number);
+    const nextTime = new Date(now);
+    nextTime.setDate(nextTime.getDate() + 1);
+    nextTime.setHours(hours);
+    nextTime.setMinutes(minutes);
+    nextTime.setSeconds(0);
+    nextTime.setMilliseconds(0);
+    return nextTime;
+  }
+
+  return null;
 };
 
 /**
@@ -123,6 +167,38 @@ export const hasActiveTournament = async (level, pool) => {
 };
 
 /**
+ * Check if it's time to create a tournament for this level
+ */
+export const shouldCreateTournament = (level) => {
+  const config = getLevelConfig(level);
+  if (!config) return false;
+
+  const now = new Date();
+  const currentMinutes = now.getHours() * 60 + now.getMinutes();
+
+  if (config.scheduleType === "hourly") {
+    // Create at the start of every hour (XX:00)
+    // Allow 5-minute window to handle scheduler delays (XX:00 to XX:05)
+    return now.getMinutes() >= 0 && now.getMinutes() <= 5;
+  }
+
+  if (config.scheduleType === "fixed") {
+    // Check if current time matches any scheduled time
+    for (const timeStr of config.schedule) {
+      const [hours, minutes] = timeStr.split(":").map(Number);
+      const scheduledMinutes = hours * 60 + minutes;
+
+      // Within 5-minute window to handle scheduler delays
+      if (Math.abs(currentMinutes - scheduledMinutes) <= 5) {
+        return true;
+      }
+    }
+  }
+
+  return false;
+};
+
+/**
  * Create automated tournament data object
  */
 export const createAutomatedTournamentData = (
@@ -143,6 +219,14 @@ export const createAutomatedTournamentData = (
   const minutes = String(startTime.getMinutes()).padStart(2, "0");
   const time = `${hours}:${minutes}`;
 
+  const durationHours = config.duration / (60 * 60 * 1000);
+  let scheduleInfo = "";
+  if (config.scheduleType === "hourly") {
+    scheduleInfo = "Created every hour on the hour.";
+  } else {
+    scheduleInfo = `Scheduled at: ${config.schedule.join(", ")}`;
+  }
+
   return {
     id: `auto_${level}_${Date.now()}`,
     title: formatTournamentTitle(level),
@@ -160,13 +244,7 @@ export const createAutomatedTournamentData = (
     prize_split_third: PRIZE_DISTRIBUTION.third,
     entry_fee: config.entryFeeDiamonds,
     entry_fee_usd: config.entryFeeUsd,
-    rules: `This is an automated ${
-      config.name
-    } level tournament. Only players with ${
-      config.minRank
-    } rank or higher can join. Tournament duration: ${
-      config.duration / (60 * 60 * 1000)
-    } hour(s).`,
+    rules: `This is an automated ${config.name} level tournament. Only players with ${config.minRank} rank or higher can join. Duration: ${durationHours} hour(s). ${scheduleInfo}`,
     image: config.icon,
     host_id: "game_owner_admin",
     participants: [],
@@ -175,13 +253,18 @@ export const createAutomatedTournamentData = (
     automated_level: level,
     expires_at: expiryTime.toISOString(),
     accepts_tickets: false,
+    display_type: "tournament", // Auto-created matches are "Tournaments"
   };
 };
 
 /**
  * Create an automated tournament in the database
  */
-export const createAutomatedTournament = async (level, pool) => {
+export const createAutomatedTournament = async (
+  level,
+  pool,
+  startTime = null
+) => {
   // Check if there's already an active tournament for this level
   const hasActive = await hasActiveTournament(level, pool);
   if (hasActive) {
@@ -191,7 +274,21 @@ export const createAutomatedTournament = async (level, pool) => {
     };
   }
 
-  const tournamentData = createAutomatedTournamentData(level);
+  const config = getLevelConfig(level);
+
+  // If no startTime provided and it's hourly, normalize to top of current hour
+  let normalizedStartTime = startTime;
+  if (!startTime && config.scheduleType === "hourly") {
+    normalizedStartTime = new Date();
+    normalizedStartTime.setMinutes(0);
+    normalizedStartTime.setSeconds(0);
+    normalizedStartTime.setMilliseconds(0);
+  }
+
+  const tournamentData = createAutomatedTournamentData(
+    level,
+    normalizedStartTime
+  );
   if (!tournamentData) {
     return { success: false, message: "Invalid level" };
   }
@@ -199,14 +296,14 @@ export const createAutomatedTournament = async (level, pool) => {
   try {
     const result = await pool.query(
       `INSERT INTO tournaments (
-        id, title, game, tournament_type, date, time, max_players, min_rank,
-        prize_pool_type, prize_pool, prize_pool_usd, prize_split_first, 
-        prize_split_second, prize_split_third, entry_fee, entry_fee_usd, rules,
-        image, host_id, participants, status, is_automated, automated_level, expires_at
-      ) VALUES (
-        $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17,
-        $18, $19, $20, $21, $22, $23, $24
-      ) RETURNING id`,
+          id, title, game, tournament_type, date, time, max_players, min_rank,
+          prize_pool_type, prize_pool, prize_pool_usd, prize_split_first, 
+          prize_split_second, prize_split_third, entry_fee, entry_fee_usd, rules,
+          image, host_id, participants, status, is_automated, automated_level, expires_at, display_type
+        ) VALUES (
+          $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17,
+          $18, $19, $20, $21, $22, $23, $24, $25
+        ) RETURNING id`,
       [
         tournamentData.id,
         tournamentData.title,
@@ -232,6 +329,7 @@ export const createAutomatedTournament = async (level, pool) => {
         tournamentData.is_automated,
         tournamentData.automated_level,
         tournamentData.expires_at,
+        tournamentData.display_type,
       ]
     );
 
@@ -242,6 +340,94 @@ export const createAutomatedTournament = async (level, pool) => {
     };
   } catch (error) {
     console.error("Error creating automated tournament:", error);
+    return { success: false, message: error.message };
+  }
+};
+
+/**
+ * Create an automated tournament for the NEXT scheduled time
+ * Used for manual triggers to create upcoming matches
+ */
+export const createNextScheduledTournament = async (level, pool) => {
+  // Check if there's already an active tournament for this level
+  const hasActive = await hasActiveTournament(level, pool);
+  if (hasActive) {
+    return {
+      success: false,
+      message: `Active ${level} tournament already exists`,
+    };
+  }
+
+  // Get next scheduled time for this level
+  const nextTime = getNextScheduledTime(level);
+  if (!nextTime) {
+    return {
+      success: false,
+      message: "Unable to determine next scheduled time",
+    };
+  }
+
+  const config = getLevelConfig(level);
+  const now = new Date();
+
+  console.log(
+    `[Manual Create] ${level}: Next scheduled at ${nextTime.toISOString()} (${nextTime.toLocaleTimeString()})`
+  );
+
+  // Create tournament for the next scheduled time
+  const tournamentData = createAutomatedTournamentData(level, nextTime);
+  if (!tournamentData) {
+    return { success: false, message: "Invalid level" };
+  }
+
+  try {
+    const result = await pool.query(
+      `INSERT INTO tournaments (
+          id, title, game, tournament_type, date, time, max_players, min_rank,
+          prize_pool_type, prize_pool, prize_pool_usd, prize_split_first, 
+          prize_split_second, prize_split_third, entry_fee, entry_fee_usd, rules,
+          image, host_id, participants, status, is_automated, automated_level, expires_at, display_type
+        ) VALUES (
+          $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17,
+          $18, $19, $20, $21, $22, $23, $24, $25
+        ) RETURNING id`,
+      [
+        tournamentData.id,
+        tournamentData.title,
+        tournamentData.game,
+        tournamentData.tournament_type,
+        tournamentData.date,
+        tournamentData.time,
+        tournamentData.max_players,
+        tournamentData.min_rank,
+        tournamentData.prize_pool_type,
+        tournamentData.prize_pool,
+        tournamentData.prize_pool_usd,
+        tournamentData.prize_split_first,
+        tournamentData.prize_split_second,
+        tournamentData.prize_split_third,
+        tournamentData.entry_fee,
+        tournamentData.entry_fee_usd,
+        tournamentData.rules,
+        tournamentData.image,
+        tournamentData.host_id,
+        tournamentData.participants,
+        tournamentData.status,
+        tournamentData.is_automated,
+        tournamentData.automated_level,
+        tournamentData.expires_at,
+        tournamentData.display_type,
+      ]
+    );
+
+    return {
+      success: true,
+      message: `${level} tournament created for ${nextTime.toLocaleTimeString()}`,
+      tournamentId: result.rows[0].id,
+      scheduledTime: nextTime.toISOString(),
+    };
+  } catch (error) {
+    console.error("Error creating next scheduled tournament:", error);
     return { success: false, message: error.message };
   }
 };
@@ -302,10 +488,13 @@ export const updateTournamentStatuses = async (pool) => {
 
 /**
  * Run the automated tournament scheduler
- * This should be called periodically (e.g., every 5 minutes)
+ * This should be called periodically (every 1 minute recommended)
  */
 export const runScheduler = async (pool) => {
   const results = [];
+  const now = new Date();
+
+  console.log(`[Scheduler] Running at ${now.toISOString()}`);
 
   // First, expire old tournaments
   const expireResult = await expireOldTournaments(pool);
@@ -314,15 +503,67 @@ export const runScheduler = async (pool) => {
   // Update statuses
   await updateTournamentStatuses(pool);
 
-  // For each level, check if we need to create a new tournament
+  // For each level, check if we should create a tournament
   const levels = getAllLevels();
 
   for (const level of levels) {
+    // Check if there's already an active tournament
     const hasActive = await hasActiveTournament(level, pool);
 
-    if (!hasActive) {
+    if (hasActive) {
+      console.log(
+        `[Scheduler] ${level}: Already has active tournament, skipping`
+      );
+      continue;
+    }
+
+    // Check if it's time to create a tournament for this level
+    const shouldCreate = shouldCreateTournament(level);
+
+    if (shouldCreate) {
+      console.log(`[Scheduler] ${level}: Time to create tournament`);
       const createResult = await createAutomatedTournament(level, pool);
       results.push({ action: "create", level, ...createResult });
+    } else {
+      console.log(`[Scheduler] ${level}: Not scheduled for this time`);
+    }
+  }
+
+  return results;
+};
+
+/**
+ * Run manual scheduler - creates tournaments for NEXT scheduled time
+ * Used when admin clicks "Run Scheduler Now" button
+ */
+export const runManualScheduler = async (pool) => {
+  const results = [];
+  const now = new Date();
+
+  console.log(`[Manual Scheduler] Running at ${now.toISOString()}`);
+  console.log(
+    `[Manual Scheduler] Creating tournaments for next scheduled times...`
+  );
+
+  // First, expire old tournaments
+  const expireResult = await expireOldTournaments(pool);
+  results.push({ action: "expire", ...expireResult });
+
+  // Update statuses
+  await updateTournamentStatuses(pool);
+
+  // For each level, create tournament for next scheduled time
+  const levels = getAllLevels();
+
+  for (const level of levels) {
+    console.log(`[Manual Scheduler] Processing ${level}...`);
+    const createResult = await createNextScheduledTournament(level, pool);
+    results.push({ action: "create", level, ...createResult });
+
+    if (createResult.success) {
+      console.log(`[Manual Scheduler] ✅ ${level}: ${createResult.message}`);
+    } else {
+      console.log(`[Manual Scheduler] ⚠️ ${level}: ${createResult.message}`);
     }
   }
 

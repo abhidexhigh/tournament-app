@@ -359,11 +359,29 @@ export default function TournamentDetailsPage() {
 
   const isHost = user && (tournament.host_id ?? tournament.hostId) === user.id;
   const isParticipant = user && tournament.participants.includes(user.id);
+
+  // Check if tournament is still joinable
+  const isTournamentJoinable = () => {
+    // For automated tournaments, check if not expired
+    if (
+      tournament.is_automated === true ||
+      tournament.is_automated === "true"
+    ) {
+      if (tournament.expires_at) {
+        const expiresAt = new Date(tournament.expires_at);
+        const now = new Date();
+        return now < expiresAt; // Can join if not expired
+      }
+    }
+    // For non-automated tournaments, only allow joining if upcoming
+    return tournament.status === "upcoming";
+  };
+
   const canJoin =
     user &&
     user.type === "player" &&
     !isParticipant &&
-    tournament.status === "upcoming" &&
+    isTournamentJoinable() &&
     tournament.participants.length <
       (tournament.max_players ?? tournament.maxPlayers);
 
@@ -1157,15 +1175,59 @@ export default function TournamentDetailsPage() {
                   {tournament.status}
                 </Badge>
 
-                {/* Countdown Timer for Upcoming Tournaments */}
-                {tournament.status === "upcoming" && (
-                  <div className="mt-4 p-4 bg-dark-secondary rounded-lg border border-gold-dark/30">
-                    <CountdownTimer
-                      date={tournament.date}
-                      time={tournament.time}
-                    />
-                  </div>
-                )}
+                {/* Countdown Timer for Upcoming Automated Tournaments */}
+                {tournament.status === "upcoming" &&
+                  (tournament.is_automated === true ||
+                    tournament.is_automated === "true") &&
+                  tournament.expires_at && (
+                    <div className="mt-4 p-4 bg-dark-secondary rounded-lg border border-gold-dark/30">
+                      <CountdownTimer
+                        expiresAt={tournament.expires_at}
+                        label="Join before"
+                      />
+                    </div>
+                  )}
+
+                {/* Countdown Timer for Upcoming Non-Automated Tournaments */}
+                {tournament.status === "upcoming" &&
+                  !(
+                    tournament.is_automated === true ||
+                    tournament.is_automated === "true"
+                  ) && (
+                    <div className="mt-4 p-4 bg-dark-secondary rounded-lg border border-gold-dark/30">
+                      <CountdownTimer
+                        date={tournament.date}
+                        time={tournament.time}
+                        label="Starts in"
+                      />
+                    </div>
+                  )}
+
+                {/* Countdown Timer for Ongoing Automated Tournaments */}
+                {tournament.status === "ongoing" &&
+                  (tournament.is_automated === true ||
+                    tournament.is_automated === "true") &&
+                  tournament.expires_at && (
+                    <div className="mt-4 p-4 bg-dark-secondary rounded-lg border border-gold-dark/30">
+                      <CountdownTimer
+                        expiresAt={tournament.expires_at}
+                        label="Join before"
+                      />
+                    </div>
+                  )}
+
+                {/* Show Tournament Started for Ongoing Non-Automated */}
+                {tournament.status === "ongoing" &&
+                  !(
+                    tournament.is_automated === true ||
+                    tournament.is_automated === "true"
+                  ) && (
+                    <div className="mt-4 p-4 bg-dark-secondary rounded-lg border border-gold-dark/30">
+                      <div className="text-red-400 text-sm font-medium text-center">
+                        ⏰ Tournament Started
+                      </div>
+                    </div>
+                  )}
               </div>
             </div>
 

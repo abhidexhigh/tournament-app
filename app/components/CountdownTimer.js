@@ -2,7 +2,13 @@
 
 import { useState, useEffect } from "react";
 
-export default function CountdownTimer({ date, time, className = "" }) {
+export default function CountdownTimer({
+  date,
+  time,
+  expiresAt,
+  label,
+  className = "",
+}) {
   const [timeLeft, setTimeLeft] = useState({
     days: 0,
     hours: 0,
@@ -13,39 +19,61 @@ export default function CountdownTimer({ date, time, className = "" }) {
 
   useEffect(() => {
     const calculateTimeLeft = () => {
-      // Validate inputs
-      if (!date || !time) {
-        return {
-          days: 0,
-          hours: 0,
-          minutes: 0,
-          seconds: 0,
-          isExpired: true,
-        };
-      }
+      let tournamentDateTime;
 
-      // Handle both Date objects and string dates from PostgreSQL
-      let dateStr = date;
-      if (date instanceof Date) {
-        // Convert Date object to YYYY-MM-DD format
-        dateStr = date.toISOString().split("T")[0];
-      } else if (typeof date === "string" && date.includes("T")) {
-        // Handle full ISO string - extract just the date part
-        dateStr = date.split("T")[0];
-      }
+      // If expiresAt is provided, use it directly (for ongoing tournaments)
+      if (expiresAt) {
+        tournamentDateTime = new Date(expiresAt);
+        if (isNaN(tournamentDateTime.getTime())) {
+          console.error("Invalid expiresAt:", expiresAt);
+          return {
+            days: 0,
+            hours: 0,
+            minutes: 0,
+            seconds: 0,
+            isExpired: true,
+          };
+        }
+      } else {
+        // Otherwise use date + time (for upcoming tournaments)
+        // Validate inputs
+        if (!date || !time) {
+          return {
+            days: 0,
+            hours: 0,
+            minutes: 0,
+            seconds: 0,
+            isExpired: true,
+          };
+        }
 
-      const tournamentDateTime = new Date(`${dateStr}T${time}`);
+        // Handle both Date objects and string dates from PostgreSQL
+        let dateStr = date;
+        if (date instanceof Date) {
+          // Convert Date object to YYYY-MM-DD format
+          dateStr = date.toISOString().split("T")[0];
+        } else if (typeof date === "string" && date.includes("T")) {
+          // Handle full ISO string - extract just the date part
+          dateStr = date.split("T")[0];
+        }
 
-      // Check if date is valid
-      if (isNaN(tournamentDateTime.getTime())) {
-        console.error("Invalid tournament date/time:", { date, time, dateStr });
-        return {
-          days: 0,
-          hours: 0,
-          minutes: 0,
-          seconds: 0,
-          isExpired: true,
-        };
+        tournamentDateTime = new Date(`${dateStr}T${time}`);
+
+        // Check if date is valid
+        if (isNaN(tournamentDateTime.getTime())) {
+          console.error("Invalid tournament date/time:", {
+            date,
+            time,
+            dateStr,
+          });
+          return {
+            days: 0,
+            hours: 0,
+            minutes: 0,
+            seconds: 0,
+            isExpired: true,
+          };
+        }
       }
 
       const now = new Date();
@@ -86,12 +114,12 @@ export default function CountdownTimer({ date, time, className = "" }) {
     }, 1000);
 
     return () => clearInterval(timer);
-  }, [date, time]);
+  }, [date, time, expiresAt]);
 
   if (timeLeft.isExpired) {
     return (
       <div className={`text-red-400 text-sm font-medium ${className}`}>
-        ⏰ Tournament Started
+        ⏰ {expiresAt ? "Joining Closed" : "Tournament Started"}
       </div>
     );
   }
@@ -100,7 +128,7 @@ export default function CountdownTimer({ date, time, className = "" }) {
     <div className={`text-gold text-sm font-medium ${className}`}>
       <div className="flex items-center space-x-1 justify-center sm:justify-start">
         <span className="text-lg">⏰</span>
-        <span>Starts in:</span>
+        <span>{label || "Starts in"}:</span>
       </div>
       <div className="flex items-center space-x-2 mt-1 justify-center sm:justify-start">
         {timeLeft.days > 0 && (

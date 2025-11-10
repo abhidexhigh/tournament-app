@@ -25,6 +25,7 @@ import CountdownTimer from "./components/CountdownTimer";
 export default function Home() {
   const [tournaments, setTournaments] = useState([]);
   const [activeTab, setActiveTab] = useState("all");
+  const [displayTypeTab, setDisplayTypeTab] = useState("all"); // New: Tournament/Event filter
   const [selectedGame, setSelectedGame] = useState("all");
   const [clanData, setClanData] = useState({});
   const { user, loading: userLoading } = useUser();
@@ -36,6 +37,24 @@ export default function Home() {
     const loadData = async () => {
       try {
         const tournamentsData = await tournamentsApi.getAll();
+
+        // Debug: Log automated tournaments
+        const automatedTournaments = tournamentsData.filter(
+          (t) => t.is_automated
+        );
+        if (automatedTournaments.length > 0) {
+          console.log(
+            "Automated tournaments found:",
+            automatedTournaments.map((t) => ({
+              id: t.id,
+              title: t.title,
+              status: t.status,
+              is_automated: t.is_automated,
+              expires_at: t.expires_at,
+            }))
+          );
+        }
+
         setTournaments(tournamentsData);
 
         // Load clan data for clan battle tournaments
@@ -72,7 +91,11 @@ export default function Home() {
   const filteredTournaments = tournaments.filter((t) => {
     const statusMatch = activeTab === "all" || t.status === activeTab;
     const gameMatch = selectedGame === "all" || t.game === selectedGame;
-    return statusMatch && gameMatch;
+    const displayTypeMatch =
+      displayTypeTab === "all" ||
+      (displayTypeTab === "tournaments" && t.display_type === "tournament") ||
+      (displayTypeTab === "events" && t.display_type === "event");
+    return statusMatch && gameMatch && displayTypeMatch;
   });
 
   // Get unique games for filter
@@ -159,10 +182,31 @@ export default function Home() {
           </Card>
         )}
 
-        {/* Tabs */}
+        {/* Display Type Tabs - Tournament vs Event */}
+        <div className="flex flex-wrap gap-2 sm:gap-3 mb-4">
+          {[
+            { key: "all", label: "All", icon: "🎯" },
+            { key: "tournaments", label: "Tournaments", icon: "⚡" },
+            { key: "events", label: "Events", icon: "🎪" },
+          ].map((tab) => (
+            <Button
+              key={tab.key}
+              variant={displayTypeTab === tab.key ? "primary" : "secondary"}
+              onClick={() => setDisplayTypeTab(tab.key)}
+              size="sm"
+            >
+              <span className="flex items-center gap-1.5">
+                <span>{tab.icon}</span>
+                <span>{tab.label}</span>
+              </span>
+            </Button>
+          ))}
+        </div>
+
+        {/* Status Tabs */}
         <div className="flex flex-wrap gap-2 sm:gap-3 mb-6">
           {[
-            { key: "all", label: "All Tournaments" },
+            { key: "all", label: "All Status" },
             { key: "upcoming", label: "Upcoming" },
             { key: "ongoing", label: "Ongoing" },
             { key: "completed", label: "Completed" },
@@ -242,13 +286,22 @@ export default function Home() {
                           >
                             {tournament.status}
                           </Badge>
-                          {tournament.is_automated && (
+                          {tournament.display_type === "tournament" && (
                             <Badge
                               variant="primary"
                               size="sm"
-                              className="animate-pulse"
+                              className="font-semibold"
                             >
-                              ⚡ Auto
+                              ⚡ Tournament
+                            </Badge>
+                          )}
+                          {tournament.display_type === "event" && (
+                            <Badge
+                              variant="secondary"
+                              size="sm"
+                              className="font-semibold"
+                            >
+                              🎪 Event
                             </Badge>
                           )}
                           {(tournament.tournament_type ??
@@ -317,14 +370,59 @@ export default function Home() {
 
                     {/* Right Section: Countdown + Prize Pool */}
                     <div className="flex sm:flex-row flex-col items-stretch sm:items-center gap-3 sm:gap-4 w-full lg:w-auto">
-                      {tournament.status === "upcoming" && (
-                        <div className="countdown-wrapper w-full sm:w-auto">
-                          <CountdownTimer
-                            date={tournament.date}
-                            time={tournament.time}
-                          />
-                        </div>
-                      )}
+                      {/* Show countdown for upcoming automated tournaments (to expires_at) */}
+                      {tournament.status === "upcoming" &&
+                        (tournament.is_automated === true ||
+                          tournament.is_automated === "true") &&
+                        tournament.expires_at && (
+                          <div className="countdown-wrapper w-full sm:w-auto">
+                            <CountdownTimer
+                              expiresAt={tournament.expires_at}
+                              label="Join before"
+                            />
+                          </div>
+                        )}
+
+                      {/* Show countdown for upcoming non-automated tournaments */}
+                      {tournament.status === "upcoming" &&
+                        !(
+                          tournament.is_automated === true ||
+                          tournament.is_automated === "true"
+                        ) && (
+                          <div className="countdown-wrapper w-full sm:w-auto">
+                            <CountdownTimer
+                              date={tournament.date}
+                              time={tournament.time}
+                              label="Starts in"
+                            />
+                          </div>
+                        )}
+
+                      {/* Show countdown to joining deadline for ongoing automated tournaments */}
+                      {tournament.status === "ongoing" &&
+                        (tournament.is_automated === true ||
+                          tournament.is_automated === "true") &&
+                        tournament.expires_at && (
+                          <div className="countdown-wrapper w-full sm:w-auto">
+                            <CountdownTimer
+                              expiresAt={tournament.expires_at}
+                              label="Join before"
+                            />
+                          </div>
+                        )}
+
+                      {/* Show started message for ongoing non-automated */}
+                      {tournament.status === "ongoing" &&
+                        !(
+                          tournament.is_automated === true ||
+                          tournament.is_automated === "true"
+                        ) && (
+                          <div className="countdown-wrapper w-full sm:w-auto">
+                            <div className="text-red-400 text-sm font-medium">
+                              ⏰ Tournament Started
+                            </div>
+                          </div>
+                        )}
 
                       {/* Prize Pool */}
                       <div className="prize-display flex-shrink-0 w-full sm:w-auto">

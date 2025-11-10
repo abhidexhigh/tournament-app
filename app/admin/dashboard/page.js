@@ -59,9 +59,31 @@ export default function AdminDashboard() {
       const data = await response.json();
 
       if (data.success) {
+        // Build detailed message showing what was created
+        let detailText = "Tournaments created for next scheduled times:\n";
+        const created = data.results.filter(
+          (r) => r.action === "create" && r.success
+        );
+        const skipped = data.results.filter(
+          (r) => r.action === "create" && !r.success
+        );
+
+        if (created.length > 0) {
+          created.forEach((result) => {
+            detailText += `✅ ${result.level}: ${result.message}\n`;
+          });
+        }
+
+        if (skipped.length > 0) {
+          skipped.forEach((result) => {
+            detailText += `⚠️ ${result.level}: ${result.message}\n`;
+          });
+        }
+
         setMessage({
           type: "success",
-          text: "Scheduler executed successfully!",
+          text: detailText,
+          details: data.results,
         });
         fetchStats(); // Refresh stats
       } else {
@@ -144,17 +166,19 @@ export default function AdminDashboard() {
                 : "bg-red-500/10 border-red-500/30"
             }`}
           >
-            <div className="flex items-center gap-3">
-              <span className="text-2xl">
+            <div className="flex gap-3">
+              <span className="text-2xl flex-shrink-0">
                 {message.type === "success" ? "✅" : "❌"}
               </span>
-              <p
+              <div
                 className={
                   message.type === "success" ? "text-green-400" : "text-red-400"
                 }
               >
-                {message.text}
-              </p>
+                <pre className="whitespace-pre-wrap font-sans">
+                  {message.text}
+                </pre>
+              </div>
             </div>
           </Card>
         )}
@@ -164,14 +188,21 @@ export default function AdminDashboard() {
           <h2 className="text-2xl font-bold text-gold mb-4">
             ⚡ Quick Actions
           </h2>
-          <div className="flex flex-wrap gap-3">
-            <Button
-              variant="primary"
-              onClick={runScheduler}
-              disabled={actionLoading}
-            >
-              {actionLoading ? "Processing..." : "🔄 Run Scheduler Now"}
-            </Button>
+          <div className="space-y-3">
+            <div>
+              <Button
+                variant="primary"
+                onClick={runScheduler}
+                disabled={actionLoading}
+                className="mb-2"
+              >
+                {actionLoading ? "Processing..." : "🚀 Create Next Tournaments"}
+              </Button>
+              <p className="text-sm text-gray-400">
+                Creates tournaments for the nearest upcoming scheduled time for
+                all levels
+              </p>
+            </div>
             <Button variant="secondary" onClick={fetchStats}>
               📊 Refresh Stats
             </Button>
@@ -184,25 +215,27 @@ export default function AdminDashboard() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
               <StatCard
                 title="Total Tournaments"
-                value={stats.overall.total_tournaments || 0}
+                value={parseInt(stats.overall.total_tournaments) || 0}
                 icon="🎮"
                 color="gold"
               />
               <StatCard
                 title="Active Levels"
-                value={stats.overall.active_levels || 0}
+                value={parseInt(stats.overall.active_levels) || 0}
                 icon="🏆"
                 color="blue"
               />
               <StatCard
                 title="Total Participants"
-                value={stats.overall.total_participants || 0}
+                value={parseInt(stats.overall.total_participants) || 0}
                 icon="👥"
                 color="purple"
               />
               <StatCard
                 title="Total Prize Pool"
-                value={`$${(stats.overall.total_prize_pool || 0).toFixed(2)}`}
+                value={`$${parseFloat(
+                  stats.overall.total_prize_pool || 0
+                ).toFixed(2)}`}
                 icon="💰"
                 color="green"
               />
@@ -252,19 +285,22 @@ export default function AdminDashboard() {
                         <div className="flex justify-between">
                           <span className="text-gray-400">Tournaments:</span>
                           <span className="text-white font-semibold">
-                            {levelData?.tournament_count || 0}
+                            {parseInt(levelData?.tournament_count) || 0}
                           </span>
                         </div>
                         <div className="flex justify-between">
                           <span className="text-gray-400">Participants:</span>
                           <span className="text-white font-semibold">
-                            {levelData?.total_participants || 0}
+                            {parseInt(levelData?.total_participants) || 0}
                           </span>
                         </div>
                         <div className="flex justify-between">
                           <span className="text-gray-400">Prize Pool:</span>
                           <span className="text-gold font-semibold">
-                            ${(levelData?.total_prize_pool || 0).toFixed(2)}
+                            $
+                            {parseFloat(
+                              levelData?.total_prize_pool || 0
+                            ).toFixed(2)}
                           </span>
                         </div>
                       </div>
@@ -341,7 +377,7 @@ export default function AdminDashboard() {
                               Participants
                             </div>
                             <div className="text-white font-bold">
-                              {tournament.participant_count || 0}/
+                              {parseInt(tournament.participant_count) || 0}/
                               {tournament.max_players}
                             </div>
                           </div>
@@ -350,7 +386,10 @@ export default function AdminDashboard() {
                               Prize Pool
                             </div>
                             <div className="text-gold font-bold">
-                              ${tournament.prize_pool_usd}
+                              $
+                              {parseFloat(
+                                tournament.prize_pool_usd || 0
+                              ).toFixed(2)}
                             </div>
                           </div>
                         </div>
@@ -410,4 +449,3 @@ export default function AdminDashboard() {
     </div>
   );
 }
-

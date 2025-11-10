@@ -30,6 +30,12 @@ export default function LoginPage() {
   // Handle session changes
   useEffect(() => {
     if (status === "authenticated" && session?.user) {
+      // Check if user is game owner (from session)
+      if (session.user.type === "game_owner") {
+        router.push("/admin/dashboard");
+        return;
+      }
+
       // Sync with localStorage
       const user = syncUserWithStorage(session.user);
 
@@ -91,7 +97,7 @@ export default function LoginPage() {
         if (user) {
           // Use NextAuth signIn for session management
           const result = await signIn("credentials", {
-            email: formData.email,
+            username: formData.email,
             password: formData.password,
             redirect: false,
           });
@@ -114,7 +120,7 @@ export default function LoginPage() {
         if (user) {
           // Sign in after registration
           const result = await signIn("credentials", {
-            email: formData.email,
+            username: formData.email,
             password: formData.password,
             redirect: false,
           });
@@ -147,21 +153,38 @@ export default function LoginPage() {
     }
   };
 
-  const quickLogin = async (email) => {
+  const quickLogin = async (identifier, isUsername = false) => {
     setLoading(true);
-    const user = loginWithCredentials(email, "password");
-    if (user) {
-      const result = await signIn("credentials", {
-        email: email,
-        password: "password",
-        redirect: false,
-      });
-
-      if (result?.ok) {
-        // Session will be handled by useEffect
+    try {
+      if (isUsername) {
+        // For admin login (uses username)
+        const result = await signIn("credentials", {
+          username: identifier,
+          password: "password",
+          redirect: false,
+        });
+        if (result?.ok) {
+          // Session will be handled by useEffect
+        }
+      } else {
+        // For regular users (uses email)
+        const user = loginWithCredentials(identifier, "password");
+        if (user) {
+          const result = await signIn("credentials", {
+            username: identifier,
+            password: "password",
+            redirect: false,
+          });
+          if (result?.ok) {
+            // Session will be handled by useEffect
+          }
+        }
       }
+    } catch (error) {
+      console.error("Quick login error:", error);
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   if (status === "loading") {
@@ -324,6 +347,20 @@ export default function LoginPage() {
             </p>
 
             <div className="space-y-3">
+              <h4 className="text-gold font-semibold text-sm">👨‍💼 Game Owner</h4>
+              <Button
+                variant="primary"
+                size="sm"
+                fullWidth
+                onClick={() => quickLogin("admin", true)}
+                disabled={loading}
+                className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
+              >
+                👨‍💼 Login as Game Admin
+              </Button>
+            </div>
+
+            <div className="space-y-3 pt-4 border-t border-gold-dark/30">
               <h4 className="text-gold font-semibold text-sm">
                 👑 Host Accounts
               </h4>

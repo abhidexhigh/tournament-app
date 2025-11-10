@@ -1,8 +1,12 @@
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
-import { authOptions } from "../../lib/auth";
+import { authOptions } from "../../lib/authConfig";
 import { pool } from "../../lib/database";
-import { runScheduler, getAllLevels } from "../../lib/automatedTournaments";
+import {
+  runScheduler,
+  runManualScheduler,
+  getAllLevels,
+} from "../../lib/automatedTournaments";
 
 /**
  * GET /api/automated-tournaments
@@ -50,6 +54,7 @@ export async function GET(request) {
 /**
  * POST /api/automated-tournaments
  * Manually trigger the scheduler (admin only)
+ * Creates tournaments for NEXT scheduled time for all levels
  */
 export async function POST(request) {
   try {
@@ -63,19 +68,19 @@ export async function POST(request) {
       );
     }
 
-    const results = await runScheduler(pool);
+    // Use runManualScheduler to create tournaments for next scheduled times
+    const results = await runManualScheduler(pool);
 
     return NextResponse.json({
       success: true,
-      message: "Scheduler executed successfully",
+      message: "Tournaments created for next scheduled times",
       results,
     });
   } catch (error) {
-    console.error("Error running scheduler:", error);
+    console.error("Error running manual scheduler:", error);
     return NextResponse.json(
       { success: false, error: error.message },
       { status: 500 }
     );
   }
 }
-

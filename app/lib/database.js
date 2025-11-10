@@ -3,6 +3,23 @@
 
 import { sql } from "@vercel/postgres";
 
+// Export pool for compatibility with direct SQL queries
+// The sql function acts as both a template tag and provides access to the connection pool
+export const pool = {
+  query: async (queryText, params = []) => {
+    try {
+      // Convert parameterized query to Vercel Postgres format
+      if (params.length === 0) {
+        return await sql.query(queryText);
+      }
+      return await sql.query(queryText, params);
+    } catch (error) {
+      console.error("Database query error:", error);
+      throw error;
+    }
+  },
+};
+
 // Generate unique ID
 export const generateId = (prefix = "") => {
   return `${prefix}_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
@@ -228,6 +245,7 @@ export const tournamentsDb = {
         image: tournamentData.image || "🎮",
         host_id: tournamentData.host_id,
         accepts_tickets: tournamentData.accepts_tickets || false,
+        display_type: tournamentData.display_type || "event", // Host-created tournaments are "Events"
       };
 
       const { rows } = await sql`
@@ -236,7 +254,7 @@ export const tournamentsDb = {
           clan1_id, clan2_id, date, time, max_players, min_rank,
           prize_pool_type, prize_pool, prize_pool_usd,
           prize_split_first, prize_split_second, prize_split_third,
-          entry_fee, entry_fee_usd, rules, image, host_id, accepts_tickets
+          entry_fee, entry_fee_usd, rules, image, host_id, accepts_tickets, display_type
         )
         VALUES (
           ${newTournament.id}, ${newTournament.title}, ${newTournament.game},
@@ -248,7 +266,8 @@ export const tournamentsDb = {
           ${newTournament.prize_split_first}, ${newTournament.prize_split_second},
           ${newTournament.prize_split_third}, ${newTournament.entry_fee},
           ${newTournament.entry_fee_usd}, ${newTournament.rules},
-          ${newTournament.image}, ${newTournament.host_id}, ${newTournament.accepts_tickets}
+          ${newTournament.image}, ${newTournament.host_id}, ${newTournament.accepts_tickets},
+          ${newTournament.display_type}
         )
         RETURNING *
       `;
