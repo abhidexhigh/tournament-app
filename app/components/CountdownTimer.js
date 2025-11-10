@@ -8,6 +8,7 @@ export default function CountdownTimer({
   expiresAt,
   label,
   className = "",
+  style = "default",
 }) {
   const [timeLeft, setTimeLeft] = useState({
     days: 0,
@@ -120,6 +121,38 @@ export default function CountdownTimer({
     return (
       <div className={`text-red-400 text-sm font-medium ${className}`}>
         ⏰ {expiresAt ? "Joining Closed" : "Tournament Started"}
+      </div>
+    );
+  }
+  if (style === "minimal") {
+    return (
+      <div className="flex items-center space-x-2 mt-1 justify-center sm:justify-start">
+        {timeLeft.days > 0 && (
+          <div className="flex flex-col items-center">
+            <span className="text-white font-bold text-lg">
+              {timeLeft.days.toString().padStart(2, "0")}
+            </span>
+            <span className="text-xs text-gray-400">Days</span>
+          </div>
+        )}
+        <div className="flex flex-col items-center">
+          <span className="text-white font-bold text-lg">
+            {timeLeft.hours.toString().padStart(2, "0")}
+          </span>
+          <span className="text-xs text-gray-400">Hours</span>
+        </div>
+        <div className="flex flex-col items-center">
+          <span className="text-white font-bold text-lg">
+            {timeLeft.minutes.toString().padStart(2, "0")}
+          </span>
+          <span className="text-xs text-gray-400">Min</span>
+        </div>
+        <div className="flex flex-col items-center">
+          <span className="text-white font-bold text-lg">
+            {timeLeft.seconds.toString().padStart(2, "0")}
+          </span>
+          <span className="text-xs text-gray-400">Sec</span>
+        </div>
       </div>
     );
   }

@@ -1067,8 +1067,8 @@ export default function TournamentDetailsPage() {
 
         {/* Tournament Header */}
         <Card glass className="mb-8">
-          <div className="flex items-start justify-between mb-6">
-            <div className="flex items-start space-x-4">
+          <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center space-x-4">
               {(() => {
                 const icon = getTournamentIcon(tournament);
                 const isImageUrl =
@@ -1092,9 +1092,18 @@ export default function TournamentDetailsPage() {
                 return <div className="text-6xl">{icon}</div>;
               })()}
               <div>
-                <h1 className="text-4xl font-bold text-gold-gradient mb-2">
-                  {tournament.title}
-                </h1>
+                <div className="flex items-center gap-3">
+                  <h1 className="text-3xl font-bold text-gold-gradient mb-2">
+                    {tournament.title}
+                  </h1>
+                  <Badge
+                    variant={tournament.status}
+                    size="lg"
+                    className="capitalize"
+                  >
+                    {tournament.status}
+                  </Badge>
+                </div>
                 {!tournament.is_automated && (
                   <div className="flex items-center gap-3 mb-3">
                     <p className="text-gray-400 text-lg">{tournament.game}</p>
@@ -1106,13 +1115,114 @@ export default function TournamentDetailsPage() {
                     )}
                   </div>
                 )}
-                <Badge
-                  variant={tournament.status}
-                  size="lg"
-                  className="capitalize"
-                >
-                  {tournament.status}
-                </Badge>
+                {/* Countdown Timer Section */}
+                {(tournament.status === "upcoming" ||
+                  tournament.status === "ongoing") && (
+                  <div className="grid grid-cols-1 lg:grid-cols-3 gap-2">
+                    {/* Countdown Timer for Upcoming Automated Tournaments */}
+                    {tournament.status === "upcoming" &&
+                      (tournament.is_automated === true ||
+                        tournament.is_automated === "true") &&
+                      tournament.expires_at && (
+                        <>
+                          <div className="lg:col-span-2 p-0.5 rounded-lg border-2 border-gold/40 bg-gradient-to-br from-gold/20 via-gold/10 to-transparent">
+                            <CountdownTimer
+                              expiresAt={tournament.expires_at}
+                              label="Join before"
+                              style="minimal"
+                            />
+                          </div>
+                        </>
+                      )}
+
+                    {/* Countdown Timer for Upcoming Non-Automated Tournaments */}
+                    {tournament.status === "upcoming" &&
+                      !(
+                        tournament.is_automated === true ||
+                        tournament.is_automated === "true"
+                      ) && (
+                        <>
+                          <div className="lg:col-span-1 flex items-start gap-2 p-0.5 rounded-lg border border-gold-dark/30 bg-gradient-to-br from-dark-secondary/60 to-dark-secondary/30">
+                            <div className="flex-shrink-0 w-8 h-8 rounded-md bg-blue-500/20 flex items-center justify-center text-lg">
+                              ⏰
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <p className="text-gray-400 text-xs uppercase tracking-wider mb-1">
+                                Starts In
+                              </p>
+                              <p className="text-white font-semibold text-xs">
+                                Scheduled match
+                              </p>
+                            </div>
+                          </div>
+                          <div className="lg:col-span-2 p-0.5 rounded-lg border-2 border-blue-500/40 bg-gradient-to-br from-blue-500/20 via-blue-500/10 to-transparent">
+                            <CountdownTimer
+                              date={tournament.date}
+                              time={tournament.time}
+                              label="Starts in"
+                              style="minimal"
+                            />
+                          </div>
+                        </>
+                      )}
+
+                    {/* Countdown Timer for Ongoing Automated Tournaments */}
+                    {tournament.status === "ongoing" &&
+                      (tournament.is_automated === true ||
+                        tournament.is_automated === "true") &&
+                      tournament.expires_at && (
+                        <>
+                          <div className="lg:col-span-1 flex items-start gap-2 p-0.5 rounded-lg border border-gold-dark/30 bg-gradient-to-br from-dark-secondary/60 to-dark-secondary/30">
+                            <div className="flex-shrink-0 w-8 h-8 rounded-md bg-green-500/20 flex items-center justify-center text-lg">
+                              ⏰
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <p className="text-gray-400 text-xs uppercase tracking-wider mb-1">
+                                Late Join
+                              </p>
+                              <p className="text-white font-semibold text-xs">
+                                Time left to join
+                              </p>
+                            </div>
+                          </div>
+                          <div className="lg:col-span-2 p-0.5 rounded-lg border-2 border-green-500/40 bg-gradient-to-br from-green-500/20 via-green-500/10 to-transparent">
+                            <CountdownTimer
+                              expiresAt={tournament.expires_at}
+                              label="Join before"
+                              style="minimal"
+                            />
+                          </div>
+                        </>
+                      )}
+
+                    {/* Show Tournament Started for Ongoing Non-Automated */}
+                    {tournament.status === "ongoing" &&
+                      !(
+                        tournament.is_automated === true ||
+                        tournament.is_automated === "true"
+                      ) && (
+                        <div className="lg:col-span-3 flex items-start gap-2 p-0.5 rounded-lg border border-red-500/30 bg-gradient-to-br from-red-500/10 via-red-500/5 to-transparent">
+                          <div className="flex-shrink-0 w-8 h-8 rounded-md bg-red-500/20 flex items-center justify-center text-lg">
+                            ⏰
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <p className="text-gray-400 text-xs uppercase tracking-wider mb-1">
+                              Status
+                            </p>
+                            <div className="flex items-center gap-2">
+                              <div className="h-2 w-2 rounded-full bg-red-400 animate-pulse"></div>
+                              <p className="text-red-400 font-semibold text-sm">
+                                Tournament Started
+                              </p>
+                            </div>
+                            <p className="text-gray-300 text-xs mt-1">
+                              Matches are underway • New entries are closed
+                            </p>
+                          </div>
+                        </div>
+                      )}
+                  </div>
+                )}
               </div>
             </div>
 
@@ -1555,112 +1665,6 @@ export default function TournamentDetailsPage() {
                     </>
                   )}
                 </div>
-              </div>
-            )}
-
-            {/* Countdown Timer Section */}
-            {(tournament.status === "upcoming" ||
-              tournament.status === "ongoing") && (
-              <div className="mt-3 grid grid-cols-1 lg:grid-cols-3 gap-2">
-                {/* Countdown Timer for Upcoming Automated Tournaments */}
-                {tournament.status === "upcoming" &&
-                  (tournament.is_automated === true ||
-                    tournament.is_automated === "true") &&
-                  tournament.expires_at && (
-                    <>
-                      <div className="lg:col-span-2 p-3 rounded-lg border-2 border-gold/40 bg-gradient-to-br from-gold/20 via-gold/10 to-transparent">
-                        <CountdownTimer
-                          expiresAt={tournament.expires_at}
-                          label="Join before"
-                        />
-                      </div>
-                    </>
-                  )}
-
-                {/* Countdown Timer for Upcoming Non-Automated Tournaments */}
-                {tournament.status === "upcoming" &&
-                  !(
-                    tournament.is_automated === true ||
-                    tournament.is_automated === "true"
-                  ) && (
-                    <>
-                      <div className="lg:col-span-1 flex items-start gap-2 p-2.5 rounded-lg border border-gold-dark/30 bg-gradient-to-br from-dark-secondary/60 to-dark-secondary/30">
-                        <div className="flex-shrink-0 w-8 h-8 rounded-md bg-blue-500/20 flex items-center justify-center text-lg">
-                          ⏰
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <p className="text-gray-400 text-xs uppercase tracking-wider mb-1">
-                            Starts In
-                          </p>
-                          <p className="text-white font-semibold text-xs">
-                            Scheduled match
-                          </p>
-                        </div>
-                      </div>
-                      <div className="lg:col-span-2 p-3 rounded-lg border-2 border-blue-500/40 bg-gradient-to-br from-blue-500/20 via-blue-500/10 to-transparent">
-                        <CountdownTimer
-                          date={tournament.date}
-                          time={tournament.time}
-                          label="Starts in"
-                        />
-                      </div>
-                    </>
-                  )}
-
-                {/* Countdown Timer for Ongoing Automated Tournaments */}
-                {tournament.status === "ongoing" &&
-                  (tournament.is_automated === true ||
-                    tournament.is_automated === "true") &&
-                  tournament.expires_at && (
-                    <>
-                      <div className="lg:col-span-1 flex items-start gap-2 p-2.5 rounded-lg border border-gold-dark/30 bg-gradient-to-br from-dark-secondary/60 to-dark-secondary/30">
-                        <div className="flex-shrink-0 w-8 h-8 rounded-md bg-green-500/20 flex items-center justify-center text-lg">
-                          ⏰
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <p className="text-gray-400 text-xs uppercase tracking-wider mb-1">
-                            Late Join
-                          </p>
-                          <p className="text-white font-semibold text-xs">
-                            Time left to join
-                          </p>
-                        </div>
-                      </div>
-                      <div className="lg:col-span-2 p-3 rounded-lg border-2 border-green-500/40 bg-gradient-to-br from-green-500/20 via-green-500/10 to-transparent">
-                        <CountdownTimer
-                          expiresAt={tournament.expires_at}
-                          label="Join before"
-                        />
-                      </div>
-                    </>
-                  )}
-
-                {/* Show Tournament Started for Ongoing Non-Automated */}
-                {tournament.status === "ongoing" &&
-                  !(
-                    tournament.is_automated === true ||
-                    tournament.is_automated === "true"
-                  ) && (
-                    <div className="lg:col-span-3 flex items-start gap-2 p-2.5 rounded-lg border border-red-500/30 bg-gradient-to-br from-red-500/10 via-red-500/5 to-transparent">
-                      <div className="flex-shrink-0 w-8 h-8 rounded-md bg-red-500/20 flex items-center justify-center text-lg">
-                        ⏰
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <p className="text-gray-400 text-xs uppercase tracking-wider mb-1">
-                          Status
-                        </p>
-                        <div className="flex items-center gap-2">
-                          <div className="h-2 w-2 rounded-full bg-red-400 animate-pulse"></div>
-                          <p className="text-red-400 font-semibold text-sm">
-                            Tournament Started
-                          </p>
-                        </div>
-                        <p className="text-gray-300 text-xs mt-1">
-                          Matches are underway • New entries are closed
-                        </p>
-                      </div>
-                    </div>
-                  )}
               </div>
             )}
           </div>
