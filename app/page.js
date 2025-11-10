@@ -89,34 +89,52 @@ export default function Home() {
     loadData();
   }, []);
 
-  const filteredTournaments = tournaments.filter((t) => {
-    // Only show active tournaments (upcoming or ongoing)
-    const isActive = t.status === "upcoming" || t.status === "ongoing";
+  const filteredTournaments = tournaments
+    .filter((t) => {
+      // Only show active tournaments (upcoming or ongoing)
+      const isActive = t.status === "upcoming" || t.status === "ongoing";
 
-    // Only show automated tournaments with Gold, Platinum, Diamond, or Master levels
-    const isAutomated = t.is_automated === true || t.is_automated === "true";
-    const allowedLevels = ["gold", "platinum", "diamond", "master"];
-    const isAllowedLevel =
-      t.automated_level &&
-      allowedLevels.includes(t.automated_level.toLowerCase());
+      // Only show automated tournaments with Gold, Platinum, Diamond, or Master levels
+      const isAutomated = t.is_automated === true || t.is_automated === "true";
+      const allowedLevels = ["gold", "platinum", "diamond", "master"];
+      const isAllowedLevel =
+        t.automated_level &&
+        allowedLevels.includes(t.automated_level.toLowerCase());
 
-    // Apply additional filters
-    const statusMatch = activeTab === "all" || t.status === activeTab;
-    const gameMatch = selectedGame === "all" || t.game === selectedGame;
-    const displayTypeMatch =
-      displayTypeTab === "all" ||
-      (displayTypeTab === "tournaments" && t.display_type === "tournament") ||
-      (displayTypeTab === "events" && t.display_type === "event");
+      // Apply additional filters
+      const statusMatch = activeTab === "all" || t.status === activeTab;
+      const gameMatch = selectedGame === "all" || t.game === selectedGame;
+      const displayTypeMatch =
+        displayTypeTab === "all" ||
+        (displayTypeTab === "tournaments" && t.display_type === "tournament") ||
+        (displayTypeTab === "events" && t.display_type === "event");
 
-    return (
-      isActive &&
-      isAutomated &&
-      isAllowedLevel &&
-      statusMatch &&
-      gameMatch &&
-      displayTypeMatch
-    );
-  });
+      return (
+        isActive &&
+        isAutomated &&
+        isAllowedLevel &&
+        statusMatch &&
+        gameMatch &&
+        displayTypeMatch
+      );
+    })
+    .sort((a, b) => {
+      // Define the order: Master, Diamond, Platinum, Gold
+      const levelOrder = {
+        master: 1,
+        diamond: 2,
+        platinum: 3,
+        gold: 4,
+      };
+
+      const levelA = (a.automated_level || "").toLowerCase();
+      const levelB = (b.automated_level || "").toLowerCase();
+
+      const orderA = levelOrder[levelA] || 999;
+      const orderB = levelOrder[levelB] || 999;
+
+      return orderA - orderB;
+    });
 
   // Get unique games for filter
   const availableGames = [...new Set(tournaments.map((t) => t.game))].sort();
@@ -222,6 +240,7 @@ export default function Home() {
             </Button>
           ))}
         </div>
+        <hr className="my-4 border-gold-dark/30" />
 
         {/* Status Tabs */}
         <div className="flex flex-wrap gap-2 sm:gap-3 mb-6">

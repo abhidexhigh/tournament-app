@@ -247,7 +247,7 @@ export default function AdminDashboard() {
                 🎯 Tournament Levels
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                {["gold", "platinum", "diamond", "master"].map((level) => {
+                {["master", "diamond", "platinum", "gold"].map((level) => {
                   const levelData = stats.byLevel.find(
                     (l) => l.automated_level === level
                   );
@@ -342,60 +342,75 @@ export default function AdminDashboard() {
                 </p>
               ) : (
                 <div className="space-y-3">
-                  {stats.activeTournaments.map((tournament) => (
-                    <Card
-                      key={tournament.id}
-                      className="bg-dark-card/30 border-gold-dark/20"
-                    >
-                      <div className="flex items-center justify-between flex-wrap gap-4">
-                        <div className="flex items-center gap-3">
-                          <span className="text-2xl">
-                            {tournament.automated_level === "gold"
-                              ? "🥇"
-                              : tournament.automated_level === "platinum"
-                              ? "🥈"
-                              : tournament.automated_level === "diamond"
-                              ? "💎"
-                              : "👑"}
-                          </span>
-                          <div>
-                            <h3 className="font-bold text-white">
-                              {tournament.title}
-                            </h3>
-                            <p className="text-sm text-gray-400">
-                              {tournament.date} at {tournament.time}
-                            </p>
+                  {stats.activeTournaments
+                    .sort((a, b) => {
+                      // Define the order: Master, Diamond, Platinum, Gold
+                      const levelOrder = {
+                        master: 1,
+                        diamond: 2,
+                        platinum: 3,
+                        gold: 4,
+                      };
+                      const levelA = (a.automated_level || "").toLowerCase();
+                      const levelB = (b.automated_level || "").toLowerCase();
+                      const orderA = levelOrder[levelA] || 999;
+                      const orderB = levelOrder[levelB] || 999;
+                      return orderA - orderB;
+                    })
+                    .map((tournament) => (
+                      <Card
+                        key={tournament.id}
+                        className="bg-dark-card/30 border-gold-dark/20"
+                      >
+                        <div className="flex items-center justify-between flex-wrap gap-4">
+                          <div className="flex items-center gap-3">
+                            <span className="text-2xl">
+                              {tournament.automated_level === "gold"
+                                ? "🥇"
+                                : tournament.automated_level === "platinum"
+                                ? "🥈"
+                                : tournament.automated_level === "diamond"
+                                ? "💎"
+                                : "👑"}
+                            </span>
+                            <div>
+                              <h3 className="font-bold text-white">
+                                {tournament.title}
+                              </h3>
+                              <p className="text-sm text-gray-400">
+                                {tournament.date} at {tournament.time}
+                              </p>
+                            </div>
                           </div>
-                        </div>
 
-                        <div className="flex items-center gap-4">
-                          <Badge variant={tournament.status}>
-                            {tournament.status}
-                          </Badge>
-                          <div className="text-right">
-                            <div className="text-sm text-gray-400">
-                              Participants
+                          <div className="flex items-center gap-4">
+                            <Badge variant={tournament.status}>
+                              {tournament.status}
+                            </Badge>
+                            <div className="text-right">
+                              <div className="text-sm text-gray-400">
+                                Participants
+                              </div>
+                              <div className="text-white font-bold">
+                                {parseInt(tournament.participant_count) || 0}/
+                                {tournament.max_players}
+                              </div>
                             </div>
-                            <div className="text-white font-bold">
-                              {parseInt(tournament.participant_count) || 0}/
-                              {tournament.max_players}
-                            </div>
-                          </div>
-                          <div className="text-right">
-                            <div className="text-sm text-gray-400">
-                              Prize Pool
-                            </div>
-                            <div className="text-gold font-bold">
-                              $
-                              {parseFloat(
-                                tournament.prize_pool_usd || 0
-                              ).toFixed(2)}
+                            <div className="text-right">
+                              <div className="text-sm text-gray-400">
+                                Prize Pool
+                              </div>
+                              <div className="text-gold font-bold">
+                                $
+                                {parseFloat(
+                                  tournament.prize_pool_usd || 0
+                                ).toFixed(2)}
+                              </div>
                             </div>
                           </div>
                         </div>
-                      </div>
-                    </Card>
-                  ))}
+                      </Card>
+                    ))}
                 </div>
               )}
             </Card>
@@ -411,35 +426,50 @@ export default function AdminDashboard() {
                 </p>
               ) : (
                 <div className="space-y-2">
-                  {stats.recentTournaments.map((tournament) => (
-                    <div
-                      key={tournament.id}
-                      className="flex items-center justify-between p-3 bg-dark-card/20 rounded-lg border border-white/5"
-                    >
-                      <div className="flex items-center gap-3">
-                        <span className="text-xl">
-                          {tournament.automated_level === "gold"
-                            ? "🥇"
-                            : tournament.automated_level === "platinum"
-                            ? "🥈"
-                            : tournament.automated_level === "diamond"
-                            ? "💎"
-                            : "👑"}
-                        </span>
-                        <div>
-                          <p className="text-white font-medium text-sm">
-                            {tournament.title}
-                          </p>
-                          <p className="text-xs text-gray-500">
-                            {tournament.date}
-                          </p>
+                  {stats.recentTournaments
+                    .sort((a, b) => {
+                      // Define the order: Master, Diamond, Platinum, Gold
+                      const levelOrder = {
+                        master: 1,
+                        diamond: 2,
+                        platinum: 3,
+                        gold: 4,
+                      };
+                      const levelA = (a.automated_level || "").toLowerCase();
+                      const levelB = (b.automated_level || "").toLowerCase();
+                      const orderA = levelOrder[levelA] || 999;
+                      const orderB = levelOrder[levelB] || 999;
+                      return orderA - orderB;
+                    })
+                    .map((tournament) => (
+                      <div
+                        key={tournament.id}
+                        className="flex items-center justify-between p-3 bg-dark-card/20 rounded-lg border border-white/5"
+                      >
+                        <div className="flex items-center gap-3">
+                          <span className="text-xl">
+                            {tournament.automated_level === "gold"
+                              ? "🥇"
+                              : tournament.automated_level === "platinum"
+                              ? "🥈"
+                              : tournament.automated_level === "diamond"
+                              ? "💎"
+                              : "👑"}
+                          </span>
+                          <div>
+                            <p className="text-white font-medium text-sm">
+                              {tournament.title}
+                            </p>
+                            <p className="text-xs text-gray-500">
+                              {tournament.date}
+                            </p>
+                          </div>
                         </div>
+                        <Badge variant={tournament.status} size="sm">
+                          {tournament.status}
+                        </Badge>
                       </div>
-                      <Badge variant={tournament.status} size="sm">
-                        {tournament.status}
-                      </Badge>
-                    </div>
-                  ))}
+                    ))}
                 </div>
               )}
             </Card>

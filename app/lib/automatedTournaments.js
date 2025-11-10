@@ -4,15 +4,15 @@
 const AUTOMATED_LEVELS = {
   gold: {
     name: "Gold",
-    schedule: "minutely", // Every minute (for testing - change back to hourly after testing)
+    schedule: "hourly",
     scheduleType: "hourly",
     duration: 1 * 60 * 60 * 1000, // 1 hour duration
     entryFeeUsd: 0, // Free entry
     entryFeeDiamonds: 0,
     prizePoolType: "fixed",
     prizePoolMultiplier: 100,
-    fixedPrizePoolUsd: 10, // Fixed $10 prize pool for free tournaments
-    fixedPrizePoolDiamonds: 1000, // Fixed 1000 diamonds prize pool
+    fixedPrizePoolUsd: 0, // Fixed $10 prize pool for free tournaments
+    fixedPrizePoolDiamonds: 0, // Fixed 1000 diamonds prize pool
     maxPlayers: 100,
     minRank: "Gold",
     icon: "🥇",
