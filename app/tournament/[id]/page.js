@@ -78,6 +78,28 @@ export default function TournamentDetailsPage() {
       }
     }
   }, [tournament]);
+
+  // Auto-select ticket type based on entry fee
+  useEffect(() => {
+    if (tournament && paymentMethod === "tickets") {
+      const entryFeeUsd = Number(tournament.entry_fee_usd || 0);
+
+      // Automatically select the matching ticket type (use Math.abs for floating point precision)
+      if (Math.abs(entryFeeUsd - 0.1) < 0.01) {
+        setSelectedTicketType("ticket_010");
+      } else if (Math.abs(entryFeeUsd - 1.0) < 0.01) {
+        setSelectedTicketType("ticket_100");
+      } else if (Math.abs(entryFeeUsd - 10.0) < 0.01) {
+        setSelectedTicketType("ticket_1000");
+      } else {
+        // If no matching ticket or free tournament, clear selection
+        setSelectedTicketType(null);
+      }
+    } else if (paymentMethod !== "tickets") {
+      // Clear ticket selection when switching away from tickets
+      setSelectedTicketType(null);
+    }
+  }, [tournament, paymentMethod]);
   const [selectedMatch, setSelectedMatch] = useState(null); // For matches tab
 
   // Removed initializeClans since we're now using dataLoader
@@ -214,15 +236,45 @@ export default function TournamentDetailsPage() {
       return;
     }
 
-    const requiresTicketSelection =
-      paymentMethod === "tickets" &&
-      (Number(tournament.entry_fee || 0) > 0 ||
-        Number(tournament.entry_fee_usd || 0) > 0);
+    // Validate ticket selection for ticket-based entry
+    if (paymentMethod === "tickets") {
+      const entryFeeUsd = Number(tournament.entry_fee_usd || 0);
+      let ticketType = selectedTicketType;
 
-    // Validate payment method for ticket-based entry
-    if (requiresTicketSelection && !selectedTicketType) {
-      alert("Please select a ticket type!");
-      return;
+      // Auto-determine ticket type if not already selected
+      if (!ticketType) {
+        // Use Math.abs to handle floating point precision issues
+        if (Math.abs(entryFeeUsd - 0.1) < 0.01) {
+          ticketType = "ticket_010";
+        } else if (Math.abs(entryFeeUsd - 1.0) < 0.01) {
+          ticketType = "ticket_100";
+        } else if (Math.abs(entryFeeUsd - 10.0) < 0.01) {
+          ticketType = "ticket_1000";
+        } else if (entryFeeUsd === 0 || !tournament.entry_fee) {
+          // Free tournament - no ticket required
+          ticketType = null;
+        } else {
+          alert("No matching ticket type found for this tournament entry fee!");
+          return;
+        }
+      }
+
+      // Check if user has the required ticket (only if ticket is required)
+      if (ticketType) {
+        const ticketCount = user?.tickets?.[ticketType] || 0;
+        if (ticketCount === 0) {
+          alert(
+            `You don't have any ${
+              ticketType === "ticket_010"
+                ? "$0.10"
+                : ticketType === "ticket_100"
+                ? "$1.00"
+                : "$10.00"
+            } tickets!`
+          );
+          return;
+        }
+      }
     }
 
     // Check clan membership for clan battle tournaments
@@ -258,16 +310,28 @@ export default function TournamentDetailsPage() {
     setLoading(true);
 
     try {
+      // Determine final ticket type for payment
+      let finalTicketType = selectedTicketType;
+      if (paymentMethod === "tickets" && !finalTicketType) {
+        const entryFeeUsd = Number(tournament.entry_fee_usd || 0);
+        // Use Math.abs to handle floating point precision issues
+        if (Math.abs(entryFeeUsd - 0.1) < 0.01) {
+          finalTicketType = "ticket_010";
+        } else if (Math.abs(entryFeeUsd - 1.0) < 0.01) {
+          finalTicketType = "ticket_100";
+        } else if (Math.abs(entryFeeUsd - 10.0) < 0.01) {
+          finalTicketType = "ticket_1000";
+        }
+        // If no matching ticket type and entry fee is 0, it's free - no ticket needed
+      }
+
       // Prepare payment data
       const paymentData = {
         payment_method: paymentMethod,
       };
-      if (
-        paymentMethod === "tickets" &&
-        selectedTicketType &&
-        requiresTicketSelection
-      ) {
-        paymentData.ticket_type = selectedTicketType;
+      // Always include ticket type when using tickets (auto-selected)
+      if (paymentMethod === "tickets" && finalTicketType) {
+        paymentData.ticket_type = finalTicketType;
       }
 
       const updatedTournament = await tournamentsApi.join(
@@ -1011,8 +1075,8 @@ export default function TournamentDetailsPage() {
   // Define tab content
   const tabs = [
     {
-      id: "overview",
-      label: "📊 Overview",
+      id: "prize-distribution",
+      label: "📊 Prize Distribution",
       content: renderOverviewTab(),
     },
     {
@@ -1142,19 +1206,6 @@ export default function TournamentDetailsPage() {
                         tournament.is_automated === "true"
                       ) && (
                         <>
-                          <div className="lg:col-span-1 flex items-start gap-2 p-0.5 rounded-lg border border-gold-dark/30 bg-gradient-to-br from-dark-secondary/60 to-dark-secondary/30">
-                            <div className="flex-shrink-0 w-8 h-8 rounded-md bg-blue-500/20 flex items-center justify-center text-lg">
-                              ⏰
-                            </div>
-                            <div className="flex-1 min-w-0">
-                              <p className="text-gray-400 text-xs uppercase tracking-wider mb-1">
-                                Starts In
-                              </p>
-                              <p className="text-white font-semibold text-xs">
-                                Scheduled match
-                              </p>
-                            </div>
-                          </div>
                           <div className="lg:col-span-2 p-0.5 rounded-lg border-2 border-blue-500/40 bg-gradient-to-br from-blue-500/20 via-blue-500/10 to-transparent">
                             <CountdownTimer
                               date={tournament.date}
@@ -1172,19 +1223,6 @@ export default function TournamentDetailsPage() {
                         tournament.is_automated === "true") &&
                       tournament.expires_at && (
                         <>
-                          <div className="lg:col-span-1 flex items-start gap-2 p-0.5 rounded-lg border border-gold-dark/30 bg-gradient-to-br from-dark-secondary/60 to-dark-secondary/30">
-                            <div className="flex-shrink-0 w-8 h-8 rounded-md bg-green-500/20 flex items-center justify-center text-lg">
-                              ⏰
-                            </div>
-                            <div className="flex-1 min-w-0">
-                              <p className="text-gray-400 text-xs uppercase tracking-wider mb-1">
-                                Late Join
-                              </p>
-                              <p className="text-white font-semibold text-xs">
-                                Time left to join
-                              </p>
-                            </div>
-                          </div>
                           <div className="lg:col-span-2 p-0.5 rounded-lg border-2 border-green-500/40 bg-gradient-to-br from-green-500/20 via-green-500/10 to-transparent">
                             <CountdownTimer
                               expiresAt={tournament.expires_at}
@@ -1274,182 +1312,121 @@ export default function TournamentDetailsPage() {
 
               {canJoin && (
                 <div className="space-y-4">
-                  {/* Payment Method Selector */}
-                  {tournament.entry_fee > 0 && (
-                    <div className="bg-dark-card border border-gold-dark/30 rounded-lg p-4">
-                      <h4 className="text-white font-medium mb-3">
-                        Select Payment Method
-                      </h4>
-                      {/* Show info message for tournaments */}
-                      {tournament.display_type === "tournament" && (
-                        <div className="mb-3 p-2 bg-blue-500/10 border border-blue-500/30 rounded-lg">
-                          <p className="text-sm text-blue-300">
-                            ⚡ Tournaments can only be joined using tickets
-                          </p>
-                        </div>
-                      )}
-                      <div
-                        className={`grid grid-cols-1 gap-3 ${
-                          tournament.display_type === "tournament"
-                            ? "md:grid-cols-1"
-                            : "md:grid-cols-3"
-                        }`}
-                      >
-                        {/* Diamonds Option - Only for Events */}
-                        {tournament.display_type === "event" && (
-                          <button
-                            type="button"
-                            onClick={() => setPaymentMethod("diamonds")}
-                            className={`p-4 rounded-lg border-2 transition-all duration-300 text-left ${
-                              paymentMethod === "diamonds"
-                                ? "border-gold bg-gold/10"
-                                : "border-gold-dark/30 hover:border-gold/50"
-                            }`}
-                          >
-                            <div className="flex items-center space-x-2 mb-2">
-                              <span className="text-2xl">💎</span>
-                              <p className="text-white font-bold">Diamonds</p>
-                            </div>
-                            <p className="text-gray-400 text-sm">
-                              {getEntryFeeDisplayDual(tournament).diamonds} 💎
+                  {/* Payment Method Selector - Hide for automated tournaments */}
+                  {tournament.entry_fee > 0 &&
+                    !(
+                      tournament.is_automated === true ||
+                      tournament.is_automated === "true"
+                    ) && (
+                      <div className="bg-dark-card border border-gold-dark/30 rounded-lg p-4">
+                        <h4 className="text-white font-medium mb-3">
+                          Select Payment Method
+                        </h4>
+                        {/* Show info message for tournaments */}
+                        {tournament.display_type === "tournament" && (
+                          <div className="mb-3 p-2 bg-blue-500/10 border border-blue-500/30 rounded-lg">
+                            <p className="text-sm text-blue-300">
+                              ⚡ Tournaments can only be joined using tickets
                             </p>
-                            {user && (
-                              <p className="text-xs text-gray-500 mt-1">
-                                Balance: {user.diamonds || 0} 💎
-                              </p>
-                            )}
-                          </button>
-                        )}
-
-                        {/* USD Option - Only for Events */}
-                        {tournament.display_type === "event" && (
-                          <button
-                            type="button"
-                            onClick={() => setPaymentMethod("usd")}
-                            className={`p-4 rounded-lg border-2 transition-all duration-300 text-left ${
-                              paymentMethod === "usd"
-                                ? "border-green-500 bg-green-500/10"
-                                : "border-green-500/30 hover:border-green-500/50"
-                            }`}
-                          >
-                            <div className="flex items-center space-x-2 mb-2">
-                              <span className="text-2xl">💵</span>
-                              <p className="text-white font-bold">USD</p>
-                            </div>
-                            <p className="text-gray-400 text-sm">
-                              ${getEntryFeeDisplayDual(tournament).usd}
-                            </p>
-                            {user && (
-                              <p className="text-xs text-gray-500 mt-1">
-                                Balance: $
-                                {Number(user.usd_balance || 0).toFixed(2)}
-                              </p>
-                            )}
-                          </button>
-                        )}
-
-                        {/* Tickets Option - Required for Tournaments, Optional for Events */}
-                        {(tournament.display_type === "tournament" ||
-                          tournament.accepts_tickets) && (
-                          <button
-                            type="button"
-                            onClick={() => setPaymentMethod("tickets")}
-                            className={`p-4 rounded-lg border-2 transition-all duration-300 text-left ${
-                              paymentMethod === "tickets"
-                                ? "border-purple-500 bg-purple-500/10"
-                                : "border-purple-500/30 hover:border-purple-500/50"
-                            }`}
-                          >
-                            <div className="flex items-center space-x-2 mb-2">
-                              <span className="text-2xl">🎫</span>
-                              <p className="text-white font-bold">Tickets</p>
-                            </div>
-                            <p className="text-gray-400 text-sm">
-                              $
-                              {Number(tournament.entry_fee_usd || 0).toFixed(2)}{" "}
-                              ticket
-                            </p>
-                            {user && (
-                              <p className="text-xs text-gray-500 mt-1">
-                                Total:{" "}
-                                {(user.tickets?.ticket_010 || 0) +
-                                  (user.tickets?.ticket_100 || 0) +
-                                  (user.tickets?.ticket_1000 || 0)}{" "}
-                                🎫
-                              </p>
-                            )}
-                          </button>
-                        )}
-                      </div>
-
-                      {/* Ticket Type Selector - Show only when tickets selected */}
-                      {paymentMethod === "tickets" &&
-                        (tournament.display_type === "tournament" ||
-                          tournament.accepts_tickets) && (
-                          <div className="mt-4 p-3 bg-purple-500/5 border border-purple-500/30 rounded-lg">
-                            <p className="text-sm text-gray-300 mb-2">
-                              Select matching ticket:
-                            </p>
-                            <div className="grid grid-cols-3 gap-2">
-                              {tournament.entry_fee_usd === 0.1 && (
-                                <button
-                                  type="button"
-                                  onClick={() =>
-                                    setSelectedTicketType("ticket_010")
-                                  }
-                                  className={`p-2 rounded border-2 text-center ${
-                                    selectedTicketType === "ticket_010"
-                                      ? "border-purple-500 bg-purple-500/20"
-                                      : "border-purple-500/30 hover:border-purple-500/50"
-                                  }`}
-                                >
-                                  <p className="text-white font-bold">$0.10</p>
-                                  <p className="text-xs text-gray-400">
-                                    {user?.tickets?.ticket_010 || 0} available
-                                  </p>
-                                </button>
-                              )}
-                              {tournament.entry_fee_usd === 1.0 && (
-                                <button
-                                  type="button"
-                                  onClick={() =>
-                                    setSelectedTicketType("ticket_100")
-                                  }
-                                  className={`p-2 rounded border-2 text-center ${
-                                    selectedTicketType === "ticket_100"
-                                      ? "border-purple-500 bg-purple-500/20"
-                                      : "border-purple-500/30 hover:border-purple-500/50"
-                                  }`}
-                                >
-                                  <p className="text-white font-bold">$1.00</p>
-                                  <p className="text-xs text-gray-400">
-                                    {user?.tickets?.ticket_100 || 0} available
-                                  </p>
-                                </button>
-                              )}
-                              {tournament.entry_fee_usd === 10.0 && (
-                                <button
-                                  type="button"
-                                  onClick={() =>
-                                    setSelectedTicketType("ticket_1000")
-                                  }
-                                  className={`p-2 rounded border-2 text-center ${
-                                    selectedTicketType === "ticket_1000"
-                                      ? "border-purple-500 bg-purple-500/20"
-                                      : "border-purple-500/30 hover:border-purple-500/50"
-                                  }`}
-                                >
-                                  <p className="text-white font-bold">$10.00</p>
-                                  <p className="text-xs text-gray-400">
-                                    {user?.tickets?.ticket_1000 || 0} available
-                                  </p>
-                                </button>
-                              )}
-                            </div>
                           </div>
                         )}
-                    </div>
-                  )}
+                        <div
+                          className={`grid grid-cols-1 gap-3 ${
+                            tournament.display_type === "tournament"
+                              ? "md:grid-cols-1"
+                              : "md:grid-cols-3"
+                          }`}
+                        >
+                          {/* Diamonds Option - Only for Events */}
+                          {tournament.display_type === "event" && (
+                            <button
+                              type="button"
+                              onClick={() => setPaymentMethod("diamonds")}
+                              className={`p-4 rounded-lg border-2 transition-all duration-300 text-left ${
+                                paymentMethod === "diamonds"
+                                  ? "border-gold bg-gold/10"
+                                  : "border-gold-dark/30 hover:border-gold/50"
+                              }`}
+                            >
+                              <div className="flex items-center space-x-2 mb-2">
+                                <span className="text-2xl">💎</span>
+                                <p className="text-white font-bold">Diamonds</p>
+                              </div>
+                              <p className="text-gray-400 text-sm">
+                                {getEntryFeeDisplayDual(tournament).diamonds} 💎
+                              </p>
+                              {user && (
+                                <p className="text-xs text-gray-500 mt-1">
+                                  Balance: {user.diamonds || 0} 💎
+                                </p>
+                              )}
+                            </button>
+                          )}
+
+                          {/* USD Option - Only for Events */}
+                          {tournament.display_type === "event" && (
+                            <button
+                              type="button"
+                              onClick={() => setPaymentMethod("usd")}
+                              className={`p-4 rounded-lg border-2 transition-all duration-300 text-left ${
+                                paymentMethod === "usd"
+                                  ? "border-green-500 bg-green-500/10"
+                                  : "border-green-500/30 hover:border-green-500/50"
+                              }`}
+                            >
+                              <div className="flex items-center space-x-2 mb-2">
+                                <span className="text-2xl">💵</span>
+                                <p className="text-white font-bold">USD</p>
+                              </div>
+                              <p className="text-gray-400 text-sm">
+                                ${getEntryFeeDisplayDual(tournament).usd}
+                              </p>
+                              {user && (
+                                <p className="text-xs text-gray-500 mt-1">
+                                  Balance: $
+                                  {Number(user.usd_balance || 0).toFixed(2)}
+                                </p>
+                              )}
+                            </button>
+                          )}
+
+                          {/* Tickets Option - Required for Tournaments, Optional for Events */}
+                          {(tournament.display_type === "tournament" ||
+                            tournament.accepts_tickets) && (
+                            <button
+                              type="button"
+                              onClick={() => setPaymentMethod("tickets")}
+                              className={`p-4 rounded-lg border-2 transition-all duration-300 text-left ${
+                                paymentMethod === "tickets"
+                                  ? "border-purple-500 bg-purple-500/10"
+                                  : "border-purple-500/30 hover:border-purple-500/50"
+                              }`}
+                            >
+                              <div className="flex items-center space-x-2 mb-2">
+                                <span className="text-2xl">🎫</span>
+                                <p className="text-white font-bold">Tickets</p>
+                              </div>
+                              <p className="text-gray-400 text-sm">
+                                $
+                                {Number(tournament.entry_fee_usd || 0).toFixed(
+                                  2
+                                )}{" "}
+                                ticket
+                              </p>
+                              {user && (
+                                <p className="text-xs text-gray-500 mt-1">
+                                  Total:{" "}
+                                  {(user.tickets?.ticket_010 || 0) +
+                                    (user.tickets?.ticket_100 || 0) +
+                                    (user.tickets?.ticket_1000 || 0)}{" "}
+                                  🎫
+                                </p>
+                              )}
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                    )}
 
                   <Button
                     variant="primary"
@@ -1671,7 +1648,7 @@ export default function TournamentDetailsPage() {
         </Card>
 
         {/* Tabbed Content */}
-        <Tabs tabs={tabs} defaultTab="overview" variant="underline" />
+        <Tabs tabs={tabs} defaultTab="prize-distribution" variant="underline" />
 
         {/* Winner Declaration Modal */}
         {showWinnerModal && (

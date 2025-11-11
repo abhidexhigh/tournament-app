@@ -151,10 +151,12 @@ export const getEntryPriceOption = (value) => {
 
 /**
  * Validate if a ticket value matches an entry fee
+ * Uses floating point comparison to handle precision issues
  */
 export const validateTicketMatch = (ticketType, entryFeeUSD) => {
   const ticketValue = getTicketValue(ticketType);
-  return ticketValue === entryFeeUSD;
+  // Use Math.abs for floating point comparison (allows for small precision differences)
+  return Math.abs(ticketValue - Number(entryFeeUSD)) < 0.01;
 };
 
 /**
