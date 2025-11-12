@@ -228,25 +228,6 @@ export default function Home() {
             </Card>
           )}
 
-          {user && user.type === "player" && (
-            <Card glass padding="p-6" className="mb-12">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-4">
-                  <div className="text-4xl">💎</div>
-                  <div>
-                    <p className="text-gray-400 text-sm">Your Balance</p>
-                    <p className="text-gold font-bold text-2xl">
-                      {user.diamonds.toLocaleString()} Diamonds
-                    </p>
-                  </div>
-                </div>
-                <Link href="/player/dashboard">
-                  <Button variant="secondary">View Dashboard</Button>
-                </Link>
-              </div>
-            </Card>
-          )}
-
           {/* Display Type Tabs - Tournament vs Event */}
           <div className="mb-8">
             <div className="bg-gradient-to-r from-dark-card/80 via-dark-card to-dark-card/80 p-1.5 rounded-2xl border border-gold-dark/30 backdrop-blur-sm max-w-md mx-auto">
