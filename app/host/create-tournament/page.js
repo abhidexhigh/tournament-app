@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import ProtectedRoute from "../../components/ProtectedRoute";
 import Button from "../../components/Button";
@@ -40,6 +40,7 @@ function CreateTournamentContent() {
   });
 
   const [clanOptions, setClanOptions] = useState([]);
+  const entryPriceOptions = useMemo(() => getEntryPriceOptions(), []);
 
   const router = useRouter();
 
@@ -370,6 +371,24 @@ function CreateTournamentContent() {
                   </p>
                 </div>
               </label>
+              {!formData.acceptsTickets && entryPriceOptions.length > 0 && (
+                <div className="mt-4 grid grid-cols-1 md:grid-cols-3 gap-4">
+                  {entryPriceOptions.map((option) => (
+                    <div
+                      key={option.value}
+                      className="p-4 rounded-lg border border-purple-500/20 bg-dark-card/80"
+                    >
+                      <p className="text-white font-semibold">{option.label}</p>
+                      <p className="text-sm text-purple-300 mt-1">
+                        {option.description}
+                      </p>
+                      <p className="text-xs text-gray-400 mt-2">
+                        {option.diamonds_equivalent} 💎 equivalent
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
 
             {/* Clan Battle Mode Selection */}
@@ -696,7 +715,7 @@ function CreateTournamentContent() {
                   Entry Fee <span className="text-gold">*</span>
                 </label>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  {getEntryPriceOptions().map((option) => (
+                  {entryPriceOptions.map((option) => (
                     <button
                       key={option.value}
                       type="button"

@@ -221,6 +221,20 @@ export const tournamentsDb = {
 
   create: async (tournamentData) => {
     try {
+      let derivedExpiresAt = tournamentData.expires_at || null;
+      if (!derivedExpiresAt && tournamentData.date && tournamentData.time) {
+        try {
+          const combinedDate = new Date(
+            `${tournamentData.date}T${tournamentData.time}`
+          );
+          if (!isNaN(combinedDate.getTime())) {
+            derivedExpiresAt = combinedDate.toISOString();
+          }
+        } catch (err) {
+          console.warn("Invalid date/time for expires_at:", err);
+        }
+      }
+
       const newTournament = {
         id: generateId("tournament"),
         title: tournamentData.title,
@@ -246,6 +260,7 @@ export const tournamentsDb = {
         host_id: tournamentData.host_id,
         accepts_tickets: tournamentData.accepts_tickets || false,
         display_type: tournamentData.display_type || "event", // Host-created tournaments are "Events"
+        expires_at: derivedExpiresAt,
       };
 
       const { rows } = await sql`
@@ -254,7 +269,7 @@ export const tournamentsDb = {
           clan1_id, clan2_id, date, time, max_players, min_rank,
           prize_pool_type, prize_pool, prize_pool_usd,
           prize_split_first, prize_split_second, prize_split_third,
-          entry_fee, entry_fee_usd, rules, image, host_id, accepts_tickets, display_type
+          entry_fee, entry_fee_usd, rules, image, host_id, accepts_tickets, display_type, expires_at
         )
         VALUES (
           ${newTournament.id}, ${newTournament.title}, ${newTournament.game},
@@ -267,7 +282,7 @@ export const tournamentsDb = {
           ${newTournament.prize_split_third}, ${newTournament.entry_fee},
           ${newTournament.entry_fee_usd}, ${newTournament.rules},
           ${newTournament.image}, ${newTournament.host_id}, ${newTournament.accepts_tickets},
-          ${newTournament.display_type}
+          ${newTournament.display_type}, ${newTournament.expires_at}
         )
         RETURNING *
       `;
@@ -313,6 +328,7 @@ export const tournamentsDb = {
         winner_third: "winner_third",
         winning_team: "winning_team",
         accepts_tickets: "accepts_tickets",
+        expires_at: "expires_at",
       };
 
       for (const [key, dbColumn] of Object.entries(fieldMap)) {

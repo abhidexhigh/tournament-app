@@ -102,6 +102,98 @@
       ]
     },
     {
+      "id": "match-ongoing-1",
+      "tournamentId": "tournament-1",
+      "title": "Live Match: PUBG Mobile Finals",
+      "date": "Nov 12, 2025",
+      "startTime": "12:00 PM",
+      "endTime": "02:00 PM",
+      "prizePool": 25000,
+      "participants": 12,
+      "status": "ongoing",
+      "leaderboard": [
+        {
+          "playerId": "player-101",
+          "username": "LivePlayer1",
+          "avatar": "🎯",
+          "position": 1,
+          "score": 3200,
+          "kills": 14,
+          "deaths": 2,
+          "kdRatio": "7.0",
+          "prizeAmount": 0
+        },
+        {
+          "playerId": "player-102",
+          "username": "LivePlayer2",
+          "avatar": "🔫",
+          "position": 2,
+          "score": 2950,
+          "kills": 12,
+          "deaths": 3,
+          "kdRatio": "4.0",
+          "prizeAmount": 0
+        },
+        {
+          "playerId": "player-103",
+          "username": "LivePlayer3",
+          "avatar": "💪",
+          "position": 3,
+          "score": 2800,
+          "kills": 11,
+          "deaths": 4,
+          "kdRatio": "2.8",
+          "prizeAmount": 0
+        }
+      ]
+    },
+    {
+      "id": "match-ongoing-2",
+      "tournamentId": "tournament-1",
+      "title": "Live Match: Call of Duty Warzone",
+      "date": "Nov 12, 2025",
+      "startTime": "10:00 AM",
+      "endTime": "12:00 PM",
+      "prizePool": 20000,
+      "participants": 10,
+      "status": "ongoing",
+      "leaderboard": [
+        {
+          "playerId": "player-201",
+          "username": "WarzonePro",
+          "avatar": "🎖️",
+          "position": 1,
+          "score": 4100,
+          "kills": 16,
+          "deaths": 1,
+          "kdRatio": "16.0",
+          "prizeAmount": 0
+        },
+        {
+          "playerId": "player-202",
+          "username": "CombatKing",
+          "avatar": "👑",
+          "position": 2,
+          "score": 3850,
+          "kills": 13,
+          "deaths": 2,
+          "kdRatio": "6.5",
+          "prizeAmount": 0
+        },
+        {
+          "playerId": "player-203",
+          "username": "TacticalElite",
+          "avatar": "🎮",
+          "position": 3,
+          "score": 3600,
+          "kills": 12,
+          "deaths": 3,
+          "kdRatio": "4.0",
+          "prizeAmount": 0
+        }
+      ]
+    },
+    {
       "id": "match-2",
       "tournamentId": "tournament-1",
       "title": "Match 2: Apex Legends Showdown",

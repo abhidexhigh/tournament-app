@@ -6,17 +6,6 @@ export const TICKET_CONFIG = {
   // Available ticket packages for purchase
   packages: [
     {
-      id: "ticket_010",
-      ticket_value: 0.1,
-      quantity: 10,
-      total_value: 1.0,
-      discount_percent: 10,
-      price: 0.9, // calculated: total_value - (total_value * discount_percent / 100)
-      label: "$0.10 Tickets",
-      popular: false,
-      currency: "tickets",
-    },
-    {
       id: "ticket_100",
       ticket_value: 1.0,
       quantity: 10,

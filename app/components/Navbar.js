@@ -2,12 +2,14 @@
 
 import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useSession, signOut } from "next-auth/react";
 import { useUser } from "../contexts/UserContext";
 
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
+  const dropdownRef = useRef(null);
   const router = useRouter();
   const pathname = usePathname();
   const { data: session, status } = useSession();
@@ -16,6 +18,20 @@ export default function Navbar() {
   const handleLogout = async () => {
     await signOut({ callbackUrl: "/" });
   };
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsProfileDropdownOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   return (
     <nav className="bg-dark-secondary border-b border-gold-dark/20 sticky top-0 z-50 backdrop-blur-lg bg-opacity-90">
@@ -59,36 +75,154 @@ export default function Navbar() {
                   {user.type === "game_owner" ? "Admin Dashboard" : "Dashboard"}
                 </Link>
 
-                <div className="flex items-center space-x-4 border-l border-gold-dark/30 pl-6">
-                  <div className="flex items-center space-x-2 bg-dark-card px-4 py-2 rounded-lg border border-gold-dark/30">
-                    <span className="text-gold text-xl">💎</span>
-                    <span className="text-gold font-bold">{user.diamonds}</span>
-                  </div>
-
-                  <div className="flex items-center space-x-2">
-                    <span className="text-2xl">{user.avatar}</span>
-                    <span className="text-white font-medium">
-                      {user.username}
-                    </span>
-                  </div>
-
-                  <Link
-                    href="/profile"
-                    className={`text-sm font-medium transition-colors duration-300 ${
-                      pathname === "/profile"
-                        ? "text-gold"
-                        : "text-gray-300 hover:text-gold"
-                    }`}
-                  >
-                    Profile
-                  </Link>
-
+                {/* Profile Dropdown */}
+                <div
+                  className="relative border-l border-gold-dark/30 pl-6"
+                  ref={dropdownRef}
+                >
                   <button
-                    onClick={handleLogout}
-                    className="text-sm bg-dark-card text-gold border border-gold-dark/50 px-4 py-2 rounded-lg hover:bg-gold hover:text-dark-primary transition-all duration-300 font-medium"
+                    onClick={() =>
+                      setIsProfileDropdownOpen(!isProfileDropdownOpen)
+                    }
+                    className="flex items-center space-x-3 bg-gradient-to-br from-dark-card to-dark-secondary px-4 py-2.5 rounded-xl border border-gold-dark/30 hover:border-gold/50 transition-all duration-300 hover:shadow-lg hover:shadow-gold/20 group"
                   >
-                    Logout
+                    <div className="flex items-center space-x-2">
+                      <span className="text-2xl group-hover:scale-110 transition-transform duration-300">
+                        {user.avatar}
+                      </span>
+                      <div className="text-left">
+                        <p className="text-white font-semibold text-sm leading-tight">
+                          {user.username}
+                        </p>
+                        <div className="flex items-center space-x-1.5 mt-0.5">
+                          <span className="text-gold text-xs">💎</span>
+                          <span className="text-gold font-bold text-xs">
+                            {user.diamonds || 0}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                    <svg
+                      className={`w-4 h-4 text-gold transition-transform duration-300 ${
+                        isProfileDropdownOpen ? "rotate-180" : ""
+                      }`}
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M19 9l-7 7-7-7"
+                      />
+                    </svg>
                   </button>
+
+                  {/* Dropdown Menu */}
+                  {isProfileDropdownOpen && (
+                    <div className="absolute right-0 mt-2 w-72 bg-dark-card rounded-xl shadow-2xl border border-gold-dark/30 overflow-hidden z-50 animate-fadeIn">
+                      {/* User Info Header */}
+                      <div className="bg-gradient-to-br from-gold/20 via-gold/10 to-transparent p-4 border-b border-gold-dark/30">
+                        <div className="flex items-center space-x-3 mb-3">
+                          <span className="text-4xl">{user.avatar}</span>
+                          <div>
+                            <p className="text-white font-bold text-lg">
+                              {user.username}
+                            </p>
+                            <p className="text-gray-400 text-xs capitalize">
+                              {user.type}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Wallet Balance Section */}
+                      <div className="p-4 bg-dark-secondary/50 border-b border-gold-dark/20">
+                        <p className="text-gray-400 text-xs uppercase tracking-wider mb-2 font-semibold">
+                          💰 Wallet Balance
+                        </p>
+                        <div className="space-y-2">
+                          <div className="flex items-center justify-between p-2 bg-dark-card rounded-lg border border-gold-dark/30">
+                            <div className="flex items-center space-x-2">
+                              <span className="text-xl">💎</span>
+                              <span className="text-gray-300 text-sm">
+                                Diamonds
+                              </span>
+                            </div>
+                            <span className="text-gold font-bold">
+                              {user.diamonds || 0}
+                            </span>
+                          </div>
+                          <div className="flex items-center justify-between p-2 bg-dark-card rounded-lg border border-green-500/30">
+                            <div className="flex items-center space-x-2">
+                              <span className="text-xl">💵</span>
+                              <span className="text-gray-300 text-sm">
+                                USD Balance
+                              </span>
+                            </div>
+                            <span className="text-green-400 font-bold">
+                              ${Number(user.usd_balance || 0).toFixed(2)}
+                            </span>
+                          </div>
+                          <div className="flex items-center justify-between p-2 bg-dark-card rounded-lg border border-purple-500/30">
+                            <div className="flex items-center space-x-2">
+                              <span className="text-xl">🎫</span>
+                              <span className="text-gray-300 text-sm">
+                                Total Tickets
+                              </span>
+                            </div>
+                            <span className="text-purple-400 font-bold">
+                              {(user.tickets?.ticket_010 || 0) +
+                                (user.tickets?.ticket_100 || 0) +
+                                (user.tickets?.ticket_1000 || 0)}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Menu Items */}
+                      <div className="py-2">
+                        <Link
+                          href="/profile"
+                          onClick={() => setIsProfileDropdownOpen(false)}
+                          className="flex items-center space-x-3 px-4 py-3 hover:bg-gold/10 transition-colors duration-200 group"
+                        >
+                          <span className="text-xl group-hover:scale-110 transition-transform duration-200">
+                            👤
+                          </span>
+                          <div>
+                            <p className="text-white font-medium text-sm">
+                              My Profile
+                            </p>
+                            <p className="text-gray-400 text-xs">
+                              View and edit your profile
+                            </p>
+                          </div>
+                        </Link>
+
+                        <button
+                          onClick={() => {
+                            handleLogout();
+                            setIsProfileDropdownOpen(false);
+                          }}
+                          className="w-full flex items-center space-x-3 px-4 py-3 hover:bg-red-500/10 transition-colors duration-200 group"
+                        >
+                          <span className="text-xl group-hover:scale-110 transition-transform duration-200">
+                            🚪
+                          </span>
+                          <div className="text-left">
+                            <p className="text-red-400 font-medium text-sm">
+                              Logout
+                            </p>
+                            <p className="text-gray-400 text-xs">
+                              Sign out of your account
+                            </p>
+                          </div>
+                        </button>
+                      </div>
+                    </div>
+                  )}
                 </div>
               </>
             ) : status === "authenticated" && session?.user ? (

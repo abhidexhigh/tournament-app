@@ -68,6 +68,7 @@ export default function TournamentDetailsPage() {
   const [leaderboard, setLeaderboard] = useState([]);
   const [paymentMethod, setPaymentMethod] = useState("diamonds"); // "diamonds", "usd", or "tickets"
   const [selectedTicketType, setSelectedTicketType] = useState(null); // ticket_010, ticket_100, ticket_1000
+  const [matchFilter, setMatchFilter] = useState("all"); // "all", "ongoing", "completed"
 
   // Set default payment method based on display_type
   useEffect(() => {
@@ -446,18 +447,14 @@ export default function TournamentDetailsPage() {
 
   // Check if tournament is still joinable
   const isTournamentJoinable = () => {
-    // For automated tournaments, check if not expired
-    if (
-      tournament.is_automated === true ||
-      tournament.is_automated === "true"
-    ) {
-      if (tournament.expires_at) {
-        const expiresAt = new Date(tournament.expires_at);
-        const now = new Date();
-        return now < expiresAt; // Can join if not expired
+    const now = new Date();
+    if (tournament.expires_at) {
+      const expiresAt = new Date(tournament.expires_at);
+      if (!isNaN(expiresAt.getTime())) {
+        return now < expiresAt;
       }
     }
-    // For non-automated tournaments, only allow joining if upcoming
+    // Fall back to status check if no valid expiration
     return tournament.status === "upcoming";
   };
 
@@ -774,10 +771,27 @@ export default function TournamentDetailsPage() {
     // Use static matches data from JSON file
     const staticMatches = matchesData.matches;
 
+    // Filter matches based on selected filter
+    const filteredMatches = staticMatches.filter((match) => {
+      if (matchFilter === "all") return true;
+      if (matchFilter === "ongoing") return match.status === "ongoing";
+      if (matchFilter === "completed") return match.status === "completed";
+      return true;
+    });
+
     // Set the first match as selected by default if none is selected
-    if (!selectedMatch && staticMatches.length > 0) {
-      setSelectedMatch(staticMatches[0]);
+    if (!selectedMatch && filteredMatches.length > 0) {
+      setSelectedMatch(filteredMatches[0]);
     }
+
+    // Calculate counts for each filter
+    const allCount = staticMatches.length;
+    const ongoingCount = staticMatches.filter(
+      (m) => m.status === "ongoing"
+    ).length;
+    const completedCount = staticMatches.filter(
+      (m) => m.status === "completed"
+    ).length;
 
     return (
       <div className="space-y-8">
@@ -787,112 +801,206 @@ export default function TournamentDetailsPage() {
             {/* Left Side - Match List */}
             <div className="lg:col-span-2">
               <Card>
-                <div className="flex items-center justify-between mb-6">
+                <div className="flex items-center justify-between mb-4">
                   <h3 className="text-xl font-bold text-gold-gradient">
-                    🎮 Past Matches
+                    🎮 Matches
                   </h3>
                   <div className="bg-gold/20 px-3 py-1 rounded-full">
                     <span className="text-gold font-semibold text-sm">
-                      {staticMatches.length} Total
+                      {filteredMatches.length} of {staticMatches.length}
                     </span>
                   </div>
                 </div>
-                <div className="space-y-4 max-h-[700px] overflow-y-auto pr-2 custom-scrollbar">
-                  {staticMatches.map((match, index) => (
-                    <button
-                      key={match.id}
-                      onClick={() => setSelectedMatch(match)}
-                      className={`w-full text-left relative overflow-hidden rounded-xl transition-all duration-300 transform hover:scale-[1.02] ${
-                        selectedMatch?.id === match.id
-                          ? "ring-2 ring-gold shadow-lg shadow-gold/30"
-                          : "hover:shadow-xl"
-                      }`}
-                    >
-                      {/* Background gradient */}
-                      <div
-                        className={`absolute inset-0 ${
-                          selectedMatch?.id === match.id
-                            ? "bg-gradient-to-br from-gold/20 via-gold/10 to-transparent"
-                            : "bg-gradient-to-br from-dark-card via-dark-secondary to-dark-card"
+
+                {/* Filter Buttons */}
+                <div className="flex gap-2 mb-6">
+                  <button
+                    onClick={() => setMatchFilter("all")}
+                    className={`flex-1 px-4 py-2 rounded-lg font-semibold text-sm transition-all duration-200 ${
+                      matchFilter === "all"
+                        ? "bg-gold text-dark-primary shadow-lg shadow-gold/30"
+                        : "bg-dark-secondary text-gray-400 hover:bg-dark-secondary/70 hover:text-white border border-gold-dark/20"
+                    }`}
+                  >
+                    <span className="flex items-center justify-center gap-2">
+                      All
+                      <span
+                        className={`px-2 py-0.5 rounded-full text-xs ${
+                          matchFilter === "all"
+                            ? "bg-dark-primary/30 text-dark-primary"
+                            : "bg-gray-700 text-gray-300"
                         }`}
-                      />
+                      >
+                        {allCount}
+                      </span>
+                    </span>
+                  </button>
+                  <button
+                    onClick={() => setMatchFilter("ongoing")}
+                    className={`flex-1 px-4 py-2 rounded-lg font-semibold text-sm transition-all duration-200 ${
+                      matchFilter === "ongoing"
+                        ? "bg-blue-500 text-white shadow-lg shadow-blue-500/30"
+                        : "bg-dark-secondary text-gray-400 hover:bg-dark-secondary/70 hover:text-white border border-gold-dark/20"
+                    }`}
+                  >
+                    <span className="flex items-center justify-center gap-2">
+                      Ongoing
+                      <span
+                        className={`px-2 py-0.5 rounded-full text-xs ${
+                          matchFilter === "ongoing"
+                            ? "bg-white/20 text-white"
+                            : "bg-gray-700 text-gray-300"
+                        }`}
+                      >
+                        {ongoingCount}
+                      </span>
+                    </span>
+                  </button>
+                  <button
+                    onClick={() => setMatchFilter("completed")}
+                    className={`flex-1 px-4 py-2 rounded-lg font-semibold text-sm transition-all duration-200 ${
+                      matchFilter === "completed"
+                        ? "bg-green-500 text-white shadow-lg shadow-green-500/30"
+                        : "bg-dark-secondary text-gray-400 hover:bg-dark-secondary/70 hover:text-white border border-gold-dark/20"
+                    }`}
+                  >
+                    <span className="flex items-center justify-center gap-2">
+                      Completed
+                      <span
+                        className={`px-2 py-0.5 rounded-full text-xs ${
+                          matchFilter === "completed"
+                            ? "bg-white/20 text-white"
+                            : "bg-gray-700 text-gray-300"
+                        }`}
+                      >
+                        {completedCount}
+                      </span>
+                    </span>
+                  </button>
+                </div>
 
-                      {/* Content */}
-                      <div className="relative p-4">
-                        {/* Match number badge */}
-                        <div className="absolute top-3 right-3">
-                          <div className="bg-gold/20 backdrop-blur-sm px-2 py-1 rounded-lg border border-gold/30">
-                            <span className="text-gold font-bold text-xs">
-                              #{index + 1}
-                            </span>
-                          </div>
-                        </div>
-
-                        {/* Match title */}
-                        <h4
-                          className={`font-bold mb-3 pr-12 ${
+                <div className="space-y-4 max-h-[700px] overflow-y-auto pr-2 custom-scrollbar">
+                  {filteredMatches.length === 0 ? (
+                    <div className="text-center py-12">
+                      <div className="text-6xl mb-4">🔍</div>
+                      <h3 className="text-xl font-bold text-white mb-2">
+                        No{" "}
+                        {matchFilter === "ongoing"
+                          ? "Ongoing"
+                          : matchFilter === "completed"
+                          ? "Completed"
+                          : ""}{" "}
+                        Matches
+                      </h3>
+                      <p className="text-gray-400">
+                        {matchFilter === "ongoing"
+                          ? "There are no ongoing matches at the moment."
+                          : matchFilter === "completed"
+                          ? "No completed matches found."
+                          : "No matches available yet."}
+                      </p>
+                    </div>
+                  ) : (
+                    filteredMatches.map((match, index) => (
+                      <button
+                        key={match.id}
+                        onClick={() => setSelectedMatch(match)}
+                        className={`w-full text-left relative overflow-hidden rounded-xl transition-all duration-300 transform hover:scale-[1.02] ${
+                          selectedMatch?.id === match.id
+                            ? "ring-2 ring-gold shadow-lg shadow-gold/30"
+                            : "hover:shadow-xl"
+                        }`}
+                      >
+                        {/* Background gradient */}
+                        <div
+                          className={`absolute inset-0 ${
                             selectedMatch?.id === match.id
-                              ? "text-gold text-lg"
-                              : "text-white text-base"
+                              ? "bg-gradient-to-br from-gold/20 via-gold/10 to-transparent"
+                              : "bg-gradient-to-br from-dark-card via-dark-secondary to-dark-card"
                           }`}
-                        >
-                          {match.title}
-                        </h4>
+                        />
 
-                        {/* Match info grid */}
-                        <div className="space-y-2">
-                          {/* Date and time */}
-                          <div className="flex items-center space-x-2 text-sm">
-                            <div className="flex items-center space-x-1 text-gray-400">
-                              <span>📅</span>
-                              <span className="font-medium">{match.date}</span>
-                            </div>
-                          </div>
-
-                          <div className="flex items-center space-x-2 text-sm text-gray-400">
-                            <span>⏰</span>
-                            <span>
-                              {match.startTime} - {match.endTime}
-                            </span>
-                          </div>
-
-                          {/* Stats row */}
-                          <div className="flex items-center justify-between pt-2 border-t border-gray-700/50">
-                            <div className="flex items-center space-x-3">
-                              <div className="flex items-center space-x-1">
-                                <span className="text-blue-400">👥</span>
-                                <span className="text-blue-300 font-semibold text-sm">
-                                  {match.participants}
-                                </span>
-                              </div>
-                              <div
-                                className={`px-2 py-1 rounded-md text-xs font-bold ${
-                                  selectedMatch?.id === match.id
-                                    ? "bg-green-500/20 text-green-400"
-                                    : "bg-gray-700/50 text-gray-400"
-                                }`}
-                              >
-                                COMPLETED
-                              </div>
-                            </div>
-
-                            {/* Prize pool */}
-                            <div className="flex items-center space-x-1">
-                              <span className="text-gold text-lg">💎</span>
-                              <span className="text-gold font-bold text-sm">
-                                {match.prizePool.toLocaleString()}
+                        {/* Content */}
+                        <div className="relative p-4">
+                          {/* Match number badge */}
+                          <div className="absolute top-3 right-3">
+                            <div className="bg-gold/20 backdrop-blur-sm px-2 py-1 rounded-lg border border-gold/30">
+                              <span className="text-gold font-bold text-xs">
+                                #{index + 1}
                               </span>
                             </div>
                           </div>
-                        </div>
 
-                        {/* Selected indicator */}
-                        {selectedMatch?.id === match.id && (
-                          <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-gold via-yellow-400 to-gold" />
-                        )}
-                      </div>
-                    </button>
-                  ))}
+                          {/* Match title */}
+                          <h4
+                            className={`font-bold mb-3 pr-12 ${
+                              selectedMatch?.id === match.id
+                                ? "text-gold text-lg"
+                                : "text-white text-base"
+                            }`}
+                          >
+                            {match.title}
+                          </h4>
+
+                          {/* Match info grid */}
+                          <div className="space-y-2">
+                            {/* Date and time */}
+                            <div className="flex items-center space-x-2 text-sm">
+                              <div className="flex items-center space-x-1 text-gray-400">
+                                <span>📅</span>
+                                <span className="font-medium">
+                                  {match.date}
+                                </span>
+                              </div>
+                            </div>
+
+                            <div className="flex items-center space-x-2 text-sm text-gray-400">
+                              <span>⏰</span>
+                              <span>
+                                {match.startTime} - {match.endTime}
+                              </span>
+                            </div>
+
+                            {/* Stats row */}
+                            <div className="flex items-center justify-between pt-2 border-t border-gray-700/50">
+                              <div className="flex items-center space-x-3">
+                                <div className="flex items-center space-x-1">
+                                  <span className="text-blue-400">👥</span>
+                                  <span className="text-blue-300 font-semibold text-sm">
+                                    {match.participants}
+                                  </span>
+                                </div>
+                                <div
+                                  className={`px-2 py-1 rounded-md text-xs font-bold ${
+                                    match.status === "ongoing"
+                                      ? "bg-blue-500/20 text-blue-400"
+                                      : match.status === "completed"
+                                      ? "bg-green-500/20 text-green-400"
+                                      : "bg-gray-700/50 text-gray-400"
+                                  }`}
+                                >
+                                  {match.status?.toUpperCase() || "COMPLETED"}
+                                </div>
+                              </div>
+
+                              {/* Prize pool */}
+                              <div className="flex items-center space-x-1">
+                                <span className="text-gold text-lg">💎</span>
+                                <span className="text-gold font-bold text-sm">
+                                  {match.prizePool.toLocaleString()}
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Selected indicator */}
+                          {selectedMatch?.id === match.id && (
+                            <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-gold via-yellow-400 to-gold" />
+                          )}
+                        </div>
+                      </button>
+                    ))
+                  )}
                 </div>
               </Card>
             </div>
@@ -1199,17 +1307,17 @@ export default function TournamentDetailsPage() {
                         </>
                       )}
 
-                    {/* Countdown Timer for Upcoming Non-Automated Tournaments */}
+                    {/* Countdown Timer for Upcoming Non-Automated Tournaments (Events) */}
                     {tournament.status === "upcoming" &&
                       !(
                         tournament.is_automated === true ||
                         tournament.is_automated === "true"
-                      ) && (
+                      ) &&
+                      tournament.expires_at && (
                         <>
                           <div className="lg:col-span-2 p-0.5 rounded-lg border-2 border-blue-500/40 bg-gradient-to-br from-blue-500/20 via-blue-500/10 to-transparent">
                             <CountdownTimer
-                              date={tournament.date}
-                              time={tournament.time}
+                              expiresAt={tournament.expires_at}
                               label="Starts in"
                               style="minimal"
                             />
@@ -1233,12 +1341,31 @@ export default function TournamentDetailsPage() {
                         </>
                       )}
 
-                    {/* Show Tournament Started for Ongoing Non-Automated */}
+                    {/* Countdown Timer for Ongoing Events (non-automated with expiration) */}
                     {tournament.status === "ongoing" &&
                       !(
                         tournament.is_automated === true ||
                         tournament.is_automated === "true"
-                      ) && (
+                      ) &&
+                      tournament.expires_at && (
+                        <>
+                          <div className="lg:col-span-2 p-0.5 rounded-lg border-2 border-blue-500/40 bg-gradient-to-br from-blue-500/20 via-blue-500/10 to-transparent">
+                            <CountdownTimer
+                              expiresAt={tournament.expires_at}
+                              label="Ends in"
+                              style="minimal"
+                            />
+                          </div>
+                        </>
+                      )}
+
+                    {/* Show Tournament Started for Ongoing Non-Automated (only if no date/time for countdown) */}
+                    {tournament.status === "ongoing" &&
+                      !(
+                        tournament.is_automated === true ||
+                        tournament.is_automated === "true"
+                      ) &&
+                      !tournament.expires_at && (
                         <div className="lg:col-span-3 flex items-start gap-2 p-0.5 rounded-lg border border-red-500/30 bg-gradient-to-br from-red-500/10 via-red-500/5 to-transparent">
                           <div className="flex-shrink-0 w-8 h-8 rounded-md bg-red-500/20 flex items-center justify-center text-lg">
                             ⏰

@@ -81,6 +81,18 @@ export async function POST(request) {
       );
     }
 
+    let expires_at = body.expires_at || null;
+    if (!expires_at && date && time) {
+      try {
+        const combinedDate = new Date(`${date}T${time}`);
+        if (!isNaN(combinedDate.getTime())) {
+          expires_at = combinedDate.toISOString();
+        }
+      } catch (err) {
+        console.warn("Invalid date/time provided for expires_at:", err);
+      }
+    }
+
     const tournamentData = {
       title,
       game,
@@ -104,6 +116,7 @@ export async function POST(request) {
       clan1_id: clan1_id || null,
       clan2_id: clan2_id || null,
       accepts_tickets: accepts_tickets || false,
+      expires_at,
     };
 
     // Create tournament
