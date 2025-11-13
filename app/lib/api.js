@@ -223,10 +223,72 @@ export const authApi = {
   },
 };
 
+// Matches API functions
+export const matchesApi = {
+  // Get all matches
+  getAll: async () => {
+    const response = await apiRequest("/matches");
+    return response.data;
+  },
+
+  // Get match by ID
+  getById: async (id) => {
+    const response = await apiRequest(`/matches/${id}`);
+    return response.data;
+  },
+
+  // Get matches by player ID
+  getByPlayerId: async (playerId) => {
+    const response = await apiRequest(`/matches?player_id=${playerId}`);
+    return response.data;
+  },
+
+  // Get matches by tournament ID
+  getByTournamentId: async (tournamentId) => {
+    const response = await apiRequest(`/matches?tournament_id=${tournamentId}`);
+    return response.data;
+  },
+
+  // Get matches by status
+  getByStatus: async (status) => {
+    const response = await apiRequest(`/matches?status=${status}`);
+    return response.data;
+  },
+
+  // Create new match
+  create: async (matchData) => {
+    const response = await apiRequest("/matches", {
+      method: "POST",
+      body: JSON.stringify(matchData),
+    });
+    return response.data;
+  },
+
+  // Update match
+  update: async (id, updateData) => {
+    const response = await apiRequest(`/matches/${id}`, {
+      method: "PUT",
+      body: JSON.stringify(updateData),
+    });
+    return response.data;
+  },
+
+  // Delete match
+  delete: async (id) => {
+    const response = await apiRequest(`/matches/${id}`, {
+      method: "DELETE",
+    });
+    return response.data;
+  },
+};
+
 // Export all API functions
-export default {
+const api = {
   users: usersApi,
   tournaments: tournamentsApi,
   transactions: transactionsApi,
+  matches: matchesApi,
   auth: authApi,
 };
+
+export default api;
