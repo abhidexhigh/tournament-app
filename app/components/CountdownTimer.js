@@ -126,29 +126,29 @@ export default function CountdownTimer({
   }
   if (style === "minimal") {
     return (
-      <div className="flex items-center space-x-2 mt-1 justify-center sm:justify-start">
+      <div className="flex items-center space-x-2 justify-center sm:justify-start">
         {timeLeft.days > 0 && (
           <div className="flex flex-col items-center">
-            <span className="text-white font-bold text-lg">
+            <span className="text-white font-bold text-lg leading-6">
               {timeLeft.days.toString().padStart(2, "0")}
             </span>
             <span className="text-xs text-gray-400">Days</span>
           </div>
         )}
         <div className="flex flex-col items-center">
-          <span className="text-white font-bold text-lg">
+          <span className="text-white font-bold text-lg leading-6">
             {timeLeft.hours.toString().padStart(2, "0")}
           </span>
           <span className="text-xs text-gray-400">Hours</span>
         </div>
         <div className="flex flex-col items-center">
-          <span className="text-white font-bold text-lg">
+          <span className="text-white font-bold text-lg leading-6">
             {timeLeft.minutes.toString().padStart(2, "0")}
           </span>
           <span className="text-xs text-gray-400">Min</span>
         </div>
         <div className="flex flex-col items-center">
-          <span className="text-white font-bold text-lg">
+          <span className="text-white font-bold text-lg leading-6">
             {timeLeft.seconds.toString().padStart(2, "0")}
           </span>
           <span className="text-xs text-gray-400">Sec</span>
@@ -160,32 +160,32 @@ export default function CountdownTimer({
   return (
     <div className={`text-gold text-sm font-medium ${className}`}>
       <div className="flex items-center space-x-1 justify-center sm:justify-start">
-        <span className="text-lg">⏰</span>
+        <span className="text-base">⏰</span>
         <span>{label || "Starts in"}:</span>
       </div>
-      <div className="flex items-center space-x-2 mt-1 justify-center sm:justify-start">
+      <div className="flex items-center space-x-2 justify-center sm:justify-start">
         {timeLeft.days > 0 && (
           <div className="flex flex-col items-center">
-            <span className="text-white font-bold text-lg">
+            <span className="text-white font-bold text-lg leading-6">
               {timeLeft.days.toString().padStart(2, "0")}
             </span>
             <span className="text-xs text-gray-400">Days</span>
           </div>
         )}
         <div className="flex flex-col items-center">
-          <span className="text-white font-bold text-lg">
+          <span className="text-white font-bold text-lg leading-6">
             {timeLeft.hours.toString().padStart(2, "0")}
           </span>
           <span className="text-xs text-gray-400">Hours</span>
         </div>
         <div className="flex flex-col items-center">
-          <span className="text-white font-bold text-lg">
+          <span className="text-white font-bold text-lg leading-6">
             {timeLeft.minutes.toString().padStart(2, "0")}
           </span>
           <span className="text-xs text-gray-400">Min</span>
         </div>
         <div className="flex flex-col items-center">
-          <span className="text-white font-bold text-lg">
+          <span className="text-white font-bold text-lg leading-6">
             {timeLeft.seconds.toString().padStart(2, "0")}
           </span>
           <span className="text-xs text-gray-400">Sec</span>

@@ -1,5 +1,46 @@
 @import "tailwindcss";
 
+/* Cerapro Font Family */
+@font-face {
+  font-family: 'Cerapro';
+  src: url('/fonts/cerapro/CERAPRO-REGULAR.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Cerapro';
+  src: url('/fonts/cerapro/CERAPRO-REGULARITALIC.ttf') format('truetype');
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Cerapro';
+  src: url('/fonts/cerapro/CERAPRO-MEDIUM.ttf') format('truetype');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Cerapro';
+  src: url('/fonts/cerapro/CERAPRO-MEDIUMITALIC.ttf') format('truetype');
+  font-weight: 500;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Cerapro';
+  src: url('/fonts/cerapro/CERAPRO-BOLD.ttf') format('truetype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
 @theme inline {
   /* Dark theme colors */
   --color-dark-primary: #0a0a0f;
@@ -25,7 +66,7 @@
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+  font-family: 'Cerapro', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -83,15 +124,15 @@ body {
 /* OPTION 1: Elevated Card with Top Accent */
 .tournament-card {
   position: relative;
-  /* background: #1a1a24; */
-  background-image: 
+  background: #1a1a24;
+  /* background-image: 
     linear-gradient(to right, 
       rgba(26, 26, 36, 1) 0%, 
       rgba(26, 26, 36, 1) 30%, 
       rgba(26, 26, 36, 0.9) 50%, 
       rgba(26, 26, 36, 1) 70%, 
       rgba(26, 26, 36, 1) 100%),
-    url('/listBg.jpg');
+    url('/listBg.jpg'); */
   background-color: #1a1a24;
   background-size: cover;
   background-position: center;
@@ -157,10 +198,10 @@ body {
   position: absolute;
   top: 12px;
   right: 12px;
-  width: 4px;
-  height: 50px;
-  background: linear-gradient(to bottom, rgba(255, 184, 0, 0.8), rgba(255, 184, 0, 0.2));
-  border-radius: 2px;
+  width: 2px;
+  height: 80%;
+  background: linear-gradient(to bottom, rgb(208 135 0), rgb(253 244 150), rgb(208 135 0));
+  border-radius: 40%;
   opacity: 0.5;
   transition: opacity 0.3s ease;
 }
@@ -208,7 +249,7 @@ body {
 /* Prize display box - Elevated Mini Card */
 .prize-display {
   position: relative;
-  padding: 20px;
+  padding: 12px;
   background: linear-gradient(135deg, #13131a 0%, #1a1a24 100%);
   border: 1px solid rgba(255, 184, 0, 0.2);
   border-radius: 12px;
@@ -256,14 +297,13 @@ body {
 
 /* Countdown timer wrapper - Blended seamlessly */
 .countdown-wrapper {
-  padding: 12px 20px;
+  padding: 12px 42px;
   background: transparent;
-  border: none;
   position: relative;
   transition: all 0.3s ease;
 }
 
-.countdown-wrapper::before {
+/* .countdown-wrapper::before {
   content: '';
   position: absolute;
   inset: 0;
@@ -272,9 +312,9 @@ body {
   opacity: 0.5;
   transition: opacity 0.3s ease;
   z-index: -1;
-}
+} */
 
-.tournament-card:hover .countdown-wrapper::before {
+/* .tournament-card:hover .countdown-wrapper::before {
   opacity: 1;
   background: linear-gradient(135deg, rgba(255, 184, 0, 0.12) 0%, rgba(255, 184, 0, 0.04) 100%);
-}
+} */

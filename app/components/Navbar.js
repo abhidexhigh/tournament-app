@@ -5,6 +5,7 @@ import { useRouter, usePathname } from "next/navigation";
 import { useState, useEffect, useRef } from "react";
 import { useSession, signOut } from "next-auth/react";
 import { useUser } from "../contexts/UserContext";
+import Image from "next/image";
 
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -84,19 +85,22 @@ export default function Navbar() {
                     onClick={() =>
                       setIsProfileDropdownOpen(!isProfileDropdownOpen)
                     }
-                    className="flex items-center space-x-3 bg-gradient-to-br from-dark-card to-dark-secondary px-4 py-2.5 rounded-xl border border-gold-dark/30 hover:border-gold/50 transition-all duration-300 hover:shadow-lg hover:shadow-gold/20 group"
+                    className="flex items-center space-x-3 bg-gradient-to-br from-dark-card to-dark-secondary px-2 py-1 rounded-xl border border-gold-dark/30 hover:border-gold/50 transition-all duration-300 hover:shadow-lg hover:shadow-gold/20 group"
                   >
                     <div className="flex items-center space-x-2">
-                      <span className="text-2xl group-hover:scale-110 transition-transform duration-300">
-                        {user.avatar}
-                      </span>
+                      <Image
+                        src={user.avatar}
+                        alt="User Avatar"
+                        width={28}
+                        height={28}
+                      />
                       <div className="text-left">
-                        <p className="text-white font-semibold text-sm leading-tight">
+                        <p className="text-gold font-semibold text-xs leading-tight">
                           {user.username}
                         </p>
                         <div className="flex items-center space-x-1.5 mt-0.5">
-                          <span className="text-gold text-xs">💎</span>
-                          <span className="text-gold font-bold text-xs">
+                          <span className="text-gold text-[10px]">💎</span>
+                          <span className="text-gold-light font-bold text-xs">
                             {user.diamonds || 0}
                           </span>
                         </div>
@@ -123,9 +127,14 @@ export default function Navbar() {
                   {isProfileDropdownOpen && (
                     <div className="absolute right-0 mt-2 w-72 bg-dark-card rounded-xl shadow-2xl border border-gold-dark/30 overflow-hidden z-50 animate-fadeIn">
                       {/* User Info Header */}
-                      <div className="bg-gradient-to-br from-gold/20 via-gold/10 to-transparent p-4 border-b border-gold-dark/30">
-                        <div className="flex items-center space-x-3 mb-3">
-                          <span className="text-4xl">{user.avatar}</span>
+                      <div className="bg-gradient-to-br from-gold/20 via-gold/10 to-transparent px-4 py-2 border-b border-gold-dark/30">
+                        <div className="flex items-center space-x-3">
+                          <Image
+                            src={user.avatar}
+                            alt="User Avatar"
+                            width={56}
+                            height={56}
+                          />
                           <div>
                             <p className="text-white font-bold text-lg">
                               {user.username}
@@ -143,10 +152,10 @@ export default function Navbar() {
                           💰 Wallet Balance
                         </p>
                         <div className="space-y-2">
-                          <div className="flex items-center justify-between p-2 bg-dark-card rounded-lg border border-gold-dark/30">
+                          <div className="flex items-center justify-between px-2">
                             <div className="flex items-center space-x-2">
                               <span className="text-xl">💎</span>
-                              <span className="text-gray-300 text-sm">
+                              <span className="text-gold text-sm font-bold">
                                 Diamonds
                               </span>
                             </div>
@@ -154,21 +163,21 @@ export default function Navbar() {
                               {user.diamonds || 0}
                             </span>
                           </div>
-                          <div className="flex items-center justify-between p-2 bg-dark-card rounded-lg border border-green-500/30">
+                          <div className="flex items-center justify-between px-2">
                             <div className="flex items-center space-x-2">
                               <span className="text-xl">💵</span>
-                              <span className="text-gray-300 text-sm">
+                              <span className="text-gold-light text-sm font-bold">
                                 USD Balance
                               </span>
                             </div>
-                            <span className="text-green-400 font-bold">
+                            <span className="text-gold-light font-bold">
                               ${Number(user.usd_balance || 0).toFixed(2)}
                             </span>
                           </div>
-                          <div className="flex items-center justify-between p-2 bg-dark-card rounded-lg border border-purple-500/30">
+                          <div className="flex items-center justify-between px-2">
                             <div className="flex items-center space-x-2">
                               <span className="text-xl">🎫</span>
-                              <span className="text-gray-300 text-sm">
+                              <span className="text-gray-300 text-sm font-bold">
                                 Total Tickets
                               </span>
                             </div>
@@ -192,7 +201,7 @@ export default function Navbar() {
                             👤
                           </span>
                           <div>
-                            <p className="text-white font-medium text-sm">
+                            <p className="text-gold font-medium text-sm">
                               My Profile
                             </p>
                             <p className="text-gray-400 text-xs">
@@ -273,6 +282,22 @@ export default function Navbar() {
             </svg>
           </button>
         </div>
+      </div>
+      <div className="flex items-center justify-between -mt-3">
+        <Image
+          src="https://res.cloudinary.com/dg0cmj6su/image/upload/v1738605248/image_4_zjejce.png"
+          alt="Navbar Background"
+          className="w-[30%] h-3"
+          width={1000}
+          height={100}
+        />
+        <Image
+          src="https://res.cloudinary.com/dg0cmj6su/image/upload/v1738605248/image_5_sgv3su.png"
+          alt="Navbar Background"
+          className="w-[30%] h-3"
+          width={1000}
+          height={100}
+        />
       </div>
 
       {/* Mobile Navigation */}

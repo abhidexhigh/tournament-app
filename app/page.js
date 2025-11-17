@@ -30,10 +30,25 @@ export default function Home() {
   const [selectedGame, setSelectedGame] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [clanData, setClanData] = useState({});
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const { user, loading: userLoading } = useUser();
 
   // Initialize clans
   // Removed initializeClans since we're now using dataLoader
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (isDropdownOpen && !event.target.closest(".status-dropdown")) {
+        setIsDropdownOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isDropdownOpen]);
 
   useEffect(() => {
     const loadData = async () => {
@@ -160,77 +175,13 @@ export default function Home() {
   return (
     <div className="min-h-screen">
       {/* Hero Section - Full Width */}
-      <div className="relative text-center mb-12 overflow-hidden">
-        {/* Background Image */}
-        <div
-          className="absolute inset-0 bg-cover bg-no-repeat"
-          style={{
-            backgroundImage:
-              "url(https://res.cloudinary.com/dg0cmj6su/image/upload/v1741077269/Champions_Webpage_Succubus_pqguqq.webp)",
-            backgroundPosition: "0 15%",
-          }}
-        />
-
-        {/* Dark Overlay with Gradient */}
-        <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-black/70 to-black/90" />
-
-        {/* Content */}
-        <div className="relative z-10 py-16 sm:py-20 lg:py-24 px-4">
-          <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold mb-6 drop-shadow-2xl">
-            <span className="text-gold-gradient">
-              Force of Rune Tournaments
-            </span>
-          </h1>
-          <p className="text-xl sm:text-2xl text-gray-200 max-w-2xl mx-auto drop-shadow-lg font-medium">
-            Join competitive Force of Rune tournaments, compete with the best,
-            and win amazing prizes! 💎
-          </p>
-        </div>
-      </div>
 
       {/* Main Content Container */}
       <div className="px-4 sm:px-6 lg:px-8 pb-8">
-        <div className="max-w-7xl mx-auto">
-          {/* CTA for different user types */}
-          {!user && (
-            <Card glass padding="p-8" className="mb-12 text-center">
-              <h2 className="text-2xl font-bold text-gold mb-4">
-                Ready to compete? 🎮
-              </h2>
-              <p className="text-gray-300 mb-6">
-                Login as a player to join tournaments or as a host to create
-                your own!
-              </p>
-              <Link href="/login">
-                <Button variant="primary" size="lg">
-                  Get Started
-                </Button>
-              </Link>
-            </Card>
-          )}
-
-          {user && user.type === "host" && (
-            <Card
-              glass
-              className="mb-12 flex flex-col sm:flex-row items-center justify-between gap-4"
-            >
-              <div>
-                <h2 className="text-xl font-bold text-gold mb-2">
-                  Host a Tournament 👑
-                </h2>
-                <p className="text-gray-300">
-                  Create your own tournament and manage participants
-                </p>
-              </div>
-              <Link href="/host/create-tournament">
-                <Button variant="primary">Create Tournament</Button>
-              </Link>
-            </Card>
-          )}
-
-          {/* Display Type Tabs - Tournament vs Event */}
-          <div className="mb-8">
-            <div className="bg-gradient-to-r from-dark-card/80 via-dark-card to-dark-card/80 p-1.5 rounded-2xl border border-gold-dark/30 backdrop-blur-sm max-w-md mx-auto">
+        <div className="max-w-7xl mx-auto mt-8">
+          {/* Display Type Tabs - Mobile Only (on top) */}
+          <div className="mb-6 lg:hidden">
+            <div className="bg-gradient-to-r from-dark-card/80 via-dark-card to-dark-card/80 p-1.5 rounded-2xl border border-gold-dark/30 backdrop-blur-sm">
               <div className="flex gap-2">
                 {[
                   {
@@ -250,17 +201,17 @@ export default function Home() {
                     key={tab.key}
                     onClick={() => setDisplayTypeTab(tab.key)}
                     className={`
-                    flex-1 flex items-center justify-center gap-2 py-3 px-6 rounded-xl font-bold text-base
-                    transition-all duration-300 ease-out
-                    ${
-                      displayTypeTab === tab.key
-                        ? `bg-gradient-to-br ${tab.gradient} border-2 border-gold text-white shadow-lg shadow-gold/30 scale-105`
-                        : "bg-dark-card/50 border-2 border-transparent text-gray-400 hover:text-white hover:bg-dark-card/80"
-                    }
-                  `}
+                      flex-1 flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl font-bold text-sm
+                      transition-all duration-300 ease-out
+                      ${
+                        displayTypeTab === tab.key
+                          ? `bg-gradient-to-br ${tab.gradient} border-2 border-gold text-white shadow-lg shadow-gold/30 scale-105`
+                          : "bg-dark-card/50 border-2 border-transparent text-gray-400 hover:text-white hover:bg-dark-card/80"
+                      }
+                    `}
                   >
                     <span
-                      className={`text-2xl transition-transform duration-300 ${
+                      className={`text-lg transition-transform duration-300 ${
                         displayTypeTab === tab.key ? "scale-110" : ""
                       }`}
                     >
@@ -274,58 +225,27 @@ export default function Home() {
           </div>
 
           {/* Filters and Search Bar */}
-          <div className="mb-8">
-            <div className="bg-gradient-to-br from-dark-card/60 via-dark-card/40 to-dark-card/60 backdrop-blur-xl border border-gold-dark/20 rounded-2xl p-4 sm:px-4 sm:py-0 shadow-2xl shadow-black/30">
-              <div className="flex flex-col lg:flex-row gap-5 lg:items-center lg:justify-between">
-                {/* Left Section - Status Filters */}
-                <div className="flex-1 space-y-3">
-                  <div className="flex flex-wrap gap-2">
-                    {[
-                      { key: "all", label: "All", icon: "🎯" },
-                      { key: "upcoming", label: "Upcoming", icon: "⏰" },
-                      { key: "ongoing", label: "Ongoing", icon: "🔥" },
-                      { key: "completed", label: "Completed", icon: "✅" },
-                    ].map((tab) => (
-                      <button
-                        key={tab.key}
-                        onClick={() => setActiveTab(tab.key)}
-                        className={`
-                          group relative px-4 py-2.5 rounded-xl font-semibold text-sm
-                          transition-all duration-300 ease-out
-                          ${
-                            activeTab === tab.key
-                              ? "bg-gradient-to-r from-gold to-yellow-600 text-black shadow-lg shadow-gold/40 scale-105"
-                              : "bg-white/5 text-gray-300 hover:bg-white/10 hover:text-white border border-white/10"
-                          }
-                        `}
-                      >
-                        <span className="flex items-center gap-2">
-                          <span
-                            className={`text-base transition-transform duration-300 ${
-                              activeTab === tab.key ? "scale-110" : ""
-                            }`}
-                          >
-                            {tab.icon}
-                          </span>
-                          <span>{tab.label}</span>
-                        </span>
-                        {activeTab === tab.key && (
-                          <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-gold to-yellow-600 opacity-30 blur-xl -z-10 animate-pulse" />
-                        )}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Vertical Divider - Hidden on Mobile */}
-                <div className="hidden lg:block w-px h-20 bg-gradient-to-b from-transparent via-gold-dark/30 to-transparent" />
-
-                {/* Right Section - Search */}
-                <div className="lg:w-96 space-y-3">
-                  <div className="relative group">
-                    <div className="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none z-10">
+          <div className="mb-8 relative z-10">
+            <div className="backdrop-blur-xl border-gold-dark/20 rounded-2xl p-4 sm:px-4 sm:py-0 shadow-2xl shadow-black/30">
+              <div className="flex flex-col lg:grid lg:grid-cols-3 gap-5 lg:items-center lg:gap-4 relative">
+                {/* Left Section - Status Filter Dropdown */}
+                <div className="flex justify-start lg:justify-start space-y-3 w-full lg:w-auto">
+                  <div className="relative status-dropdown w-full lg:w-auto lg:inline-block z-[100]">
+                    <button
+                      type="button"
+                      onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                      className="w-full lg:w-auto bg-gradient-to-r from-black/40 to-black/20 border border-gold-dark/30 rounded-xl py-3 px-4 text-white text-sm font-medium focus:outline-none focus:border-gold focus:ring-2 focus:ring-gold/30 transition-all duration-300 hover:border-gold/40 cursor-pointer lg:min-w-[160px] text-left flex items-center justify-between group"
+                    >
+                      <span className="font-semibold">
+                        {activeTab === "all" && "All"}
+                        {activeTab === "upcoming" && "Upcoming"}
+                        {activeTab === "ongoing" && "Ongoing"}
+                        {activeTab === "completed" && "Completed"}
+                      </span>
                       <svg
-                        className="w-5 h-5 text-gold-dark group-focus-within:text-gold transition-colors duration-300"
+                        className={`w-5 h-5 text-gold ml-2 transition-transform duration-300 ${
+                          isDropdownOpen ? "rotate-180" : ""
+                        }`}
                         fill="none"
                         stroke="currentColor"
                         viewBox="0 0 24 24"
@@ -334,44 +254,163 @@ export default function Home() {
                           strokeLinecap="round"
                           strokeLinejoin="round"
                           strokeWidth={2}
-                          d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                          d="M19 9l-7 7-7-7"
                         />
                       </svg>
-                    </div>
-                    <input
-                      type="text"
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                      placeholder="Search by name, game..."
-                      className="w-full bg-gradient-to-r from-black/40 to-black/20 border-2 border-white/10 rounded-xl py-3 pl-12 pr-11 text-white placeholder-gray-400 text-sm font-medium focus:outline-none focus:border-gold focus:ring-2 focus:ring-gold/30 transition-all duration-300 hover:border-white/20"
-                    />
-                    {searchQuery && (
-                      <button
-                        onClick={() => setSearchQuery("")}
-                        className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-gold transition-all duration-200 hover:scale-110"
-                        aria-label="Clear search"
-                      >
-                        <div className="p-1 rounded-full hover:bg-gold/20">
-                          <svg
-                            className="w-4 h-4"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M6 18L18 6M6 6l12 12"
-                            />
-                          </svg>
+                    </button>
+                    {isDropdownOpen && (
+                      <div className="absolute top-full left-0 mt-2 w-full lg:min-w-full bg-gradient-to-br from-dark-card/95 via-dark-card/90 to-dark-card/95 backdrop-blur-xl border-2 border-gold-dark/30 rounded-xl shadow-2xl shadow-black/50 overflow-hidden z-[9999] animate-fadeIn">
+                        <div className="py-2">
+                          {[
+                            { value: "all", label: "All" },
+                            { value: "upcoming", label: "Upcoming" },
+                            { value: "ongoing", label: "Ongoing" },
+                            { value: "completed", label: "Completed" },
+                          ].map((option) => (
+                            <button
+                              key={option.value}
+                              type="button"
+                              onClick={() => {
+                                setActiveTab(option.value);
+                                setIsDropdownOpen(false);
+                              }}
+                              className={`w-full px-4 py-3 text-left text-sm font-medium transition-all duration-200 relative ${
+                                activeTab === option.value
+                                  ? "bg-gradient-to-r from-gold/20 to-yellow-600/20 text-gold"
+                                  : "text-gray-300 hover:bg-white/10 hover:text-white"
+                              }`}
+                            >
+                              <span className="flex items-center gap-3 relative z-10">
+                                {activeTab === option.value && (
+                                  <span className="text-gold font-bold text-base">
+                                    ✓
+                                  </span>
+                                )}
+                                <span
+                                  className={
+                                    activeTab === option.value
+                                      ? "font-bold"
+                                      : ""
+                                  }
+                                >
+                                  {option.label}
+                                </span>
+                              </span>
+                              {activeTab === option.value && (
+                                <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-gold to-yellow-600 rounded-r" />
+                              )}
+                            </button>
+                          ))}
                         </div>
-                      </button>
+                        {/* Glow effect */}
+                        <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-gold/10 via-yellow-600/10 to-gold/10 opacity-50 blur-xl -z-10 pointer-events-none" />
+                      </div>
                     )}
-                    {/* Active indicator glow */}
-                    {searchQuery && (
+                    {activeTab && (
                       <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-gold/20 to-yellow-600/20 opacity-20 blur-lg -z-10 animate-pulse pointer-events-none" />
                     )}
+                  </div>
+                </div>
+
+                {/* Center Section - Display Type Tabs (Desktop Only) */}
+                <div className="hidden lg:flex items-center justify-center">
+                  <div className="bg-gradient-to-r from-dark-card/80 via-dark-card to-dark-card/80 p-1.5 rounded-2xl border border-gold-dark/30 backdrop-blur-sm">
+                    <div className="flex gap-2">
+                      {[
+                        {
+                          key: "tournaments",
+                          label: "Tournaments",
+                          icon: "⚡",
+                          gradient: "from-yellow-500/20 to-orange-500/20",
+                        },
+                        {
+                          key: "events",
+                          label: "Events",
+                          icon: "🎪",
+                          gradient: "from-purple-500/20 to-pink-500/20",
+                        },
+                      ].map((tab) => (
+                        <button
+                          key={tab.key}
+                          onClick={() => setDisplayTypeTab(tab.key)}
+                          className={`
+                            flex-1 flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl font-bold text-sm
+                            transition-all duration-300 ease-out
+                            ${
+                              displayTypeTab === tab.key
+                                ? `bg-gradient-to-br ${tab.gradient} border-2 border-gold text-white shadow-lg shadow-gold/30 scale-105`
+                                : "bg-dark-card/50 border-2 border-transparent text-gray-400 hover:text-white hover:bg-dark-card/80"
+                            }
+                          `}
+                        >
+                          <span
+                            className={`text-lg transition-transform duration-300 ${
+                              displayTypeTab === tab.key ? "scale-110" : ""
+                            }`}
+                          >
+                            {tab.icon}
+                          </span>
+                          <span className="tracking-wide">{tab.label}</span>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Right Section - Search */}
+                <div className="flex justify-end lg:justify-end">
+                  <div className="w-full lg:w-72">
+                    <div className="relative group">
+                      <div className="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none z-10">
+                        <svg
+                          className="w-5 h-5 text-gold-dark group-focus-within:text-gold transition-colors duration-300"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                          />
+                        </svg>
+                      </div>
+                      <input
+                        type="text"
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        placeholder="Search by name, game..."
+                        className="w-full bg-gradient-to-r from-black/40 to-black/20 border border-gold-dark/30 rounded-xl py-3 pl-12 pr-11 text-white placeholder-gray-400 text-sm font-medium focus:outline-none focus:border-gold focus:ring-2 focus:ring-gold/30 transition-all duration-300 hover:border-gold/40"
+                      />
+                      {searchQuery && (
+                        <button
+                          onClick={() => setSearchQuery("")}
+                          className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-gold transition-all duration-200 hover:scale-110"
+                          aria-label="Clear search"
+                        >
+                          <div className="p-1 rounded-full hover:bg-gold/20">
+                            <svg
+                              className="w-4 h-4"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M6 18L18 6M6 6l12 12"
+                              />
+                            </svg>
+                          </div>
+                        </button>
+                      )}
+                      {/* Active indicator glow */}
+                      {searchQuery && (
+                        <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-gold/20 to-yellow-600/20 opacity-20 blur-lg -z-10 animate-pulse pointer-events-none" />
+                      )}
+                    </div>
                   </div>
                 </div>
               </div>
@@ -412,12 +451,12 @@ export default function Home() {
                 <div className="tournament-card group relative">
                   <div className="status-stripe overflow-hidden" />
 
-                  <div className="p-4 sm:p-6 border border-[#ffb80033] rounded-lg">
+                  <div className="p-4 sm:px-6 sm:py-1 border border-[#ffb80033] rounded-lg">
                     {/* Top Row: Title, Status, and Prize */}
                     <div className="flex flex-col lg:flex-row !items-center lg:items-start gap-4">
                       {/* Left Section: Icon + Title + Stats */}
-                      <div className="flex items-start gap-3 sm:gap-4 flex-1 min-w-0 w-full">
-                        <div className="tournament-icon flex-shrink-0">
+                      <div className="flex items-start gap-3 sm:gap-6 flex-1 min-w-0 w-full">
+                        <div className="flex-shrink-0">
                           {(() => {
                             const icon = getTournamentIcon(tournament);
                             const isImageUrl =
@@ -453,107 +492,109 @@ export default function Home() {
                           </div>
 
                           {/* Badges Row */}
-                          <div className="flex items-center gap-2 flex-wrap mb-3">
+                          <div className="items-center gap-2 flex-wrap mb-3">
                             <h3 className="hidden sm:block text-xl sm:text-xl lg:text-2xl font-black text-white group-hover:text-gold transition-colors duration-300 tracking-tight">
                               {tournament.title}
                             </h3>
-                            <Badge
-                              variant={tournament.status}
-                              size="sm"
-                              className="!capitalize"
-                            >
-                              {tournament.status}
-                            </Badge>
-                            {tournament.display_type === "tournament" && (
+                            <span className="flex items-center gap-2">
                               <Badge
-                                variant="primary"
+                                variant={tournament.status}
                                 size="sm"
-                                className="font-semibold"
+                                className="!capitalize"
                               >
-                                ⚡ Tournament
+                                {tournament.status}
                               </Badge>
-                            )}
-                            {tournament.display_type === "event" && (
-                              <Badge
-                                variant="secondary"
-                                size="sm"
-                                className="font-semibold"
-                              >
-                                🎪 Event
-                              </Badge>
-                            )}
-                            {(tournament.tournament_type ??
-                              tournament.tournamentType) === "clan_battle" && (
-                              <Badge variant="warning" size="sm">
-                                ⚔️ Clan
-                              </Badge>
-                            )}
+                              {tournament.display_type === "tournament" && (
+                                <Badge
+                                  variant="primary"
+                                  size="sm"
+                                  className="font-semibold"
+                                >
+                                  ⚡ Tournament
+                                </Badge>
+                              )}
+                              {tournament.display_type === "event" && (
+                                <Badge
+                                  variant="secondary"
+                                  size="sm"
+                                  className="font-semibold"
+                                >
+                                  🎪 Event
+                                </Badge>
+                              )}
+                              {(tournament.tournament_type ??
+                                tournament.tournamentType) ===
+                                "clan_battle" && (
+                                <Badge variant="warning" size="sm">
+                                  ⚔️ Clan
+                                </Badge>
+                              )}
+                            </span>
                           </div>
 
                           {/* Divider */}
-                          <div className="h-px bg-gradient-to-r from-gold/30 via-gold/30 to-transparent mb-3 lg:mb-4" />
+                          {/* <div className="h-px bg-gradient-to-r from-gold/30 via-gold/30 to-transparent mb-3 lg:mb-4" /> */}
+                        </div>
+                      </div>
 
-                          {/* Stats - Responsive Grid */}
-                          <div className="grid grid-cols-2 sm:flex sm:flex-wrap gap-3 sm:gap-4 lg:gap-6">
-                            <div className="flex items-center gap-2">
-                              <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg bg-gradient-to-br from-white/10 to-white/5 flex items-center justify-center border border-white/10 flex-shrink-0">
-                                <span className="text-base sm:text-lg">👥</span>
-                              </div>
-                              <div className="min-w-0">
-                                <div className="text-[10px] sm:text-xs text-gray-400 font-medium">
-                                  Players
-                                </div>
-                                <div className="text-white font-bold text-sm sm:text-base truncate">
-                                  {tournament.participants.length}/
-                                  {tournament.max_players ??
-                                    tournament.maxPlayers}
-                                </div>
-                              </div>
+                      {/* Stats - Responsive Grid */}
+                      <div className="grid grid-cols-2 sm:flex sm:flex-wrap gap-3 sm:gap-4 lg:gap-12 lg:px-6">
+                        <div className="flex items-center gap-2">
+                          <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg bg-gradient-to-br from-white/10 to-white/5 flex items-center justify-center border border-white/10 flex-shrink-0">
+                            <span className="text-base sm:text-lg">👥</span>
+                          </div>
+                          <div className="min-w-0">
+                            <div className="text-[10px] sm:text-xs text-gray-400 font-medium">
+                              Players
                             </div>
-
-                            <div className="flex items-center gap-2">
-                              <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg bg-gradient-to-br from-gold/20 to-gold/5 flex items-center justify-center border border-gold/20 flex-shrink-0">
-                                <span className="text-base sm:text-lg">💰</span>
-                              </div>
-                              <div className="min-w-0">
-                                <div className="text-[10px] sm:text-xs text-gray-400 font-medium">
-                                  Entry Fee
-                                </div>
-                                <div className="text-white font-bold text-sm sm:text-base truncate">
-                                  {tournament.entry_fee ? (
-                                    `$${getEntryFeeDisplayDual(tournament).usd}`
-                                  ) : (
-                                    <span className="text-green-400">Free</span>
-                                  )}
-                                </div>
-                              </div>
+                            <div className="text-white font-bold text-sm sm:text-base truncate">
+                              {tournament.participants.length}/
+                              {tournament.max_players ?? tournament.maxPlayers}
                             </div>
+                          </div>
+                        </div>
 
-                            <div className="flex items-center gap-2">
-                              <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg bg-gradient-to-br from-blue-500/20 to-blue-500/5 flex items-center justify-center border border-blue-500/20 flex-shrink-0">
-                                <span className="text-base sm:text-lg">📅</span>
-                              </div>
-                              <div className="min-w-0">
-                                <div className="text-[10px] sm:text-xs text-gray-400 font-medium">
-                                  Schedule
-                                </div>
-                                <div className="text-white font-bold text-xs sm:text-sm truncate">
-                                  {formatDate(tournament.date)}
-                                </div>
-                              </div>
+                        <div className="flex items-center gap-2">
+                          <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg bg-gradient-to-br from-gold/20 to-gold/5 flex items-center justify-center border border-gold/20 flex-shrink-0">
+                            <span className="text-base sm:text-lg">💰</span>
+                          </div>
+                          <div className="min-w-0">
+                            <div className="text-[10px] sm:text-xs text-gray-400 font-medium">
+                              Entry Fee
+                            </div>
+                            <div className="text-white font-bold text-sm sm:text-base truncate">
+                              {tournament.entry_fee ? (
+                                `$${getEntryFeeDisplayDual(tournament).usd}`
+                              ) : (
+                                <span className="text-green-400">Free</span>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="flex items-center gap-2">
+                          <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg bg-gradient-to-br from-blue-500/20 to-blue-500/5 flex items-center justify-center border border-blue-500/20 flex-shrink-0">
+                            <span className="text-base sm:text-lg">📅</span>
+                          </div>
+                          <div className="min-w-0">
+                            <div className="text-[10px] sm:text-xs text-gray-400 font-medium">
+                              Schedule
+                            </div>
+                            <div className="text-white font-bold text-xs sm:text-sm truncate">
+                              {formatDate(tournament.date)}
                             </div>
                           </div>
                         </div>
                       </div>
 
                       {/* Right Section: Countdown + Prize Pool */}
-                      <div className="flex sm:flex-row flex-col items-stretch sm:items-center gap-3 sm:gap-4 w-full lg:w-auto">
+                      <div className="flex sm:flex-row flex-col items-stretch sm:items-center gap-3 sm:gap-8 w-full lg:w-auto">
                         {/* Show countdown for upcoming automated tournaments (to expires_at) */}
                         {tournament.status === "upcoming" &&
                           (tournament.is_automated === true ||
                             tournament.is_automated === "true") &&
                           tournament.expires_at && (
-                            <div className="countdown-wrapper w-full sm:w-auto">
+                            <div className="countdown-wrapper w-full sm:w-auto border-x border-white/20">
                               <CountdownTimer
                                 expiresAt={tournament.expires_at}
                                 label="Join before"

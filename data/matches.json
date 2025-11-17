@@ -789,15 +789,154 @@
           "prizeAmount": 0
         }
       ]
+    },
+    {
+      "id": "match-11",
+      "tournamentId": "tournament_regular_1",
+      "title": "Rune Masters Championship - Upcoming Battle",
+      "date": "2025-11-15",
+      "startTime": "18:00",
+      "endTime": "20:00",
+      "prizePool": 60000,
+      "participants": 16,
+      "status": "upcoming",
+      "leaderboard": [
+        {
+          "playerId": "player1",
+          "username": "ShadowNinja",
+          "avatar": "🥷",
+          "position": null,
+          "score": 0,
+          "kills": 0,
+          "deaths": 0,
+          "kdRatio": "0.0",
+          "prizeAmount": 0
+        },
+        {
+          "playerId": "player2",
+          "username": "ThunderStrike",
+          "avatar": "⚡",
+          "position": null,
+          "score": 0,
+          "kills": 0,
+          "deaths": 0,
+          "kdRatio": "0.0",
+          "prizeAmount": 0
+        },
+        {
+          "playerId": "player4",
+          "username": "IceWarrior",
+          "avatar": "❄️",
+          "position": null,
+          "score": 0,
+          "kills": 0,
+          "deaths": 0,
+          "kdRatio": "0.0",
+          "prizeAmount": 0
+        }
+      ]
+    },
+    {
+      "id": "match-12",
+      "tournamentId": "tournament_regular_2",
+      "title": "Valorant Elite Showdown - Qualifiers",
+      "date": "2025-11-16",
+      "startTime": "16:00",
+      "endTime": "18:00",
+      "prizePool": 40000,
+      "participants": 12,
+      "status": "upcoming",
+      "leaderboard": [
+        {
+          "playerId": "player1",
+          "username": "ShadowNinja",
+          "avatar": "🥷",
+          "position": null,
+          "score": 0,
+          "kills": 0,
+          "deaths": 0,
+          "kdRatio": "0.0",
+          "prizeAmount": 0
+        },
+        {
+          "playerId": "player3",
+          "username": "FireMage",
+          "avatar": "🔥",
+          "position": null,
+          "score": 0,
+          "kills": 0,
+          "deaths": 0,
+          "kdRatio": "0.0",
+          "prizeAmount": 0
+        },
+        {
+          "playerId": "player6",
+          "username": "LightningBolt",
+          "avatar": "⚡",
+          "position": null,
+          "score": 0,
+          "kills": 0,
+          "deaths": 0,
+          "kdRatio": "0.0",
+          "prizeAmount": 0
+        }
+      ]
+    },
+    {
+      "id": "match-13",
+      "tournamentId": "tournament_regular_3",
+      "title": "CS2 Grand Masters - Finals Week",
+      "date": "2025-11-20",
+      "startTime": "19:00",
+      "endTime": "21:00",
+      "prizePool": 80000,
+      "participants": 14,
+      "status": "upcoming",
+      "leaderboard": [
+        {
+          "playerId": "player1",
+          "username": "ShadowNinja",
+          "avatar": "🥷",
+          "position": null,
+          "score": 0,
+          "kills": 0,
+          "deaths": 0,
+          "kdRatio": "0.0",
+          "prizeAmount": 0
+        },
+        {
+          "playerId": "player5",
+          "username": "StormRider",
+          "avatar": "🌪️",
+          "position": null,
+          "score": 0,
+          "kills": 0,
+          "deaths": 0,
+          "kdRatio": "0.0",
+          "prizeAmount": 0
+        },
+        {
+          "playerId": "player8",
+          "username": "FrostGuardian",
+          "avatar": "🧊",
+          "position": null,
+          "score": 0,
+          "kills": 0,
+          "deaths": 0,
+          "kdRatio": "0.0",
+          "prizeAmount": 0
+        }
+      ]
     }
   ],
   "metadata": {
-    "totalMatches": 10,
+    "totalMatches": 13,
     "completedMatches": 8,
     "ongoingMatches": 2,
-    "totalPrizePool": 560000,
-    "totalParticipants": 119,
-    "averagePlayersPerMatch": 11.9,
+    "upcomingMatches": 3,
+    "totalPrizePool": 740000,
+    "totalParticipants": 161,
+    "averagePlayersPerMatch": 12.4,
     "generatedAt": "2025-11-13T10:30:00Z",
     "lastUpdated": "2025-11-13T20:00:00Z"
   }

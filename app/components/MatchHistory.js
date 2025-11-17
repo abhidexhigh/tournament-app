@@ -75,20 +75,27 @@ export default function MatchHistory({ matches, playerId }) {
     <div className="relative overflow-hidden rounded-2xl backdrop-blur-xl border border-white/20">
       <div className="absolute inset-0 bg-gradient-to-br from-dark-card/80 via-dark-card/60 to-dark-card/80" />
 
-      {/* Info Banner for Ongoing Matches */}
-      {sortedMatches.some((m) => {
+      {/* Info Banner for Live/Upcoming Matches */}
+      {(sortedMatches.some((m) => {
         const p = getPlayerPerformance(m);
         return p && m.status === "ongoing";
-      }) && (
+      }) ||
+        sortedMatches.some((m) => {
+          const p = getPlayerPerformance(m);
+          return p && m.status === "upcoming";
+        })) && (
         <div className="relative bg-white/5 border-b border-white/10 px-6 py-3">
           <div className="flex items-center gap-3 text-sm">
-            <span className="text-gray-400 text-lg animate-pulse">🔴</span>
+            <span className="text-gray-400 text-lg">ℹ️</span>
             <div>
-              <span className="text-white font-semibold">Live Matches: </span>
+              <span className="text-white font-semibold">
+                Match Information:{" "}
+              </span>
               <span className="text-gray-400">
-                Rankings shown are{" "}
-                <span className="text-white font-bold">current standings</span>{" "}
-                and will update as the match progresses.
+                <span className="text-white">Live matches</span> show current
+                standings. <span className="text-white">Upcoming matches</span>{" "}
+                show scheduled date and prize pool. Results will appear after
+                the match completes.
               </span>
             </div>
           </div>
@@ -146,25 +153,39 @@ export default function MatchHistory({ matches, playerId }) {
                 >
                   {/* Position */}
                   <td className="px-4 py-4 whitespace-nowrap">
-                    <div className="flex items-center gap-2">
-                      <div
-                        className={`text-2xl ${getPositionColorClass(
-                          performance.position
-                        )}`}
-                      >
-                        {getPositionBadge(performance.position)}
-                      </div>
-                      {match.status === "ongoing" && (
+                    {match.status === "upcoming" ? (
+                      <div className="flex items-center gap-2">
+                        <span className="text-xl text-gray-500">—</span>
                         <div className="flex flex-col items-start">
-                          <span className="text-[10px] text-gray-400 font-bold uppercase tracking-wider animate-pulse">
-                            Live
+                          <span className="text-[10px] text-gray-500 font-bold uppercase tracking-wider">
+                            Upcoming
                           </span>
                           <span className="text-[9px] text-gray-600">
-                            Current
+                            Not Started
                           </span>
                         </div>
-                      )}
-                    </div>
+                      </div>
+                    ) : (
+                      <div className="flex items-center gap-2">
+                        <div
+                          className={`text-2xl ${getPositionColorClass(
+                            performance.position
+                          )}`}
+                        >
+                          {getPositionBadge(performance.position)}
+                        </div>
+                        {match.status === "ongoing" && (
+                          <div className="flex flex-col items-start">
+                            <span className="text-[10px] text-gray-400 font-bold uppercase tracking-wider animate-pulse">
+                              Live
+                            </span>
+                            <span className="text-[9px] text-gray-600">
+                              Current
+                            </span>
+                          </div>
+                        )}
+                      </div>
+                    )}
                   </td>
 
                   {/* Match Title */}
@@ -201,6 +222,18 @@ export default function MatchHistory({ matches, playerId }) {
                           In Progress
                         </span>
                       </div>
+                    ) : match.status === "upcoming" ? (
+                      <div className="flex flex-col items-center gap-1">
+                        <Badge
+                          variant={match.status}
+                          className="capitalize text-xs"
+                        >
+                          📅 Upcoming
+                        </Badge>
+                        <span className="text-[10px] text-gray-500">
+                          Scheduled
+                        </span>
+                      </div>
                     ) : (
                       <Badge
                         variant={match.status}
@@ -214,34 +247,43 @@ export default function MatchHistory({ matches, playerId }) {
                   {/* Score */}
                   <td className="px-4 py-4 whitespace-nowrap text-right">
                     <div className="text-sm font-bold text-white">
-                      {performance.score?.toLocaleString() || "N/A"}
+                      {match.status === "upcoming"
+                        ? "—"
+                        : performance.score?.toLocaleString() || "N/A"}
                     </div>
                   </td>
 
                   {/* Kills */}
                   <td className="px-4 py-4 whitespace-nowrap text-center">
                     <div className="text-sm font-bold text-white">
-                      {performance.kills || 0}
+                      {match.status === "upcoming"
+                        ? "—"
+                        : performance.kills || 0}
                     </div>
                   </td>
 
                   {/* Deaths */}
                   <td className="px-4 py-4 whitespace-nowrap text-center">
                     <div className="text-sm font-bold text-white">
-                      {performance.deaths || 0}
+                      {match.status === "upcoming"
+                        ? "—"
+                        : performance.deaths || 0}
                     </div>
                   </td>
 
                   {/* K/D Ratio */}
                   <td className="px-4 py-4 whitespace-nowrap text-center">
                     <div className="text-sm font-bold text-white">
-                      {performance.kdRatio || "0.0"}
+                      {match.status === "upcoming"
+                        ? "—"
+                        : performance.kdRatio || "0.0"}
                     </div>
                   </td>
 
                   {/* Prize */}
                   <td className="px-4 py-4 whitespace-nowrap text-right">
-                    {match.status === "ongoing" ? (
+                    {match.status === "upcoming" ||
+                    match.status === "ongoing" ? (
                       <div className="text-xs text-gray-500 font-medium">
                         TBD
                       </div>
