@@ -88,7 +88,7 @@ export default function Navbar() {
                     className="flex items-center space-x-3 bg-gradient-to-br from-dark-card to-dark-secondary px-2 py-1 rounded-xl border border-gold-dark/30 hover:border-gold/50 transition-all duration-300 hover:shadow-lg hover:shadow-gold/20 group"
                   >
                     <div className="flex items-center space-x-2">
-                      <Image
+                      <img
                         src={user.avatar}
                         alt="User Avatar"
                         width={28}
