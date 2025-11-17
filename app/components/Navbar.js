@@ -6,8 +6,6 @@ import { useState, useEffect, useRef } from "react";
 import { useSession, signOut } from "next-auth/react";
 import { useUser } from "../contexts/UserContext";
 import Image from "next/image";
-import NavBorderLeft from "@/public/images/nav-border-left.png";
-import NavBorderRight from "@/public/images/nav-border-right.png";
 
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -287,14 +285,14 @@ export default function Navbar() {
       </div>
       <div className="flex items-center justify-between -mt-3">
         <Image
-          src={NavBorderLeft}
+          src="/images/nav-border-left.png"
           alt="Navbar Background"
           className="w-[30%] h-3"
           width={1000}
           height={100}
         />
         <Image
-          src={NavBorderRight}
+          src="/images/nav-border-right.png"
           alt="Navbar Background"
           className="w-[30%] h-3"
           width={1000}
