@@ -129,7 +129,7 @@ export default function Navbar() {
                       {/* User Info Header */}
                       <div className="bg-gradient-to-br from-gold/20 via-gold/10 to-transparent px-4 py-2 border-b border-gold-dark/30">
                         <div className="flex items-center space-x-3">
-                          <Image
+                          <img
                             src={user.avatar}
                             alt="User Avatar"
                             width={56}
