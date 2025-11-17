@@ -284,14 +284,14 @@ export default function Navbar() {
         </div>
       </div>
       <div className="flex items-center justify-between -mt-3">
-        <Image
+        <img
           src="/images/nav-border-left.png"
           alt="Navbar Background"
           className="w-[30%] h-3"
           width={1000}
           height={100}
         />
-        <Image
+        <img
           src="/images/nav-border-right.png"
           alt="Navbar Background"
           className="w-[30%] h-3"
