@@ -6,8 +6,8 @@ import { useState, useEffect, useRef } from "react";
 import { useSession, signOut } from "next-auth/react";
 import { useUser } from "../contexts/UserContext";
 import Image from "next/image";
-import NavBorderLeft from "/public/images/nav-border-left.png";
-import NavBorderRight from "/public/images/nav-border-right.png";
+import NavBorderLeft from "@/public/images/nav-border-left.png";
+import NavBorderRight from "@/public/images/nav-border-right.png";
 
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
