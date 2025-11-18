@@ -5,7 +5,7 @@ export default function Card({
   className = "",
   hover = false,
   glass = false,
-  padding = "p-6",
+  padding = "p-4",
 }) {
   const baseStyles =
     "bg-dark-card border border-gold-dark/30 rounded-2xl transition-all duration-300";

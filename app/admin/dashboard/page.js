@@ -166,7 +166,7 @@ export default function AdminDashboard() {
       </div>
 
       <div className="px-4 sm:px-6 lg:px-8 pb-8">
-        <div className="max-w-[1460px] mx-auto">
+        <div className="max-w-main mx-auto">
           {/* Message Alert */}
           {message && (
             <div

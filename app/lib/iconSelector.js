@@ -1,112 +1,12 @@
 // Utility function to select tournament icons programmatically
 export function selectTournamentIcon(tournamentData) {
-  const { title, prizePoolType, maxPlayers, entryFee, game } = tournamentData;
-
-  // Game-specific icons
-  const gameIcons = {
-    "Force of Rune": ["🔮", "✨", "🌟", "💫", "⚔️", "🛡️"],
-    "League of Legends": ["⚔️", "🏆", "👑", "💎", "⚡", "🔥"],
-    "Dota 2": ["🗡️", "🏰", "👑", "💎", "⚡", "🔥"],
-    "Counter-Strike 2": ["🔫", "💣", "🎯", "⚡", "🔥", "💎"],
-    Valorant: ["🎯", "💎", "⚡", "🔥", "🏆", "👑"],
-    "Apex Legends": ["🏹", "💥", "⚡", "🔥", "🎯", "💎"],
-    Fortnite: ["🏗️", "💥", "⚡", "🔥", "🎯", "🏆"],
-    "Rocket League": ["🚗", "⚽", "🏆", "💎", "⚡", "🔥"],
-    "Overwatch 2": ["🎯", "💥", "⚡", "🔥", "🏆", "👑"],
-    "Call of Duty: Warzone": ["🔫", "💣", "🎯", "⚡", "🔥", "💎"],
-    Other: ["🎮", "🏆", "⚔️", "🔥", "🎯", "👾"],
-  };
-
-  // Icon selection based on tournament characteristics
-  const iconRules = [
-    // Game-specific icons (highest priority)
-    {
-      condition: (data) => data.game && gameIcons[data.game],
-      icons: gameIcons[game] || gameIcons["Other"],
-    },
-    // High prize pool tournaments
-    {
-      condition: (data) => data.prizePool >= 50000,
-      icons: ["🏆", "👑", "💎", "⭐"],
-    },
-    // Large tournaments (many players)
-    {
-      condition: (data) => data.maxPlayers >= 100,
-      icons: ["🎪", "🌍", "⚡", "🔥"],
-    },
-    // Entry-based tournaments
-    {
-      condition: (data) => data.prizePoolType === "entry-based",
-      icons: ["📈", "💰", "🎯", "⚔️"],
-    },
-    // High entry fee tournaments
-    {
-      condition: (data) => data.entryFee >= 200,
-      icons: ["💎", "👑", "🏆", "⭐"],
-    },
-    // Free tournaments
-    {
-      condition: (data) => data.entryFee === 0,
-      icons: ["🎁", "🆓", "🎮", "🎪"],
-    },
-    // Championship/Masters tournaments
-    {
-      condition: (data) =>
-        data.title.toLowerCase().includes("championship") ||
-        data.title.toLowerCase().includes("masters") ||
-        data.title.toLowerCase().includes("grand"),
-      icons: ["🏆", "👑", "⭐", "💎"],
-    },
-    // Clan Battle tournaments
-    {
-      condition: (data) => data.tournamentType === "clan_battle",
-      icons: ["⚔️", "🏰", "🛡️", "👥", "🔥", "⚡"],
-    },
-    // Battle/Arena tournaments
-    {
-      condition: (data) =>
-        data.title.toLowerCase().includes("battle") ||
-        data.title.toLowerCase().includes("arena") ||
-        data.title.toLowerCase().includes("war"),
-      icons: ["⚔️", "🛡️", "🔥", "⚡"],
-    },
-    // Rune-themed tournaments
-    {
-      condition: (data) =>
-        data.title.toLowerCase().includes("rune") ||
-        data.title.toLowerCase().includes("mystic") ||
-        data.title.toLowerCase().includes("ancient"),
-      icons: ["🔮", "✨", "🌟", "💫"],
-    },
-  ];
-
-  // Find the first matching rule
-  for (const rule of iconRules) {
-    if (rule.condition(tournamentData)) {
-      // Select icon based on title hash for consistency
-      const titleHash = hashString(title);
-      const iconIndex = titleHash % rule.icons.length;
-      return rule.icons[iconIndex];
-    }
-  }
-
-  // Default icons if no rules match
-  const defaultIcons = ["🎮", "🏆", "⚔️", "🔥", "🎯", "👾", "🎪", "⚡"];
-  const titleHash = hashString(title);
-  const iconIndex = titleHash % defaultIcons.length;
-  return defaultIcons[iconIndex];
+  // Return the default game icon for all games
+  return "https://res.cloudinary.com/dg0cmj6su/image/upload/v1763459457/Clan_battle_o3fmhe.webp";
 }
 
-// Simple hash function for consistent icon selection
-function hashString(str) {
-  let hash = 0;
-  for (let i = 0; i < str.length; i++) {
-    const char = str.charCodeAt(i);
-    hash = (hash << 5) - hash + char;
-    hash = hash & hash; // Convert to 32-bit integer
-  }
-  return Math.abs(hash);
-}
+// Default game icon for all games
+const DEFAULT_GAME_ICON =
+  "https://res.cloudinary.com/dg0cmj6su/image/upload/v1763459457/Clan_battle_o3fmhe.webp";
 
 // Cloudinary image URLs for automated tournament levels
 const AUTOMATED_LEVEL_IMAGES = {
@@ -133,13 +33,6 @@ export function getTournamentIcon(tournament) {
     return tournament.image;
   }
 
-  // Otherwise, generate one based on tournament data
-  return selectTournamentIcon({
-    title: tournament.title,
-    game: tournament.game,
-    prizePoolType: tournament.prize_pool_type || tournament.prizePoolType,
-    maxPlayers: tournament.max_players || tournament.maxPlayers,
-    entryFee: tournament.entry_fee || tournament.entryFee,
-    prizePool: tournament.prize_pool || tournament.prizePool,
-  });
+  // Use default game icon for all games
+  return DEFAULT_GAME_ICON;
 }

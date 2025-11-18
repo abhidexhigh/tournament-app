@@ -132,26 +132,34 @@ export default function CountdownTimer({
             <span className="text-white font-bold text-lg leading-6">
               {timeLeft.days.toString().padStart(2, "0")}
             </span>
-            <span className="text-xs text-gray-400">Days</span>
+            <span className="text-[10px] font-medium text-gold-text leading-3.5">
+              Days
+            </span>
           </div>
         )}
         <div className="flex flex-col items-center">
           <span className="text-white font-bold text-lg leading-6">
             {timeLeft.hours.toString().padStart(2, "0")}
           </span>
-          <span className="text-xs text-gray-400">Hours</span>
+          <span className="text-[10px] font-medium text-gold-text leading-3.5">
+            Hours
+          </span>
         </div>
         <div className="flex flex-col items-center">
           <span className="text-white font-bold text-lg leading-6">
             {timeLeft.minutes.toString().padStart(2, "0")}
           </span>
-          <span className="text-xs text-gray-400">Min</span>
+          <span className="text-[10px] font-medium text-gold-text leading-3.5">
+            Min
+          </span>
         </div>
         <div className="flex flex-col items-center">
           <span className="text-white font-bold text-lg leading-6">
             {timeLeft.seconds.toString().padStart(2, "0")}
           </span>
-          <span className="text-xs text-gray-400">Sec</span>
+          <span className="text-[10px] font-medium text-gold-text leading-3.5">
+            Sec
+          </span>
         </div>
       </div>
     );
@@ -169,26 +177,34 @@ export default function CountdownTimer({
             <span className="text-white font-bold text-lg leading-6">
               {timeLeft.days.toString().padStart(2, "0")}
             </span>
-            <span className="text-xs text-gray-400">Days</span>
+            <span className="text-[10px] font-medium text-gold-text leading-3.5">
+              Days
+            </span>
           </div>
         )}
         <div className="flex flex-col items-center">
           <span className="text-white font-bold text-lg leading-6">
             {timeLeft.hours.toString().padStart(2, "0")}
           </span>
-          <span className="text-xs text-gray-400">Hours</span>
+          <span className="text-[10px] font-medium text-gold-text leading-3.5">
+            Hours
+          </span>
         </div>
         <div className="flex flex-col items-center">
           <span className="text-white font-bold text-lg leading-6">
             {timeLeft.minutes.toString().padStart(2, "0")}
           </span>
-          <span className="text-xs text-gray-400">Min</span>
+          <span className="text-[10px] font-medium text-gold-text leading-3.5">
+            Min
+          </span>
         </div>
         <div className="flex flex-col items-center">
           <span className="text-white font-bold text-lg leading-6">
             {timeLeft.seconds.toString().padStart(2, "0")}
           </span>
-          <span className="text-xs text-gray-400">Sec</span>
+          <span className="text-[10px] font-medium text-gold-text leading-3.5">
+            Sec
+          </span>
         </div>
       </div>
     </div>

@@ -51,10 +51,14 @@
   --color-gold-light: #ffd700;
   --color-gold: #fdf496;
   --color-gold-dark: #d4af37;
+  --color-gold-text: #fffac8;
   
   /* Accent colors */
   --color-accent-purple: #8b5cf6;
   --color-accent-blue: #3b82f6;
+  
+  /* Custom max-width for main content */
+  --max-width-main: 1460px;
 }
 
 :root {
@@ -109,7 +113,7 @@ body {
 
 /* Glassmorphism effect */
 .glass-effect {
-  background: rgba(26, 26, 36, 0.7);
+  background: rgba(0, 0, 0, 0.4);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
 }

@@ -114,7 +114,7 @@ function PlayerDashboardContent() {
   return (
     <div className="min-h-screen">
       <div className="px-4 sm:px-6 lg:px-8 py-8">
-        <div className="max-w-[1460px] mx-auto">
+        <div className="max-w-main mx-auto">
           {/* Stats Grid */}
           <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-4 mb-8">
             <div className="bg-gradient-to-br from-white/10 via-dark-card to-dark-card/80 backdrop-blur-xl border border-white/20 rounded-2xl p-6 shadow-2xl shadow-black/30 hover:border-white/30 transition-all duration-300 hover:scale-105">
