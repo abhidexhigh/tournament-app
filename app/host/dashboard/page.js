@@ -104,7 +104,7 @@ function HostDashboardContent() {
       </div>
 
       <div className="px-4 sm:px-6 lg:px-8 pb-8">
-        <div className="max-w-7xl mx-auto">
+        <div className="max-w-[1460px] mx-auto">
           {/* Stats Grid */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
             <div className="bg-gradient-to-br from-gold/20 via-dark-card to-dark-card/80 backdrop-blur-xl border border-gold-dark/30 rounded-2xl p-6 shadow-2xl shadow-black/30 hover:shadow-gold/20 transition-all duration-300 hover:scale-105">

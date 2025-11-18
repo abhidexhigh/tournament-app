@@ -178,7 +178,7 @@ export default function Home() {
 
       {/* Main Content Container */}
       <div className="px-4 sm:px-6 lg:px-8 pb-8">
-        <div className="max-w-7xl mx-auto mt-8">
+        <div className="max-w-[1460px] mx-auto mt-8">
           {/* Display Type Tabs - Mobile Only (on top) */}
           <div className="mb-6 lg:hidden">
             <div className="bg-gradient-to-r from-dark-card/80 via-dark-card to-dark-card/80 p-1.5 rounded-2xl border border-gold-dark/30 backdrop-blur-sm">
@@ -210,13 +210,13 @@ export default function Home() {
                       }
                     `}
                   >
-                    <span
+                    {/* <span
                       className={`text-lg transition-transform duration-300 ${
                         displayTypeTab === tab.key ? "scale-110" : ""
                       }`}
                     >
                       {tab.icon}
-                    </span>
+                    </span> */}
                     <span className="tracking-wide">{tab.label}</span>
                   </button>
                 ))}
@@ -343,13 +343,13 @@ export default function Home() {
                             }
                           `}
                         >
-                          <span
+                          {/* <span
                             className={`text-lg transition-transform duration-300 ${
                               displayTypeTab === tab.key ? "scale-110" : ""
                             }`}
                           >
                             {tab.icon}
-                          </span>
+                          </span> */}
                           <span className="tracking-wide">{tab.label}</span>
                         </button>
                       ))}

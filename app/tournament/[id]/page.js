@@ -1229,7 +1229,7 @@ export default function TournamentDetailsPage() {
           background: linear-gradient(180deg, #f0c14b, #d4af37);
         }
       `}</style>
-      <div className="max-w-6xl mx-auto">
+      <div className="max-w-[1460px] mx-auto">
         {/* Back Button */}
         <Link href="/" className="inline-block mb-6">
           <Button variant="ghost" size="sm">

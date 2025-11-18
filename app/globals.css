@@ -64,7 +64,11 @@
 }
 
 body {
-  background: var(--background);
+  /* background: var(--background); */
+  background-image: url('/images/tournaments-bg.webp');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
   color: var(--foreground);
   font-family: 'Cerapro', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
   -webkit-font-smoothing: antialiased;
