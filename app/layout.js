@@ -23,7 +23,7 @@ export default function RootLayout({ children }) {
           <ClientInitializer />
           <Navbar />
           <main className="min-h-screen">{children}</main>
-          <footer className="bg-dark-secondary border-t border-gold-dark/20 py-8">
+          <footer className="py-8">
             <div className="max-w-main mx-auto px-4 sm:px-6 lg:px-8 text-center">
               <p className="text-gray-400">
                 © 2025 Force of Rune Tournaments. All rights reserved.
