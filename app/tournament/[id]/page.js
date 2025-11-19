@@ -611,7 +611,7 @@ export default function TournamentDetailsPage() {
           <Card className="px-10">
             <div>
               <div className="flex items-center mb-4 justify-start gap-2">
-                <Image
+                <img
                   src="https://res.cloudinary.com/dg0cmj6su/image/upload/v1763459457/dollar_bag_jehifs.webp"
                   alt="Prize Distribution"
                   width={32}
@@ -643,7 +643,7 @@ export default function TournamentDetailsPage() {
                               <div className="flex items-center gap-3">
                                 <span className="text-2xl">
                                   {index === 0 ? (
-                                    <Image
+                                    <img
                                       src="https://res.cloudinary.com/dg0cmj6su/image/upload/v1763459457/First_xf1xz2.webp"
                                       alt="1st Place"
                                       width={24}
@@ -651,7 +651,7 @@ export default function TournamentDetailsPage() {
                                       className="w-8"
                                     />
                                   ) : index === 1 ? (
-                                    <Image
+                                    <img
                                       src="https://res.cloudinary.com/dg0cmj6su/image/upload/v1763459457/second_nak1rc.webp"
                                       alt="2nd Place"
                                       width={24}
@@ -659,7 +659,7 @@ export default function TournamentDetailsPage() {
                                       className="w-8"
                                     />
                                   ) : (
-                                    <Image
+                                    <img
                                       src="https://res.cloudinary.com/dg0cmj6su/image/upload/v1763459457/3rd_dxdd3t.webp"
                                       alt="3rd Place"
                                       width={24}
@@ -1280,7 +1280,7 @@ export default function TournamentDetailsPage() {
                 if (isImageUrl) {
                   return (
                     <div className="flex-shrink-0">
-                      <Image
+                      <img
                         src={icon}
                         alt={`${tournament.title} icon`}
                         width={96}
@@ -1308,7 +1308,7 @@ export default function TournamentDetailsPage() {
                         <>🤖 Admin</>
                       ) : host ? (
                         <div className="flex items-center">
-                          <Image
+                          <img
                             src={host.avatar}
                             alt={host.username}
                             width={20}
