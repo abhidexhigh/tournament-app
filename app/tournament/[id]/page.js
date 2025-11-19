@@ -13,6 +13,12 @@ import Select from "../../components/Select";
 import CountdownTimer from "../../components/CountdownTimer";
 import Tabs from "../../components/Tabs";
 import { getCurrentUser } from "../../lib/auth";
+import { LuCalendarDays, LuUsers } from "react-icons/lu";
+import { TbMoneybag } from "react-icons/tb";
+import { GiCrossedAxes } from "react-icons/gi";
+import { FaTrophy } from "react-icons/fa";
+import { FaClock } from "react-icons/fa6";
+
 import {
   calculateActualPrizePool,
   calculatePrizes,
@@ -534,13 +540,30 @@ export default function TournamentDetailsPage() {
         {(tournament.tournament_type ?? tournament.tournamentType) !==
           "clan_battle" && (
           <Card>
-            <h2 className="text-xl font-medium text-gold mb-4">
-              Prize Distribution
-            </h2>
+            <div className="flex items-center mb-4 justify-start gap-2">
+              <img
+                src="https://res.cloudinary.com/dg0cmj6su/image/upload/v1763459457/dollar_bag_jehifs.webp"
+                alt="Prize Distribution"
+                width={32}
+                height={32}
+                className="w-5"
+              />
+              <div>
+                <h3 className="text-gold font-bold text-xl flex items-center gap-2 leading-6">
+                  Prize Distribution
+                </h3>
+              </div>
+            </div>
             <div className="space-y-3">
-              <div className="flex items-center justify-between p-4 bg-dark-secondary rounded-lg border border-gold/30">
+              <div className="flex items-center justify-between bg-dark-primary/50 rounded-lg p-3 border border-gold-dark/50 px-6">
                 <div className="flex items-center space-x-3">
-                  <span className="text-3xl">🥇</span>
+                  <img
+                    src="https://res.cloudinary.com/dg0cmj6su/image/upload/v1763459457/First_xf1xz2.webp"
+                    alt="1st Place"
+                    width={24}
+                    height={24}
+                    className="w-8"
+                  />
                   <div>
                     <p className="text-white font-bold">1st Place</p>
                     <p className="text-gray-400 text-sm">
@@ -559,9 +582,15 @@ export default function TournamentDetailsPage() {
                   </p>
                 </div>
               </div>
-              <div className="flex items-center justify-between p-4 bg-dark-secondary rounded-lg border border-gold-dark/20">
+              <div className="flex items-center justify-between bg-dark-primary/50 rounded-lg p-3 border border-gold-dark/50 px-6">
                 <div className="flex items-center space-x-3">
-                  <span className="text-3xl">🥈</span>
+                  <img
+                    src="https://res.cloudinary.com/dg0cmj6su/image/upload/v1763459457/second_nak1rc.webp"
+                    alt="2nd Place"
+                    width={24}
+                    height={24}
+                    className="w-8"
+                  />
                   <div>
                     <p className="text-white font-bold">2nd Place</p>
                     <p className="text-gray-400 text-sm">
@@ -580,9 +609,15 @@ export default function TournamentDetailsPage() {
                   </p>
                 </div>
               </div>
-              <div className="flex items-center justify-between p-4 bg-dark-secondary rounded-lg border border-gold-dark/20">
+              <div className="flex items-center justify-between bg-dark-primary/50 rounded-lg p-3 border border-gold-dark/50 px-6">
                 <div className="flex items-center space-x-3">
-                  <span className="text-3xl">🥉</span>
+                  <img
+                    src="https://res.cloudinary.com/dg0cmj6su/image/upload/v1763459457/3rd_dxdd3t.webp"
+                    alt="3rd Place"
+                    width={24}
+                    height={24}
+                    className="w-8"
+                  />
                   <div>
                     <p className="text-white font-bold">3rd Place</p>
                     <p className="text-gray-400 text-sm">
@@ -832,25 +867,25 @@ export default function TournamentDetailsPage() {
             {/* Left Side - Match List */}
             <div className="lg:col-span-2">
               <Card>
-                <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-xl font-bold text-gold-gradient">
-                    🎮 Matches
+                <div className="flex items-center justify-start mb-4 gap-4">
+                  <h3 className="text-xl font-bold text-gold-gradient flex items-center gap-2">
+                    <FaTrophy className="text-gold" /> <span>Matches</span>
                   </h3>
-                  <div className="bg-gold/20 px-3 py-1 rounded-full">
-                    <span className="text-gold font-semibold text-sm">
+                  <div className="bg-gold/20 px-3 rounded-lg">
+                    <span className="text-gold font-semibold text-[10px]">
                       {filteredMatches.length} of {staticMatches.length}
                     </span>
                   </div>
                 </div>
 
-                {/* Filter Buttons */}
-                <div className="flex gap-2 mb-6">
+                {/* Filter Buttons - Button Group */}
+                <div className="inline-flex rounded-lg border border-gold-dark/30 overflow-hidden mb-6 w-full">
                   <button
                     onClick={() => setMatchFilter("all")}
-                    className={`flex-1 px-4 py-2 rounded-lg font-semibold text-sm transition-all duration-200 ${
+                    className={`flex-1 px-4 py-2 font-medium text-sm transition-all duration-200 border-r border-gold-dark/30 ${
                       matchFilter === "all"
-                        ? "bg-gold text-dark-primary shadow-lg shadow-gold/30"
-                        : "bg-dark-secondary text-gray-400 hover:bg-dark-secondary/70 hover:text-white border border-gold-dark/20"
+                        ? "bg-gold text-dark-primary"
+                        : "bg-dark-secondary text-gray-400 hover:bg-dark-secondary/70 hover:text-white"
                     }`}
                   >
                     <span className="flex items-center justify-center gap-2">
@@ -868,10 +903,10 @@ export default function TournamentDetailsPage() {
                   </button>
                   <button
                     onClick={() => setMatchFilter("ongoing")}
-                    className={`flex-1 px-4 py-2 rounded-lg font-semibold text-sm transition-all duration-200 ${
+                    className={`flex-1 px-4 py-2 font-medium text-sm transition-all duration-200 border-r border-gold-dark/30 ${
                       matchFilter === "ongoing"
-                        ? "bg-blue-500 text-white shadow-lg shadow-blue-500/30"
-                        : "bg-dark-secondary text-gray-400 hover:bg-dark-secondary/70 hover:text-white border border-gold-dark/20"
+                        ? "bg-gold text-dark-primary"
+                        : "bg-dark-secondary text-gray-400 hover:bg-dark-secondary/70 hover:text-white"
                     }`}
                   >
                     <span className="flex items-center justify-center gap-2">
@@ -879,7 +914,7 @@ export default function TournamentDetailsPage() {
                       <span
                         className={`px-2 py-0.5 rounded-full text-xs ${
                           matchFilter === "ongoing"
-                            ? "bg-white/20 text-white"
+                            ? "bg-dark-primary/30 text-dark-primary"
                             : "bg-gray-700 text-gray-300"
                         }`}
                       >
@@ -889,10 +924,10 @@ export default function TournamentDetailsPage() {
                   </button>
                   <button
                     onClick={() => setMatchFilter("completed")}
-                    className={`flex-1 px-4 py-2 rounded-lg font-semibold text-sm transition-all duration-200 ${
+                    className={`flex-1 px-4 py-2 font-medium text-sm transition-all duration-200 ${
                       matchFilter === "completed"
-                        ? "bg-green-500 text-white shadow-lg shadow-green-500/30"
-                        : "bg-dark-secondary text-gray-400 hover:bg-dark-secondary/70 hover:text-white border border-gold-dark/20"
+                        ? "bg-gold text-dark-primary"
+                        : "bg-dark-secondary text-gray-400 hover:bg-dark-secondary/70 hover:text-white"
                     }`}
                   >
                     <span className="flex items-center justify-center gap-2">
@@ -900,7 +935,7 @@ export default function TournamentDetailsPage() {
                       <span
                         className={`px-2 py-0.5 rounded-full text-xs ${
                           matchFilter === "completed"
-                            ? "bg-white/20 text-white"
+                            ? "bg-dark-primary/30 text-dark-primary"
                             : "bg-gray-700 text-gray-300"
                         }`}
                       >
@@ -938,7 +973,7 @@ export default function TournamentDetailsPage() {
                         onClick={() => setSelectedMatch(match)}
                         className={`w-full text-left relative overflow-hidden rounded-xl transition-all duration-300 transform hover:scale-[1.02] ${
                           selectedMatch?.id === match.id
-                            ? "ring-2 ring-gold shadow-lg shadow-gold/30"
+                            ? ""
                             : "hover:shadow-xl"
                         }`}
                       >
@@ -946,7 +981,7 @@ export default function TournamentDetailsPage() {
                         <div
                           className={`absolute inset-0 ${
                             selectedMatch?.id === match.id
-                              ? "bg-gradient-to-br from-gold/20 via-gold/10 to-transparent"
+                              ? "bg-gold/10 from-gold/20 via-gold/10 to-transparent"
                               : "bg-gradient-to-br from-dark-card via-dark-secondary to-dark-card"
                           }`}
                         />
@@ -975,29 +1010,35 @@ export default function TournamentDetailsPage() {
 
                           {/* Match info grid */}
                           <div className="space-y-2">
-                            {/* Date and time */}
-                            <div className="flex items-center space-x-2 text-sm">
-                              <div className="flex items-center space-x-1 text-gray-400">
-                                <span>📅</span>
-                                <span className="font-medium">
-                                  {match.date}
+                            <div className="flex items-center space-x-6 text-sm">
+                              {/* Date and time */}
+                              <div className="flex items-center space-x-2 text-sm">
+                                <div className="flex items-center space-x-1 text-gray-400">
+                                  <span>
+                                    <LuCalendarDays />
+                                  </span>
+                                  <span className="font-medium">
+                                    {match.date}
+                                  </span>
+                                </div>
+                              </div>
+
+                              <div className="flex items-center space-x-1 text-sm text-gray-400">
+                                <span>
+                                  <FaClock />
+                                </span>
+                                <span>
+                                  {match.startTime} - {match.endTime}
                                 </span>
                               </div>
-                            </div>
-
-                            <div className="flex items-center space-x-2 text-sm text-gray-400">
-                              <span>⏰</span>
-                              <span>
-                                {match.startTime} - {match.endTime}
-                              </span>
                             </div>
 
                             {/* Stats row */}
                             <div className="flex items-center justify-between pt-2 border-t border-gray-700/50">
                               <div className="flex items-center space-x-3">
                                 <div className="flex items-center space-x-1">
-                                  <span className="text-blue-400">👥</span>
-                                  <span className="text-blue-300 font-semibold text-sm">
+                                  <LuUsers />
+                                  <span className="font-semibold text-sm">
                                     {match.participants}
                                   </span>
                                 </div>
@@ -1026,7 +1067,7 @@ export default function TournamentDetailsPage() {
 
                           {/* Selected indicator */}
                           {selectedMatch?.id === match.id && (
-                            <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-gold via-yellow-400 to-gold" />
+                            <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-gold via-yellow-400 to-gold" />
                           )}
                         </div>
                       </button>
@@ -1039,48 +1080,60 @@ export default function TournamentDetailsPage() {
             {/* Right Side - Match Leaderboard */}
             <div className="lg:col-span-3">
               {selectedMatch ? (
-                <Card glass>
-                  <div className="mb-6">
+                <Card glass className="!p-0">
+                  <div className="mb-6 p-4 pb-0">
                     <h3 className="text-2xl font-bold text-gold-gradient mb-2">
                       {selectedMatch.title}
                     </h3>
-                    <div className="flex items-center gap-4 text-sm text-gray-400">
-                      <span>📅 {selectedMatch.date}</span>
-                      <span>
-                        ⏰ {selectedMatch.startTime} - {selectedMatch.endTime}
-                      </span>
+                    <div className="flex items-center gap-8 text-sm text-gray-400">
+                      <div className="flex items-center gap-2">
+                        <LuCalendarDays />
+                        <span>{selectedMatch.date}</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <FaClock />
+                        <span className="text-gray-400">
+                          {selectedMatch.startTime} - {selectedMatch.endTime}
+                        </span>
+                      </div>
                       <span className="text-gold font-semibold">
-                        💰 {selectedMatch.prizePool.toLocaleString()} 💎
+                        {selectedMatch.prizePool.toLocaleString()} 💎
                       </span>
                     </div>
                   </div>
-
-                  <h4 className="text-lg font-bold text-white mb-4">
-                    🏆 Match Results
-                  </h4>
-                  <div className="space-y-3">
+                  <div className="">
                     {selectedMatch.leaderboard.map((entry) => (
                       <div
                         key={entry.playerId}
-                        className={`flex items-center justify-between p-4 rounded-lg border ${
-                          entry.position === 1
-                            ? "bg-gradient-to-r from-yellow-400/20 to-yellow-600/20 border-yellow-400/50"
-                            : entry.position === 2
-                            ? "bg-gradient-to-r from-gray-300/20 to-gray-500/20 border-gray-300/50"
-                            : entry.position === 3
-                            ? "bg-gradient-to-r from-orange-400/20 to-orange-600/20 border-orange-400/50"
-                            : "bg-dark-secondary/50 border-gray-600/30"
-                        }`}
+                        className={`flex items-center justify-between p-4 bg-gold/10 border-b border-white/20 px-8`}
                       >
                         <div className="flex items-center space-x-4">
                           <div className="flex items-center space-x-2">
                             <span className="text-2xl font-bold text-gold min-w-[3rem]">
                               {entry.position === 1 ? (
-                                "🥇"
+                                <img
+                                  src="https://res.cloudinary.com/dg0cmj6su/image/upload/v1763459457/First_xf1xz2.webp"
+                                  alt="1st Place"
+                                  width={24}
+                                  height={24}
+                                  className="w-8"
+                                />
                               ) : entry.position === 2 ? (
-                                "🥈"
+                                <img
+                                  src="https://res.cloudinary.com/dg0cmj6su/image/upload/v1763459457/second_nak1rc.webp"
+                                  alt="2nd Place"
+                                  width={24}
+                                  height={24}
+                                  className="w-8"
+                                />
                               ) : entry.position === 3 ? (
-                                "🥉"
+                                <img
+                                  src="https://res.cloudinary.com/dg0cmj6su/image/upload/v1763459457/3rd_dxdd3t.webp"
+                                  alt="3rd Place"
+                                  width={24}
+                                  height={24}
+                                  className="w-8"
+                                />
                               ) : (
                                 <span className="text-sm">
                                   #{entry.position}
@@ -1150,7 +1203,7 @@ export default function TournamentDetailsPage() {
     return (
       <Card>
         <h2 className="text-xl font-bold text-gold mb-4">
-          👥 Participants ({participants.length}/
+          Participants ({participants.length}/
           {tournament.max_players ?? tournament.maxPlayers})
         </h2>
         {participants.length === 0 ? (
@@ -1171,7 +1224,13 @@ export default function TournamentDetailsPage() {
                   <span className="text-gray-400 text-sm font-medium min-w-[2rem]">
                     #{index + 1}
                   </span>
-                  <span className="text-3xl">{participant.avatar}</span>
+                  <img
+                    src={participant.avatar}
+                    alt={participant.username}
+                    width={24}
+                    height={24}
+                    className="w-8"
+                  />
                   <div className="flex-1">
                     <p className="text-white font-medium">
                       {participant.username}
@@ -1269,8 +1328,8 @@ export default function TournamentDetailsPage() {
         </Link>
 
         {/* Tournament Header */}
-        <Card glass className="mb-8">
-          <div className="flex items-center justify-between mb-6">
+        <Card glass className="mb-4">
+          <div className="flex items-center justify-between mb-4">
             <div className="flex items-center space-x-4">
               {(() => {
                 const icon = getTournamentIcon(tournament);
@@ -1353,7 +1412,7 @@ export default function TournamentDetailsPage() {
               {/* Countdown Timer Section */}
               {(tournament.status === "upcoming" ||
                 tournament.status === "ongoing") && (
-                <div className="flex items-center gap-2 border-r border-white/20 w-[148px]">
+                <div className="flex items-center gap-2 border-r border-white/20 w-[156px]">
                   {/* Countdown Timer for Upcoming Automated Tournaments */}
                   {tournament.status === "upcoming" &&
                     (tournament.is_automated === true ||
@@ -1465,9 +1524,9 @@ export default function TournamentDetailsPage() {
               )}
 
               {/* Schedule Card */}
-              <div className="flex items-start gap-2 p-2.5 w-[148px] border-r border-white/20">
-                <div className="flex-shrink-0 w-8 h-8 rounded-md bg-blue-500/20 flex items-center justify-center text-lg">
-                  📅
+              <div className="flex items-start gap-2 p-2.5 w-[156px] border-r border-white/20">
+                <div className="flex-shrink-0 w-8 h-8 rounded-md bg-gray-500/20 flex items-center justify-center text-lg">
+                  <LuCalendarDays />
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="text-gold-text font-medium text-xs tracking-wider">
@@ -1481,9 +1540,9 @@ export default function TournamentDetailsPage() {
               </div>
 
               {/* Players Card */}
-              <div className="flex items-start gap-2 p-2.5 w-[148px] border-r border-white/20">
-                <div className="flex-shrink-0 w-8 h-8 rounded-md bg-purple-500/20 flex items-center justify-center text-lg">
-                  👥
+              <div className="flex items-start gap-2 p-2.5 w-[156px] border-r border-white/20">
+                <div className="flex-shrink-0 w-8 h-8 rounded-md bg-gray-500/20 flex items-center justify-center text-lg">
+                  <LuUsers />
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="text-gold-text font-medium text-xs tracking-wider">
@@ -1509,9 +1568,9 @@ export default function TournamentDetailsPage() {
               </div>
 
               {/* Entry Fee Card */}
-              <div className="flex items-start gap-2 p-2.5 w-[148px] border-r border-white/20">
-                <div className="flex-shrink-0 w-8 h-8 rounded-md bg-green-500/20 flex items-center justify-center text-lg">
-                  💰
+              <div className="flex items-start gap-2 p-2.5 w-[156px] border-r border-white/20">
+                <div className="flex-shrink-0 w-8 h-8 rounded-md bg-gray-500/20 flex items-center justify-center text-lg">
+                  <TbMoneybag />
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="text-gold-text font-medium text-xs tracking-wider">
@@ -1535,15 +1594,12 @@ export default function TournamentDetailsPage() {
               </div>
 
               {/* Prize Pool Card - Highlighted */}
-              <div className="flex items-start gap-2 p-2.5 w-[148px] border-r border border-gold/40 hover:border-gold/40 transition-all shadow-md shadow-gold/10 rounded-lg">
-                <div className="flex-shrink-0 w-8 h-8 rounded-md bg-gold/30 flex items-center justify-center text-lg">
-                  🏆
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-gold/80 text-xs uppercase tracking-wider mb-1 font-semibold">
+              <div className="flex items-start gap-2 p-2.5 w-[156px] border-r border border-gold/40 hover:border-gold/40 transition-all shadow-md shadow-gold/10 rounded-lg">
+                <div className="flex-1 min-w-0 text-center">
+                  <p className="text-gold/80 text-xs tracking-wider mb-1 font-semibold">
                     Prize Pool
                   </p>
-                  <p className="text-gold font-bold text-base">
+                  <p className="text-gold font-bold text-lg">
                     ${getPrizePoolDisplayDual(tournament).usd}
                   </p>
                   <p className="text-gold/90 text-sm">
@@ -1565,8 +1621,8 @@ export default function TournamentDetailsPage() {
               <div className="px-3 flex-1">
                 <div className="flex justify-self-start items-center gap-8">
                   <div className="flex items-center gap-2">
-                    <div className="w-8 h-8 rounded-md bg-purple-500/20 flex items-center justify-center text-base">
-                      ⚔️
+                    <div className="w-8 h-8 rounded-md bg-gray-500/20 flex items-center justify-center text-base">
+                      <GiCrossedAxes />
                     </div>
                     <h3 className="text-white font-bold text-base">
                       Clan Details
@@ -1634,7 +1690,7 @@ export default function TournamentDetailsPage() {
         </Card>
 
         {/* Tabbed Content */}
-        <Tabs tabs={tabs} defaultTab="prize-distribution" variant="divided" />
+        <Tabs tabs={tabs} defaultTab="participants" variant="divided" />
 
         {/* Winner Declaration Modal */}
         {showWinnerModal && (
