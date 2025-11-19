@@ -7,7 +7,7 @@ import { useState } from "react";
  *
  * @param {Array} tabs - Array of tab objects with { id, label, content, badge }
  * @param {string} defaultTab - ID of the default active tab
- * @param {string} variant - Style variant: 'underline' | 'pill' | 'bordered'
+ * @param {string} variant - Style variant: 'underline' | 'pill' | 'bordered' | 'divided'
  * @param {Function} onTabChange - Optional callback when tab changes
  */
 export default function Tabs({
@@ -28,7 +28,7 @@ export default function Tabs({
 
   const getTabStyles = (isActive) => {
     const baseStyles =
-      "px-4 py-3 font-medium transition-all duration-300 focus:outline-none";
+      "px-6 py-3 font-medium transition-all duration-300 focus:outline-none";
 
     switch (variant) {
       case "underline":
@@ -52,6 +52,13 @@ export default function Tabs({
             : "bg-dark-secondary/50 border-transparent text-gray-400 hover:text-white"
         }`;
 
+      case "divided":
+        return `${baseStyles} ${
+          isActive
+            ? "text-gold bg-dark-card/30"
+            : "text-gray-400 hover:text-white hover:bg-dark-secondary/30"
+        }`;
+
       default:
         return baseStyles;
     }
@@ -65,7 +72,11 @@ export default function Tabs({
     <div className={`w-full ${className}`}>
       {/* Tab Navigation */}
       <div className="relative border-b border-gray-700/50 overflow-x-auto scrollbar-hide">
-        <div className="flex space-x-1 min-w-max">
+        <div
+          className={`flex ${
+            variant === "divided" ? "divide-x divide-gray-700/70" : "space-x-1"
+          } min-w-max`}
+        >
           {tabs.map((tab) => (
             <button
               key={tab.id}
