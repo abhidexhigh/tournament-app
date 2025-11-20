@@ -472,7 +472,12 @@ export default function TournamentDetailsPage() {
       id: "participants",
       label: "Participants",
       content: (
-        <ParticipantsTab participants={participants} tournament={tournament} />
+        <ParticipantsTab
+          participants={participants}
+          tournament={tournament}
+          clan1={clan1}
+          clan2={clan2}
+        />
       ),
     },
     {
@@ -514,7 +519,7 @@ export default function TournamentDetailsPage() {
         />
 
         {/* Tabbed Content */}
-        <Tabs tabs={tabs} defaultTab="participants" variant="divided" />
+        <Tabs tabs={tabs} defaultTab="prize-distribution" variant="divided" />
 
         {/* Winner Declaration Modal */}
         <WinnerDeclarationModal

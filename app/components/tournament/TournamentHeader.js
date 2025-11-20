@@ -50,12 +50,12 @@ export default function TournamentHeader({
         <div className="flex items-start sm:items-center space-x-3 sm:space-x-4">
           <TournamentIcon tournament={tournament} />
           <div className="flex-1 min-w-0">
-            <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gold-gradient break-words">
+            <h1 className="text-xl sm:text-xl lg:text-2xl 2xl:text-3xl font-bold text-gold-gradient break-words">
               {tournament.title}
             </h1>
             {/* Host Name */}
-            <div className="mt-1 sm:mt-2">
-              <div className="text-gray-400 text-xs sm:text-sm">
+            <div className="mt-1">
+              <div className="text-gray-400 text-xs sm:text-sm 2xl:text-base">
                 <div className="text-white font-medium">
                   {tournament.is_automated ? (
                     <>🤖 Admin</>
@@ -66,9 +66,9 @@ export default function TournamentHeader({
                         alt={host.username}
                         width={20}
                         height={20}
-                        className="w-5 h-5 sm:w-6 sm:h-6 rounded-full"
+                        className="w-5 h-5 sm:w-6 sm:h-6 2xl:w-7 2xl:h-7 rounded-full"
                       />
-                      <span className="text-white font-medium text-sm">
+                      <span className="text-white font-medium text-sm 2xl:text-base">
                         {host.username}
                       </span>
                     </div>
@@ -141,15 +141,15 @@ export default function TournamentHeader({
           <TournamentStatCard icon={<TbMoneybag />} label="Entry Fee">
             {tournament.entry_fee ? (
               <>
-                <p className="text-white font-semibold text-sm sm:text-base">
+                <p className="text-white font-semibold text-sm sm:text-base 2xl:text-lg">
                   ${getEntryFeeDisplayDual(tournament).usd}
                 </p>
-                <p className="text-gold text-xs">
+                <p className="text-gold text-xs 2xl:text-sm">
                   {getEntryFeeDisplayDual(tournament).diamonds} 💎
                 </p>
               </>
             ) : (
-              <p className="text-green-400 font-semibold text-sm sm:text-base">
+              <p className="text-green-400 font-semibold text-sm sm:text-base 2xl:text-lg">
                 Free
               </p>
             )}
@@ -157,15 +157,17 @@ export default function TournamentHeader({
 
           {/* Prize Pool Card - Highlighted */}
           <TournamentStatCard label="Prize Pool" highlighted>
-            <p className="text-gold font-bold text-base sm:text-lg">
+            <p className="text-gold font-bold text-base sm:text-lg 2xl:text-xl">
               ${getPrizePoolDisplayDual(tournament).usd}
             </p>
-            <p className="text-gold/90 text-xs sm:text-sm">
+            <p className="text-gold/90 text-xs sm:text-sm 2xl:text-base">
               {getPrizePoolDisplayDual(tournament).diamonds} 💎
             </p>
             {(tournament.prize_pool_type ?? tournament.prizePoolType) ===
               "entry-based" && (
-              <p className="text-gold/70 text-xs italic">Entry-based</p>
+              <p className="text-gold/70 text-xs 2xl:text-sm italic">
+                Entry-based
+              </p>
             )}
           </TournamentStatCard>
         </div>
@@ -184,7 +186,7 @@ export default function TournamentHeader({
         )}
 
         {/* Action Buttons */}
-        <div className="flex flex-col gap-2 w-full lg:w-auto lg:min-w-[200px]">
+        <div className="flex flex-col gap-2 w-full lg:w-auto lg:min-w-[200px] lg:ml-auto">
           {canJoin && (
             <Button variant="primary" onClick={onJoin} disabled={loading}>
               {tournament.entry_fee
@@ -250,16 +252,18 @@ function ClanBattleDetails({ tournament, clan1, clan2 }) {
       {/* Mobile View - Stacked Layout */}
       <div className="lg:hidden">
         <div className="flex items-center gap-2 mb-3">
-          <div className="w-7 h-7 rounded-md bg-gray-500/20 flex items-center justify-center text-sm">
+          <div className="w-7 h-7 2xl:w-8 2xl:h-8 rounded-md bg-gray-500/20 flex items-center justify-center text-sm 2xl:text-base">
             <GiCrossedAxes />
           </div>
-          <h3 className="text-white font-bold text-sm">Clan Battle</h3>
+          <h3 className="text-white font-bold text-sm 2xl:text-base">
+            Clan Battle
+          </h3>
         </div>
         {isClanSelection && (
           <div className="space-y-2">
             <div className="p-2.5 rounded-md bg-black/50 border border-white/20">
-              <p className="text-gray-400 text-xs mb-1">Clan 1</p>
-              <p className="text-white font-semibold text-sm">
+              <p className="text-gray-400 text-xs 2xl:text-sm mb-1">Clan 1</p>
+              <p className="text-white font-semibold text-sm 2xl:text-base">
                 {clan1
                   ? `${clan1.emblem} ${clan1.name} [${clan1.tag}]`
                   : "Not specified"}
@@ -267,12 +271,14 @@ function ClanBattleDetails({ tournament, clan1, clan2 }) {
             </div>
             <div className="flex items-center justify-center">
               <div className="px-4 py-1 rounded-full bg-gold/10 border border-gold/30">
-                <span className="text-gold font-bold text-xs">VS</span>
+                <span className="text-gold font-bold text-xs 2xl:text-sm">
+                  VS
+                </span>
               </div>
             </div>
             <div className="p-2.5 rounded-md bg-black/50 border border-white/20">
-              <p className="text-gray-400 text-xs mb-1">Clan 2</p>
-              <p className="text-white font-semibold text-sm">
+              <p className="text-gray-400 text-xs 2xl:text-sm mb-1">Clan 2</p>
+              <p className="text-white font-semibold text-sm 2xl:text-base">
                 {clan2
                   ? `${clan2.emblem} ${clan2.name} [${clan2.tag}]`
                   : "Not specified"}
@@ -284,33 +290,37 @@ function ClanBattleDetails({ tournament, clan1, clan2 }) {
 
       {/* Desktop View - Horizontal Layout */}
       <div className="hidden lg:block px-3">
-        <div className="flex items-center gap-8">
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-md bg-gray-500/20 flex items-center justify-center text-base">
-              <GiCrossedAxes />
+        {isClanSelection && (
+          <div className="flex items-center gap-8">
+            <div className="flex items-center gap-2">
+              <div className="w-8 h-8 2xl:w-10 2xl:h-10 rounded-md bg-gray-500/20 flex items-center justify-center text-base 2xl:text-lg">
+                <GiCrossedAxes />
+              </div>
+              <h3 className="text-white font-bold text-base 2xl:text-lg">
+                Clan Details
+              </h3>
             </div>
-            <h3 className="text-white font-bold text-base">Clan Details</h3>
-          </div>
-          {isClanSelection && (
             <>
               <div className="p-2.5 rounded-md bg-black/50 border border-white/20">
-                <p className="text-white font-semibold text-sm whitespace-nowrap">
+                <p className="text-white font-semibold text-sm 2xl:text-base whitespace-nowrap">
                   {clan1
                     ? `${clan1.emblem} ${clan1.name} [${clan1.tag}]`
                     : "Not specified"}
                 </p>
               </div>
-              <span className="text-white font-semibold text-sm">vs</span>
+              <span className="text-white font-semibold text-sm 2xl:text-base">
+                vs
+              </span>
               <div className="p-2.5 rounded-md bg-black/50 border border-white/20">
-                <p className="text-white font-semibold text-sm whitespace-nowrap">
+                <p className="text-white font-semibold text-sm 2xl:text-base whitespace-nowrap">
                   {clan2
                     ? `${clan2.emblem} ${clan2.name} [${clan2.tag}]`
                     : "Not specified"}
                 </p>
               </div>
             </>
-          )}
-        </div>
+          </div>
+        )}
       </div>
     </div>
   );

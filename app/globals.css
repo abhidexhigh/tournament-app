@@ -45,6 +45,7 @@
   /* Dark theme colors */
   --color-dark-primary: #0a0a0f;
   --color-dark-secondary: #13131a;
+  --color-dark-secondary-accent: #0f0f0f;
   --color-dark-card: #1a1a24;
   
   /* Golden theme colors */
@@ -53,6 +54,7 @@
   --color-gold-dark: #d4af37;
   --color-gold-text: #fffac8;
   --color-gold-light-text: #e6d9c2;
+  --color-gold-card-bg: #272525;
   
   /* Accent colors */
   --color-accent-purple: #8b5cf6;
@@ -271,7 +273,7 @@ body {
   position: relative;
   width: fit-content;
   margin-left: auto;
-  padding: 12px;
+  padding: 12px 30px;
   background: linear-gradient(135deg, #13131a 0%, #1a1a24 100%);
   border: 1px solid rgba(255, 184, 0, 0.2);
   border-radius: 12px;

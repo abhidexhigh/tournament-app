@@ -215,8 +215,8 @@ function MatchCard({ match, index, isSelected, onClick }) {
       <div
         className={`absolute inset-0 ${
           isSelected
-            ? "bg-gold/10 from-gold/20 via-gold/10 to-transparent"
-            : "bg-gradient-to-br from-dark-card via-dark-secondary to-dark-card"
+            ? "bg-gold-card-bg"
+            : "bg-dark-secondary-accent border border-white/20 overflow-hidden rounded-xl"
         }`}
       />
 
@@ -340,7 +340,7 @@ function LeaderboardEntry({ entry }) {
   };
 
   return (
-    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between p-3 sm:p-4 bg-gold/10 border-b border-white/20 px-4 sm:px-8 gap-3 sm:gap-0">
+    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between p-3 sm:p-4 bg-gold-card-bg border-b border-white/20 px-4 sm:px-8 gap-3 sm:gap-0">
       <div className="flex items-center space-x-3 sm:space-x-4">
         <div className="flex items-center space-x-2">
           <span className="text-xl sm:text-2xl font-bold text-gold min-w-[2.5rem] sm:min-w-[3rem]">

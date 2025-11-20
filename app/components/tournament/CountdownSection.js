@@ -29,8 +29,10 @@ export default function CountdownSection({ tournament }) {
           }`}
         >
           <div className="flex items-center gap-2">
-            <LuClock className="text-base text-red-400" />
-            <p className="text-red-400 font-semibold text-sm">{message}</p>
+            <LuClock className="text-base 2xl:text-lg text-red-400" />
+            <p className="text-red-400 font-semibold text-sm 2xl:text-base">
+              {message}
+            </p>
           </div>
         </div>
       );
@@ -44,7 +46,7 @@ export default function CountdownSection({ tournament }) {
             : ""
         }`}
       >
-        <p className="text-gold-text font-medium text-xs tracking-wider">
+        <p className="text-gold-text font-medium text-xs 2xl:text-sm tracking-wider">
           {label}
         </p>
         <CountdownTimer {...timerProps} style="minimal" />
@@ -113,20 +115,20 @@ export default function CountdownSection({ tournament }) {
   ) {
     return (
       <div className="lg:col-span-3 flex items-start gap-2 p-0.5 rounded-lg border border-red-500/30 bg-gradient-to-br from-red-500/10 via-red-500/5 to-transparent">
-        <div className="flex-shrink-0 w-8 h-8 rounded-md bg-red-500/20 flex items-center justify-center text-lg">
+        <div className="flex-shrink-0 w-8 h-8 2xl:w-10 2xl:h-10 rounded-md bg-red-500/20 flex items-center justify-center text-lg 2xl:text-xl">
           ⏰
         </div>
         <div className="flex-1 min-w-0">
-          <p className="text-gold-text font-medium text-xs tracking-wider">
+          <p className="text-gold-text font-medium text-xs 2xl:text-sm tracking-wider">
             Status
           </p>
           <div className="flex items-center gap-2">
-            <div className="h-2 w-2 rounded-full bg-red-400 animate-pulse"></div>
-            <p className="text-red-400 font-semibold text-sm">
+            <div className="h-2 w-2 2xl:h-2.5 2xl:w-2.5 rounded-full bg-red-400 animate-pulse"></div>
+            <p className="text-red-400 font-semibold text-sm 2xl:text-base">
               Tournament Started
             </p>
           </div>
-          <p className="text-gray-300 text-xs mt-1">
+          <p className="text-gray-300 text-xs 2xl:text-sm mt-1">
             Matches are underway • New entries are closed
           </p>
         </div>

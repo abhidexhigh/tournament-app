@@ -70,8 +70,8 @@ export default function TournamentCard({ tournament }) {
       <div className="tournament-card group relative">
         <div className="status-stripe overflow-hidden" />
 
-        <div className="p-4 sm:px-6 sm:py-1 border border-[#ffb80033] rounded-xl min-h-[104px]">
-          <div className="flex flex-col lg:flex-row !items-center lg:items-start gap-4">
+        <div className="p-4 sm:px-6 sm:py-1 border border-[#ffb80033] rounded-xl">
+          <div className="flex flex-col lg:flex-row !items-center lg:items-start gap-4 min-h-[90px]">
             {/* Left Section: Icon + Title + Badges */}
             <div className="flex items-start gap-3 sm:gap-6 flex-1 min-w-0 w-full">
               {/* Tournament Icon */}
@@ -154,7 +154,7 @@ export default function TournamentCard({ tournament }) {
             {/* Stats Grid */}
             <div className="grid grid-cols-2 sm:flex sm:flex-nowrap gap-3 sm:gap-2 lg:gap-4">
               {/* Players */}
-              <div className="flex items-center gap-2 w-full sm:w-28 lg:w-32">
+              <div className="flex items-center gap-2 w-full sm:w-32 lg:w-36">
                 <div className="w-8 h-8 sm:w-8 sm:h-8 2xl:w-10 2xl:h-10 rounded-lg bg-gradient-to-br from-white/10 to-white/5 flex items-center justify-center border border-white/10 flex-shrink-0">
                   <LuUsers className="text-base sm:text-lg 2xl:text-xl" />
                 </div>
@@ -250,17 +250,17 @@ export default function TournamentCard({ tournament }) {
 
               {/* Prize Pool */}
               {/* {tournament?.prize_pool !== 0 && ( */}
-              <div className="flex-shrink-0 w-full sm:w-32 lg:w-36">
+              <div className="flex-shrink-0 w-full sm:w-32 lg:w-40">
                 {tournament?.prize_pool !== 0 && (
                   <div className="prize-display">
-                    <div className="text-center sm:text-right">
-                      <div className="text-[10px] sm:text-xs 2xl:text-sm text-gold font-medium mb-1 tracking-wider whitespace-nowrap">
+                    <div className="text-center sm:text-left">
+                      <div className="text-[10px] sm:text-xs 2xl:text-sm text-gold font-medium mb-1 whitespace-nowrap">
                         Prize Pool
                       </div>
-                      <div className="text-gold font-black text-xl sm:text-xl 2xl:text-2xl leading-none mb-1">
+                      <div className="text-gold text-xl font-medium sm:text-lg 2xl:text-lg leading-none mb-1">
                         ${getPrizePoolDisplayDual(tournament).usd}
                       </div>
-                      <div className="text-gold-dark text-xs sm:text-sm 2xl:text-base font-semibold">
+                      <div className="text-gold-dark text-xs sm:text-xs 2xl:text-sm font-semibold">
                         {getPrizePoolDisplayDual(tournament).diamonds} 💎
                       </div>
                     </div>
