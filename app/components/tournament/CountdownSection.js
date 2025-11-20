@@ -1,6 +1,7 @@
 "use client";
 
-import CountdownTimer from "../CountdownTimer";
+import { LuClock } from "react-icons/lu";
+import CountdownTimer, { useCountdown } from "../CountdownTimer";
 
 export default function CountdownSection({ tournament }) {
   const isAutomated =
@@ -10,6 +11,47 @@ export default function CountdownSection({ tournament }) {
     return null;
   }
 
+  // Helper component to render countdown with conditional label
+  const CountdownDisplay = ({ label, timerProps, highlighted = false }) => {
+    const timeLeft = useCountdown(timerProps);
+
+    // Check if the timer has expired
+    if (timeLeft.isExpired) {
+      const message = timerProps.expiresAt
+        ? "Joining Closed"
+        : "Tournament Started";
+      return (
+        <div
+          className={`lg:col-span-2 p-0.5 rounded-lg ${
+            highlighted
+              ? "border-2 border-red-500/40 bg-gradient-to-br from-red-500/20 via-red-500/10 to-transparent"
+              : ""
+          }`}
+        >
+          <div className="flex items-center gap-2">
+            <LuClock className="text-base text-red-400" />
+            <p className="text-red-400 font-semibold text-sm">{message}</p>
+          </div>
+        </div>
+      );
+    }
+
+    return (
+      <div
+        className={`lg:col-span-2 p-0.5 rounded-lg ${
+          highlighted
+            ? "border-2 border-green-500/40 bg-gradient-to-br from-green-500/20 via-green-500/10 to-transparent"
+            : ""
+        }`}
+      >
+        <p className="text-gold-text font-medium text-xs tracking-wider">
+          {label}
+        </p>
+        <CountdownTimer {...timerProps} style="minimal" />
+      </div>
+    );
+  };
+
   // Upcoming Automated Tournaments
   if (
     tournament.status === "upcoming" &&
@@ -17,16 +59,10 @@ export default function CountdownSection({ tournament }) {
     tournament.expires_at
   ) {
     return (
-      <div className="lg:col-span-2 p-0.5 rounded-lg">
-        <p className="text-gold-text font-medium text-xs tracking-wider">
-          Join before
-        </p>
-        <CountdownTimer
-          expiresAt={tournament.expires_at}
-          label="Join before"
-          style="minimal"
-        />
-      </div>
+      <CountdownDisplay
+        label="Join before"
+        timerProps={{ expiresAt: tournament.expires_at }}
+      />
     );
   }
 
@@ -37,32 +73,21 @@ export default function CountdownSection({ tournament }) {
     tournament.expires_at
   ) {
     return (
-      <div className="lg:col-span-2 p-0.5">
-        <p className="text-gold-text font-medium text-xs tracking-wider">
-          Join before
-        </p>
-        <CountdownTimer
-          expiresAt={tournament.expires_at}
-          label="Starts in"
-          style="minimal"
-        />
-      </div>
+      <CountdownDisplay
+        label="Join before"
+        timerProps={{ expiresAt: tournament.expires_at }}
+      />
     );
   }
 
   // Ongoing Automated Tournaments
   if (tournament.status === "ongoing" && isAutomated && tournament.expires_at) {
     return (
-      <div className="lg:col-span-2 p-0.5 rounded-lg border-2 border-green-500/40 bg-gradient-to-br from-green-500/20 via-green-500/10 to-transparent">
-        <p className="text-gold-text font-medium text-xs tracking-wider">
-          Join before
-        </p>
-        <CountdownTimer
-          expiresAt={tournament.expires_at}
-          label="Join before"
-          style="minimal"
-        />
-      </div>
+      <CountdownDisplay
+        label="Join before"
+        timerProps={{ expiresAt: tournament.expires_at }}
+        highlighted={true}
+      />
     );
   }
 
@@ -73,16 +98,10 @@ export default function CountdownSection({ tournament }) {
     tournament.expires_at
   ) {
     return (
-      <div className="lg:col-span-2 p-0.5">
-        <p className="text-gold-text font-medium text-xs tracking-wider">
-          Join before
-        </p>
-        <CountdownTimer
-          expiresAt={tournament.expires_at}
-          label="Ends in"
-          style="minimal"
-        />
-      </div>
+      <CountdownDisplay
+        label="Join before"
+        timerProps={{ expiresAt: tournament.expires_at }}
+      />
     );
   }
 

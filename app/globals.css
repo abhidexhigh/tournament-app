@@ -172,7 +172,7 @@ body {
   height: 1px;
   background: linear-gradient(90deg,
     transparent,
-    #ffb800,
+    #ffb70022,
     transparent,
     transparent,
     transparent);
@@ -269,6 +269,8 @@ body {
 /* Prize display box - Elevated Mini Card */
 .prize-display {
   position: relative;
+  width: fit-content;
+  margin-left: auto;
   padding: 12px;
   background: linear-gradient(135deg, #13131a 0%, #1a1a24 100%);
   border: 1px solid rgba(255, 184, 0, 0.2);
@@ -317,7 +319,7 @@ body {
 
 /* Countdown timer wrapper - Blended seamlessly */
 .countdown-wrapper {
-  padding: 12px 42px;
+  /* padding: 12px 42px; */
   background: transparent;
   position: relative;
   transition: all 0.3s ease;

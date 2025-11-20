@@ -3,6 +3,102 @@
 import { useState, useEffect } from "react";
 import { FaClock } from "react-icons/fa";
 
+// Custom hook to get countdown state
+export function useCountdown({ date, time, expiresAt }) {
+  const [timeLeft, setTimeLeft] = useState({
+    days: 0,
+    hours: 0,
+    minutes: 0,
+    seconds: 0,
+    isExpired: false,
+  });
+
+  useEffect(() => {
+    const calculateTimeLeft = () => {
+      let tournamentDateTime;
+
+      if (expiresAt) {
+        tournamentDateTime = new Date(expiresAt);
+        if (isNaN(tournamentDateTime.getTime())) {
+          return {
+            days: 0,
+            hours: 0,
+            minutes: 0,
+            seconds: 0,
+            isExpired: true,
+          };
+        }
+      } else {
+        if (!date || !time) {
+          return {
+            days: 0,
+            hours: 0,
+            minutes: 0,
+            seconds: 0,
+            isExpired: true,
+          };
+        }
+
+        let dateStr = date;
+        if (date instanceof Date) {
+          dateStr = date.toISOString().split("T")[0];
+        } else if (typeof date === "string" && date.includes("T")) {
+          dateStr = date.split("T")[0];
+        }
+
+        tournamentDateTime = new Date(`${dateStr}T${time}`);
+
+        if (isNaN(tournamentDateTime.getTime())) {
+          return {
+            days: 0,
+            hours: 0,
+            minutes: 0,
+            seconds: 0,
+            isExpired: true,
+          };
+        }
+      }
+
+      const now = new Date();
+      const difference = tournamentDateTime.getTime() - now.getTime();
+
+      if (difference <= 0) {
+        return {
+          days: 0,
+          hours: 0,
+          minutes: 0,
+          seconds: 0,
+          isExpired: true,
+        };
+      }
+
+      const days = Math.floor(difference / (1000 * 60 * 60 * 24));
+      const hours = Math.floor(
+        (difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
+      );
+      const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((difference % (1000 * 60)) / 1000);
+
+      return {
+        days,
+        hours,
+        minutes,
+        seconds,
+        isExpired: false,
+      };
+    };
+
+    setTimeLeft(calculateTimeLeft());
+    const timer = setInterval(() => {
+      setTimeLeft(calculateTimeLeft());
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [date, time, expiresAt]);
+
+  return timeLeft;
+}
+
 export default function CountdownTimer({
   date,
   time,
@@ -119,6 +215,12 @@ export default function CountdownTimer({
   }, [date, time, expiresAt]);
 
   if (timeLeft.isExpired) {
+    // For compact or minimal styles, return just the text
+    if (style === "compact" || style === "minimal") {
+      return expiresAt ? "EXPIRED" : "STARTED";
+    }
+
+    // For default style, return full component
     return (
       <div
         className={`flex items-center space-x-2 justify-center sm:justify-start text-red-400 text-sm font-medium ${className}`}
@@ -132,6 +234,17 @@ export default function CountdownTimer({
       </div>
     );
   }
+  if (style === "compact") {
+    // Compact style - just the countdown text without extra formatting
+    if (timeLeft.days > 0) {
+      return `${timeLeft.days}d ${timeLeft.hours}h`;
+    } else if (timeLeft.hours > 0) {
+      return `${timeLeft.hours}h ${timeLeft.minutes}m`;
+    } else {
+      return `${timeLeft.minutes}m`;
+    }
+  }
+
   if (style === "minimal") {
     return (
       <div className="flex items-center space-x-2 justify-center sm:justify-start">

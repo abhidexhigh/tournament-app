@@ -3,9 +3,9 @@
 import Link from "next/link";
 import Image from "next/image";
 import Badge from "./Badge";
-import CountdownTimer from "./CountdownTimer";
+import CountdownTimer, { useCountdown } from "./CountdownTimer";
 import { getTournamentIcon } from "../lib/iconSelector";
-import { LuCalendarDays, LuUsers } from "react-icons/lu";
+import { LuCalendarDays, LuUsers, LuClock, LuTrophy } from "react-icons/lu";
 import { TbMoneybag } from "react-icons/tb";
 import {
   getPrizePoolDisplayDual,
@@ -24,6 +24,46 @@ export default function TournamentCard({ tournament }) {
 
   const isAutomated =
     tournament.is_automated === true || tournament.is_automated === "true";
+
+  // Helper component to render countdown with proper styling
+  const CountdownDisplay = ({ label, timerProps }) => {
+    const timeLeft = useCountdown(timerProps);
+
+    // Check if the timer has expired
+    if (timeLeft.isExpired) {
+      const message = timerProps.expiresAt
+        ? "Joining Closed"
+        : "Tournament Started";
+      return (
+        <div className="flex items-center gap-2 w-full sm:w-40 lg:w-44 border-x border-white/20 px-4 mx-auto">
+          <div className="w-8 h-8 sm:w-8 sm:h-8 2xl:w-10 2xl:h-10 rounded-lg bg-gradient-to-br from-white/10 to-white/5 flex items-center justify-center border border-white/10 flex-shrink-0">
+            <LuClock className="text-base sm:text-lg 2xl:text-xl text-red-400" />
+          </div>
+          <div className="min-w-0 flex-1">
+            <div className="text-red-400 font-bold text-wrap text-xs sm:text-sm 2xl:text-base truncate">
+              {message}
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    return (
+      <div className="flex items-center gap-2 w-full sm:w-40 lg:w-44 border-x border-white/20 px-4 mx-auto">
+        <div className="w-8 h-8 sm:w-8 sm:h-8 2xl:w-10 2xl:h-10 rounded-lg bg-gradient-to-br from-white/10 to-white/5 flex items-center justify-center border border-white/10 flex-shrink-0">
+          <LuClock className="text-base sm:text-lg 2xl:text-xl" />
+        </div>
+        <div className="min-w-0 flex-1">
+          <div className="text-[10px] sm:text-xs 2xl:text-sm text-gray-400 font-medium whitespace-nowrap">
+            {label}
+          </div>
+          <div className="text-gold-light-text font-bold text-xs sm:text-sm 2xl:text-base truncate">
+            <CountdownTimer {...timerProps} style="minimal" />
+          </div>
+        </div>
+      </div>
+    );
+  };
 
   return (
     <Link href={`/tournament/${tournament.id}`} className="block">
@@ -65,13 +105,13 @@ export default function TournamentCard({ tournament }) {
               {/* Title and Badges */}
               <div className="flex-1 min-w-0">
                 <div className="flex items-start gap-2 flex-wrap mb-2">
-                  <h3 className="sm:hidden text-xl sm:text-2xl lg:text-3xl 2xl:text-4xl font-black text-gold-light-text group-hover:text-gold transition-colors duration-300 tracking-tight">
+                  <h3 className="sm:hidden text-xl sm:text-xl lg:text-2xl 2xl:text-2xl font-black text-gold-light-text group-hover:text-gold transition-colors duration-300 tracking-tight">
                     {tournament.title}
                   </h3>
                 </div>
 
                 <div className="items-center gap-2 flex-wrap mb-3">
-                  <h3 className="hidden sm:block text-xl sm:text-xl lg:text-2xl 2xl:text-3xl font-black text-gold-light-text group-hover:text-gold transition-colors duration-300 tracking-tight">
+                  <h3 className="hidden sm:block text-xl sm:text-xl lg:text-xl 2xl:text-2xl font-black text-gold-light-text group-hover:text-gold transition-colors duration-300 tracking-tight mb-1">
                     {tournament.title}
                   </h3>
                   <span className="flex items-center gap-2">
@@ -112,14 +152,14 @@ export default function TournamentCard({ tournament }) {
             </div>
 
             {/* Stats Grid */}
-            <div className="grid grid-cols-2 sm:flex sm:flex-wrap gap-3 sm:gap-4 lg:gap-12 lg:px-6">
+            <div className="grid grid-cols-2 sm:flex sm:flex-nowrap gap-3 sm:gap-2 lg:gap-4">
               {/* Players */}
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 w-full sm:w-28 lg:w-32">
                 <div className="w-8 h-8 sm:w-8 sm:h-8 2xl:w-10 2xl:h-10 rounded-lg bg-gradient-to-br from-white/10 to-white/5 flex items-center justify-center border border-white/10 flex-shrink-0">
                   <LuUsers className="text-base sm:text-lg 2xl:text-xl" />
                 </div>
-                <div className="min-w-0">
-                  <div className="text-[10px] sm:text-xs 2xl:text-sm text-gray-400 font-medium">
+                <div className="min-w-0 flex-1">
+                  <div className="text-[10px] sm:text-xs 2xl:text-sm text-gray-400 font-medium whitespace-nowrap">
                     Players
                   </div>
                   <div className="text-gold-light-text font-bold text-sm sm:text-base 2xl:text-lg truncate">
@@ -130,12 +170,12 @@ export default function TournamentCard({ tournament }) {
               </div>
 
               {/* Entry Fee */}
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 w-full sm:w-32 lg:w-36">
                 <div className="w-8 h-8 sm:w-8 sm:h-8 2xl:w-10 2xl:h-10 rounded-lg bg-gradient-to-br from-white/10 to-white/5 flex items-center justify-center border border-white/10 flex-shrink-0">
                   <TbMoneybag className="text-base sm:text-lg 2xl:text-xl" />
                 </div>
-                <div className="min-w-0">
-                  <div className="text-[10px] sm:text-xs 2xl:text-sm text-gray-400 font-medium">
+                <div className="min-w-0 flex-1">
+                  <div className="text-[10px] sm:text-xs 2xl:text-sm text-gray-400 font-medium whitespace-nowrap">
                     Entry Fee
                   </div>
                   <div className="text-gold-light-text font-bold text-sm sm:text-base 2xl:text-lg truncate">
@@ -149,12 +189,12 @@ export default function TournamentCard({ tournament }) {
               </div>
 
               {/* Schedule */}
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 w-full sm:w-32 lg:w-36">
                 <div className="w-8 h-8 sm:w-8 sm:h-8 2xl:w-10 2xl:h-10 rounded-lg bg-gradient-to-br from-white/10 to-white/5 flex items-center justify-center border border-white/10 flex-shrink-0">
                   <LuCalendarDays className="text-base sm:text-lg 2xl:text-xl" />
                 </div>
-                <div className="min-w-0">
-                  <div className="text-[10px] sm:text-xs 2xl:text-sm text-gray-400 font-medium">
+                <div className="min-w-0 flex-1">
+                  <div className="text-[10px] sm:text-xs 2xl:text-sm text-gray-400 font-medium whitespace-nowrap">
                     Schedule
                   </div>
                   <div className="text-gold-light-text font-bold text-xs sm:text-sm 2xl:text-base truncate">
@@ -165,64 +205,69 @@ export default function TournamentCard({ tournament }) {
             </div>
 
             {/* Right Section: Countdown + Prize Pool */}
-            <div className="flex sm:flex-row flex-col items-stretch sm:items-center gap-3 sm:gap-8 w-full lg:w-auto">
+            <div className="flex sm:flex-row flex-col items-stretch sm:items-center gap-3 sm:gap-4 w-full lg:w-auto">
               {/* Countdown Logic */}
               {tournament.status === "upcoming" &&
                 isAutomated &&
                 tournament.expires_at && (
-                  <div className="countdown-wrapper w-full sm:w-auto border-x border-white/20">
-                    <CountdownTimer
-                      expiresAt={tournament.expires_at}
-                      label="Join before"
-                    />
-                  </div>
+                  <CountdownDisplay
+                    label="Join Before"
+                    timerProps={{ expiresAt: tournament.expires_at }}
+                  />
                 )}
 
               {tournament.status === "upcoming" && !isAutomated && (
-                <div className="countdown-wrapper w-full sm:w-auto border-x border-white/20">
-                  <CountdownTimer
-                    date={tournament.date}
-                    time={tournament.time}
-                    label="Starts in"
-                  />
-                </div>
+                <CountdownDisplay
+                  label="Starts In"
+                  timerProps={{ date: tournament.date, time: tournament.time }}
+                />
               )}
 
               {tournament.status === "ongoing" &&
                 isAutomated &&
                 tournament.expires_at && (
-                  <div className="countdown-wrapper w-full sm:w-auto border-x border-white/20">
-                    <CountdownTimer
-                      expiresAt={tournament.expires_at}
-                      label="Join before"
-                    />
-                  </div>
+                  <CountdownDisplay
+                    label="Join Before"
+                    timerProps={{ expiresAt: tournament.expires_at }}
+                  />
                 )}
 
               {tournament.status === "ongoing" && !isAutomated && (
-                <div className="countdown-wrapper w-full sm:w-auto border-x border-white/20">
-                  <div className="text-red-400 text-sm font-medium">
-                    ⏰ Tournament Started
+                <div className="flex items-center gap-2 w-full sm:w-40 lg:w-44 border-x border-white/20 px-4 mx-auto">
+                  <div className="w-8 h-8 sm:w-8 sm:h-8 2xl:w-10 2xl:h-10 rounded-lg bg-gradient-to-br from-white/10 to-white/5 flex items-center justify-center border border-white/10 flex-shrink-0">
+                    <LuClock className="text-base sm:text-lg 2xl:text-xl text-red-400" />
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <div className="text-[10px] sm:text-xs 2xl:text-sm text-gray-400 font-medium whitespace-nowrap">
+                      Status
+                    </div>
+                    <div className="text-red-400 font-bold text-xs sm:text-sm 2xl:text-base truncate">
+                      Started
+                    </div>
                   </div>
                 </div>
               )}
 
               {/* Prize Pool */}
-              {tournament?.prize_pool !== 0 && (
-                <div className="prize-display flex-shrink-0 w-full sm:w-auto">
-                  <div className="text-center sm:text-right">
-                    <div className="text-[10px] sm:text-xs 2xl:text-sm text-gold uppercase font-bold mb-1 tracking-wider">
-                      Prize Pool
-                    </div>
-                    <div className="text-gold font-black text-xl sm:text-2xl 2xl:text-3xl leading-none mb-1">
-                      ${getPrizePoolDisplayDual(tournament).usd}
-                    </div>
-                    <div className="text-gold-dark text-xs sm:text-sm 2xl:text-base font-semibold">
-                      {getPrizePoolDisplayDual(tournament).diamonds} 💎
+              {/* {tournament?.prize_pool !== 0 && ( */}
+              <div className="flex-shrink-0 w-full sm:w-32 lg:w-36">
+                {tournament?.prize_pool !== 0 && (
+                  <div className="prize-display">
+                    <div className="text-center sm:text-right">
+                      <div className="text-[10px] sm:text-xs 2xl:text-sm text-gold font-medium mb-1 tracking-wider whitespace-nowrap">
+                        Prize Pool
+                      </div>
+                      <div className="text-gold font-black text-xl sm:text-xl 2xl:text-2xl leading-none mb-1">
+                        ${getPrizePoolDisplayDual(tournament).usd}
+                      </div>
+                      <div className="text-gold-dark text-xs sm:text-sm 2xl:text-base font-semibold">
+                        {getPrizePoolDisplayDual(tournament).diamonds} 💎
+                      </div>
                     </div>
                   </div>
-                </div>
-              )}
+                )}
+              </div>
+              {/* )} */}
             </div>
           </div>
         </div>
