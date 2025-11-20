@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { FaClock } from "react-icons/fa";
 
 export default function CountdownTimer({
   date,
@@ -119,8 +120,15 @@ export default function CountdownTimer({
 
   if (timeLeft.isExpired) {
     return (
-      <div className={`text-red-400 text-sm font-medium ${className}`}>
-        ⏰ {expiresAt ? "Joining Closed" : "Tournament Started"}
+      <div
+        className={`flex items-center space-x-2 justify-center sm:justify-start text-red-400 text-sm font-medium ${className}`}
+      >
+        <div className="w-8 h-8 sm:w-8 sm:h-8 2xl:w-10 2xl:h-10 rounded-lg bg-gradient-to-br from-white/10 to-white/5 flex items-center justify-center border border-white/10 flex-shrink-0">
+          <FaClock className="text-base sm:text-lg 2xl:text-xl" />
+        </div>
+        <span className="text-red-400 font-medium text-sm tracking-wider">
+          {expiresAt ? "Joining Closed" : "Tournament Started"}
+        </span>
       </div>
     );
   }
@@ -168,7 +176,9 @@ export default function CountdownTimer({
   return (
     <div className={`text-gold text-sm font-medium ${className}`}>
       <div className="flex items-center space-x-1 justify-center sm:justify-start">
-        <span className="text-base">⏰</span>
+        <div className="w-8 h-8 sm:w-8 sm:h-8 2xl:w-10 2xl:h-10 rounded-lg bg-gradient-to-br from-white/10 to-white/5 flex items-center justify-center border border-white/10 flex-shrink-0">
+          <FaClock className="text-base sm:text-lg 2xl:text-xl" />
+        </div>
         <span>{label || "Starts in"}:</span>
       </div>
       <div className="flex items-center space-x-2 justify-center sm:justify-start">

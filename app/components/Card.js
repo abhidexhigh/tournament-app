@@ -8,7 +8,7 @@ export default function Card({
   padding = "p-4",
 }) {
   const baseStyles =
-    "bg-dark-card border border-gold-dark/30 rounded-2xl transition-all duration-300";
+    "bg-dark-gray-card border border-gold-dark/30 rounded-2xl transition-all duration-300";
   const hoverStyles = hover
     ? "hover:border-gold hover:shadow-lg hover:shadow-gold/30 cursor-pointer"
     : "";

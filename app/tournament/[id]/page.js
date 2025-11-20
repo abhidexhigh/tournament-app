@@ -3,89 +3,55 @@
 import { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
-import Image from "next/image";
 import { useSession } from "next-auth/react";
 import Button from "../../components/Button";
-import Card from "../../components/Card";
-import Badge from "../../components/Badge";
-import Input from "../../components/Input";
-import Select from "../../components/Select";
-import CountdownTimer from "../../components/CountdownTimer";
 import Tabs from "../../components/Tabs";
-import { getCurrentUser } from "../../lib/auth";
-import { LuCalendarDays, LuUsers } from "react-icons/lu";
-import { TbMoneybag } from "react-icons/tb";
-import { GiCrossedAxes } from "react-icons/gi";
-import { FaTrophy } from "react-icons/fa";
-import { FaClock } from "react-icons/fa6";
-
-import {
-  calculateActualPrizePool,
-  calculatePrizes,
-  getPrizePoolDisplay,
-  getPrizePoolDisplayDual,
-  getEntryFeeDisplayDual,
-} from "../../lib/prizeCalculator";
+import { calculatePrizes } from "../../lib/prizeCalculator";
 import { tournamentsApi, usersApi } from "../../lib/api";
-import { getTournamentIcon } from "../../lib/iconSelector";
-import { getUserById as getUserByIdLocal } from "../../lib/auth";
-import { refreshUserFromAPI } from "../../lib/authHelpers";
 import { useUser } from "../../contexts/UserContext";
+import { getClanById, getUserClans } from "../../lib/dataLoader";
+import { calculateClanBattlePrizeDistribution } from "../../lib/clanPrizeDistribution";
 import {
-  getClanById,
-  canUserJoinClanBattle,
-  getUserClan,
-  getUserClans,
-} from "../../lib/dataLoader";
-import {
-  calculateClanBattlePrizeDistribution,
-  formatPrizeAmount,
-  formatPrizeWithDiamonds,
-} from "../../lib/clanPrizeDistribution";
-import {
-  generateRandomLeaderboard,
   generateClanBattleLeaderboard,
   generateRegularLeaderboard,
-  getPerformanceBadgeColor,
-  getPerformanceEmoji,
-  formatScore,
-  getPositionSuffix,
 } from "../../lib/leaderboardGenerator";
-import matchesData from "../../../data/matches.json";
+
+// Import new components
+import TournamentHeader from "../../components/tournament/TournamentHeader";
+import PaymentModal from "../../components/tournament/PaymentModal";
+import WinnerDeclarationModal from "../../components/tournament/WinnerDeclarationModal";
+import PrizeDistributionTab from "../../components/tournament/PrizeDistributionTab";
+import MatchesTab from "../../components/tournament/MatchesTab";
+import ParticipantsTab from "../../components/tournament/ParticipantsTab";
+import RulesTab from "../../components/tournament/RulesTab";
 
 export default function TournamentDetailsPage() {
   const params = useParams();
   const router = useRouter();
   const { data: session, status } = useSession();
   const { user, refreshUser } = useUser();
+
+  // State
   const [tournament, setTournament] = useState(null);
   const [participants, setParticipants] = useState([]);
   const [loading, setLoading] = useState(false);
   const [initialLoading, setInitialLoading] = useState(true);
   const [showWinnerModal, setShowWinnerModal] = useState(false);
-  const [winners, setWinners] = useState({
-    first: "",
-    second: "",
-    third: "",
-  });
+  const [winners, setWinners] = useState({ first: "", second: "", third: "" });
   const [errors, setErrors] = useState({});
   const [clan1, setClan1] = useState(null);
   const [clan2, setClan2] = useState(null);
   const [prizeDistribution, setPrizeDistribution] = useState(null);
   const [leaderboard, setLeaderboard] = useState([]);
-  const [paymentMethod, setPaymentMethod] = useState("diamonds"); // "diamonds", "usd", or "tickets"
-  const [selectedTicketType, setSelectedTicketType] = useState(null); // ticket_010, ticket_100, ticket_1000
-  const [matchFilter, setMatchFilter] = useState("all"); // "all", "ongoing", "completed"
+  const [paymentMethod, setPaymentMethod] = useState("diamonds");
+  const [selectedTicketType, setSelectedTicketType] = useState(null);
   const [host, setHost] = useState(null);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
 
   // Set default payment method based on display_type
   useEffect(() => {
-    if (tournament) {
-      // Tournaments can only use tickets, Events can use all three
-      if (tournament.display_type === "tournament") {
-        setPaymentMethod("tickets");
-      }
+    if (tournament && tournament.display_type === "tournament") {
+      setPaymentMethod("tickets");
     }
   }, [tournament]);
 
@@ -94,7 +60,6 @@ export default function TournamentDetailsPage() {
     if (tournament && paymentMethod === "tickets") {
       const entryFeeUsd = Number(tournament.entry_fee_usd || 0);
 
-      // Automatically select the matching ticket type (use Math.abs for floating point precision)
       if (Math.abs(entryFeeUsd - 0.1) < 0.01) {
         setSelectedTicketType("ticket_010");
       } else if (Math.abs(entryFeeUsd - 1.0) < 0.01) {
@@ -102,18 +67,14 @@ export default function TournamentDetailsPage() {
       } else if (Math.abs(entryFeeUsd - 10.0) < 0.01) {
         setSelectedTicketType("ticket_1000");
       } else {
-        // If no matching ticket or free tournament, clear selection
         setSelectedTicketType(null);
       }
     } else if (paymentMethod !== "tickets") {
-      // Clear ticket selection when switching away from tickets
       setSelectedTicketType(null);
     }
   }, [tournament, paymentMethod]);
-  const [selectedMatch, setSelectedMatch] = useState(null); // For matches tab
 
-  // Removed initializeClans since we're now using dataLoader
-
+  // Load tournament data
   useEffect(() => {
     const loadData = async () => {
       try {
@@ -138,12 +99,6 @@ export default function TournamentDetailsPage() {
           const validParticipants = participantsList.filter(
             (p) => p !== null && p !== undefined && p.id
           );
-          console.log(
-            "Loaded participants:",
-            validParticipants.length,
-            "out of",
-            tournamentData.participants.length
-          );
           setParticipants(validParticipants);
 
           // Load clan information for clan battle tournaments
@@ -165,18 +120,16 @@ export default function TournamentDetailsPage() {
           if (tournamentData.tournament_type === "clan_battle") {
             const maxPlayers =
               tournamentData.maxPlayers || tournamentData.max_players || 30;
-            // Use USD value for calculation, fallback to diamonds converted to USD
             const prizePoolUsd =
               tournamentData.prize_pool_usd ||
               (tournamentData.prize_pool || tournamentData.prizePool || 0) /
                 100;
 
-            // Only calculate if we have valid data
             if (prizePoolUsd > 0 && maxPlayers > 0) {
               const teamSize =
                 tournamentData.clan_battle_mode === "auto_division"
                   ? Math.floor(maxPlayers / 2)
-                  : maxPlayers / 2; // For clan selection, each clan gets half
+                  : maxPlayers / 2;
 
               const distribution = calculateClanBattlePrizeDistribution(
                 prizePoolUsd,
@@ -184,11 +137,6 @@ export default function TournamentDetailsPage() {
               );
               setPrizeDistribution(distribution);
             } else {
-              console.warn("Invalid tournament data for prize calculation:", {
-                prizePoolUsd,
-                maxPlayers,
-                tournamentData,
-              });
               setPrizeDistribution(null);
             }
           }
@@ -199,20 +147,17 @@ export default function TournamentDetailsPage() {
             tournamentData.participants &&
             tournamentData.participants.length > 0
           ) {
-            // Generate leaderboard using the already filtered valid participants
             if (validParticipants.length > 0) {
               let generatedLeaderboard = [];
 
               if (tournamentData.tournament_type === "clan_battle") {
-                // For clan battle, show only winning team players
-                const winningTeam = tournamentData.winning_team || "clan1"; // Default to clan1 if not specified
+                const winningTeam = tournamentData.winning_team || "clan1";
                 generatedLeaderboard = generateClanBattleLeaderboard(
                   tournamentData,
                   validParticipants.map((p) => p.id),
                   winningTeam
                 );
               } else {
-                // For regular tournaments, show all players
                 generatedLeaderboard = generateRegularLeaderboard(
                   tournamentData,
                   validParticipants.map((p) => p.id)
@@ -225,7 +170,6 @@ export default function TournamentDetailsPage() {
         }
       } catch (error) {
         console.error("Failed to load tournament:", error);
-        // Show not found state if API fails
         setTournament(null);
       } finally {
         setInitialLoading(false);
@@ -236,16 +180,6 @@ export default function TournamentDetailsPage() {
       loadData();
     }
   }, [params.id]);
-
-  const formatDate = (dateStr) => {
-    const date = new Date(dateStr);
-    return date.toLocaleDateString("en-US", {
-      weekday: "short",
-      month: "short",
-      day: "numeric",
-      year: "numeric",
-    });
-  };
 
   const handleJoinButtonClick = () => {
     if (!user) {
@@ -286,7 +220,6 @@ export default function TournamentDetailsPage() {
 
       // Auto-determine ticket type if not already selected
       if (!ticketType) {
-        // Use Math.abs to handle floating point precision issues
         if (Math.abs(entryFeeUsd - 0.1) < 0.01) {
           ticketType = "ticket_010";
         } else if (Math.abs(entryFeeUsd - 1.0) < 0.01) {
@@ -294,7 +227,6 @@ export default function TournamentDetailsPage() {
         } else if (Math.abs(entryFeeUsd - 10.0) < 0.01) {
           ticketType = "ticket_1000";
         } else if (entryFeeUsd === 0 || !tournament.entry_fee) {
-          // Free tournament - no ticket required
           ticketType = null;
         } else {
           alert("No matching ticket type found for this tournament entry fee!");
@@ -302,7 +234,7 @@ export default function TournamentDetailsPage() {
         }
       }
 
-      // Check if user has the required ticket (only if ticket is required)
+      // Check if user has the required ticket
       if (ticketType) {
         const ticketCount = user?.tickets?.[ticketType] || 0;
         if (ticketCount === 0) {
@@ -357,7 +289,6 @@ export default function TournamentDetailsPage() {
       let finalTicketType = selectedTicketType;
       if (paymentMethod === "tickets" && !finalTicketType) {
         const entryFeeUsd = Number(tournament.entry_fee_usd || 0);
-        // Use Math.abs to handle floating point precision issues
         if (Math.abs(entryFeeUsd - 0.1) < 0.01) {
           finalTicketType = "ticket_010";
         } else if (Math.abs(entryFeeUsd - 1.0) < 0.01) {
@@ -365,14 +296,13 @@ export default function TournamentDetailsPage() {
         } else if (Math.abs(entryFeeUsd - 10.0) < 0.01) {
           finalTicketType = "ticket_1000";
         }
-        // If no matching ticket type and entry fee is 0, it's free - no ticket needed
       }
 
       // Prepare payment data
       const paymentData = {
         payment_method: paymentMethod,
       };
-      // Always include ticket type when using tickets (auto-selected)
+
       if (paymentMethod === "tickets" && finalTicketType) {
         paymentData.ticket_type = finalTicketType;
       }
@@ -384,7 +314,7 @@ export default function TournamentDetailsPage() {
       );
       setTournament(updatedTournament);
 
-      // Refresh user data from API to get updated diamond balance
+      // Refresh user data from API to get updated balance
       await refreshUser();
 
       const participantsList = await Promise.all(
@@ -414,15 +344,9 @@ export default function TournamentDetailsPage() {
     // Validate
     const newErrors = {};
 
-    if (!winners.first) {
-      newErrors.first = "1st place winner is required";
-    }
-    if (!winners.second) {
-      newErrors.second = "2nd place winner is required";
-    }
-    if (!winners.third) {
-      newErrors.third = "3rd place winner is required";
-    }
+    if (!winners.first) newErrors.first = "1st place winner is required";
+    if (!winners.second) newErrors.second = "2nd place winner is required";
+    if (!winners.third) newErrors.third = "3rd place winner is required";
 
     // Check for duplicates
     if (winners.first && winners.second && winners.first === winners.second) {
@@ -473,7 +397,7 @@ export default function TournamentDetailsPage() {
     }
   };
 
-  // Show loading state while fetching data
+  // Show loading state
   if (initialLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -485,7 +409,7 @@ export default function TournamentDetailsPage() {
     );
   }
 
-  // Show not found state if data loaded but tournament is null
+  // Show not found state
   if (!tournament) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -512,7 +436,6 @@ export default function TournamentDetailsPage() {
         return now < expiresAt;
       }
     }
-    // Fall back to status check if no valid expiration
     return tournament.status === "upcoming";
   };
 
@@ -525,774 +448,37 @@ export default function TournamentDetailsPage() {
       (tournament.max_players ?? tournament.maxPlayers);
 
   const prizes = calculatePrizes(tournament);
-  const participantOptions = participants
-    .filter((p) => p && p.id) // Filter out null/undefined participants
-    .map((p) => ({
-      value: p.id,
-      label: `${p.avatar} ${p.username}`,
-    }));
-
-  // Tab render functions
-  function renderOverviewTab() {
-    return (
-      <div className="space-y-8">
-        {/* Prize Distribution - Regular Tournaments */}
-        {(tournament.tournament_type ?? tournament.tournamentType) !==
-          "clan_battle" && (
-          <Card>
-            <div className="flex items-center mb-4 justify-start gap-2">
-              <img
-                src="https://res.cloudinary.com/dg0cmj6su/image/upload/v1763459457/dollar_bag_jehifs.webp"
-                alt="Prize Distribution"
-                width={32}
-                height={32}
-                className="w-5"
-              />
-              <div>
-                <h3 className="text-gold font-bold text-xl flex items-center gap-2 leading-6">
-                  Prize Distribution
-                </h3>
-              </div>
-            </div>
-            <div className="space-y-3">
-              <div className="flex items-center justify-between bg-dark-primary/50 rounded-lg p-3 border border-gold-dark/50 px-6">
-                <div className="flex items-center space-x-3">
-                  <img
-                    src="https://res.cloudinary.com/dg0cmj6su/image/upload/v1763459457/First_xf1xz2.webp"
-                    alt="1st Place"
-                    width={24}
-                    height={24}
-                    className="w-8"
-                  />
-                  <div>
-                    <p className="text-white font-bold">1st Place</p>
-                    <p className="text-gray-400 text-sm">
-                      {tournament.prize_split_first ??
-                        tournament.prizeSplit?.first}
-                      % of prize pool
-                    </p>
-                  </div>
-                </div>
-                <div className="text-right">
-                  <p className="text-gold font-bold text-xl">
-                    ${Math.floor(prizes.first / 100).toLocaleString()} USD
-                  </p>
-                  <p className="text-gold text-sm">
-                    ({prizes.first.toLocaleString()} 💎)
-                  </p>
-                </div>
-              </div>
-              <div className="flex items-center justify-between bg-dark-primary/50 rounded-lg p-3 border border-gold-dark/50 px-6">
-                <div className="flex items-center space-x-3">
-                  <img
-                    src="https://res.cloudinary.com/dg0cmj6su/image/upload/v1763459457/second_nak1rc.webp"
-                    alt="2nd Place"
-                    width={24}
-                    height={24}
-                    className="w-8"
-                  />
-                  <div>
-                    <p className="text-white font-bold">2nd Place</p>
-                    <p className="text-gray-400 text-sm">
-                      {tournament.prize_split_second ??
-                        tournament.prizeSplit?.second}
-                      % of prize pool
-                    </p>
-                  </div>
-                </div>
-                <div className="text-right">
-                  <p className="text-gold font-bold text-xl">
-                    ${Math.floor(prizes.second / 100).toLocaleString()} USD
-                  </p>
-                  <p className="text-gold text-sm">
-                    ({prizes.second.toLocaleString()} 💎)
-                  </p>
-                </div>
-              </div>
-              <div className="flex items-center justify-between bg-dark-primary/50 rounded-lg p-3 border border-gold-dark/50 px-6">
-                <div className="flex items-center space-x-3">
-                  <img
-                    src="https://res.cloudinary.com/dg0cmj6su/image/upload/v1763459457/3rd_dxdd3t.webp"
-                    alt="3rd Place"
-                    width={24}
-                    height={24}
-                    className="w-8"
-                  />
-                  <div>
-                    <p className="text-white font-bold">3rd Place</p>
-                    <p className="text-gray-400 text-sm">
-                      {tournament.prize_split_third ??
-                        tournament.prizeSplit?.third}
-                      % of prize pool
-                    </p>
-                  </div>
-                </div>
-                <div className="text-right">
-                  <p className="text-gold font-bold text-xl">
-                    ${Math.floor(prizes.third / 100).toLocaleString()} USD
-                  </p>
-                  <p className="text-gold text-sm">
-                    ({prizes.third.toLocaleString()} 💎)
-                  </p>
-                </div>
-              </div>
-            </div>
-          </Card>
-        )}
-
-        {/* Clan Battle Prize Distribution */}
-        {(tournament.tournament_type ?? tournament.tournamentType) ===
-          "clan_battle" && (
-          <Card className="px-10">
-            <div>
-              <div className="flex items-center mb-4 justify-start gap-2">
-                <img
-                  src="https://res.cloudinary.com/dg0cmj6su/image/upload/v1763459457/dollar_bag_jehifs.webp"
-                  alt="Prize Distribution"
-                  width={32}
-                  height={32}
-                  className="w-5"
-                />
-                <div>
-                  <h3 className="text-gold font-bold text-xl flex items-center gap-2 leading-6">
-                    Prize Distribution
-                  </h3>
-                </div>
-              </div>
-
-              {prizeDistribution ? (
-                <>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    {/* Top Performers */}
-                    <div>
-                      <h5 className="text-white text-base font-medium mb-2 pl-4 border-l-2 border-gold-dark/30 flex items-center gap-2">
-                        Top Performers (20%)
-                      </h5>
-                      <div className="space-y-2">
-                        {prizeDistribution.topPerformers.map(
-                          (performer, index) => (
-                            <div
-                              key={index}
-                              className="flex items-center justify-between bg-dark-primary/50 rounded-lg p-3 border border-gold-dark/50 px-6"
-                            >
-                              <div className="flex items-center gap-3">
-                                <span className="text-2xl">
-                                  {index === 0 ? (
-                                    <img
-                                      src="https://res.cloudinary.com/dg0cmj6su/image/upload/v1763459457/First_xf1xz2.webp"
-                                      alt="1st Place"
-                                      width={24}
-                                      height={24}
-                                      className="w-8"
-                                    />
-                                  ) : index === 1 ? (
-                                    <img
-                                      src="https://res.cloudinary.com/dg0cmj6su/image/upload/v1763459457/second_nak1rc.webp"
-                                      alt="2nd Place"
-                                      width={24}
-                                      height={24}
-                                      className="w-8"
-                                    />
-                                  ) : (
-                                    <img
-                                      src="https://res.cloudinary.com/dg0cmj6su/image/upload/v1763459457/3rd_dxdd3t.webp"
-                                      alt="3rd Place"
-                                      width={24}
-                                      height={24}
-                                      className="w-8"
-                                    />
-                                  )}
-                                </span>
-                                <div>
-                                  <p className="text-white font-medium">
-                                    {performer.position}
-                                    {performer.position === 1
-                                      ? "st"
-                                      : performer.position === 2
-                                      ? "nd"
-                                      : "rd"}{" "}
-                                    Place
-                                  </p>
-                                  <p className="text-gray-400 text-sm">
-                                    {performer.percentage}% of total
-                                  </p>
-                                </div>
-                              </div>
-                              <div className="text-right">
-                                <p className="text-gold font-bold text-lg">
-                                  {formatPrizeAmount(performer.prize)}
-                                </p>
-                                <p className="text-gold/80 text-sm">
-                                  ({(performer.prize * 100).toLocaleString()}{" "}
-                                  💎)
-                                </p>
-                              </div>
-                            </div>
-                          )
-                        )}
-                      </div>
-                    </div>
-
-                    {/* Team Members */}
-                    <div>
-                      <h5 className="text-white text-base font-medium mb-2 pl-4 border-l-2 border-gold-dark/30 flex items-center gap-2">
-                        Team Members (80%)
-                      </h5>
-                      <div className="bg-dark-primary/50 rounded-lg p-4 border border-gold-dark/50 h-[88%]">
-                        <div className="flex items-center justify-between mb-2">
-                          <span className="text-white font-medium">
-                            {prizeDistribution.remainingMembers.count} Members
-                          </span>
-                          <div className="text-right">
-                            <span className="text-gold font-bold text-lg">
-                              {formatPrizeAmount(
-                                prizeDistribution.remainingMembers
-                                  .individualPrize
-                              )}{" "}
-                              each
-                            </span>
-                            <div className="text-gold/80 text-sm">
-                              (
-                              {(
-                                prizeDistribution.remainingMembers
-                                  .individualPrize * 100
-                              ).toLocaleString()}{" "}
-                              💎)
-                            </div>
-                          </div>
-                        </div>
-                        <p className="text-gray-400 text-sm">
-                          Equal distribution of 80% total prize pool
-                        </p>
-                        <div className="mt-3 pt-3 border-t border-gray-600">
-                          <div className="flex justify-between text-sm items-end">
-                            <span className="text-gray-400">
-                              Total for team members:
-                            </span>
-                            <div className="text-right">
-                              <span className="text-gold font-semibold">
-                                {formatPrizeAmount(
-                                  prizeDistribution.remainingMembers.totalPrize
-                                )}
-                              </span>
-                              <div className="text-gold/80 text-xs">
-                                (
-                                {(
-                                  prizeDistribution.remainingMembers
-                                    .totalPrize * 100
-                                ).toLocaleString()}{" "}
-                                💎)
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Summary */}
-                  <div className="mt-4 pt-4 border-t border-gold-dark/30">
-                    <div className="flex justify-between items-end">
-                      <span className="text-gold font-semibold">
-                        Total Prize Pool:
-                      </span>
-                      <div className="text-right">
-                        <span className="text-gold font-bold text-xl">
-                          {formatPrizeAmount(prizeDistribution.totalPrize)}
-                        </span>
-                        <div className="text-gold/80 text-sm">
-                          (
-                          {(
-                            prizeDistribution.totalPrize * 100
-                          ).toLocaleString()}{" "}
-                          💎)
-                        </div>
-                      </div>
-                    </div>
-                    <p className="text-gray-400 text-sm mt-1">
-                      Winning team receives 100% of the prize pool
-                    </p>
-                  </div>
-                </>
-              ) : (
-                <div className="text-center py-8">
-                  <div className="text-4xl mb-4">🏆</div>
-                  <p className="text-gray-300 text-lg mb-2">
-                    Prize Distribution Loading
-                  </p>
-                  <p className="text-gray-400">
-                    Prize distribution details will be available once tournament
-                    data is loaded.
-                  </p>
-                </div>
-              )}
-            </div>
-          </Card>
-        )}
-      </div>
-    );
-  }
-
-  function renderMatchesTab() {
-    // Use static matches data from JSON file
-    const staticMatches = matchesData.matches;
-
-    // Filter matches based on selected filter
-    const filteredMatches = staticMatches.filter((match) => {
-      if (matchFilter === "all") return true;
-      if (matchFilter === "ongoing") return match.status === "ongoing";
-      if (matchFilter === "completed") return match.status === "completed";
-      return true;
-    });
-
-    // Set the first match as selected by default if none is selected
-    if (!selectedMatch && filteredMatches.length > 0) {
-      setSelectedMatch(filteredMatches[0]);
-    }
-
-    // Calculate counts for each filter
-    const allCount = staticMatches.length;
-    const ongoingCount = staticMatches.filter(
-      (m) => m.status === "ongoing"
-    ).length;
-    const completedCount = staticMatches.filter(
-      (m) => m.status === "completed"
-    ).length;
-
-    return (
-      <div className="space-y-8">
-        {/* Past Matches Section - Two Column Layout */}
-        {staticMatches.length > 0 ? (
-          <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
-            {/* Left Side - Match List */}
-            <div className="lg:col-span-2">
-              <Card>
-                <div className="flex items-center justify-start mb-4 gap-4">
-                  <h3 className="text-xl font-bold text-gold-gradient flex items-center gap-2">
-                    <FaTrophy className="text-gold" /> <span>Matches</span>
-                  </h3>
-                  <div className="bg-gold/20 px-3 rounded-lg">
-                    <span className="text-gold font-semibold text-[10px]">
-                      {filteredMatches.length} of {staticMatches.length}
-                    </span>
-                  </div>
-                </div>
-
-                {/* Filter Buttons - Button Group */}
-                <div className="inline-flex rounded-lg border border-gold-dark/30 overflow-hidden mb-6 w-full">
-                  <button
-                    onClick={() => setMatchFilter("all")}
-                    className={`flex-1 px-4 py-2 font-medium text-sm transition-all duration-200 border-r border-gold-dark/30 ${
-                      matchFilter === "all"
-                        ? "bg-gold text-dark-primary"
-                        : "bg-dark-secondary text-gray-400 hover:bg-dark-secondary/70 hover:text-white"
-                    }`}
-                  >
-                    <span className="flex items-center justify-center gap-2">
-                      All
-                      <span
-                        className={`px-2 py-0.5 rounded-full text-xs ${
-                          matchFilter === "all"
-                            ? "bg-dark-primary/30 text-dark-primary"
-                            : "bg-gray-700 text-gray-300"
-                        }`}
-                      >
-                        {allCount}
-                      </span>
-                    </span>
-                  </button>
-                  <button
-                    onClick={() => setMatchFilter("ongoing")}
-                    className={`flex-1 px-4 py-2 font-medium text-sm transition-all duration-200 border-r border-gold-dark/30 ${
-                      matchFilter === "ongoing"
-                        ? "bg-gold text-dark-primary"
-                        : "bg-dark-secondary text-gray-400 hover:bg-dark-secondary/70 hover:text-white"
-                    }`}
-                  >
-                    <span className="flex items-center justify-center gap-2">
-                      Ongoing
-                      <span
-                        className={`px-2 py-0.5 rounded-full text-xs ${
-                          matchFilter === "ongoing"
-                            ? "bg-dark-primary/30 text-dark-primary"
-                            : "bg-gray-700 text-gray-300"
-                        }`}
-                      >
-                        {ongoingCount}
-                      </span>
-                    </span>
-                  </button>
-                  <button
-                    onClick={() => setMatchFilter("completed")}
-                    className={`flex-1 px-4 py-2 font-medium text-sm transition-all duration-200 ${
-                      matchFilter === "completed"
-                        ? "bg-gold text-dark-primary"
-                        : "bg-dark-secondary text-gray-400 hover:bg-dark-secondary/70 hover:text-white"
-                    }`}
-                  >
-                    <span className="flex items-center justify-center gap-2">
-                      Completed
-                      <span
-                        className={`px-2 py-0.5 rounded-full text-xs ${
-                          matchFilter === "completed"
-                            ? "bg-dark-primary/30 text-dark-primary"
-                            : "bg-gray-700 text-gray-300"
-                        }`}
-                      >
-                        {completedCount}
-                      </span>
-                    </span>
-                  </button>
-                </div>
-
-                <div className="space-y-4 max-h-[700px] overflow-y-auto pr-2 custom-scrollbar">
-                  {filteredMatches.length === 0 ? (
-                    <div className="text-center py-12">
-                      <div className="text-6xl mb-4">🔍</div>
-                      <h3 className="text-xl font-bold text-white mb-2">
-                        No{" "}
-                        {matchFilter === "ongoing"
-                          ? "Ongoing"
-                          : matchFilter === "completed"
-                          ? "Completed"
-                          : ""}{" "}
-                        Matches
-                      </h3>
-                      <p className="text-gray-400">
-                        {matchFilter === "ongoing"
-                          ? "There are no ongoing matches at the moment."
-                          : matchFilter === "completed"
-                          ? "No completed matches found."
-                          : "No matches available yet."}
-                      </p>
-                    </div>
-                  ) : (
-                    filteredMatches.map((match, index) => (
-                      <button
-                        key={match.id}
-                        onClick={() => setSelectedMatch(match)}
-                        className={`w-full text-left relative overflow-hidden rounded-xl transition-all duration-300 transform hover:scale-[1.02] ${
-                          selectedMatch?.id === match.id
-                            ? ""
-                            : "hover:shadow-xl"
-                        }`}
-                      >
-                        {/* Background gradient */}
-                        <div
-                          className={`absolute inset-0 ${
-                            selectedMatch?.id === match.id
-                              ? "bg-gold/10 from-gold/20 via-gold/10 to-transparent"
-                              : "bg-gradient-to-br from-dark-card via-dark-secondary to-dark-card"
-                          }`}
-                        />
-
-                        {/* Content */}
-                        <div className="relative p-4">
-                          {/* Match number badge */}
-                          <div className="absolute top-3 right-3">
-                            <div className="bg-gold/20 backdrop-blur-sm px-2 py-1 rounded-lg border border-gold/30">
-                              <span className="text-gold font-bold text-xs">
-                                #{index + 1}
-                              </span>
-                            </div>
-                          </div>
-
-                          {/* Match title */}
-                          <h4
-                            className={`font-bold mb-3 pr-12 ${
-                              selectedMatch?.id === match.id
-                                ? "text-gold text-lg"
-                                : "text-white text-base"
-                            }`}
-                          >
-                            {match.title}
-                          </h4>
-
-                          {/* Match info grid */}
-                          <div className="space-y-2">
-                            <div className="flex items-center space-x-6 text-sm">
-                              {/* Date and time */}
-                              <div className="flex items-center space-x-2 text-sm">
-                                <div className="flex items-center space-x-1 text-gray-400">
-                                  <span>
-                                    <LuCalendarDays />
-                                  </span>
-                                  <span className="font-medium">
-                                    {match.date}
-                                  </span>
-                                </div>
-                              </div>
-
-                              <div className="flex items-center space-x-1 text-sm text-gray-400">
-                                <span>
-                                  <FaClock />
-                                </span>
-                                <span>
-                                  {match.startTime} - {match.endTime}
-                                </span>
-                              </div>
-                            </div>
-
-                            {/* Stats row */}
-                            <div className="flex items-center justify-between pt-2 border-t border-gray-700/50">
-                              <div className="flex items-center space-x-3">
-                                <div className="flex items-center space-x-1">
-                                  <LuUsers />
-                                  <span className="font-semibold text-sm">
-                                    {match.participants}
-                                  </span>
-                                </div>
-                                <div
-                                  className={`px-2 py-1 rounded-md text-xs font-bold ${
-                                    match.status === "ongoing"
-                                      ? "bg-blue-500/20 text-blue-400"
-                                      : match.status === "completed"
-                                      ? "bg-green-500/20 text-green-400"
-                                      : "bg-gray-700/50 text-gray-400"
-                                  }`}
-                                >
-                                  {match.status?.toUpperCase() || "COMPLETED"}
-                                </div>
-                              </div>
-
-                              {/* Prize pool */}
-                              <div className="flex items-center space-x-1">
-                                <span className="text-gold text-lg">💎</span>
-                                <span className="text-gold font-bold text-sm">
-                                  {match.prizePool.toLocaleString()}
-                                </span>
-                              </div>
-                            </div>
-                          </div>
-
-                          {/* Selected indicator */}
-                          {selectedMatch?.id === match.id && (
-                            <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-gold via-yellow-400 to-gold" />
-                          )}
-                        </div>
-                      </button>
-                    ))
-                  )}
-                </div>
-              </Card>
-            </div>
-
-            {/* Right Side - Match Leaderboard */}
-            <div className="lg:col-span-3">
-              {selectedMatch ? (
-                <Card glass className="!p-0">
-                  <div className="mb-6 p-4 pb-0">
-                    <h3 className="text-2xl font-bold text-gold-gradient mb-2">
-                      {selectedMatch.title}
-                    </h3>
-                    <div className="flex items-center gap-8 text-sm text-gray-400">
-                      <div className="flex items-center gap-2">
-                        <LuCalendarDays />
-                        <span>{selectedMatch.date}</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <FaClock />
-                        <span className="text-gray-400">
-                          {selectedMatch.startTime} - {selectedMatch.endTime}
-                        </span>
-                      </div>
-                      <span className="text-gold font-semibold">
-                        {selectedMatch.prizePool.toLocaleString()} 💎
-                      </span>
-                    </div>
-                  </div>
-                  <div className="">
-                    {selectedMatch.leaderboard.map((entry) => (
-                      <div
-                        key={entry.playerId}
-                        className={`flex items-center justify-between p-4 bg-gold/10 border-b border-white/20 px-8`}
-                      >
-                        <div className="flex items-center space-x-4">
-                          <div className="flex items-center space-x-2">
-                            <span className="text-2xl font-bold text-gold min-w-[3rem]">
-                              {entry.position === 1 ? (
-                                <img
-                                  src="https://res.cloudinary.com/dg0cmj6su/image/upload/v1763459457/First_xf1xz2.webp"
-                                  alt="1st Place"
-                                  width={24}
-                                  height={24}
-                                  className="w-8"
-                                />
-                              ) : entry.position === 2 ? (
-                                <img
-                                  src="https://res.cloudinary.com/dg0cmj6su/image/upload/v1763459457/second_nak1rc.webp"
-                                  alt="2nd Place"
-                                  width={24}
-                                  height={24}
-                                  className="w-8"
-                                />
-                              ) : entry.position === 3 ? (
-                                <img
-                                  src="https://res.cloudinary.com/dg0cmj6su/image/upload/v1763459457/3rd_dxdd3t.webp"
-                                  alt="3rd Place"
-                                  width={24}
-                                  height={24}
-                                  className="w-8"
-                                />
-                              ) : (
-                                <span className="text-sm">
-                                  #{entry.position}
-                                </span>
-                              )}
-                            </span>
-                            <div className="text-3xl">{entry.avatar}</div>
-                          </div>
-                          <div>
-                            <p className="text-white font-bold text-base">
-                              {entry.username}
-                            </p>
-                            <div className="flex items-center space-x-4 text-sm text-gray-400">
-                              <span>Score: {entry.score.toLocaleString()}</span>
-                              <span>Kills: {entry.kills}</span>
-                              <span>K/D: {entry.kdRatio}</span>
-                            </div>
-                          </div>
-                        </div>
-                        <div className="text-right">
-                          {entry.prizeAmount > 0 && (
-                            <div className="bg-gold/20 px-4 py-2 rounded-lg border border-gold/40">
-                              <p className="text-gold font-bold text-base">
-                                +${(entry.prizeAmount / 100).toLocaleString()}{" "}
-                                USD
-                              </p>
-                              <p className="text-gold/80 text-xs">Prize Won</p>
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </Card>
-              ) : (
-                <Card>
-                  <div className="text-center py-12">
-                    <div className="text-6xl mb-4">🎮</div>
-                    <p className="text-gray-400">
-                      Select a match to view the leaderboard
-                    </p>
-                  </div>
-                </Card>
-              )}
-            </div>
-          </div>
-        ) : (
-          <Card>
-            <div className="text-center py-12">
-              <div className="text-6xl mb-4">🏁</div>
-              <h3 className="text-xl font-bold text-white mb-2">
-                No Matches Available
-              </h3>
-              <p className="text-gray-400">
-                Matches will be available once participants join the tournament.
-              </p>
-            </div>
-          </Card>
-        )}
-
-        {/* Additional section for overall tournament stats if needed */}
-      </div>
-    );
-  }
-
-  function renderParticipantsTab() {
-    return (
-      <Card>
-        <h2 className="text-xl font-bold text-gold mb-4">
-          Participants ({participants.length}/
-          {tournament.max_players ?? tournament.maxPlayers})
-        </h2>
-        {participants.length === 0 ? (
-          <div className="text-center py-12">
-            <div className="text-6xl mb-4">👥</div>
-            <p className="text-gray-400 text-lg">No participants yet</p>
-            <p className="text-gray-500 text-sm mt-2">Be the first to join!</p>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {participants
-              .filter((participant) => participant && participant.id)
-              .map((participant, index) => (
-                <div
-                  key={participant.id}
-                  className="flex items-center space-x-3 p-4 bg-dark-secondary rounded-lg border border-gold-dark/20 hover:border-gold/50 transition-colors"
-                >
-                  <span className="text-gray-400 text-sm font-medium min-w-[2rem]">
-                    #{index + 1}
-                  </span>
-                  <img
-                    src={participant.avatar}
-                    alt={participant.username}
-                    width={24}
-                    height={24}
-                    className="w-8"
-                  />
-                  <div className="flex-1">
-                    <p className="text-white font-medium">
-                      {participant.username}
-                    </p>
-                    {participant.rank && (
-                      <p className="text-gray-400 text-sm">
-                        {participant.rank} Rank
-                      </p>
-                    )}
-                  </div>
-                  {participant.id ===
-                    (tournament.host_id ?? tournament.hostId) && (
-                    <Badge variant="primary" size="sm">
-                      Host
-                    </Badge>
-                  )}
-                </div>
-              ))}
-          </div>
-        )}
-      </Card>
-    );
-  }
-
-  function renderRulesTab() {
-    return (
-      <Card>
-        <h2 className="text-2xl font-bold text-gold mb-6">
-          📜 Tournament Rules
-        </h2>
-        <div className="prose prose-invert max-w-none">
-          <p className="text-gray-300 whitespace-pre-wrap text-lg leading-relaxed">
-            {tournament.rules}
-          </p>
-        </div>
-      </Card>
-    );
-  }
 
   // Define tab content
   const tabs = [
     {
       id: "prize-distribution",
       label: "Prize Distribution",
-      content: renderOverviewTab(),
+      content: (
+        <PrizeDistributionTab
+          tournament={tournament}
+          prizeDistribution={prizeDistribution}
+          prizes={prizes}
+        />
+      ),
     },
     {
       id: "matches",
       label: "Matches",
       badge: tournament.status === "completed" ? leaderboard.length : null,
-      content: renderMatchesTab(),
+      content: <MatchesTab />,
     },
     {
       id: "participants",
       label: "Participants",
-      // badge: participants.length,
-      content: renderParticipantsTab(),
+      content: (
+        <ParticipantsTab participants={participants} tournament={tournament} />
+      ),
     },
     {
       id: "rules",
       label: "Rules",
-      content: renderRulesTab(),
+      content: <RulesTab rules={tournament.rules} />,
     },
     {
       id: "stream",
@@ -1302,786 +488,59 @@ export default function TournamentDetailsPage() {
   ];
 
   return (
-    <div className="min-h-screen py-8 px-4 sm:px-6 lg:px-8">
-      <style jsx>{`
-        .custom-scrollbar::-webkit-scrollbar {
-          width: 6px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-track {
-          background: rgba(0, 0, 0, 0.2);
-          border-radius: 10px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-          background: linear-gradient(180deg, #d4af37, #aa8c2c);
-          border-radius: 10px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-          background: linear-gradient(180deg, #f0c14b, #d4af37);
-        }
-      `}</style>
+    <div className="min-h-screen py-4 sm:py-8 px-3 sm:px-4 lg:px-8">
       <div className="max-w-main mx-auto">
         {/* Back Button */}
-        <Link href="/" className="inline-block mb-6">
+        <Link href="/" className="inline-block mb-4 sm:mb-6">
           <Button variant="ghost" size="sm">
             ← Back to Tournaments
           </Button>
         </Link>
 
         {/* Tournament Header */}
-        <Card glass className="mb-4">
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center space-x-4">
-              {(() => {
-                const icon = getTournamentIcon(tournament);
-                const isImageUrl =
-                  typeof icon === "string" && icon.startsWith("http");
-
-                if (isImageUrl) {
-                  return (
-                    <div className="flex-shrink-0">
-                      <img
-                        src={icon}
-                        alt={`${tournament.title} icon`}
-                        width={96}
-                        height={96}
-                        className="w-16 h-16 sm:w-20 sm:h-20 lg:w-20 lg:h-20 object-contain rounded-lg border border-gold-dark/20"
-                        unoptimized
-                      />
-                    </div>
-                  );
-                }
-
-                return <div className="text-6xl">{icon}</div>;
-              })()}
-              <div>
-                <div className="flex items-center gap-3">
-                  <h1 className="text-3xl font-bold text-gold-gradient">
-                    {tournament.title}
-                  </h1>
-                </div>
-                {/* Host Name */}
-                <div className="mb-2">
-                  <div className="text-gray-400 text-sm leading-3.5">
-                    <div className="text-white font-medium">
-                      {tournament.is_automated ? (
-                        <>🤖 Admin</>
-                      ) : host ? (
-                        <div className="flex items-center">
-                          <img
-                            src={host.avatar}
-                            alt={host.username}
-                            width={20}
-                            height={20}
-                            className="w-6 h-6 rounded-full"
-                          />
-                          <span className="text-white font-medium">
-                            {host.username}
-                          </span>
-                        </div>
-                      ) : (
-                        "Loading..."
-                      )}
-                    </div>
-                  </div>
-                </div>
-                <div className="flex items-center gap-3">
-                  {console.log("tournament", tournament)}
-                  {!tournament.is_automated && (
-                    <div className="flex items-center gap-3">
-                      {(tournament.tournament_type ??
-                        tournament.tournamentType) === "clan_battle" && (
-                        <Badge variant="warning" size="sm">
-                          ⚔️ Clan Battle
-                        </Badge>
-                      )}
-                    </div>
-                  )}
-                  <Badge
-                    variant={tournament.status}
-                    size="sm"
-                    className="capitalize"
-                  >
-                    {tournament.status}
-                  </Badge>
-                </div>
-              </div>
-            </div>
-
-            {/* Add stats here */}
-            <div className="flex justify-end gap-2">
-              {/* Countdown Timer Section */}
-              {(tournament.status === "upcoming" ||
-                tournament.status === "ongoing") && (
-                <div className="flex items-center gap-2 border-r border-white/20 w-[156px]">
-                  {/* Countdown Timer for Upcoming Automated Tournaments */}
-                  {tournament.status === "upcoming" &&
-                    (tournament.is_automated === true ||
-                      tournament.is_automated === "true") &&
-                    tournament.expires_at && (
-                      <>
-                        <div className="lg:col-span-2 p-0.5 rounded-lg">
-                          <p className="text-gold-text font-medium text-xs tracking-wider">
-                            Join before
-                          </p>
-                          <CountdownTimer
-                            expiresAt={tournament.expires_at}
-                            label="Join before"
-                            style="minimal"
-                          />
-                        </div>
-                      </>
-                    )}
-
-                  {/* Countdown Timer for Upcoming Non-Automated Tournaments (Events) */}
-                  {tournament.status === "upcoming" &&
-                    !(
-                      tournament.is_automated === true ||
-                      tournament.is_automated === "true"
-                    ) &&
-                    tournament.expires_at && (
-                      <>
-                        <div className="lg:col-span-2 p-0.5 ">
-                          <p className="text-gold-text font-medium text-xs tracking-wider">
-                            Join before
-                          </p>
-                          <CountdownTimer
-                            expiresAt={tournament.expires_at}
-                            label="Starts in"
-                            style="minimal"
-                          />
-                        </div>
-                      </>
-                    )}
-
-                  {/* Countdown Timer for Ongoing Automated Tournaments */}
-                  {tournament.status === "ongoing" &&
-                    (tournament.is_automated === true ||
-                      tournament.is_automated === "true") &&
-                    tournament.expires_at && (
-                      <>
-                        <div className="lg:col-span-2 p-0.5 rounded-lg border-2 border-green-500/40 bg-gradient-to-br from-green-500/20 via-green-500/10 to-transparent">
-                          <p className="text-gold-text font-medium text-xs tracking-wider">
-                            Join before
-                          </p>
-                          <CountdownTimer
-                            expiresAt={tournament.expires_at}
-                            label="Join before"
-                            style="minimal"
-                          />
-                        </div>
-                      </>
-                    )}
-
-                  {/* Countdown Timer for Ongoing Events (non-automated with expiration) */}
-                  {tournament.status === "ongoing" &&
-                    !(
-                      tournament.is_automated === true ||
-                      tournament.is_automated === "true"
-                    ) &&
-                    tournament.expires_at && (
-                      <>
-                        <div className="lg:col-span-2 p-0.5 ">
-                          <p className="text-gold-text font-medium text-xs tracking-wider">
-                            Join before
-                          </p>
-                          <CountdownTimer
-                            expiresAt={tournament.expires_at}
-                            label="Ends in"
-                            style="minimal"
-                          />
-                        </div>
-                      </>
-                    )}
-
-                  {/* Show Tournament Started for Ongoing Non-Automated (only if no date/time for countdown) */}
-                  {tournament.status === "ongoing" &&
-                    !(
-                      tournament.is_automated === true ||
-                      tournament.is_automated === "true"
-                    ) &&
-                    !tournament.expires_at && (
-                      <div className="lg:col-span-3 flex items-start gap-2 p-0.5 rounded-lg border border-red-500/30 bg-gradient-to-br from-red-500/10 via-red-500/5 to-transparent">
-                        <div className="flex-shrink-0 w-8 h-8 rounded-md bg-red-500/20 flex items-center justify-center text-lg">
-                          ⏰
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <p className="text-gold-text font-medium text-xs tracking-wider">
-                            Status
-                          </p>
-                          <div className="flex items-center gap-2">
-                            <div className="h-2 w-2 rounded-full bg-red-400 animate-pulse"></div>
-                            <p className="text-red-400 font-semibold text-sm">
-                              Tournament Started
-                            </p>
-                          </div>
-                          <p className="text-gray-300 text-xs mt-1">
-                            Matches are underway • New entries are closed
-                          </p>
-                        </div>
-                      </div>
-                    )}
-                </div>
-              )}
-
-              {/* Schedule Card */}
-              <div className="flex items-start gap-2 p-2.5 w-[156px] border-r border-white/20">
-                <div className="flex-shrink-0 w-8 h-8 rounded-md bg-gray-500/20 flex items-center justify-center text-lg">
-                  <LuCalendarDays />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-gold-text font-medium text-xs tracking-wider">
-                    Schedule
-                  </p>
-                  <p className="text-white font-semibold text-sm leading-tight">
-                    {formatDate(tournament.date)}
-                  </p>
-                  <p className="text-gray-300 text-xs">{tournament.time}</p>
-                </div>
-              </div>
-
-              {/* Players Card */}
-              <div className="flex items-start gap-2 p-2.5 w-[156px] border-r border-white/20">
-                <div className="flex-shrink-0 w-8 h-8 rounded-md bg-gray-500/20 flex items-center justify-center text-lg">
-                  <LuUsers />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-gold-text font-medium text-xs tracking-wider">
-                    Players
-                  </p>
-                  <p className="text-white font-semibold text-base">
-                    {tournament.participants.length}
-                    <span className="text-gray-400 text-sm font-normal">
-                      /{tournament.max_players ?? tournament.maxPlayers}
-                    </span>
-                  </p>
-                  <p className="text-gray-300 text-xs">
-                    {(tournament.max_players ?? tournament.maxPlayers) -
-                      tournament.participants.length >
-                    0
-                      ? `${
-                          (tournament.max_players ?? tournament.maxPlayers) -
-                          tournament.participants.length
-                        } left`
-                      : "Full"}
-                  </p>
-                </div>
-              </div>
-
-              {/* Entry Fee Card */}
-              <div className="flex items-start gap-2 p-2.5 w-[156px] border-r border-white/20">
-                <div className="flex-shrink-0 w-8 h-8 rounded-md bg-gray-500/20 flex items-center justify-center text-lg">
-                  <TbMoneybag />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-gold-text font-medium text-xs tracking-wider">
-                    Entry Fee
-                  </p>
-                  {tournament.entry_fee ? (
-                    <>
-                      <p className="text-white font-semibold text-base">
-                        ${getEntryFeeDisplayDual(tournament).usd}
-                      </p>
-                      <p className="text-gold text-xs">
-                        {getEntryFeeDisplayDual(tournament).diamonds} 💎
-                      </p>
-                    </>
-                  ) : (
-                    <p className="text-green-400 font-semibold text-base">
-                      Free
-                    </p>
-                  )}
-                </div>
-              </div>
-
-              {/* Prize Pool Card - Highlighted */}
-              <div className="flex items-start gap-2 p-2.5 w-[156px] border-r border border-gold/40 hover:border-gold/40 transition-all shadow-md shadow-gold/10 rounded-lg">
-                <div className="flex-1 min-w-0 text-center">
-                  <p className="text-gold/80 text-xs tracking-wider mb-1 font-semibold">
-                    Prize Pool
-                  </p>
-                  <p className="text-gold font-bold text-lg">
-                    ${getPrizePoolDisplayDual(tournament).usd}
-                  </p>
-                  <p className="text-gold/90 text-sm">
-                    {getPrizePoolDisplayDual(tournament).diamonds} 💎
-                  </p>
-                  {(tournament.prize_pool_type ?? tournament.prizePoolType) ===
-                    "entry-based" && (
-                    <p className="text-gold/70 text-xs italic">Entry-based</p>
-                  )}
-                </div>
-              </div>
-            </div>
-          </div>
-          <div className="h-[1px] bg-gradient-to-r from-transparent via-gold-dark/50 to-transparent" />
-          <div className="flex justify-between items-center pt-4">
-            {/* Clan Battle Details */}
-            {(tournament.tournament_type ?? tournament.tournamentType) ===
-              "clan_battle" && (
-              <div className="px-3 flex-1">
-                <div className="flex justify-self-start items-center gap-8">
-                  <div className="flex items-center gap-2">
-                    <div className="w-8 h-8 rounded-md bg-gray-500/20 flex items-center justify-center text-base">
-                      <GiCrossedAxes />
-                    </div>
-                    <h3 className="text-white font-bold text-base">
-                      Clan Details
-                    </h3>
-                  </div>
-                  {(tournament.clan_battle_mode ??
-                    tournament.clanBattleMode) === "clan_selection" && (
-                    <>
-                      <div className="p-2.5 rounded-md bg-black/50 border border-white/20">
-                        <p className="text-white font-semibold text-sm">
-                          {clan1
-                            ? `${clan1.emblem} ${clan1.name} [${clan1.tag}]`
-                            : "Not specified"}
-                        </p>
-                      </div>
-                      <span className="text-white font-semibold text-sm">
-                        vs
-                      </span>
-                      <div className="p-2.5 rounded-md bg-black/50 border border-white/20">
-                        <p className="text-white font-semibold text-sm">
-                          {clan2
-                            ? `${clan2.emblem} ${clan2.name} [${clan2.tag}]`
-                            : "Not specified"}
-                        </p>
-                      </div>
-                    </>
-                  )}
-                </div>
-              </div>
-            )}
-            {/* Action Buttons - Always Visible */}
-            <div className="flex flex-col gap-2 w-1/4">
-              {canJoin && (
-                <Button
-                  variant="primary"
-                  onClick={handleJoinButtonClick}
-                  disabled={loading}
-                >
-                  {tournament.entry_fee
-                    ? "Join Tournament"
-                    : "Join Tournament (Free)"}
-                </Button>
-              )}
-
-              {isHost && tournament.status === "upcoming" && (
-                <Button variant="primary" onClick={handleStartTournament}>
-                  Start Tournament
-                </Button>
-              )}
-
-              {isHost && tournament.status === "ongoing" && (
-                <Button
-                  variant="primary"
-                  onClick={() => setShowWinnerModal(true)}
-                >
-                  Declare Winners
-                </Button>
-              )}
-
-              {isParticipant && (
-                <Badge variant="success">You are Registered ✓</Badge>
-              )}
-            </div>
-          </div>
-        </Card>
+        <TournamentHeader
+          tournament={tournament}
+          host={host}
+          user={user}
+          clan1={clan1}
+          clan2={clan2}
+          canJoin={canJoin}
+          isHost={isHost}
+          isParticipant={isParticipant}
+          loading={loading}
+          onJoin={handleJoinButtonClick}
+          onStart={handleStartTournament}
+          onDeclareWinners={() => setShowWinnerModal(true)}
+        />
 
         {/* Tabbed Content */}
         <Tabs tabs={tabs} defaultTab="participants" variant="divided" />
 
         {/* Winner Declaration Modal */}
-        {showWinnerModal && (
-          <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
-            <Card className="max-w-2xl w-full">
-              <h2 className="text-2xl font-bold text-gold-gradient mb-6">
-                🏆 Declare Winners
-              </h2>
-
-              <div className="space-y-4 mb-6">
-                <Select
-                  label="🥇 1st Place"
-                  name="first"
-                  value={winners.first}
-                  onChange={(e) =>
-                    setWinners({ ...winners, first: e.target.value })
-                  }
-                  options={participantOptions}
-                  placeholder="Select winner"
-                  error={errors.first}
-                  required
-                />
-                <Select
-                  label="🥈 2nd Place"
-                  name="second"
-                  value={winners.second}
-                  onChange={(e) =>
-                    setWinners({ ...winners, second: e.target.value })
-                  }
-                  options={participantOptions}
-                  placeholder="Select winner"
-                  error={errors.second}
-                  required
-                />
-                <Select
-                  label="🥉 3rd Place"
-                  name="third"
-                  value={winners.third}
-                  onChange={(e) =>
-                    setWinners({ ...winners, third: e.target.value })
-                  }
-                  options={participantOptions}
-                  placeholder="Select winner"
-                  error={errors.third}
-                  required
-                />
-              </div>
-
-              {errors.duplicate && (
-                <p className="text-red-400 text-sm mb-4">{errors.duplicate}</p>
-              )}
-
-              <div className="bg-dark-secondary p-4 rounded-lg mb-6">
-                <p className="text-gray-400 text-sm mb-2">
-                  Prize Distribution:
-                </p>
-                <div className="space-y-1 text-sm">
-                  <p className="text-white">
-                    🥇 1st: {prizes.first.toLocaleString()} 💎
-                  </p>
-                  <p className="text-white">
-                    🥈 2nd: {prizes.second.toLocaleString()} 💎
-                  </p>
-                  <p className="text-white">
-                    🥉 3rd: {prizes.third.toLocaleString()} 💎
-                  </p>
-                </div>
-              </div>
-
-              <div className="flex gap-4">
-                <Button
-                  variant="secondary"
-                  fullWidth
-                  onClick={() => {
-                    setShowWinnerModal(false);
-                    setErrors({});
-                  }}
-                  disabled={loading}
-                >
-                  Cancel
-                </Button>
-                <Button
-                  variant="primary"
-                  fullWidth
-                  onClick={handleDeclareWinners}
-                  disabled={loading}
-                >
-                  {loading ? "Processing..." : "Declare Winners"}
-                </Button>
-              </div>
-            </Card>
-          </div>
-        )}
+        <WinnerDeclarationModal
+          show={showWinnerModal}
+          winners={winners}
+          setWinners={setWinners}
+          errors={errors}
+          setErrors={setErrors}
+          prizes={prizes}
+          participants={participants}
+          loading={loading}
+          onConfirm={handleDeclareWinners}
+          onCancel={() => setShowWinnerModal(false)}
+        />
 
         {/* Payment Method Selection Modal */}
-        {showPaymentModal && (
-          <div className="fixed inset-0 bg-black/90 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-fadeIn">
-            <div className="max-w-2xl w-full">
-              {/* Decorative background glow */}
-              <div className="absolute inset-0 bg-gradient-to-br from-gold/5 via-transparent to-purple-500/5 blur-3xl pointer-events-none" />
-
-              <Card className="relative overflow-hidden border-2 border-gold-dark/30 shadow-2xl">
-                {/* Top golden accent line */}
-                <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-gold to-transparent" />
-
-                {/* Header with icon */}
-                <div className="relative">
-                  <div className="flex items-center gap-3 mb-4">
-                    <div className="flex-shrink-0 w-10 h-10 rounded-full bg-gradient-to-br from-gold/20 to-gold/5 border-2 border-gold/30 flex items-center justify-center">
-                      <span className="text-2xl">💳</span>
-                    </div>
-                    <div>
-                      <h2 className="text-2xl font-bold text-gold-gradient">
-                        Select Payment Method
-                      </h2>
-                      <p className="text-gray-400 text-xs mt-0.5">
-                        Choose how you&apos;d like to pay for this tournament
-                      </p>
-                    </div>
-                  </div>
-
-                  {/* Show info message for tournaments */}
-                  {tournament.display_type === "tournament" && (
-                    <div className="mb-4 p-3 bg-gradient-to-r from-blue-500/10 to-purple-500/10 border border-blue-500/30 rounded-lg backdrop-blur-sm">
-                      <div className="flex items-center gap-2">
-                        <div className="flex-shrink-0 w-8 h-8 rounded-lg bg-blue-500/20 flex items-center justify-center">
-                          <span className="text-lg">⚡</span>
-                        </div>
-                        <p className="text-blue-300 text-sm font-medium">
-                          Tournaments can only be joined using tickets
-                        </p>
-                      </div>
-                    </div>
-                  )}
-                </div>
-
-                {/* Payment Options */}
-                <div
-                  className={`grid grid-cols-1 gap-3 mb-4 ${
-                    tournament.display_type === "tournament"
-                      ? "md:grid-cols-1"
-                      : "md:grid-cols-3"
-                  }`}
-                >
-                  {/* Diamonds Option - Only for Events */}
-                  {tournament.display_type === "event" && (
-                    <button
-                      type="button"
-                      onClick={() => setPaymentMethod("diamonds")}
-                      className={`group relative p-4 rounded-lg border-2 transition-all duration-300 text-left overflow-hidden ${
-                        paymentMethod === "diamonds"
-                          ? "border-gold bg-gradient-to-br from-gold/15 to-gold/5 shadow-lg shadow-gold/20 scale-[1.02]"
-                          : "border-gold-dark/30 hover:border-gold/50 bg-dark-secondary/50"
-                      }`}
-                    >
-                      {/* Background gradient effect */}
-                      <div
-                        className={`absolute inset-0 bg-gradient-to-br from-gold/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300`}
-                      />
-
-                      <div className="relative">
-                        <div className="flex items-center justify-between mb-2">
-                          <div className="flex items-center space-x-2">
-                            <div
-                              className={`w-10 h-10 rounded-lg flex items-center justify-center transition-all ${
-                                paymentMethod === "diamonds"
-                                  ? "bg-gold/20 shadow-md shadow-gold/30"
-                                  : "bg-gold/10"
-                              }`}
-                            >
-                              <span className="text-2xl">💎</span>
-                            </div>
-                            <p className="text-white font-bold text-base">
-                              Diamonds
-                            </p>
-                          </div>
-                          {paymentMethod === "diamonds" && (
-                            <div className="w-5 h-5 rounded-full bg-gold flex items-center justify-center">
-                              <span className="text-dark-primary text-xs font-bold">
-                                ✓
-                              </span>
-                            </div>
-                          )}
-                        </div>
-                        <div className="space-y-1">
-                          <p className="text-gold font-bold text-lg">
-                            {getEntryFeeDisplayDual(tournament).diamonds} 💎
-                          </p>
-                          {user && (
-                            <div className="pt-1.5 border-t border-gold/20">
-                              <p className="text-xs text-gray-400">
-                                Balance: {user.diamonds || 0} 💎
-                              </p>
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    </button>
-                  )}
-
-                  {/* USD Option - Only for Events */}
-                  {tournament.display_type === "event" && (
-                    <button
-                      type="button"
-                      onClick={() => setPaymentMethod("usd")}
-                      className={`group relative p-4 rounded-lg border-2 transition-all duration-300 text-left overflow-hidden ${
-                        paymentMethod === "usd"
-                          ? "border-green-500 bg-gradient-to-br from-green-500/15 to-green-500/5 shadow-lg shadow-green-500/20 scale-[1.02]"
-                          : "border-green-500/30 hover:border-green-500/50 bg-dark-secondary/50"
-                      }`}
-                    >
-                      {/* Background gradient effect */}
-                      <div
-                        className={`absolute inset-0 bg-gradient-to-br from-green-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300`}
-                      />
-
-                      <div className="relative">
-                        <div className="flex items-center justify-between mb-2">
-                          <div className="flex items-center space-x-2">
-                            <div
-                              className={`w-10 h-10 rounded-lg flex items-center justify-center transition-all ${
-                                paymentMethod === "usd"
-                                  ? "bg-green-500/20 shadow-md shadow-green-500/30"
-                                  : "bg-green-500/10"
-                              }`}
-                            >
-                              <span className="text-2xl">💵</span>
-                            </div>
-                            <p className="text-white font-bold text-base">
-                              USD
-                            </p>
-                          </div>
-                          {paymentMethod === "usd" && (
-                            <div className="w-5 h-5 rounded-full bg-green-500 flex items-center justify-center">
-                              <span className="text-white text-xs font-bold">
-                                ✓
-                              </span>
-                            </div>
-                          )}
-                        </div>
-                        <div className="space-y-1">
-                          <p className="text-green-400 font-bold text-lg">
-                            ${getEntryFeeDisplayDual(tournament).usd}
-                          </p>
-                          {user && (
-                            <div className="pt-1.5 border-t border-green-500/20">
-                              <p className="text-xs text-gray-400">
-                                Balance: $
-                                {Number(user.usd_balance || 0).toFixed(2)}
-                              </p>
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    </button>
-                  )}
-
-                  {/* Tickets Option - Required for Tournaments, Optional for Events */}
-                  {(tournament.display_type === "tournament" ||
-                    tournament.accepts_tickets) && (
-                    <button
-                      type="button"
-                      onClick={() => setPaymentMethod("tickets")}
-                      className={`group relative p-4 rounded-lg border-2 transition-all duration-300 text-left overflow-hidden ${
-                        paymentMethod === "tickets"
-                          ? "border-purple-500 bg-gradient-to-br from-purple-500/15 to-purple-500/5 shadow-lg shadow-purple-500/20 scale-[1.02]"
-                          : "border-purple-500/30 hover:border-purple-500/50 bg-dark-secondary/50"
-                      }`}
-                    >
-                      {/* Background gradient effect */}
-                      <div
-                        className={`absolute inset-0 bg-gradient-to-br from-purple-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300`}
-                      />
-
-                      <div className="relative">
-                        <div className="flex items-center justify-between mb-2">
-                          <div className="flex items-center space-x-2">
-                            <div
-                              className={`w-10 h-10 rounded-lg flex items-center justify-center transition-all ${
-                                paymentMethod === "tickets"
-                                  ? "bg-purple-500/20 shadow-md shadow-purple-500/30"
-                                  : "bg-purple-500/10"
-                              }`}
-                            >
-                              <span className="text-2xl">🎫</span>
-                            </div>
-                            <p className="text-white font-bold text-base">
-                              Tickets
-                            </p>
-                          </div>
-                          {paymentMethod === "tickets" && (
-                            <div className="w-5 h-5 rounded-full bg-purple-500 flex items-center justify-center">
-                              <span className="text-white text-xs font-bold">
-                                ✓
-                              </span>
-                            </div>
-                          )}
-                        </div>
-                        <div className="space-y-1">
-                          <p className="text-purple-400 font-bold text-lg">
-                            ${Number(tournament.entry_fee_usd || 0).toFixed(2)}{" "}
-                            ticket
-                          </p>
-                          {user && (
-                            <div className="pt-1.5 border-t border-purple-500/20">
-                              <p className="text-xs text-gray-400">
-                                Balance:{" "}
-                                {(user.tickets?.ticket_010 || 0) +
-                                  (user.tickets?.ticket_100 || 0) +
-                                  (user.tickets?.ticket_1000 || 0)}{" "}
-                                🎫
-                              </p>
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    </button>
-                  )}
-                </div>
-
-                {/* Entry Fee Summary */}
-                <div className="relative mb-4 p-3 rounded-lg bg-gradient-to-br from-dark-primary to-dark-secondary border border-gold-dark/30 shadow-inner">
-                  <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-gold/50 to-transparent" />
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-gray-400 text-xs mb-0.5">
-                        Payment Method
-                      </p>
-                      <p className="text-white font-bold text-sm">
-                        {paymentMethod === "diamonds"
-                          ? "💎 Diamonds"
-                          : paymentMethod === "usd"
-                          ? "💵 USD"
-                          : "🎫 Tickets"}
-                      </p>
-                    </div>
-                    <div className="text-right">
-                      <p className="text-gray-400 text-xs mb-0.5">Amount</p>
-                      <p className="text-gold-gradient font-bold text-lg">
-                        {paymentMethod === "diamonds"
-                          ? `${getEntryFeeDisplayDual(tournament).diamonds} 💎`
-                          : paymentMethod === "usd"
-                          ? `$${getEntryFeeDisplayDual(tournament).usd}`
-                          : `$${Number(tournament.entry_fee_usd || 0).toFixed(
-                              2
-                            )}`}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Action Buttons */}
-                <div className="flex gap-3">
-                  <Button
-                    variant="secondary"
-                    fullWidth
-                    onClick={() => {
-                      setShowPaymentModal(false);
-                    }}
-                    disabled={loading}
-                  >
-                    Cancel
-                  </Button>
-                  <Button
-                    variant="primary"
-                    fullWidth
-                    onClick={handleJoinTournament}
-                    disabled={loading}
-                    className="relative overflow-hidden group"
-                  >
-                    <span className="relative z-10">
-                      {loading ? (
-                        <span className="flex items-center justify-center gap-2">
-                          <span className="animate-spin">⏳</span>
-                          Processing...
-                        </span>
-                      ) : (
-                        <span className="flex items-center justify-center gap-2">
-                          <span>Confirm & Join</span>
-                          <span className="group-hover:translate-x-1 transition-transform">
-                            →
-                          </span>
-                        </span>
-                      )}
-                    </span>
-                  </Button>
-                </div>
-              </Card>
-            </div>
-          </div>
-        )}
+        <PaymentModal
+          show={showPaymentModal}
+          tournament={tournament}
+          user={user}
+          paymentMethod={paymentMethod}
+          setPaymentMethod={setPaymentMethod}
+          loading={loading}
+          onConfirm={handleJoinTournament}
+          onCancel={() => setShowPaymentModal(false)}
+        />
       </div>
     </div>
   );

@@ -1,0 +1,10 @@
+// Export all tournament-specific components for easier imports
+export { default as TournamentStatCard } from "./TournamentStatCard";
+export { default as PaymentModal } from "./PaymentModal";
+export { default as WinnerDeclarationModal } from "./WinnerDeclarationModal";
+export { default as CountdownSection } from "./CountdownSection";
+export { default as PrizeDistributionTab } from "./PrizeDistributionTab";
+export { default as ParticipantsTab } from "./ParticipantsTab";
+export { default as RulesTab } from "./RulesTab";
+export { default as MatchesTab } from "./MatchesTab";
+export { default as TournamentHeader } from "./TournamentHeader";

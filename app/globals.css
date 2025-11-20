@@ -52,6 +52,7 @@
   --color-gold: #fdf496;
   --color-gold-dark: #d4af37;
   --color-gold-text: #fffac8;
+  --color-gold-light-text: #e6d9c2;
   
   /* Accent colors */
   --color-accent-purple: #8b5cf6;
@@ -59,6 +60,16 @@
   
   /* Custom max-width for main content */
   --max-width-main: 1460px;
+
+  /* Dark Gray Theme Colors */
+  --color-dark-gray-primary: #1a1a24;
+  --color-dark-gray-secondary: #2a2a3a;
+  --color-dark-gray-card: #101313;
+  --color-dark-gray-text: #ffffff;
+  --color-dark-gray-accent: #d4af37;
+  --color-dark-gray-accent-text: #fffac8;
+  --color-dark-gray-accent-background: #1a1a24;
+  --color-dark-gray-accent-background-text: #ffffff;
 }
 
 :root {
@@ -73,6 +84,7 @@ body {
   background-size: cover;
   background-position: bottom;
   background-repeat: no-repeat;
+  background-attachment: fixed;
   color: var(--foreground);
   font-family: 'Cerapro', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -132,7 +144,7 @@ body {
 /* OPTION 1: Elevated Card with Top Accent */
 .tournament-card {
   position: relative;
-  background: #1a1a24;
+  background: var(--color-dark-gray-card);
   /* background-image: 
     linear-gradient(to right, 
       rgba(26, 26, 36, 1) 0%, 
@@ -141,10 +153,10 @@ body {
       rgba(26, 26, 36, 1) 70%, 
       rgba(26, 26, 36, 1) 100%),
     url('/listBg.jpg'); */
-  background-color: #1a1a24;
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
+  border-radius: 0.75rem;
   /* border-radius: 12px; */
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 2px 4px rgba(0, 0, 0, 0.06);
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
@@ -326,3 +338,22 @@ body {
   opacity: 1;
   background: linear-gradient(135deg, rgba(255, 184, 0, 0.12) 0%, rgba(255, 184, 0, 0.04) 100%);
 } */
+
+/* Custom scrollbar for matches list */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 10px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #d4af37, #aa8c2c);
+  border-radius: 10px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, #f0c14b, #d4af37);
+}
