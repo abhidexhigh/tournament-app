@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback, Suspense } from "react";
 import { useUser } from "../contexts/UserContext";
 import { useSession } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
+import Image from "next/image";
 import Card from "../components/Card";
 import Button from "../components/Button";
 import Input from "../components/Input";
@@ -271,8 +272,16 @@ function ProfileContent() {
           {/* Profile Information */}
           <div className="lg:col-span-1">
             <Card className="p-6">
-              <div className="text-center">
-                <div className="text-6xl mb-4">{user.avatar}</div>
+              <div className="text-center w-full">
+                <div className="w-24 h-24 rounded-full overflow-hidden mx-auto mb-4">
+                  <Image
+                    src={user.avatar}
+                    alt="User Avatar"
+                    width={96}
+                    height={96}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
                 <h2 className="text-2xl font-bold text-white mb-2">
                   {user.username}
                 </h2>

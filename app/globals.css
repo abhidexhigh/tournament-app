@@ -361,3 +361,14 @@ body {
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
   background: linear-gradient(180deg, #f0c14b, #d4af37);
 }
+
+.chamfered-div {
+  clip-path: polygon(20px 0,
+        calc(100% - 20px) 0,
+        100% 20px,
+        100% calc(100% - 20px),
+        calc(100% - 20px) 100%,
+        20px 100%,
+        0 calc(100% - 20px),
+        0 20px);
+}

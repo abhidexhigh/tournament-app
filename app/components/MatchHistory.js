@@ -1,6 +1,7 @@
 "use client";
 
 import Badge from "./Badge";
+import Image from "next/image";
 
 export default function MatchHistory({ matches, playerId }) {
   if (!matches || matches.length === 0) {
@@ -30,9 +31,36 @@ export default function MatchHistory({ matches, playerId }) {
 
   // Get position medal/emoji
   const getPositionBadge = (position) => {
-    if (position === 1) return "🥇";
-    if (position === 2) return "🥈";
-    if (position === 3) return "🥉";
+    if (position === 1)
+      return (
+        <Image
+          src="https://res.cloudinary.com/dg0cmj6su/image/upload/v1763459457/First_xf1xz2.webp"
+          alt="1st place"
+          width={24}
+          height={24}
+          className="w-6 sm:w-8"
+        />
+      );
+    if (position === 2)
+      return (
+        <Image
+          src="https://res.cloudinary.com/dg0cmj6su/image/upload/v1763459457/second_nak1rc.webp"
+          alt="2nd place"
+          width={24}
+          height={24}
+          className="w-6 sm:w-8"
+        />
+      );
+    if (position === 3)
+      return (
+        <Image
+          src="https://res.cloudinary.com/dg0cmj6su/image/upload/v1763459457/3rd_dxdd3t.webp"
+          alt="3rd place"
+          width={24}
+          height={24}
+          className="w-6 sm:w-8"
+        />
+      );
     return position;
   };
 
@@ -53,7 +81,7 @@ export default function MatchHistory({ matches, playerId }) {
       return "bg-gradient-to-r from-gray-400/20 via-gray-400/10 to-transparent";
     if (position === 3)
       return "bg-gradient-to-r from-orange-500/20 via-orange-500/10 to-transparent";
-    return "bg-dark-card/40";
+    return "bg-dark-secondary-accent/90";
   };
 
   // Format date
@@ -190,20 +218,20 @@ export default function MatchHistory({ matches, playerId }) {
 
                   {/* Match Title */}
                   <td className="px-4 py-4">
-                    <div className="text-sm font-semibold text-white line-clamp-2 max-w-xs">
+                    <div className="text-sm font-semibold text-gold-light-text line-clamp-2 max-w-xs">
                       {match.title}
                     </div>
-                    <div className="text-xs text-gray-400 mt-1">
+                    <div className="text-xs text-gold-light-text mt-1">
                       💎 {match.prizePool?.toLocaleString()} Pool
                     </div>
                   </td>
 
                   {/* Date */}
                   <td className="px-4 py-4 whitespace-nowrap">
-                    <div className="text-sm text-gray-300">
+                    <div className="text-sm text-gold-light-text">
                       {formatDate(match.date)}
                     </div>
-                    <div className="text-xs text-gray-500">
+                    <div className="text-xs text-gold-light-text">
                       {match.startTime}
                     </div>
                   </td>
@@ -218,7 +246,7 @@ export default function MatchHistory({ matches, playerId }) {
                         >
                           🔴 Live
                         </Badge>
-                        <span className="text-[10px] text-gray-500">
+                        <span className="text-[10px] text-gold-light-text">
                           In Progress
                         </span>
                       </div>
@@ -228,9 +256,9 @@ export default function MatchHistory({ matches, playerId }) {
                           variant={match.status}
                           className="capitalize text-xs"
                         >
-                          📅 Upcoming
+                          Upcoming
                         </Badge>
-                        <span className="text-[10px] text-gray-500">
+                        <span className="text-[10px] text-gold-light-text">
                           Scheduled
                         </span>
                       </div>
@@ -246,7 +274,7 @@ export default function MatchHistory({ matches, playerId }) {
 
                   {/* Score */}
                   <td className="px-4 py-4 whitespace-nowrap text-right">
-                    <div className="text-sm font-bold text-white">
+                    <div className="text-sm font-bold text-gold-light-text">
                       {match.status === "upcoming"
                         ? "—"
                         : performance.score?.toLocaleString() || "N/A"}
@@ -255,7 +283,7 @@ export default function MatchHistory({ matches, playerId }) {
 
                   {/* Kills */}
                   <td className="px-4 py-4 whitespace-nowrap text-center">
-                    <div className="text-sm font-bold text-white">
+                    <div className="text-sm font-bold text-gold-light-text">
                       {match.status === "upcoming"
                         ? "—"
                         : performance.kills || 0}
@@ -264,7 +292,7 @@ export default function MatchHistory({ matches, playerId }) {
 
                   {/* Deaths */}
                   <td className="px-4 py-4 whitespace-nowrap text-center">
-                    <div className="text-sm font-bold text-white">
+                    <div className="text-sm font-bold text-gold-light-text">
                       {match.status === "upcoming"
                         ? "—"
                         : performance.deaths || 0}
@@ -273,7 +301,7 @@ export default function MatchHistory({ matches, playerId }) {
 
                   {/* K/D Ratio */}
                   <td className="px-4 py-4 whitespace-nowrap text-center">
-                    <div className="text-sm font-bold text-white">
+                    <div className="text-sm font-bold text-gold-light-text">
                       {match.status === "upcoming"
                         ? "—"
                         : performance.kdRatio || "0.0"}
@@ -284,7 +312,7 @@ export default function MatchHistory({ matches, playerId }) {
                   <td className="px-4 py-4 whitespace-nowrap text-right">
                     {match.status === "upcoming" ||
                     match.status === "ongoing" ? (
-                      <div className="text-xs text-gray-500 font-medium">
+                      <div className="text-xs text-gold-light-text font-medium">
                         TBD
                       </div>
                     ) : performance.prizeAmount > 0 ? (
@@ -295,7 +323,7 @@ export default function MatchHistory({ matches, playerId }) {
                         <span className="text-xs">💎</span>
                       </div>
                     ) : (
-                      <span className="text-sm text-gray-500">—</span>
+                      <span className="text-sm text-gold-light-text">—</span>
                     )}
                   </td>
                 </tr>
@@ -310,13 +338,13 @@ export default function MatchHistory({ matches, playerId }) {
         <div className="flex flex-wrap items-center justify-between gap-4 text-sm">
           <div className="flex items-center gap-6">
             <div>
-              <span className="text-gray-400">Total Matches:</span>
+              <span className="text-gold-light-text">Total Matches:</span>
               <span className="ml-2 font-bold text-white">
                 {sortedMatches.length}
               </span>
             </div>
             <div>
-              <span className="text-gray-400">Wins:</span>
+              <span className="text-gold-light-text">Wins:</span>
               <span className="ml-2 font-bold text-gold">
                 {
                   sortedMatches.filter((m) => {
@@ -339,7 +367,7 @@ export default function MatchHistory({ matches, playerId }) {
             </div>
           </div>
           <div>
-            <span className="text-gray-400">Total Prize:</span>
+            <span className="text-gold-light-text">Total Prize:</span>
             <span className="ml-2 font-black text-gold text-lg">
               {sortedMatches
                 .reduce((sum, m) => {
