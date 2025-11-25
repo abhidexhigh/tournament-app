@@ -465,7 +465,7 @@ export default function TournamentDetailsPage() {
     {
       id: "matches",
       label: "Matches",
-      badge: tournament.status === "completed" ? leaderboard.length : null,
+      // badge: tournament.status === "completed" ? leaderboard.length : null,
       content: <MatchesTab />,
     },
     {
