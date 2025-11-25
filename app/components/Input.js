@@ -39,7 +39,7 @@ export default function Input({
           placeholder={placeholder}
           required={required}
           disabled={disabled}
-          className={`w-full bg-dark-card border ${
+          className={`w-full bg-dark-gray-card border ${
             error ? "border-red-500" : "border-gold-dark/30"
           } rounded-lg px-4 py-3 ${
             icon ? "pl-12" : ""

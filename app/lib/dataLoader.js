@@ -35,7 +35,7 @@ export const getClanById = async (clanId) => {
   return clans.find((clan) => clan.id === clanId);
 };
 
-// Get user's clans (multiple memberships)
+// Get user's clan (single membership only - returns array for compatibility)
 export const getUserClans = async (userId) => {
   console.log("getUserClans called with userId:", userId);
 

@@ -6,10 +6,12 @@ import { useState, useEffect, useRef } from "react";
 import { useSession, signOut } from "next-auth/react";
 import { useUser } from "../contexts/UserContext";
 import Image from "next/image";
+import AuthModal from "./AuthModal";
 
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const dropdownRef = useRef(null);
   const router = useRouter();
   const pathname = usePathname();
@@ -244,12 +246,12 @@ export default function Navbar() {
                 </Link>
               </>
             ) : (
-              <Link
-                href="/login"
+              <button
+                onClick={() => setIsAuthModalOpen(true)}
                 className="bg-gold-gradient text-dark-primary px-6 py-2 rounded-lg font-bold hover:shadow-lg hover:shadow-gold/50 transition-all duration-300"
               >
                 Login
-              </Link>
+              </button>
             )}
           </div>
 
@@ -372,17 +374,25 @@ export default function Navbar() {
                 Select Role
               </Link>
             ) : (
-              <Link
-                href="/login"
+              <button
+                onClick={() => {
+                  setIsAuthModalOpen(true);
+                  setIsMenuOpen(false);
+                }}
                 className="block w-full text-center bg-gold-gradient text-dark-primary px-6 py-2 rounded-lg font-bold hover:shadow-lg hover:shadow-gold/50 transition-all duration-300"
-                onClick={() => setIsMenuOpen(false)}
               >
                 Login
-              </Link>
+              </button>
             )}
           </div>
         </div>
       )}
+
+      {/* Auth Modal */}
+      <AuthModal
+        isOpen={isAuthModalOpen}
+        onClose={() => setIsAuthModalOpen(false)}
+      />
     </nav>
   );
 }

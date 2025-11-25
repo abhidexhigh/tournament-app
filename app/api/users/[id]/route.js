@@ -30,6 +30,16 @@ export async function PUT(request, { params }) {
     const { id } = await params;
     const body = await request.json();
 
+    // Validate clan membership if clans are being updated
+    if (body.clans !== undefined) {
+      if (Array.isArray(body.clans) && body.clans.length > 1) {
+        return NextResponse.json(
+          { success: false, error: "A user can only be part of one clan at a time" },
+          { status: 400 }
+        );
+      }
+    }
+
     const updatedUser = await usersDb.update(id, body);
 
     if (!updatedUser) {
@@ -41,6 +51,13 @@ export async function PUT(request, { params }) {
 
     return NextResponse.json({ success: true, data: updatedUser });
   } catch (error) {
+    // Check if it's a clan validation error
+    if (error.message.includes("one clan at a time")) {
+      return NextResponse.json(
+        { success: false, error: error.message },
+        { status: 400 }
+      );
+    }
     return NextResponse.json(
       { success: false, error: error.message },
       { status: 500 }

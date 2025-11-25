@@ -159,7 +159,7 @@ export const formatTournamentTitle = (level) => {
   const config = getLevelConfig(level);
   if (!config) return "";
 
-  return `${config.name} Match - Auto`;
+  return `${config.name} League`;
 };
 
 /**

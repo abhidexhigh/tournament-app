@@ -17,10 +17,11 @@ export default function Button({
     primary:
       "bg-gold-gradient text-dark-primary hover:shadow-lg hover:shadow-gold/50 hover:scale-105",
     secondary:
-      "bg-dark-card text-gold border border-gold-dark/50 hover:bg-gold hover:text-dark-primary",
+      "bg-dark-gray-card text-gold border border-gold-dark/50 hover:bg-gold hover:text-dark-primary",
     outline:
       "bg-transparent text-gold border-2 border-gold hover:bg-gold hover:text-dark-primary",
-    ghost: "bg-transparent text-gray-300 hover:text-gold hover:bg-dark-card",
+    ghost:
+      "bg-transparent text-gray-300 hover:text-gold hover:bg-dark-gray-card",
     danger:
       "bg-red-500/20 text-red-400 border border-red-500/50 hover:bg-red-500 hover:text-white",
   };

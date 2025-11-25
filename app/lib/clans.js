@@ -89,7 +89,7 @@ export const getClanByName = (name) => {
   return clans.find((c) => c.name === name);
 };
 
-// Get user's clans (multiple memberships)
+// Get user's clan (single membership only - returns array for compatibility)
 export const getUserClans = (userId) => {
   if (typeof window === "undefined") return [];
 
@@ -122,11 +122,6 @@ export const getUserClans = (userId) => {
           clan_id: "clan_1",
           role: "leader",
           joined_at: "2025-01-01T00:00:00.000Z",
-        },
-        {
-          clan_id: "clan_3",
-          role: "member",
-          joined_at: "2025-02-15T00:00:00.000Z",
         },
       ],
       created_at: "2025-01-01T00:00:00.000Z",

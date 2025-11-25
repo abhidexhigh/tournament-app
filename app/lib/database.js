@@ -30,12 +30,23 @@ export const getCurrentTimestamp = () => {
   return new Date().toISOString();
 };
 
+// Helper function to transform user object from database format to application format
+const transformUser = (user) => {
+  if (!user) return null;
+  
+  return {
+    ...user,
+    gameId: user.game_id, // Convert game_id to gameId
+    game_id: undefined, // Remove the snake_case field
+  };
+};
+
 // Users operations
 export const usersDb = {
   getAll: async () => {
     try {
       const { rows } = await sql`SELECT * FROM users ORDER BY created_at DESC`;
-      return rows;
+      return rows.map(transformUser);
     } catch (error) {
       console.error("Error getting all users:", error);
       throw error;
@@ -45,7 +56,7 @@ export const usersDb = {
   getById: async (id) => {
     try {
       const { rows } = await sql`SELECT * FROM users WHERE id = ${id}`;
-      return rows[0] || null;
+      return transformUser(rows[0]);
     } catch (error) {
       console.error("Error getting user by ID:", error);
       throw error;
@@ -55,7 +66,7 @@ export const usersDb = {
   getByEmail: async (email) => {
     try {
       const { rows } = await sql`SELECT * FROM users WHERE email = ${email}`;
-      return rows[0] || null;
+      return transformUser(rows[0]);
     } catch (error) {
       console.error("Error getting user by email:", error);
       throw error;
@@ -64,6 +75,12 @@ export const usersDb = {
 
   create: async (userData) => {
     try {
+      // Validate clan membership: a user can only be in ONE clan
+      const clans = userData.clans || [];
+      if (Array.isArray(clans) && clans.length > 1) {
+        throw new Error("A user can only be part of one clan at a time");
+      }
+
       const newUser = {
         id: generateId("user"),
         username: userData.username,
@@ -73,7 +90,7 @@ export const usersDb = {
         avatar: userData.avatar || "🎮",
         game_id: userData.gameId || null,
         rank: userData.rank || null,
-        clans: JSON.stringify(userData.clans || []),
+        clans: JSON.stringify(clans),
         usd_balance: userData.usd_balance || 0,
         tickets: JSON.stringify(
           userData.tickets || {
@@ -98,7 +115,7 @@ export const usersDb = {
         RETURNING *
       `;
 
-      return rows[0];
+      return transformUser(rows[0]);
     } catch (error) {
       console.error("Error creating user:", error);
       throw error;
@@ -107,6 +124,13 @@ export const usersDb = {
 
   update: async (id, updateData) => {
     try {
+      // Validate clan membership: a user can only be in ONE clan
+      if (updateData.clans !== undefined) {
+        if (Array.isArray(updateData.clans) && updateData.clans.length > 1) {
+          throw new Error("A user can only be part of one clan at a time");
+        }
+      }
+
       // Build dynamic update query
       const updates = [];
       const values = [];
@@ -164,7 +188,7 @@ export const usersDb = {
       `;
 
       const { rows } = await sql.query(query, [...values, id]);
-      return rows[0] || null;
+      return transformUser(rows[0]);
     } catch (error) {
       console.error("Error updating user:", error);
       throw error;

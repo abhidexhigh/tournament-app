@@ -16,6 +16,14 @@ export default function AdminDashboard() {
   const [actionLoading, setActionLoading] = useState(false);
   const [message, setMessage] = useState(null);
 
+  // Apply dashboard-specific background
+  useEffect(() => {
+    document.body.classList.add('dashboard-bg');
+    return () => {
+      document.body.classList.remove('dashboard-bg');
+    };
+  }, []);
+
   useEffect(() => {
     // Redirect if not game owner
     if (status === "authenticated" && session?.user?.type !== "game_owner") {

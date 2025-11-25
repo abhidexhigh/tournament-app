@@ -49,11 +49,6 @@
         "clan_id": "clan_1",
         "role": "leader",
         "joined_at": "2025-01-01T00:00:00.000Z"
-      },
-      {
-        "clan_id": "clan_5",
-        "role": "member",
-        "joined_at": "2025-02-15T00:00:00.000Z"
       }
     ],
     "created_at": "2025-01-01T00:00:00.000Z",
@@ -79,11 +74,6 @@
         "clan_id": "clan_1",
         "role": "member",
         "joined_at": "2025-01-01T00:00:00.000Z"
-      },
-      {
-        "clan_id": "clan_5",
-        "role": "member",
-        "joined_at": "2025-03-01T00:00:00.000Z"
       }
     ],
     "created_at": "2025-01-01T00:00:00.000Z",
@@ -134,11 +124,6 @@
         "clan_id": "clan_2",
         "role": "leader",
         "joined_at": "2025-01-01T00:00:00.000Z"
-      },
-      {
-        "clan_id": "clan_4",
-        "role": "member",
-        "joined_at": "2025-02-20T00:00:00.000Z"
       }
     ],
     "created_at": "2025-01-01T00:00:00.000Z",
@@ -164,11 +149,6 @@
         "clan_id": "clan_2",
         "role": "member",
         "joined_at": "2025-01-01T00:00:00.000Z"
-      },
-      {
-        "clan_id": "clan_6",
-        "role": "member",
-        "joined_at": "2025-03-10T00:00:00.000Z"
       }
     ],
     "created_at": "2025-01-01T00:00:00.000Z",
@@ -194,11 +174,6 @@
         "clan_id": "clan_3",
         "role": "leader",
         "joined_at": "2025-01-01T00:00:00.000Z"
-      },
-      {
-        "clan_id": "clan_1",
-        "role": "member",
-        "joined_at": "2025-02-01T00:00:00.000Z"
       }
     ],
     "created_at": "2025-01-01T00:00:00.000Z",
@@ -249,11 +224,6 @@
         "clan_id": "clan_4",
         "role": "leader",
         "joined_at": "2025-01-01T00:00:00.000Z"
-      },
-      {
-        "clan_id": "clan_2",
-        "role": "member",
-        "joined_at": "2025-02-25T00:00:00.000Z"
       }
     ],
     "created_at": "2025-01-01T00:00:00.000Z",
@@ -279,11 +249,6 @@
         "clan_id": "clan_5",
         "role": "leader",
         "joined_at": "2025-01-01T00:00:00.000Z"
-      },
-      {
-        "clan_id": "clan_6",
-        "role": "member",
-        "joined_at": "2025-03-05T00:00:00.000Z"
       }
     ],
     "created_at": "2025-01-01T00:00:00.000Z",
@@ -309,11 +274,6 @@
         "clan_id": "clan_6",
         "role": "leader",
         "joined_at": "2025-01-01T00:00:00.000Z"
-      },
-      {
-        "clan_id": "clan_3",
-        "role": "member",
-        "joined_at": "2025-02-10T00:00:00.000Z"
       }
     ],
     "created_at": "2025-01-01T00:00:00.000Z",

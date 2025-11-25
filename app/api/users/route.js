@@ -19,7 +19,7 @@ export async function GET() {
 export async function POST(request) {
   try {
     const body = await request.json();
-    const { username, email, type, avatar } = body;
+    const { username, email, type, avatar, clans } = body;
 
     // Validation
     if (!username || !email || !type) {
@@ -27,6 +27,16 @@ export async function POST(request) {
         { success: false, error: "Missing required fields" },
         { status: 400 }
       );
+    }
+
+    // Validate clan membership: a user can only be in ONE clan
+    if (clans !== undefined) {
+      if (Array.isArray(clans) && clans.length > 1) {
+        return NextResponse.json(
+          { success: false, error: "A user can only be part of one clan at a time" },
+          { status: 400 }
+        );
+      }
     }
 
     // Check if user already exists
@@ -47,12 +57,20 @@ export async function POST(request) {
       type,
       diamonds: initialDiamonds,
       avatar: avatar || (type === "host" ? "👑" : "🎮"),
+      clans: clans || [],
     };
 
     const newUser = await usersDb.create(userData);
 
     return NextResponse.json({ success: true, data: newUser }, { status: 201 });
   } catch (error) {
+    // Check if it's a clan validation error
+    if (error.message.includes("one clan at a time")) {
+      return NextResponse.json(
+        { success: false, error: error.message },
+        { status: 400 }
+      );
+    }
     return NextResponse.json(
       { success: false, error: error.message },
       { status: 500 }

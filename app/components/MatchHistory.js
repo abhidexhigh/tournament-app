@@ -112,7 +112,7 @@ export default function MatchHistory({ matches, playerId }) {
           const p = getPlayerPerformance(m);
           return p && m.status === "upcoming";
         })) && (
-        <div className="relative bg-white/5 border-b border-white/10 px-6 py-3">
+        <div className="hidden relative bg-white/5 border-b border-white/10 px-6 py-3">
           <div className="flex items-center gap-3 text-sm">
             <span className="text-gray-400 text-lg">ℹ️</span>
             <div>

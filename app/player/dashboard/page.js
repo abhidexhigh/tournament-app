@@ -12,6 +12,7 @@ import TransactionHistory from "../../components/TransactionHistory";
 import { useUser } from "../../contexts/UserContext";
 import { tournamentsApi, transactionsApi, matchesApi } from "../../lib/api";
 import MatchHistory from "../../components/MatchHistory";
+import Image from "next/image";
 
 function PlayerDashboardContent() {
   const { user } = useUser();
@@ -29,6 +30,14 @@ function PlayerDashboardContent() {
     top3Finishes: 0,
   });
   const router = useRouter();
+
+  // Apply dashboard-specific background
+  useEffect(() => {
+    document.body.classList.add("dashboard-bg");
+    return () => {
+      document.body.classList.remove("dashboard-bg");
+    };
+  }, []);
 
   useEffect(() => {
     const loadData = async () => {
@@ -122,11 +131,16 @@ function PlayerDashboardContent() {
               <div className="group relative overflow-hidden bg-gold-card-bg backdrop-blur-sm transition-all duration-300 hover:scale-[1.02] chamfered-div">
                 <div className="absolute inset-0 bg-gradient-to-tl from-white/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
                 <div className="relative p-5">
-                  <div className="text-center space-y-3">
-                    <div className="inline-flex w-14 h-14 rounded-full bg-gradient-to-br from-white/20 via-white/10 to-transparent items-center justify-center border border-white/20 shadow-xl group-hover:scale-110 group-hover:shadow-white/20 transition-all duration-300">
-                      <span className="text-3xl">🎮</span>
+                  <div className="flex items-center gap-4">
+                    <div className="flex-shrink-0 w-14 h-14 rounded-full bg-gradient-to-br from-white/20 via-white/10 to-transparent flex items-center justify-center border border-white/20 shadow-xl group-hover:scale-110 group-hover:shadow-white/20 transition-all duration-300">
+                      <Image
+                        src="/icons/002.webp"
+                        alt="Tournaments"
+                        width={32}
+                        height={32}
+                      />
                     </div>
-                    <div>
+                    <div className="flex-1 min-w-0">
                       <div className="text-4xl font-black text-white mb-1">
                         {stats.totalJoined}
                       </div>
@@ -144,11 +158,16 @@ function PlayerDashboardContent() {
               <div className="group relative overflow-hidden bg-gold-card-bg backdrop-blur-sm transition-all duration-300 hover:scale-[1.02] chamfered-div">
                 <div className="absolute inset-0 bg-gradient-to-tl from-gold/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
                 <div className="relative p-5">
-                  <div className="text-center space-y-3">
-                    <div className="inline-flex w-14 h-14 rounded-full bg-gradient-to-br from-gold/40 via-gold/20 to-transparent items-center justify-center border border-gold/40 shadow-xl shadow-gold/30 group-hover:scale-110 group-hover:shadow-gold/50 transition-all duration-300">
-                      <span className="text-3xl">💰</span>
+                  <div className="flex items-center gap-4">
+                    <div className="flex-shrink-0 w-14 h-14 rounded-full bg-gradient-to-br from-gold/40 via-gold/20 to-transparent flex items-center justify-center border border-gold/40 shadow-xl shadow-gold/30 group-hover:scale-110 group-hover:shadow-gold/50 transition-all duration-300">
+                      <Image
+                        src="/icons/004.webp"
+                        alt="Gold"
+                        width={32}
+                        height={32}
+                      />
                     </div>
-                    <div>
+                    <div className="flex-1 min-w-0">
                       <div className="text-4xl font-black text-gold mb-1">
                         {stats.totalWinnings.toLocaleString()}
                       </div>
@@ -166,11 +185,16 @@ function PlayerDashboardContent() {
               <div className="group relative overflow-hidden bg-gold-card-bg backdrop-blur-sm transition-all duration-300 hover:scale-[1.02] chamfered-div">
                 <div className="absolute inset-0 bg-gradient-to-tl from-gold/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
                 <div className="relative p-5">
-                  <div className="text-center space-y-3">
-                    <div className="inline-flex w-14 h-14 rounded-full bg-gradient-to-br from-gold/40 via-gold/20 to-transparent items-center justify-center border border-gold/40 shadow-xl shadow-gold/30 group-hover:scale-110 group-hover:rotate-12 group-hover:shadow-gold/50 transition-all duration-300">
-                      <span className="text-3xl">🏆</span>
+                  <div className="flex items-center gap-4">
+                    <div className="flex-shrink-0 w-14 h-14 rounded-full bg-gradient-to-br from-gold/40 via-gold/20 to-transparent flex items-center justify-center border border-gold/40 shadow-xl shadow-gold/30 group-hover:scale-110 group-hover:shadow-gold/50 transition-all duration-300">
+                      <Image
+                        src="/icons/003.webp"
+                        alt="Wins"
+                        width={32}
+                        height={32}
+                      />
                     </div>
-                    <div>
+                    <div className="flex-1 min-w-0">
                       <div className="text-4xl font-black text-gold mb-1">
                         {stats.wins}
                       </div>
@@ -188,11 +212,16 @@ function PlayerDashboardContent() {
               <div className="group relative overflow-hidden bg-gold-card-bg backdrop-blur-sm transition-all duration-300 hover:scale-[1.02] chamfered-div">
                 <div className="absolute inset-0 bg-gradient-to-tl from-gold/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
                 <div className="relative p-5">
-                  <div className="text-center space-y-3">
-                    <div className="inline-flex w-14 h-14 rounded-full bg-gradient-to-br from-gold/40 via-gold/20 to-transparent items-center justify-center border border-gold/40 shadow-xl shadow-gold/30 group-hover:scale-110 group-hover:shadow-gold/50 transition-all duration-300">
-                      <span className="text-3xl">🥇</span>
+                  <div className="flex items-center gap-4">
+                    <div className="flex-shrink-0 w-14 h-14 rounded-full bg-gradient-to-br from-gold/40 via-gold/20 to-transparent flex items-center justify-center border border-gold/40 shadow-xl shadow-gold/30 group-hover:scale-110 group-hover:shadow-gold/50 transition-all duration-300">
+                      <Image
+                        src="/icons/001.webp"
+                        alt="Top 3 Finishes"
+                        width={32}
+                        height={32}
+                      />
                     </div>
-                    <div>
+                    <div className="flex-1 min-w-0">
                       <div className="text-4xl font-black text-gold mb-1">
                         {stats.top3Finishes}
                       </div>

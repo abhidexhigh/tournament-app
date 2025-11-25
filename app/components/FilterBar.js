@@ -2,50 +2,29 @@
 
 import { useState, useEffect } from "react";
 
-export default function FilterBar({
-  activeTab,
-  setActiveTab,
-  displayTypeTab,
-  setDisplayTypeTab,
-  searchQuery,
-  setSearchQuery,
-}) {
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+// Constants defined outside component to prevent recreation on each render
+const displayTypeTabs = [
+  {
+    key: "tournaments",
+    label: "Tournaments",
+    gradient: "from-yellow-500/20 to-orange-500/20",
+  },
+  {
+    key: "events",
+    label: "Events",
+    gradient: "from-purple-500/20 to-pink-500/20",
+  },
+];
 
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (isDropdownOpen && !event.target.closest(".status-dropdown")) {
-        setIsDropdownOpen(false);
-      }
-    };
+const statusOptions = [
+  { value: "all", label: "All" },
+  { value: "upcoming", label: "Upcoming" },
+  { value: "ongoing", label: "Ongoing" },
+  { value: "completed", label: "Completed" },
+];
 
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [isDropdownOpen]);
-
-  const displayTypeTabs = [
-    {
-      key: "tournaments",
-      label: "Tournaments",
-      gradient: "from-yellow-500/20 to-orange-500/20",
-    },
-    {
-      key: "events",
-      label: "Events",
-      gradient: "from-purple-500/20 to-pink-500/20",
-    },
-  ];
-
-  const statusOptions = [
-    { value: "all", label: "All" },
-    { value: "upcoming", label: "Upcoming" },
-    { value: "ongoing", label: "Ongoing" },
-    { value: "completed", label: "Completed" },
-  ];
-
-  const StatusDropdown = () => (
+// Move StatusDropdown outside to prevent recreation
+const StatusDropdown = ({ activeTab, setActiveTab, isDropdownOpen, setIsDropdownOpen }) => (
     <div className="relative status-dropdown w-full lg:w-auto lg:inline-block z-[100]">
       <button
         type="button"
@@ -113,9 +92,10 @@ export default function FilterBar({
         <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-gold/20 to-yellow-600/20 opacity-20 blur-lg -z-10 animate-pulse pointer-events-none" />
       )}
     </div>
-  );
+);
 
-  const DisplayTypeTabs = ({ isMobile = false }) => (
+// Move DisplayTypeTabs outside to prevent recreation
+const DisplayTypeTabs = ({ displayTypeTab, setDisplayTypeTab, isMobile = false }) => (
     <div className="bg-gradient-to-r from-dark-card/80 via-dark-card to-dark-card/80 p-1.5 rounded-2xl border border-gold-dark/30 backdrop-blur-sm">
       <div className="flex gap-2">
         {displayTypeTabs.map((tab) => (
@@ -137,9 +117,10 @@ export default function FilterBar({
         ))}
       </div>
     </div>
-  );
+);
 
-  const SearchBar = () => (
+// Move SearchBar outside to prevent recreation
+const SearchBar = ({ searchQuery, setSearchQuery }) => (
     <div className="w-full lg:w-72">
       <div className="relative group">
         <div className="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none z-10">
@@ -192,13 +173,40 @@ export default function FilterBar({
         )}
       </div>
     </div>
-  );
+);
+
+export default function FilterBar({
+  activeTab,
+  setActiveTab,
+  displayTypeTab,
+  setDisplayTypeTab,
+  searchQuery,
+  setSearchQuery,
+}) {
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (isDropdownOpen && !event.target.closest(".status-dropdown")) {
+        setIsDropdownOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isDropdownOpen]);
 
   return (
     <>
       {/* Display Type Tabs - Mobile Only (on top) */}
       <div className="mb-6 lg:hidden">
-        <DisplayTypeTabs isMobile={true} />
+        <DisplayTypeTabs 
+          displayTypeTab={displayTypeTab}
+          setDisplayTypeTab={setDisplayTypeTab}
+          isMobile={true} 
+        />
       </div>
 
       {/* Main Filter Bar */}
@@ -207,17 +215,28 @@ export default function FilterBar({
           <div className="flex flex-col lg:grid lg:grid-cols-3 gap-5 lg:items-center lg:gap-4 relative">
             {/* Left: Status Dropdown */}
             <div className="flex justify-start lg:justify-start space-y-3 w-full lg:w-auto">
-              <StatusDropdown />
+              <StatusDropdown 
+                activeTab={activeTab}
+                setActiveTab={setActiveTab}
+                isDropdownOpen={isDropdownOpen}
+                setIsDropdownOpen={setIsDropdownOpen}
+              />
             </div>
 
             {/* Center: Display Type Tabs (Desktop Only) */}
             <div className="hidden lg:flex items-center justify-center">
-              <DisplayTypeTabs />
+              <DisplayTypeTabs 
+                displayTypeTab={displayTypeTab}
+                setDisplayTypeTab={setDisplayTypeTab}
+              />
             </div>
 
             {/* Right: Search */}
             <div className="flex justify-end lg:justify-end">
-              <SearchBar />
+              <SearchBar 
+                searchQuery={searchQuery}
+                setSearchQuery={setSearchQuery}
+              />
             </div>
           </div>
         </div>
