@@ -94,10 +94,10 @@ export default function TournamentDetailsPage() {
 
           // Load participants
           const participantsList = await Promise.all(
-            tournamentData.participants.map((pId) => usersApi.getById(pId))
+            tournamentData.participants.map((pId) => usersApi.getById(pId)),
           );
           const validParticipants = participantsList.filter(
-            (p) => p !== null && p !== undefined && p.id
+            (p) => p !== null && p !== undefined && p.id,
           );
           setParticipants(validParticipants);
 
@@ -120,10 +120,12 @@ export default function TournamentDetailsPage() {
           if (tournamentData.tournament_type === "clan_battle") {
             const maxPlayers =
               tournamentData.maxPlayers || tournamentData.max_players || 30;
+            // 1 USD = 1 Diamond
             const prizePoolUsd =
               tournamentData.prize_pool_usd ||
-              (tournamentData.prize_pool || tournamentData.prizePool || 0) /
-                100;
+              tournamentData.prize_pool ||
+              tournamentData.prizePool ||
+              0;
 
             if (prizePoolUsd > 0 && maxPlayers > 0) {
               const teamSize =
@@ -133,7 +135,7 @@ export default function TournamentDetailsPage() {
 
               const distribution = calculateClanBattlePrizeDistribution(
                 prizePoolUsd,
-                teamSize
+                teamSize,
               );
               setPrizeDistribution(distribution);
             } else {
@@ -155,12 +157,12 @@ export default function TournamentDetailsPage() {
                 generatedLeaderboard = generateClanBattleLeaderboard(
                   tournamentData,
                   validParticipants.map((p) => p.id),
-                  winningTeam
+                  winningTeam,
                 );
               } else {
                 generatedLeaderboard = generateRegularLeaderboard(
                   tournamentData,
-                  validParticipants.map((p) => p.id)
+                  validParticipants.map((p) => p.id),
                 );
               }
 
@@ -243,9 +245,9 @@ export default function TournamentDetailsPage() {
               ticketType === "ticket_010"
                 ? "$0.10"
                 : ticketType === "ticket_100"
-                ? "$1.00"
-                : "$10.00"
-            } tickets!`
+                  ? "$1.00"
+                  : "$10.00"
+            } tickets!`,
           );
           return;
         }
@@ -264,13 +266,14 @@ export default function TournamentDetailsPage() {
 
           const isEligibleClan = userClans.some(
             (clan) =>
-              clan.id === tournament.clan1_id || clan.id === tournament.clan2_id
+              clan.id === tournament.clan1_id ||
+              clan.id === tournament.clan2_id,
           );
           if (!isEligibleClan) {
             const clan1Name = clan1 ? clan1.name : "Unknown";
             const clan2Name = clan2 ? clan2.name : "Unknown";
             alert(
-              `You can only join this tournament if you're a member of ${clan1Name} or ${clan2Name}!`
+              `You can only join this tournament if you're a member of ${clan1Name} or ${clan2Name}!`,
             );
             return;
           }
@@ -310,7 +313,7 @@ export default function TournamentDetailsPage() {
       const updatedTournament = await tournamentsApi.join(
         tournament.id,
         user.id,
-        paymentData
+        paymentData,
       );
       setTournament(updatedTournament);
 
@@ -318,10 +321,10 @@ export default function TournamentDetailsPage() {
       await refreshUser();
 
       const participantsList = await Promise.all(
-        updatedTournament.participants.map((pId) => usersApi.getById(pId))
+        updatedTournament.participants.map((pId) => usersApi.getById(pId)),
       );
       const validParticipants = participantsList.filter(
-        (p) => p !== null && p !== undefined && p.id
+        (p) => p !== null && p !== undefined && p.id,
       );
       setParticipants(validParticipants);
 
@@ -333,7 +336,7 @@ export default function TournamentDetailsPage() {
       console.error("Failed to join tournament:", error);
       alert(
         error.message ||
-          "Failed to join tournament. It may be full or you're already registered."
+          "Failed to join tournament. It may be full or you're already registered.",
       );
     } finally {
       setLoading(false);
@@ -370,7 +373,7 @@ export default function TournamentDetailsPage() {
       const updatedTournament = await tournamentsApi.declareWinners(
         tournament.id,
         winners,
-        user.id
+        user.id,
       );
       setTournament(updatedTournament);
       setShowWinnerModal(false);
@@ -387,7 +390,7 @@ export default function TournamentDetailsPage() {
     try {
       const updatedTournament = await tournamentsApi.updateStatus(
         tournament.id,
-        "ongoing"
+        "ongoing",
       );
       setTournament(updatedTournament);
       alert("Tournament started! 🚀");
@@ -400,9 +403,9 @@ export default function TournamentDetailsPage() {
   // Show loading state
   if (initialLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="flex min-h-screen items-center justify-center">
         <div className="text-center">
-          <div className="text-6xl mb-4 animate-pulse">🎮</div>
+          <div className="mb-4 animate-pulse text-6xl">🎮</div>
           <p className="text-gray-400">Loading tournament...</p>
         </div>
       </div>
@@ -412,9 +415,9 @@ export default function TournamentDetailsPage() {
   // Show not found state
   if (!tournament) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="flex min-h-screen items-center justify-center">
         <div className="text-center">
-          <div className="text-6xl mb-4">🎮</div>
+          <div className="mb-4 text-6xl">🎮</div>
           <p className="text-gray-400">Tournament not found</p>
           <Link href="/" className="mt-4 inline-block">
             <Button variant="secondary">Back to Tournaments</Button>
@@ -493,10 +496,10 @@ export default function TournamentDetailsPage() {
   ];
 
   return (
-    <div className="min-h-screen py-4 sm:py-8 px-3 sm:px-4 lg:px-8">
+    <div className="min-h-screen px-3 py-4 sm:px-4 sm:py-8 lg:px-8">
       <div className="max-w-main mx-auto">
         {/* Back Button */}
-        <Link href="/" className="inline-block mb-4 sm:mb-6">
+        <Link href="/" className="mb-4 inline-block sm:mb-6">
           <Button variant="ghost" size="sm">
             ← Back to Tournaments
           </Button>

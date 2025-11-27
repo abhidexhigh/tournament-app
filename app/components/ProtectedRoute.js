@@ -43,9 +43,9 @@ export default function ProtectedRoute({ children, requiredRole = null }) {
 
   if (isLoading || status === "loading") {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="flex min-h-screen items-center justify-center">
         <div className="text-center">
-          <div className="text-6xl mb-4 animate-pulse">🏆</div>
+          <div className="mb-4 animate-pulse text-6xl">🏆</div>
           <p className="text-gray-400">Loading...</p>
         </div>
       </div>

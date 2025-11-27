@@ -175,7 +175,7 @@ export const hasActiveTournament = async (level, pool) => {
      AND status IN ('upcoming', 'ongoing')
      AND (expires_at IS NULL OR expires_at > $2)
      LIMIT 1`,
-    [level, now]
+    [level, now],
   );
 
   return result.rows.length > 0;
@@ -223,7 +223,7 @@ export const shouldCreateTournament = (level) => {
  */
 export const createAutomatedTournamentData = (
   level,
-  startTime = new Date()
+  startTime = new Date(),
 ) => {
   const config = getLevelConfig(level);
   if (!config) return null;
@@ -301,7 +301,7 @@ export const createAutomatedTournamentData = (
 export const createAutomatedTournament = async (
   level,
   pool,
-  startTime = null
+  startTime = null,
 ) => {
   // Check if there's already an active tournament for this level
   const hasActive = await hasActiveTournament(level, pool);
@@ -332,7 +332,7 @@ export const createAutomatedTournament = async (
 
   const tournamentData = createAutomatedTournamentData(
     level,
-    normalizedStartTime
+    normalizedStartTime,
   );
   if (!tournamentData) {
     return { success: false, message: "Invalid level" };
@@ -376,7 +376,7 @@ export const createAutomatedTournament = async (
         tournamentData.expires_at,
         tournamentData.display_type,
         tournamentData.accepts_tickets,
-      ]
+      ],
     );
 
     return {
@@ -417,7 +417,7 @@ export const createNextScheduledTournament = async (level, pool) => {
   const now = new Date();
 
   console.log(
-    `[Manual Create] ${level}: Next scheduled at ${nextTime.toISOString()} (${nextTime.toLocaleTimeString()})`
+    `[Manual Create] ${level}: Next scheduled at ${nextTime.toISOString()} (${nextTime.toLocaleTimeString()})`,
   );
 
   // Create tournament for the next scheduled time
@@ -464,7 +464,7 @@ export const createNextScheduledTournament = async (level, pool) => {
         tournamentData.expires_at,
         tournamentData.display_type,
         tournamentData.accepts_tickets,
-      ]
+      ],
     );
 
     return {
@@ -494,7 +494,7 @@ export const expireOldTournaments = async (pool) => {
        AND expires_at IS NOT NULL 
        AND expires_at <= $1
        RETURNING id, automated_level`,
-      [now]
+      [now],
     );
 
     return {
@@ -523,7 +523,7 @@ export const updateTournamentStatuses = async (pool) => {
        AND status = 'upcoming'
        AND CONCAT(date, ' ', time)::timestamp <= $1
        AND (expires_at IS NULL OR expires_at > $1)`,
-      [now]
+      [now],
     );
 
     return { success: true };
@@ -559,7 +559,7 @@ export const runScheduler = async (pool) => {
 
     if (hasActive) {
       console.log(
-        `[Scheduler] ${level}: Already has active tournament, skipping`
+        `[Scheduler] ${level}: Already has active tournament, skipping`,
       );
       continue;
     }
@@ -589,7 +589,7 @@ export const runManualScheduler = async (pool) => {
 
   console.log(`[Manual Scheduler] Running at ${now.toISOString()}`);
   console.log(
-    `[Manual Scheduler] Creating tournaments for next scheduled times...`
+    `[Manual Scheduler] Creating tournaments for next scheduled times...`,
   );
 
   // First, expire old tournaments

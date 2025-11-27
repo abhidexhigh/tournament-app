@@ -10,7 +10,7 @@ export async function GET() {
   } catch (error) {
     return NextResponse.json(
       { success: false, error: error.message },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -58,7 +58,7 @@ export async function POST(request) {
     ) {
       return NextResponse.json(
         { success: false, error: "Missing required fields" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -67,7 +67,7 @@ export async function POST(request) {
     if (!host) {
       return NextResponse.json(
         { success: false, error: "Host not found" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -77,7 +77,7 @@ export async function POST(request) {
     if (totalSplit !== 100) {
       return NextResponse.json(
         { success: false, error: "Prize split must add up to 100%" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -124,12 +124,12 @@ export async function POST(request) {
 
     return NextResponse.json(
       { success: true, data: newTournament },
-      { status: 201 }
+      { status: 201 },
     );
   } catch (error) {
     return NextResponse.json(
       { success: false, error: error.message },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

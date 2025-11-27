@@ -46,7 +46,7 @@ function PlayerDashboardContent() {
           // Get tournaments the user has joined
           const allTournaments = await tournamentsApi.getAll();
           const userTournaments = allTournaments.filter((t) =>
-            t.participants.includes(user.id)
+            t.participants.includes(user.id),
           );
           setJoinedTournaments(userTournaments);
 
@@ -65,18 +65,18 @@ function PlayerDashboardContent() {
 
           // Calculate match stats
           const completedMatches = userMatches.filter(
-            (m) => m.status === "completed"
+            (m) => m.status === "completed",
           );
           const wins = completedMatches.filter((m) => {
             const playerPerformance = m.leaderboard?.find(
-              (entry) => entry.playerId === user.id
+              (entry) => entry.playerId === user.id,
             );
             return playerPerformance?.position === 1;
           }).length;
 
           const top3Finishes = completedMatches.filter((m) => {
             const playerPerformance = m.leaderboard?.find(
-              (entry) => entry.playerId === user.id
+              (entry) => entry.playerId === user.id,
             );
             return playerPerformance?.position <= 3;
           }).length;
@@ -122,17 +122,17 @@ function PlayerDashboardContent() {
 
   return (
     <div className="min-h-screen">
-      <div className="px-4 sm:px-6 lg:px-8 py-8">
+      <div className="px-4 py-8 sm:px-6 lg:px-8">
         <div className="max-w-main mx-auto">
           {/* Stats Grid */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 mb-8">
+          <div className="mb-8 grid grid-cols-2 gap-3 md:grid-cols-4 md:gap-4">
             {/* Tournaments Joined Card */}
-            <div className="bg-gold-light/80 backdrop-blur-xl p-[1px] chamfered-div">
-              <div className="group relative overflow-hidden bg-gold-card-bg backdrop-blur-sm transition-all duration-300 hover:scale-[1.02] chamfered-div">
-                <div className="absolute inset-0 bg-gradient-to-tl from-white/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+            <div className="bg-gold-light/80 chamfered-div p-[1px] backdrop-blur-xl">
+              <div className="group bg-gold-card-bg chamfered-div relative overflow-hidden backdrop-blur-sm transition-all duration-300 hover:scale-[1.02]">
+                <div className="absolute inset-0 bg-gradient-to-tl from-white/10 via-transparent to-transparent opacity-0 transition-opacity group-hover:opacity-100"></div>
                 <div className="relative p-5">
                   <div className="flex items-center gap-4">
-                    <div className="flex-shrink-0 w-14 h-14 rounded-full bg-gradient-to-br from-white/20 via-white/10 to-transparent flex items-center justify-center border border-white/20 shadow-xl group-hover:scale-110 group-hover:shadow-white/20 transition-all duration-300">
+                    <div className="flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-full border border-white/20 bg-gradient-to-br from-white/20 via-white/10 to-transparent shadow-xl transition-all duration-300 group-hover:scale-110 group-hover:shadow-white/20">
                       <Image
                         src="/icons/002.webp"
                         alt="Tournaments"
@@ -140,11 +140,11 @@ function PlayerDashboardContent() {
                         height={32}
                       />
                     </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="text-4xl font-black text-white mb-1">
+                    <div className="min-w-0 flex-1">
+                      <div className="mb-1 text-4xl font-black text-white">
                         {stats.totalJoined}
                       </div>
-                      <div className="text-xs text-gray-500 uppercase tracking-wider font-bold">
+                      <div className="text-xs font-bold tracking-wider text-gray-500 uppercase">
                         Tournaments
                       </div>
                     </div>
@@ -154,12 +154,12 @@ function PlayerDashboardContent() {
             </div>
 
             {/* Total Winnings Card */}
-            <div className="bg-gold-light/80 backdrop-blur-xl p-[1px] chamfered-div">
-              <div className="group relative overflow-hidden bg-gold-card-bg backdrop-blur-sm transition-all duration-300 hover:scale-[1.02] chamfered-div">
-                <div className="absolute inset-0 bg-gradient-to-tl from-gold/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+            <div className="bg-gold-light/80 chamfered-div p-[1px] backdrop-blur-xl">
+              <div className="group bg-gold-card-bg chamfered-div relative overflow-hidden backdrop-blur-sm transition-all duration-300 hover:scale-[1.02]">
+                <div className="from-gold/20 absolute inset-0 bg-gradient-to-tl via-transparent to-transparent opacity-0 transition-opacity group-hover:opacity-100"></div>
                 <div className="relative p-5">
                   <div className="flex items-center gap-4">
-                    <div className="flex-shrink-0 w-14 h-14 rounded-full bg-gradient-to-br from-gold/40 via-gold/20 to-transparent flex items-center justify-center border border-gold/40 shadow-xl shadow-gold/30 group-hover:scale-110 group-hover:shadow-gold/50 transition-all duration-300">
+                    <div className="from-gold/40 via-gold/20 border-gold/40 shadow-gold/30 group-hover:shadow-gold/50 flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-full border bg-gradient-to-br to-transparent shadow-xl transition-all duration-300 group-hover:scale-110">
                       <Image
                         src="/icons/004.webp"
                         alt="Gold"
@@ -167,11 +167,11 @@ function PlayerDashboardContent() {
                         height={32}
                       />
                     </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="text-4xl font-black text-gold mb-1">
+                    <div className="min-w-0 flex-1">
+                      <div className="text-gold mb-1 text-4xl font-black">
                         {stats.totalWinnings.toLocaleString()}
                       </div>
-                      <div className="text-xs text-gray-500 uppercase tracking-wider font-bold">
+                      <div className="text-xs font-bold tracking-wider text-gray-500 uppercase">
                         Total Winnings
                       </div>
                     </div>
@@ -181,12 +181,12 @@ function PlayerDashboardContent() {
             </div>
 
             {/* Wins Card */}
-            <div className="bg-gold-light/80 backdrop-blur-xl p-[1px] chamfered-div">
-              <div className="group relative overflow-hidden bg-gold-card-bg backdrop-blur-sm transition-all duration-300 hover:scale-[1.02] chamfered-div">
-                <div className="absolute inset-0 bg-gradient-to-tl from-gold/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+            <div className="bg-gold-light/80 chamfered-div p-[1px] backdrop-blur-xl">
+              <div className="group bg-gold-card-bg chamfered-div relative overflow-hidden backdrop-blur-sm transition-all duration-300 hover:scale-[1.02]">
+                <div className="from-gold/20 absolute inset-0 bg-gradient-to-tl via-transparent to-transparent opacity-0 transition-opacity group-hover:opacity-100"></div>
                 <div className="relative p-5">
                   <div className="flex items-center gap-4">
-                    <div className="flex-shrink-0 w-14 h-14 rounded-full bg-gradient-to-br from-gold/40 via-gold/20 to-transparent flex items-center justify-center border border-gold/40 shadow-xl shadow-gold/30 group-hover:scale-110 group-hover:shadow-gold/50 transition-all duration-300">
+                    <div className="from-gold/40 via-gold/20 border-gold/40 shadow-gold/30 group-hover:shadow-gold/50 flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-full border bg-gradient-to-br to-transparent shadow-xl transition-all duration-300 group-hover:scale-110">
                       <Image
                         src="/icons/003.webp"
                         alt="Wins"
@@ -194,11 +194,11 @@ function PlayerDashboardContent() {
                         height={32}
                       />
                     </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="text-4xl font-black text-gold mb-1">
+                    <div className="min-w-0 flex-1">
+                      <div className="text-gold mb-1 text-4xl font-black">
                         {stats.wins}
                       </div>
-                      <div className="text-xs text-gray-500 uppercase tracking-wider font-bold">
+                      <div className="text-xs font-bold tracking-wider text-gray-500 uppercase">
                         Total Wins
                       </div>
                     </div>
@@ -208,12 +208,12 @@ function PlayerDashboardContent() {
             </div>
 
             {/* Top 3 Finishes Card */}
-            <div className="bg-gold-light/80 backdrop-blur-xl p-[1px] chamfered-div">
-              <div className="group relative overflow-hidden bg-gold-card-bg backdrop-blur-sm transition-all duration-300 hover:scale-[1.02] chamfered-div">
-                <div className="absolute inset-0 bg-gradient-to-tl from-gold/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+            <div className="bg-gold-light/80 chamfered-div p-[1px] backdrop-blur-xl">
+              <div className="group bg-gold-card-bg chamfered-div relative overflow-hidden backdrop-blur-sm transition-all duration-300 hover:scale-[1.02]">
+                <div className="from-gold/20 absolute inset-0 bg-gradient-to-tl via-transparent to-transparent opacity-0 transition-opacity group-hover:opacity-100"></div>
                 <div className="relative p-5">
                   <div className="flex items-center gap-4">
-                    <div className="flex-shrink-0 w-14 h-14 rounded-full bg-gradient-to-br from-gold/40 via-gold/20 to-transparent flex items-center justify-center border border-gold/40 shadow-xl shadow-gold/30 group-hover:scale-110 group-hover:shadow-gold/50 transition-all duration-300">
+                    <div className="from-gold/40 via-gold/20 border-gold/40 shadow-gold/30 group-hover:shadow-gold/50 flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-full border bg-gradient-to-br to-transparent shadow-xl transition-all duration-300 group-hover:scale-110">
                       <Image
                         src="/icons/001.webp"
                         alt="Top 3 Finishes"
@@ -221,11 +221,11 @@ function PlayerDashboardContent() {
                         height={32}
                       />
                     </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="text-4xl font-black text-gold mb-1">
+                    <div className="min-w-0 flex-1">
+                      <div className="text-gold mb-1 text-4xl font-black">
                         {stats.top3Finishes}
                       </div>
-                      <div className="text-xs text-gray-500 uppercase tracking-wider font-bold">
+                      <div className="text-xs font-bold tracking-wider text-gray-500 uppercase">
                         Top 3 Finishes
                       </div>
                     </div>
@@ -237,8 +237,8 @@ function PlayerDashboardContent() {
 
           {/* Match History Section */}
           <div className="mb-8">
-            <div className="flex items-center gap-3 mb-6">
-              <h2 className="text-3xl font-bold text-gold-text">
+            <div className="mb-6 flex items-center gap-3">
+              <h2 className="text-gold-text text-3xl font-bold">
                 Match Results
               </h2>
             </div>

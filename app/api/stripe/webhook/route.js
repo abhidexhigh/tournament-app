@@ -19,7 +19,7 @@ export async function POST(request) {
       console.warn("Stripe webhook secret not configured");
       return NextResponse.json(
         { error: "Webhook secret not configured" },
-        { status: 500 }
+        { status: 500 },
       );
     }
 
@@ -31,7 +31,7 @@ export async function POST(request) {
       console.error("Webhook signature verification failed:", err.message);
       return NextResponse.json(
         { error: "Webhook signature verification failed" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -65,7 +65,7 @@ export async function POST(request) {
             });
 
             console.log(
-              `Successfully credited ${diamondsToAdd} diamonds to user ${userId}`
+              `Successfully credited ${diamondsToAdd} diamonds to user ${userId}`,
             );
           }
         }
@@ -87,7 +87,7 @@ export async function POST(request) {
     console.error("Webhook error:", error);
     return NextResponse.json(
       { error: "Webhook handler failed" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

@@ -173,7 +173,7 @@ export const getClanMembers = (clanId) => {
 
   const users = JSON.parse(localStorage.getItem("users") || "[]");
   return users.filter(
-    (u) => u.clans && u.clans.some((clan) => clan.clan_id === clanId)
+    (u) => u.clans && u.clans.some((clan) => clan.clan_id === clanId),
   );
 };
 
@@ -192,7 +192,7 @@ export const canUserJoinClanBattle = (userId, tournament) => {
     // Check if user is member of any of the selected clans
     return userClans.some(
       (clan) =>
-        clan.id === tournament.clan1_id || clan.id === tournament.clan2_id
+        clan.id === tournament.clan1_id || clan.id === tournament.clan2_id,
     );
   }
 

@@ -1,7 +1,7 @@
 "use client";
 
 import Card from "./Card";
-import { getTicketName } from "../lib/ticketConfig";
+// Simplified tickets - no need for ticket config anymore
 import Badge from "./Badge";
 
 export default function TransactionHistory({ transactions = [] }) {
@@ -41,24 +41,22 @@ export default function TransactionHistory({ transactions = [] }) {
     return amount > 0 ? "text-green-400" : "text-red-400";
   };
 
-  const formatAmount = (amount, currency, ticketType) => {
+  const formatAmount = (amount, currency) => {
     const prefix = amount > 0 ? "+" : "";
     if (currency === "tickets") {
-      const ticketName = getTicketName(ticketType);
-      return `${prefix}${Math.abs(amount)}x ${ticketName} 🎫`;
+      const absAmount = Math.abs(amount);
+      return `${prefix}${absAmount} ticket${absAmount !== 1 ? "s" : ""} 🎫`;
     }
-    if (currency === "usd") {
-      return `${prefix}$${Math.abs(amount).toFixed(2)}`;
-    }
-    return `${prefix}${amount.toLocaleString()} 💎`;
+    // Show everything in Diamonds (1 USD = 1 Diamond)
+    return `${prefix}${Math.abs(amount).toLocaleString()} 💎`;
   };
 
   if (transactions.length === 0) {
     return (
-      <Card glass className="text-center py-8">
-        <div className="text-5xl mb-3">📜</div>
+      <Card glass className="py-8 text-center">
+        <div className="mb-3 text-5xl">📜</div>
         <p className="text-gray-400">No transactions yet</p>
-        <p className="text-gray-500 text-sm mt-2">
+        <p className="mt-2 text-sm text-gray-500">
           Your transaction history will appear here
         </p>
       </Card>
@@ -67,24 +65,24 @@ export default function TransactionHistory({ transactions = [] }) {
 
   return (
     <Card>
-      <h2 className="text-2xl font-bold text-gold mb-4">
+      <h2 className="text-gold mb-4 text-2xl font-bold">
         📜 Transaction History
       </h2>
-      <div className="space-y-3 max-h-96 overflow-y-auto">
+      <div className="max-h-96 space-y-3 overflow-y-auto">
         {transactions.map((transaction) => (
           <div
             key={transaction.id}
-            className="flex items-center justify-between p-4 bg-dark-secondary rounded-lg border border-gold-dark/20 hover:border-gold-dark/40 transition-colors"
+            className="bg-dark-secondary border-gold-dark/20 hover:border-gold-dark/40 flex items-center justify-between rounded-lg border p-4 transition-colors"
           >
-            <div className="flex items-center space-x-4 flex-1">
+            <div className="flex flex-1 items-center space-x-4">
               <div className="text-3xl">
                 {getTransactionIcon(transaction.type, transaction.currency)}
               </div>
               <div className="flex-1">
-                <p className="text-white font-medium">
+                <p className="font-medium text-white">
                   {transaction.description}
                 </p>
-                <p className="text-gray-500 text-sm">
+                <p className="text-sm text-gray-500">
                   {formatDate(transaction.timestamp)}
                 </p>
               </div>
@@ -93,20 +91,13 @@ export default function TransactionHistory({ transactions = [] }) {
               <p
                 className={`text-xl font-bold ${getTransactionColor(
                   transaction.amount,
-                  transaction.currency
+                  transaction.currency,
                 )}`}
               >
-                {formatAmount(
-                  transaction.amount,
-                  transaction.currency,
-                  transaction.ticket_type
-                )}
+                {formatAmount(transaction.amount, transaction.currency)}
               </p>
-              {(transaction.currency === "usd" ||
-                transaction.currency === "tickets") && (
-                <p className="text-xs text-gray-500">
-                  {transaction.currency === "usd" ? "USD" : "Tickets"}
-                </p>
+              {transaction.currency === "tickets" && (
+                <p className="text-xs text-gray-500">Tickets</p>
               )}
             </div>
           </div>

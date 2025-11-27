@@ -45,7 +45,7 @@ export async function GET(request) {
       console.log("[Scheduler] ❌ Unauthorized request");
       return NextResponse.json(
         { success: false, error: "Unauthorized" },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
@@ -89,7 +89,7 @@ export async function GET(request) {
         errorType: error?.constructor?.name,
         timestamp: new Date().toISOString(),
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

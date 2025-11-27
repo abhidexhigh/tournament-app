@@ -24,11 +24,11 @@ export default function RootLayout({ children }) {
           <Navbar />
           <main className="min-h-screen">{children}</main>
           <footer className="py-8">
-            <div className="max-w-main mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <div className="max-w-main mx-auto px-4 text-center sm:px-6 lg:px-8">
               <p className="text-gray-400">
                 © 2025 Force of Rune Tournaments. All rights reserved.
               </p>
-              <p className="text-gold-dark text-sm mt-2">
+              <p className="text-gold-dark mt-2 text-sm">
                 Master the Runes. Claim Victory. ⚔️
               </p>
             </div>

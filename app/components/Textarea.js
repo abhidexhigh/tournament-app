@@ -17,7 +17,7 @@ export default function Textarea({
       {label && (
         <label
           htmlFor={name}
-          className="block text-sm font-medium text-gray-300 mb-2"
+          className="mb-2 block text-sm font-medium text-gray-300"
         >
           {label}
           {required && <span className="text-gold ml-1">*</span>}
@@ -32,9 +32,9 @@ export default function Textarea({
         required={required}
         disabled={disabled}
         rows={rows}
-        className={`w-full bg-dark-card border ${
+        className={`bg-dark-card w-full border ${
           error ? "border-red-500" : "border-gold-dark/30"
-        } rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-gold focus:ring-2 focus:ring-gold/20 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed resize-none`}
+        } focus:border-gold focus:ring-gold/20 resize-none rounded-lg px-4 py-3 text-white placeholder-gray-500 transition-all duration-300 focus:ring-2 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50`}
       />
       {error && <p className="mt-1 text-sm text-red-400">{error}</p>}
     </div>

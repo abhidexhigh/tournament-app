@@ -18,7 +18,7 @@ export default function Select({
       {label && (
         <label
           htmlFor={name}
-          className="block text-sm font-medium text-gray-300 mb-2"
+          className="mb-2 block text-sm font-medium text-gray-300"
         >
           {label}
           {required && <span className="text-gold ml-1">*</span>}
@@ -26,7 +26,7 @@ export default function Select({
       )}
       <div className="relative">
         {icon && (
-          <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gold text-xl z-10">
+          <div className="text-gold absolute top-1/2 left-3 z-10 -translate-y-1/2 text-xl">
             {icon}
           </div>
         )}
@@ -37,11 +37,11 @@ export default function Select({
           onChange={onChange}
           required={required}
           disabled={disabled}
-          className={`w-full bg-dark-card border ${
+          className={`bg-dark-card w-full border ${
             error ? "border-red-500" : "border-gold-dark/30"
           } rounded-lg px-4 py-3 ${
             icon ? "pl-12" : ""
-          } text-white appearance-none focus:outline-none focus:border-gold focus:ring-2 focus:ring-gold/20 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed`}
+          } focus:border-gold focus:ring-gold/20 appearance-none text-white transition-all duration-300 focus:ring-2 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50`}
         >
           <option value="" disabled>
             {placeholder}
@@ -52,7 +52,7 @@ export default function Select({
             </option>
           ))}
         </select>
-        <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-gold">
+        <div className="text-gold pointer-events-none absolute top-1/2 right-3 -translate-y-1/2">
           ▼
         </div>
       </div>

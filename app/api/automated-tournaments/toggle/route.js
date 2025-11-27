@@ -15,7 +15,7 @@ export async function POST(request) {
     if (!session || session.user.type !== "game_owner") {
       return NextResponse.json(
         { success: false, error: "Unauthorized. Game owner access required." },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
@@ -24,7 +24,7 @@ export async function POST(request) {
     if (!level || !action) {
       return NextResponse.json(
         { success: false, error: "Level and action are required" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -36,7 +36,7 @@ export async function POST(request) {
          WHERE is_automated = true 
          AND automated_level = $1
          AND status IN ('upcoming', 'ongoing')`,
-        [level]
+        [level],
       );
 
       return NextResponse.json({
@@ -52,14 +52,14 @@ export async function POST(request) {
     } else {
       return NextResponse.json(
         { success: false, error: "Invalid action. Use 'start' or 'stop'" },
-        { status: 400 }
+        { status: 400 },
       );
     }
   } catch (error) {
     console.error("Error toggling automated tournaments:", error);
     return NextResponse.json(
       { success: false, error: error.message },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

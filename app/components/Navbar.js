@@ -7,11 +7,15 @@ import { useSession, signOut } from "next-auth/react";
 import { useUser } from "../contexts/UserContext";
 import Image from "next/image";
 import AuthModal from "./AuthModal";
+import TopupModal from "./TopupModal";
+import { getTicketCount } from "../lib/utils";
 
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const [authModalMode, setAuthModalMode] = useState("login");
+  const [isTopupModalOpen, setIsTopupModalOpen] = useState(false);
   const dropdownRef = useRef(null);
   const router = useRouter();
   const pathname = usePathname();
@@ -37,23 +41,23 @@ export default function Navbar() {
   }, []);
 
   return (
-    <nav className="bg-dark-secondary border-b border-gold-dark/20 sticky top-0 z-50 backdrop-blur-lg bg-opacity-90">
+    <nav className="bg-dark-secondary border-gold-dark/20 bg-opacity-90 sticky top-0 z-50 border-b backdrop-blur-lg">
       <div className="max-w-main mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
+        <div className="flex h-16 items-center justify-between">
           {/* Logo */}
-          <Link href="/" className="flex items-center space-x-2 group">
+          <Link href="/" className="group flex items-center space-x-2">
             <span className="text-3xl">⚔️</span>
-            <span className="text-2xl font-bold text-gold-gradient">
+            <span className="text-gold-gradient text-2xl font-bold">
               Force of Rune
             </span>
           </Link>
 
           {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center space-x-6">
+          <div className="hidden items-center space-x-4 md:flex">
             <Link
               href="/"
               className={`text-sm font-medium transition-colors duration-300 ${
-                pathname === "/" ? "text-gold" : "text-gray-300 hover:text-gold"
+                pathname === "/" ? "text-gold" : "hover:text-gold text-gray-300"
               }`}
             >
               Tournaments
@@ -66,50 +70,54 @@ export default function Navbar() {
                     user.type === "host"
                       ? "/host/dashboard"
                       : user.type === "game_owner"
-                      ? "/admin/dashboard"
-                      : "/player/dashboard"
+                        ? "/admin/dashboard"
+                        : "/player/dashboard"
                   }
                   className={`text-sm font-medium transition-colors duration-300 ${
                     pathname.includes("dashboard")
                       ? "text-gold"
-                      : "text-gray-300 hover:text-gold"
+                      : "hover:text-gold text-gray-300"
                   }`}
                 >
                   {user.type === "game_owner" ? "Admin Dashboard" : "Dashboard"}
                 </Link>
 
+                {/* Diamond Balance - Clickable */}
+                <button
+                  onClick={() => setIsTopupModalOpen(true)}
+                  className="from-gold/20 to-gold/5 border-gold/40 hover:border-gold hover:bg-gold/30 hover:shadow-gold/30 group flex items-center space-x-2 rounded-lg border bg-gradient-to-br px-3 py-1.5 transition-all duration-300 hover:shadow-lg"
+                >
+                  <span className="text-lg transition-transform duration-200 group-hover:scale-110">
+                    💎
+                  </span>
+                  <span className="text-gold text-sm font-bold">
+                    {(user.diamonds || 0).toLocaleString()}
+                  </span>
+                </button>
+
                 {/* Profile Dropdown */}
                 <div
-                  className="relative border-l border-gold-dark/30 pl-6"
+                  className="border-gold-dark/30 relative border-l pl-4"
                   ref={dropdownRef}
                 >
                   <button
                     onClick={() =>
                       setIsProfileDropdownOpen(!isProfileDropdownOpen)
                     }
-                    className="flex items-center space-x-3 bg-gradient-to-br from-dark-card to-dark-secondary px-2 py-1 rounded-xl border border-gold-dark/30 hover:border-gold/50 transition-all duration-300 hover:shadow-lg hover:shadow-gold/20 group"
+                    className="from-dark-card to-dark-secondary border-gold-dark/30 hover:border-gold/50 hover:shadow-gold/20 group flex items-center space-x-2 rounded-xl border bg-gradient-to-br px-2 py-1 transition-all duration-300 hover:shadow-lg"
                   >
-                    <div className="flex items-center space-x-2">
-                      <img
-                        src={user.avatar}
-                        alt="User Avatar"
-                        width={28}
-                        height={28}
-                      />
-                      <div className="text-left">
-                        <p className="text-gold font-semibold text-xs leading-tight">
-                          {user.username}
-                        </p>
-                        <div className="flex items-center space-x-1.5 mt-0.5">
-                          <span className="text-gold text-[10px]">💎</span>
-                          <span className="text-gold-light font-bold text-xs">
-                            {user.diamonds || 0}
-                          </span>
-                        </div>
-                      </div>
-                    </div>
+                    <Image
+                      src={user.avatar}
+                      alt="User Avatar"
+                      width={28}
+                      height={28}
+                      className="rounded-full"
+                    />
+                    <p className="text-gold text-sm font-semibold">
+                      {user.username}
+                    </p>
                     <svg
-                      className={`w-4 h-4 text-gold transition-transform duration-300 ${
+                      className={`text-gold h-4 w-4 transition-transform duration-300 ${
                         isProfileDropdownOpen ? "rotate-180" : ""
                       }`}
                       fill="none"
@@ -127,21 +135,21 @@ export default function Navbar() {
 
                   {/* Dropdown Menu */}
                   {isProfileDropdownOpen && (
-                    <div className="absolute right-0 mt-2 w-72 bg-dark-card rounded-xl shadow-2xl border border-gold-dark/30 overflow-hidden z-50 animate-fadeIn">
+                    <div className="bg-dark-card border-gold-dark/30 animate-fadeIn absolute right-0 z-50 mt-2 w-72 overflow-hidden rounded-xl border shadow-2xl">
                       {/* User Info Header */}
-                      <div className="bg-gradient-to-br from-gold/20 via-gold/10 to-transparent px-4 py-2 border-b border-gold-dark/30">
+                      <div className="from-gold/20 via-gold/10 border-gold-dark/30 border-b bg-gradient-to-br to-transparent px-4 py-2">
                         <div className="flex items-center space-x-3">
-                          <img
+                          <Image
                             src={user.avatar}
                             alt="User Avatar"
                             width={56}
                             height={56}
                           />
                           <div>
-                            <p className="text-white font-bold text-lg">
+                            <p className="text-lg font-bold text-white">
                               {user.username}
                             </p>
-                            <p className="text-gray-400 text-xs capitalize">
+                            <p className="text-xs text-gray-400 capitalize">
                               {user.type}
                             </p>
                           </div>
@@ -149,8 +157,8 @@ export default function Navbar() {
                       </div>
 
                       {/* Wallet Balance Section */}
-                      <div className="p-4 bg-dark-secondary/50 border-b border-gold-dark/20">
-                        <p className="text-gray-400 text-xs uppercase tracking-wider mb-2 font-semibold">
+                      <div className="bg-dark-secondary/50 border-gold-dark/20 border-b p-4">
+                        <p className="mb-2 text-xs font-semibold tracking-wider text-gray-400 uppercase">
                           💰 Wallet Balance
                         </p>
                         <div className="space-y-2">
@@ -162,31 +170,18 @@ export default function Navbar() {
                               </span>
                             </div>
                             <span className="text-gold font-bold">
-                              {user.diamonds || 0}
-                            </span>
-                          </div>
-                          <div className="flex items-center justify-between px-2">
-                            <div className="flex items-center space-x-2">
-                              <span className="text-xl">💵</span>
-                              <span className="text-gold-light text-sm font-bold">
-                                USD Balance
-                              </span>
-                            </div>
-                            <span className="text-gold-light font-bold">
-                              ${Number(user.usd_balance || 0).toFixed(2)}
+                              {(user.diamonds || 0).toLocaleString()}
                             </span>
                           </div>
                           <div className="flex items-center justify-between px-2">
                             <div className="flex items-center space-x-2">
                               <span className="text-xl">🎫</span>
-                              <span className="text-gray-300 text-sm font-bold">
+                              <span className="text-sm font-bold text-gray-300">
                                 Total Tickets
                               </span>
                             </div>
-                            <span className="text-purple-400 font-bold">
-                              {(user.tickets?.ticket_010 || 0) +
-                                (user.tickets?.ticket_100 || 0) +
-                                (user.tickets?.ticket_1000 || 0)}
+                            <span className="font-bold text-purple-400">
+                              {getTicketCount(user.tickets)}
                             </span>
                           </div>
                         </div>
@@ -197,16 +192,16 @@ export default function Navbar() {
                         <Link
                           href="/profile"
                           onClick={() => setIsProfileDropdownOpen(false)}
-                          className="flex items-center space-x-3 px-4 py-3 hover:bg-gold/10 transition-colors duration-200 group"
+                          className="hover:bg-gold/10 group flex items-center space-x-3 px-4 py-3 transition-colors duration-200"
                         >
-                          <span className="text-xl group-hover:scale-110 transition-transform duration-200">
+                          <span className="text-xl transition-transform duration-200 group-hover:scale-110">
                             👤
                           </span>
                           <div>
-                            <p className="text-gold font-medium text-sm">
+                            <p className="text-gold text-sm font-medium">
                               My Profile
                             </p>
-                            <p className="text-gray-400 text-xs">
+                            <p className="text-xs text-gray-400">
                               View and edit your profile
                             </p>
                           </div>
@@ -217,16 +212,16 @@ export default function Navbar() {
                             handleLogout();
                             setIsProfileDropdownOpen(false);
                           }}
-                          className="w-full flex items-center space-x-3 px-4 py-3 hover:bg-red-500/10 transition-colors duration-200 group"
+                          className="group flex w-full items-center space-x-3 px-4 py-3 transition-colors duration-200 hover:bg-red-500/10"
                         >
-                          <span className="text-xl group-hover:scale-110 transition-transform duration-200">
+                          <span className="text-xl transition-transform duration-200 group-hover:scale-110">
                             🚪
                           </span>
                           <div className="text-left">
-                            <p className="text-red-400 font-medium text-sm">
+                            <p className="text-sm font-medium text-red-400">
                               Logout
                             </p>
-                            <p className="text-gray-400 text-xs">
+                            <p className="text-xs text-gray-400">
                               Sign out of your account
                             </p>
                           </div>
@@ -240,28 +235,42 @@ export default function Navbar() {
               <>
                 <Link
                   href="/select-role"
-                  className="bg-gold-gradient text-dark-primary px-6 py-2 rounded-lg font-bold hover:shadow-lg hover:shadow-gold/50 transition-all duration-300"
+                  className="bg-gold-gradient text-dark-primary hover:shadow-gold/50 rounded-lg px-6 py-2 font-bold transition-all duration-300 hover:shadow-lg"
                 >
                   Select Role
                 </Link>
               </>
             ) : (
-              <button
-                onClick={() => setIsAuthModalOpen(true)}
-                className="bg-gold-gradient text-dark-primary px-6 py-2 rounded-lg font-bold hover:shadow-lg hover:shadow-gold/50 transition-all duration-300"
-              >
-                Login
-              </button>
+              <div className="flex items-center space-x-3">
+                <button
+                  onClick={() => {
+                    setAuthModalMode("login");
+                    setIsAuthModalOpen(true);
+                  }}
+                  className="text-gold border-gold-dark/50 hover:bg-gold/10 hover:border-gold rounded-lg border px-5 py-2 font-semibold transition-all duration-300"
+                >
+                  Login
+                </button>
+                <button
+                  onClick={() => {
+                    setAuthModalMode("register");
+                    setIsAuthModalOpen(true);
+                  }}
+                  className="bg-gold-gradient text-dark-primary hover:shadow-gold/50 rounded-lg px-5 py-2 font-bold transition-all duration-300 hover:shadow-lg"
+                >
+                  Register
+                </button>
+              </div>
             )}
           </div>
 
           {/* Mobile menu button */}
           <button
             onClick={() => setIsMenuOpen(!isMenuOpen)}
-            className="md:hidden text-gold focus:outline-none"
+            className="text-gold focus:outline-none md:hidden"
           >
             <svg
-              className="w-6 h-6"
+              className="h-6 w-6"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -285,18 +294,18 @@ export default function Navbar() {
           </button>
         </div>
       </div>
-      <div className="flex items-center justify-between -mt-3">
-        <img
+      <div className="-mt-3 flex items-center justify-between">
+        <Image
           src="/images/nav-border-left.webp"
           alt="Navbar Background"
-          className="w-[30%] h-3"
+          className="h-3 w-[30%]"
           width={1000}
           height={100}
         />
-        <img
+        <Image
           src="/images/nav-border-right.webp"
           alt="Navbar Background"
-          className="w-[30%] h-3"
+          className="h-3 w-[30%]"
           width={1000}
           height={100}
         />
@@ -304,11 +313,11 @@ export default function Navbar() {
 
       {/* Mobile Navigation */}
       {isMenuOpen && (
-        <div className="md:hidden bg-dark-card border-t border-gold-dark/20">
-          <div className="px-4 pt-2 pb-4 space-y-3">
+        <div className="bg-dark-card border-gold-dark/20 border-t md:hidden">
+          <div className="space-y-3 px-4 pt-2 pb-4">
             <Link
               href="/"
-              className="block text-gray-300 hover:text-gold py-2 transition-colors duration-300"
+              className="hover:text-gold block py-2 text-gray-300 transition-colors duration-300"
               onClick={() => setIsMenuOpen(false)}
             >
               Tournaments
@@ -321,34 +330,45 @@ export default function Navbar() {
                     user.type === "host"
                       ? "/host/dashboard"
                       : user.type === "game_owner"
-                      ? "/admin/dashboard"
-                      : "/player/dashboard"
+                        ? "/admin/dashboard"
+                        : "/player/dashboard"
                   }
-                  className="block text-gray-300 hover:text-gold py-2 transition-colors duration-300"
+                  className="hover:text-gold block py-2 text-gray-300 transition-colors duration-300"
                   onClick={() => setIsMenuOpen(false)}
                 >
                   {user.type === "game_owner" ? "Admin Dashboard" : "Dashboard"}
                 </Link>
 
-                <div className="pt-3 border-t border-gold-dark/30 space-y-3">
+                <div className="border-gold-dark/30 space-y-3 border-t pt-3">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-2">
-                      <span className="text-2xl">{user.avatar}</span>
-                      <span className="text-white font-medium">
+                      <Image
+                        src={user.avatar}
+                        alt="Avatar"
+                        className="h-8 w-8 rounded-full"
+                      />
+                      <span className="font-medium text-white">
                         {user.username}
                       </span>
                     </div>
-                    <div className="flex items-center space-x-2 bg-dark-primary px-3 py-1.5 rounded-lg border border-gold-dark/30">
+                    <button
+                      onClick={() => {
+                        setIsTopupModalOpen(true);
+                        setIsMenuOpen(false);
+                      }}
+                      className="from-gold/20 to-gold/5 border-gold/40 hover:border-gold flex items-center space-x-2 rounded-lg border bg-gradient-to-br px-3 py-1.5 transition-all active:scale-95"
+                    >
                       <span className="text-gold text-lg">💎</span>
                       <span className="text-gold font-bold">
-                        {user.diamonds}
+                        {(user.diamonds || 0).toLocaleString()}
                       </span>
-                    </div>
+                      <span className="text-gold/70 text-xs">+</span>
+                    </button>
                   </div>
 
                   <Link
                     href="/profile"
-                    className="block w-full text-center text-gray-300 hover:text-gold py-2 transition-colors duration-300"
+                    className="hover:text-gold block w-full py-2 text-center text-gray-300 transition-colors duration-300"
                     onClick={() => setIsMenuOpen(false)}
                   >
                     Profile
@@ -359,7 +379,7 @@ export default function Navbar() {
                       handleLogout();
                       setIsMenuOpen(false);
                     }}
-                    className="w-full text-center bg-dark-primary text-gold border border-gold-dark/50 px-4 py-2 rounded-lg hover:bg-gold hover:text-dark-primary transition-all duration-300 font-medium"
+                    className="bg-dark-primary text-gold border-gold-dark/50 hover:bg-gold hover:text-dark-primary w-full rounded-lg border px-4 py-2 text-center font-medium transition-all duration-300"
                   >
                     Logout
                   </button>
@@ -368,21 +388,34 @@ export default function Navbar() {
             ) : status === "authenticated" && session?.user ? (
               <Link
                 href="/select-role"
-                className="block w-full text-center bg-gold-gradient text-dark-primary px-6 py-2 rounded-lg font-bold hover:shadow-lg hover:shadow-gold/50 transition-all duration-300"
+                className="bg-gold-gradient text-dark-primary hover:shadow-gold/50 block w-full rounded-lg px-6 py-2 text-center font-bold transition-all duration-300 hover:shadow-lg"
                 onClick={() => setIsMenuOpen(false)}
               >
                 Select Role
               </Link>
             ) : (
-              <button
-                onClick={() => {
-                  setIsAuthModalOpen(true);
-                  setIsMenuOpen(false);
-                }}
-                className="block w-full text-center bg-gold-gradient text-dark-primary px-6 py-2 rounded-lg font-bold hover:shadow-lg hover:shadow-gold/50 transition-all duration-300"
-              >
-                Login
-              </button>
+              <div className="space-y-3">
+                <button
+                  onClick={() => {
+                    setAuthModalMode("login");
+                    setIsAuthModalOpen(true);
+                    setIsMenuOpen(false);
+                  }}
+                  className="text-gold border-gold-dark/50 hover:bg-gold/10 hover:border-gold block w-full rounded-lg border px-6 py-2 text-center font-semibold transition-all duration-300"
+                >
+                  Login
+                </button>
+                <button
+                  onClick={() => {
+                    setAuthModalMode("register");
+                    setIsAuthModalOpen(true);
+                    setIsMenuOpen(false);
+                  }}
+                  className="bg-gold-gradient text-dark-primary hover:shadow-gold/50 block w-full rounded-lg px-6 py-2 text-center font-bold transition-all duration-300 hover:shadow-lg"
+                >
+                  Register
+                </button>
+              </div>
             )}
           </div>
         </div>
@@ -392,6 +425,14 @@ export default function Navbar() {
       <AuthModal
         isOpen={isAuthModalOpen}
         onClose={() => setIsAuthModalOpen(false)}
+        initialMode={authModalMode}
+      />
+
+      {/* Topup Modal */}
+      <TopupModal
+        isOpen={isTopupModalOpen}
+        onClose={() => setIsTopupModalOpen(false)}
+        user={user}
       />
     </nav>
   );

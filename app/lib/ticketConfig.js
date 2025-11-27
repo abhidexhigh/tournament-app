@@ -134,7 +134,7 @@ export const getEntryPriceOptions = () => {
  */
 export const getEntryPriceOption = (value) => {
   return TICKET_ENTRY_CONFIG.entry_price_options.find(
-    (opt) => opt.value === value
+    (opt) => opt.value === value,
   );
 };
 
@@ -153,7 +153,7 @@ export const validateTicketMatch = (ticketType, entryFeeUSD) => {
  */
 export const getMatchingTicketType = (entryFeeUSD) => {
   const option = COMPANY_TOURNAMENT_CONFIG.entry_price_options.find(
-    (opt) => opt.value === entryFeeUSD
+    (opt) => opt.value === entryFeeUSD,
   );
   return option ? option.ticket_type : null;
 };
@@ -163,7 +163,7 @@ export const getMatchingTicketType = (entryFeeUSD) => {
  */
 export const isValidTicketEntry = (priceUSD) => {
   return TICKET_ENTRY_CONFIG.entry_price_options.some(
-    (opt) => opt.value === priceUSD
+    (opt) => opt.value === priceUSD,
   );
 };
 

@@ -2,7 +2,6 @@
 import { NextResponse } from "next/server";
 import Stripe from "stripe";
 import { usersDb, transactionsDb } from "../../../lib/database";
-import { getTicketName } from "../../../lib/ticketConfig";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
   apiVersion: "2024-11-20.acacia",
@@ -15,7 +14,7 @@ export async function POST(request) {
     if (!sessionId) {
       return NextResponse.json(
         { success: false, error: "Missing session ID" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -26,20 +25,26 @@ export async function POST(request) {
     if (session.payment_status !== "paid") {
       return NextResponse.json(
         { success: false, error: "Payment not completed" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     // Get metadata
-    const { userId, amount, currency, ticket_type } = session.metadata;
-    const amountToAdd = parseFloat(amount);
-    const isTickets = currency === "tickets";
-    const isUSD = currency === "usd";
+    const { userId, amount, currency } = session.metadata;
+    const amountToAdd = parseInt(amount);
+
+    // Validate currency (should always be diamonds now)
+    if (currency !== "diamonds") {
+      return NextResponse.json(
+        { success: false, error: "Invalid currency type" },
+        { status: 400 },
+      );
+    }
 
     // Check if this payment has already been processed (idempotency)
     const allTransactions = await transactionsDb.getAll();
     const existingTransaction = allTransactions.find(
-      (txn) => txn.payment_id === session.payment_intent
+      (txn) => txn.payment_id === session.payment_intent,
     );
 
     if (existingTransaction) {
@@ -51,7 +56,7 @@ export async function POST(request) {
           user: user,
           transaction: existingTransaction,
           amount: amountToAdd,
-          currency: currency,
+          currency: "diamonds",
         },
         message: "Payment already processed",
       });
@@ -62,42 +67,19 @@ export async function POST(request) {
     if (!user) {
       return NextResponse.json(
         { success: false, error: "User not found" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
-    // Update user's balance (Tickets, USD, or Diamonds)
-    let updateData;
-    if (isTickets) {
-      const currentTickets = user.tickets || {
-        ticket_010: 0,
-        ticket_100: 0,
-        ticket_1000: 0,
-      };
-      updateData = {
-        tickets: {
-          ...currentTickets,
-          [ticket_type]: (currentTickets[ticket_type] || 0) + amountToAdd,
-        },
-      };
-    } else if (isUSD) {
-      updateData = { usd_balance: (user.usd_balance || 0) + amountToAdd };
-    } else {
-      updateData = { diamonds: user.diamonds + amountToAdd };
-    }
+    // Update user's diamond balance
+    const updateData = {
+      diamonds: (user.diamonds || 0) + amountToAdd,
+    };
 
     const updatedUser = await usersDb.update(userId, updateData);
 
     // Create transaction record
-    let description;
-    if (isTickets) {
-      const ticketName = getTicketName(ticket_type);
-      description = `Bought ${amountToAdd}x ${ticketName} tickets via Stripe`;
-    } else if (isUSD) {
-      description = `Wallet top-up: $${amountToAdd} USD via Stripe`;
-    } else {
-      description = `Wallet top-up: ${amountToAdd} diamonds via Stripe`;
-    }
+    const description = `Purchased ${amountToAdd.toLocaleString()} diamonds via Stripe`;
 
     const transaction = await transactionsDb.create({
       user_id: userId,
@@ -107,8 +89,8 @@ export async function POST(request) {
       tournament_id: null,
       payment_id: session.payment_intent,
       payment_method: "stripe",
-      currency: currency,
-      ticket_type: ticket_type || null,
+      currency: "diamonds",
+      ticket_type: null,
     });
 
     return NextResponse.json({
@@ -117,7 +99,7 @@ export async function POST(request) {
         user: updatedUser,
         transaction: transaction,
         amount: amountToAdd,
-        currency: currency,
+        currency: "diamonds",
       },
     });
   } catch (error) {
@@ -127,7 +109,7 @@ export async function POST(request) {
         success: false,
         error: error.message || "Failed to verify payment",
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

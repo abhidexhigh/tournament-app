@@ -23,7 +23,7 @@ export default function Home() {
 
         // Debug: Log automated tournaments
         const automatedTournaments = tournamentsData.filter(
-          (t) => t.is_automated
+          (t) => t.is_automated,
         );
         if (automatedTournaments.length > 0) {
           console.log(
@@ -34,7 +34,7 @@ export default function Home() {
               status: t.status,
               is_automated: t.is_automated,
               expires_at: t.expires_at,
-            }))
+            })),
           );
         }
 
@@ -112,7 +112,7 @@ export default function Home() {
 
   return (
     <div className="min-h-screen">
-      <div className="px-4 sm:px-6 lg:px-8 pb-8">
+      <div className="px-4 pb-8 sm:px-6 lg:px-8">
         <div className="max-w-main mx-auto mt-8">
           {/* Filter Bar Component */}
           <FilterBar

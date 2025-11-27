@@ -12,7 +12,7 @@ export const generateRandomLeaderboard = (
   tournament,
   participants,
   tournamentType = "regular",
-  winningTeam = null
+  winningTeam = null,
 ) => {
   if (!participants || participants.length === 0) {
     return [];
@@ -25,7 +25,7 @@ export const generateRandomLeaderboard = (
     // For now, we'll use all participants and simulate team filtering
     filteredParticipants = participants.slice(
       0,
-      Math.ceil(participants.length / 2)
+      Math.ceil(participants.length / 2),
     );
   }
 
@@ -135,7 +135,7 @@ export const getPositionSuffix = (position) => {
 export const generateClanBattleLeaderboard = (
   tournament,
   participants,
-  winningTeam
+  winningTeam,
 ) => {
   if (!participants || participants.length === 0) {
     return [];
@@ -150,7 +150,7 @@ export const generateClanBattleLeaderboard = (
     tournament,
     winningTeamParticipants,
     "clan_battle",
-    winningTeam
+    winningTeam,
   );
 };
 

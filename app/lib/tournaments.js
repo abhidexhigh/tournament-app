@@ -163,7 +163,7 @@ export const addTransaction = (transaction) => {
   if (typeof window === "undefined") return;
 
   const transactions = JSON.parse(
-    localStorage.getItem(STORAGE_KEYS.TRANSACTIONS) || "[]"
+    localStorage.getItem(STORAGE_KEYS.TRANSACTIONS) || "[]",
   );
   transactions.push({
     id: `tx_${Date.now()}`,
@@ -177,7 +177,7 @@ export const addTransaction = (transaction) => {
 export const getTransactionsByUserId = (userId) => {
   if (typeof window === "undefined") return [];
   const transactions = JSON.parse(
-    localStorage.getItem(STORAGE_KEYS.TRANSACTIONS) || "[]"
+    localStorage.getItem(STORAGE_KEYS.TRANSACTIONS) || "[]",
   );
   return transactions
     .filter((t) => t.userId === userId)

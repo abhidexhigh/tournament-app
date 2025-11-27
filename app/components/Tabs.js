@@ -71,7 +71,7 @@ export default function Tabs({
   return (
     <div className={`w-full ${className}`}>
       {/* Tab Navigation */}
-      <div className="relative border-b border-gray-700/50 overflow-x-auto scrollbar-hide">
+      <div className="scrollbar-hide relative overflow-x-auto border-b border-gray-700/50">
         <div
           className={`flex ${
             variant === "divided" ? "divide-x divide-gray-700/70" : "space-x-1"
@@ -82,7 +82,7 @@ export default function Tabs({
               key={tab.id}
               onClick={() => handleTabChange(tab.id)}
               className={`${getTabStyles(
-                activeTab === tab.id
+                activeTab === tab.id,
               )} flex items-center space-x-2 whitespace-nowrap`}
               role="tab"
               aria-selected={activeTab === tab.id}
@@ -91,7 +91,7 @@ export default function Tabs({
               <span>{tab.label}</span>
               {tab.badge && (
                 <span
-                  className={`inline-flex items-center justify-center px-2 py-0.5 text-xs font-bold rounded-full ${
+                  className={`inline-flex items-center justify-center rounded-full px-2 py-0.5 text-xs font-bold ${
                     activeTab === tab.id
                       ? "bg-dark-primary text-gold"
                       : "bg-gold/20 text-gold"

@@ -11,7 +11,7 @@ export async function GET(request, { params }) {
     if (!user) {
       return NextResponse.json(
         { success: false, error: "User not found" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -19,7 +19,7 @@ export async function GET(request, { params }) {
   } catch (error) {
     return NextResponse.json(
       { success: false, error: error.message },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -34,8 +34,11 @@ export async function PUT(request, { params }) {
     if (body.clans !== undefined) {
       if (Array.isArray(body.clans) && body.clans.length > 1) {
         return NextResponse.json(
-          { success: false, error: "A user can only be part of one clan at a time" },
-          { status: 400 }
+          {
+            success: false,
+            error: "A user can only be part of one clan at a time",
+          },
+          { status: 400 },
         );
       }
     }
@@ -45,7 +48,7 @@ export async function PUT(request, { params }) {
     if (!updatedUser) {
       return NextResponse.json(
         { success: false, error: "User not found" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -55,12 +58,12 @@ export async function PUT(request, { params }) {
     if (error.message.includes("one clan at a time")) {
       return NextResponse.json(
         { success: false, error: error.message },
-        { status: 400 }
+        { status: 400 },
       );
     }
     return NextResponse.json(
       { success: false, error: error.message },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -75,7 +78,7 @@ export async function PATCH(request, { params }) {
     if (typeof amount !== "number") {
       return NextResponse.json(
         { success: false, error: "Amount must be a number" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -84,7 +87,7 @@ export async function PATCH(request, { params }) {
     if (!updatedUser) {
       return NextResponse.json(
         { success: false, error: "User not found" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -92,7 +95,7 @@ export async function PATCH(request, { params }) {
   } catch (error) {
     return NextResponse.json(
       { success: false, error: error.message },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

@@ -116,7 +116,7 @@ function HostDashboardContent() {
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
-      <div className="relative text-center mb-12 overflow-hidden">
+      <div className="relative mb-12 overflow-hidden text-center">
         {/* Background with Gradient */}
         <div className="absolute inset-0 bg-gradient-to-br from-orange-900/40 via-black to-red-900/40" />
 
@@ -124,11 +124,11 @@ function HostDashboardContent() {
         <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/70 to-black" />
 
         {/* Content */}
-        <div className="relative z-10 py-16 sm:py-20 lg:py-24 px-4">
-          <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold mb-4 drop-shadow-2xl">
+        <div className="relative z-10 px-4 py-16 sm:py-20 lg:py-24">
+          <h1 className="mb-4 text-5xl font-bold drop-shadow-2xl sm:text-6xl lg:text-7xl">
             <span className="text-gold-gradient">Host Dashboard</span>
           </h1>
-          <p className="text-xl sm:text-2xl text-gray-200 max-w-2xl mx-auto drop-shadow-lg font-medium mb-8">
+          <p className="mx-auto mb-8 max-w-2xl text-xl font-medium text-gray-200 drop-shadow-lg sm:text-2xl">
             Welcome back, {user?.username}! 👑
           </p>
           <Link href="/host/create-tournament">
@@ -139,56 +139,56 @@ function HostDashboardContent() {
         </div>
       </div>
 
-      <div className="px-4 sm:px-6 lg:px-8 pb-8">
+      <div className="px-4 pb-8 sm:px-6 lg:px-8">
         <div className="max-w-main mx-auto">
           {/* Stats Grid */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-            <div className="bg-gradient-to-br from-gold/20 via-dark-card to-dark-card/80 backdrop-blur-xl border border-gold-dark/30 rounded-2xl p-6 shadow-2xl shadow-black/30 hover:shadow-gold/20 transition-all duration-300 hover:scale-105">
-              <div className="flex items-center gap-3 mb-2">
-                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-gold/30 to-gold/10 flex items-center justify-center border border-gold/20">
+          <div className="mb-8 grid grid-cols-2 gap-4 md:grid-cols-4">
+            <div className="from-gold/20 via-dark-card to-dark-card/80 border-gold-dark/30 hover:shadow-gold/20 rounded-2xl border bg-gradient-to-br p-6 shadow-2xl shadow-black/30 backdrop-blur-xl transition-all duration-300 hover:scale-105">
+              <div className="mb-2 flex items-center gap-3">
+                <div className="from-gold/30 to-gold/10 border-gold/20 flex h-12 w-12 items-center justify-center rounded-xl border bg-gradient-to-br">
                   <span className="text-2xl">🏆</span>
                 </div>
               </div>
-              <div className="text-gray-400 text-sm font-medium mb-1">
+              <div className="mb-1 text-sm font-medium text-gray-400">
                 Total Tournaments
               </div>
               <div className="text-3xl font-black text-white">
                 {stats.total}
               </div>
             </div>
-            <div className="bg-gradient-to-br from-blue-500/20 via-dark-card to-dark-card/80 backdrop-blur-xl border border-blue-500/30 rounded-2xl p-6 shadow-2xl shadow-black/30 hover:shadow-blue-500/20 transition-all duration-300 hover:scale-105">
-              <div className="flex items-center gap-3 mb-2">
-                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500/30 to-blue-500/10 flex items-center justify-center border border-blue-500/20">
+            <div className="via-dark-card to-dark-card/80 rounded-2xl border border-blue-500/30 bg-gradient-to-br from-blue-500/20 p-6 shadow-2xl shadow-black/30 backdrop-blur-xl transition-all duration-300 hover:scale-105 hover:shadow-blue-500/20">
+              <div className="mb-2 flex items-center gap-3">
+                <div className="flex h-12 w-12 items-center justify-center rounded-xl border border-blue-500/20 bg-gradient-to-br from-blue-500/30 to-blue-500/10">
                   <span className="text-2xl">📅</span>
                 </div>
               </div>
-              <div className="text-gray-400 text-sm font-medium mb-1">
+              <div className="mb-1 text-sm font-medium text-gray-400">
                 Upcoming
               </div>
               <div className="text-3xl font-black text-white">
                 {stats.upcoming}
               </div>
             </div>
-            <div className="bg-gradient-to-br from-green-500/20 via-dark-card to-dark-card/80 backdrop-blur-xl border border-green-500/30 rounded-2xl p-6 shadow-2xl shadow-black/30 hover:shadow-green-500/20 transition-all duration-300 hover:scale-105">
-              <div className="flex items-center gap-3 mb-2">
-                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-green-500/30 to-green-500/10 flex items-center justify-center border border-green-500/20">
+            <div className="via-dark-card to-dark-card/80 rounded-2xl border border-green-500/30 bg-gradient-to-br from-green-500/20 p-6 shadow-2xl shadow-black/30 backdrop-blur-xl transition-all duration-300 hover:scale-105 hover:shadow-green-500/20">
+              <div className="mb-2 flex items-center gap-3">
+                <div className="flex h-12 w-12 items-center justify-center rounded-xl border border-green-500/20 bg-gradient-to-br from-green-500/30 to-green-500/10">
                   <span className="text-2xl">🎮</span>
                 </div>
               </div>
-              <div className="text-gray-400 text-sm font-medium mb-1">
+              <div className="mb-1 text-sm font-medium text-gray-400">
                 Ongoing
               </div>
               <div className="text-3xl font-black text-white">
                 {stats.ongoing}
               </div>
             </div>
-            <div className="bg-gradient-to-br from-purple-500/20 via-dark-card to-dark-card/80 backdrop-blur-xl border border-purple-500/30 rounded-2xl p-6 shadow-2xl shadow-black/30 hover:shadow-purple-500/20 transition-all duration-300 hover:scale-105">
-              <div className="flex items-center gap-3 mb-2">
-                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-500/30 to-purple-500/10 flex items-center justify-center border border-purple-500/20">
+            <div className="via-dark-card to-dark-card/80 rounded-2xl border border-purple-500/30 bg-gradient-to-br from-purple-500/20 p-6 shadow-2xl shadow-black/30 backdrop-blur-xl transition-all duration-300 hover:scale-105 hover:shadow-purple-500/20">
+              <div className="mb-2 flex items-center gap-3">
+                <div className="flex h-12 w-12 items-center justify-center rounded-xl border border-purple-500/20 bg-gradient-to-br from-purple-500/30 to-purple-500/10">
                   <span className="text-2xl">✅</span>
                 </div>
               </div>
-              <div className="text-gray-400 text-sm font-medium mb-1">
+              <div className="mb-1 text-sm font-medium text-gray-400">
                 Completed
               </div>
               <div className="text-3xl font-black text-white">
@@ -199,27 +199,27 @@ function HostDashboardContent() {
 
           {/* Tournaments List */}
           <div className="mb-6">
-            <div className="flex items-center gap-3 mb-6">
-              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-gold/30 to-gold/10 flex items-center justify-center border border-gold/20">
+            <div className="mb-6 flex items-center gap-3">
+              <div className="from-gold/30 to-gold/10 border-gold/20 flex h-12 w-12 items-center justify-center rounded-xl border bg-gradient-to-br">
                 <span className="text-2xl">👑</span>
               </div>
-              <h2 className="text-3xl font-bold text-gold-gradient">
+              <h2 className="text-gold-gradient text-3xl font-bold">
                 Your Tournaments
               </h2>
             </div>
           </div>
 
           {tournaments.length === 0 ? (
-            <div className="relative overflow-hidden rounded-2xl backdrop-blur-xl border border-gold-dark/20">
-              <div className="absolute inset-0 bg-gradient-to-br from-dark-card/60 via-dark-card/40 to-dark-card/60" />
-              <div className="relative text-center py-16 px-6">
-                <div className="w-24 h-24 mx-auto mb-6 rounded-full bg-gradient-to-br from-gold/20 to-gold/5 flex items-center justify-center border-2 border-gold/20">
+            <div className="border-gold-dark/20 relative overflow-hidden rounded-2xl border backdrop-blur-xl">
+              <div className="from-dark-card/60 via-dark-card/40 to-dark-card/60 absolute inset-0 bg-gradient-to-br" />
+              <div className="relative px-6 py-16 text-center">
+                <div className="from-gold/20 to-gold/5 border-gold/20 mx-auto mb-6 flex h-24 w-24 items-center justify-center rounded-full border-2 bg-gradient-to-br">
                   <span className="text-6xl">🎮</span>
                 </div>
-                <h3 className="text-3xl font-bold text-white mb-3">
+                <h3 className="mb-3 text-3xl font-bold text-white">
                   No Tournaments Yet
                 </h3>
-                <p className="text-gray-400 text-lg mb-8 max-w-md mx-auto">
+                <p className="mx-auto mb-8 max-w-md text-lg text-gray-400">
                   Create your first tournament and start hosting amazing
                   competitions!
                 </p>
@@ -233,18 +233,18 @@ function HostDashboardContent() {
           ) : (
             <>
               {/* Simple Filter Bar for Host Dashboard */}
-              <div className="mb-8 relative z-10">
-                <div className="backdrop-blur-xl border-gold-dark/20 rounded-2xl p-4 sm:px-6 sm:py-4 shadow-2xl shadow-black/30">
-                  <div className="flex flex-col sm:flex-row gap-4 items-stretch sm:items-center">
+              <div className="relative z-10 mb-8">
+                <div className="border-gold-dark/20 rounded-2xl p-4 shadow-2xl shadow-black/30 backdrop-blur-xl sm:px-6 sm:py-4">
+                  <div className="flex flex-col items-stretch gap-4 sm:flex-row sm:items-center">
                     {/* Status Filter */}
                     <div className="relative">
-                      <label className="block text-sm font-medium text-gray-400 mb-2">
+                      <label className="mb-2 block text-sm font-medium text-gray-400">
                         Filter by Status
                       </label>
                       <select
                         value={activeTab}
                         onChange={(e) => setActiveTab(e.target.value)}
-                        className="w-full sm:w-48 bg-gradient-to-r from-black/40 to-black/20 border border-gold-dark/30 rounded-xl py-3 px-4 text-white text-sm font-medium focus:outline-none focus:border-gold focus:ring-2 focus:ring-gold/30 transition-all duration-300 hover:border-gold/40 cursor-pointer"
+                        className="border-gold-dark/30 focus:border-gold focus:ring-gold/30 hover:border-gold/40 w-full cursor-pointer rounded-xl border bg-gradient-to-r from-black/40 to-black/20 px-4 py-3 text-sm font-medium text-white transition-all duration-300 focus:ring-2 focus:outline-none sm:w-48"
                       >
                         <option value="all">All Tournaments</option>
                         <option value="upcoming">Upcoming</option>
@@ -255,13 +255,13 @@ function HostDashboardContent() {
 
                     {/* Search Bar */}
                     <div className="flex-1">
-                      <label className="block text-sm font-medium text-gray-400 mb-2">
+                      <label className="mb-2 block text-sm font-medium text-gray-400">
                         Search
                       </label>
-                      <div className="relative group">
-                        <div className="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none z-10">
+                      <div className="group relative">
+                        <div className="pointer-events-none absolute inset-y-0 left-0 z-10 flex items-center pl-4">
                           <svg
-                            className="w-5 h-5 text-gold-dark group-focus-within:text-gold transition-colors duration-300"
+                            className="text-gold-dark group-focus-within:text-gold h-5 w-5 transition-colors duration-300"
                             fill="none"
                             stroke="currentColor"
                             viewBox="0 0 24 24"
@@ -279,17 +279,17 @@ function HostDashboardContent() {
                           value={searchQuery}
                           onChange={(e) => setSearchQuery(e.target.value)}
                           placeholder="Search by name, game..."
-                          className="w-full bg-gradient-to-r from-black/40 to-black/20 border border-gold-dark/30 rounded-xl py-3 pl-12 pr-11 text-white placeholder-gray-400 text-sm font-medium focus:outline-none focus:border-gold focus:ring-2 focus:ring-gold/30 transition-all duration-300 hover:border-gold/40"
+                          className="border-gold-dark/30 focus:border-gold focus:ring-gold/30 hover:border-gold/40 w-full rounded-xl border bg-gradient-to-r from-black/40 to-black/20 py-3 pr-11 pl-12 text-sm font-medium text-white placeholder-gray-400 transition-all duration-300 focus:ring-2 focus:outline-none"
                         />
                         {searchQuery && (
                           <button
                             onClick={() => setSearchQuery("")}
-                            className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-gold transition-all duration-200 hover:scale-110"
+                            className="hover:text-gold absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 transition-all duration-200 hover:scale-110"
                             aria-label="Clear search"
                           >
-                            <div className="p-1 rounded-full hover:bg-gold/20">
+                            <div className="hover:bg-gold/20 rounded-full p-1">
                               <svg
-                                className="w-4 h-4"
+                                className="h-4 w-4"
                                 fill="none"
                                 stroke="currentColor"
                                 viewBox="0 0 24 24"

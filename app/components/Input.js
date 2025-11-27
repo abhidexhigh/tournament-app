@@ -18,7 +18,7 @@ export default function Input({
       {label && (
         <label
           htmlFor={name}
-          className="block text-sm font-medium text-gray-300 mb-2"
+          className="mb-2 block text-sm font-medium text-gray-300"
         >
           {label}
           {required && <span className="text-gold ml-1">*</span>}
@@ -26,7 +26,7 @@ export default function Input({
       )}
       <div className="relative">
         {icon && (
-          <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gold text-xl">
+          <div className="text-gold absolute top-1/2 left-3 -translate-y-1/2 text-xl">
             {icon}
           </div>
         )}
@@ -39,11 +39,11 @@ export default function Input({
           placeholder={placeholder}
           required={required}
           disabled={disabled}
-          className={`w-full bg-dark-gray-card border ${
+          className={`bg-dark-gray-card w-full border ${
             error ? "border-red-500" : "border-gold-dark/30"
           } rounded-lg px-4 py-3 ${
             icon ? "pl-12" : ""
-          } text-white placeholder-gray-500 focus:outline-none focus:border-gold focus:ring-2 focus:ring-gold/20 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed`}
+          } focus:border-gold focus:ring-gold/20 text-white placeholder-gray-500 transition-all duration-300 focus:ring-2 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50`}
         />
       </div>
       {error && <p className="mt-1 text-sm text-red-400">{error}</p>}

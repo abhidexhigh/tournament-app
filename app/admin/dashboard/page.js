@@ -18,9 +18,9 @@ export default function AdminDashboard() {
 
   // Apply dashboard-specific background
   useEffect(() => {
-    document.body.classList.add('dashboard-bg');
+    document.body.classList.add("dashboard-bg");
     return () => {
-      document.body.classList.remove('dashboard-bg');
+      document.body.classList.remove("dashboard-bg");
     };
   }, []);
 
@@ -70,10 +70,10 @@ export default function AdminDashboard() {
         // Build detailed message showing what was created
         let detailText = "Tournaments created for next scheduled times:\n";
         const created = data.results.filter(
-          (r) => r.action === "create" && r.success
+          (r) => r.action === "create" && r.success,
         );
         const skipped = data.results.filter(
-          (r) => r.action === "create" && !r.success
+          (r) => r.action === "create" && !r.success,
         );
 
         if (created.length > 0) {
@@ -132,9 +132,9 @@ export default function AdminDashboard() {
 
   if (status === "loading" || loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="flex min-h-screen items-center justify-center">
         <div className="text-center">
-          <div className="text-6xl mb-4">⏳</div>
+          <div className="mb-4 text-6xl">⏳</div>
           <p className="text-xl text-gray-400">Loading...</p>
         </div>
       </div>
@@ -143,9 +143,9 @@ export default function AdminDashboard() {
 
   if (status === "unauthenticated" || session?.user?.type !== "game_owner") {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="flex min-h-screen items-center justify-center">
         <div className="text-center">
-          <div className="text-6xl mb-4">🚫</div>
+          <div className="mb-4 text-6xl">🚫</div>
           <p className="text-xl text-gray-400">Access Denied</p>
         </div>
       </div>
@@ -155,7 +155,7 @@ export default function AdminDashboard() {
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
-      <div className="relative text-center mb-12 overflow-hidden">
+      <div className="relative mb-12 overflow-hidden text-center">
         {/* Background with Gradient */}
         <div className="absolute inset-0 bg-gradient-to-br from-red-900/40 via-black to-purple-900/40" />
 
@@ -163,22 +163,22 @@ export default function AdminDashboard() {
         <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/70 to-black" />
 
         {/* Content */}
-        <div className="relative z-10 py-16 sm:py-20 lg:py-24 px-4">
-          <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold mb-4 drop-shadow-2xl">
+        <div className="relative z-10 px-4 py-16 sm:py-20 lg:py-24">
+          <h1 className="mb-4 text-5xl font-bold drop-shadow-2xl sm:text-6xl lg:text-7xl">
             <span className="text-gold-gradient">Admin Dashboard</span>
           </h1>
-          <p className="text-xl sm:text-2xl text-gray-200 max-w-2xl mx-auto drop-shadow-lg font-medium">
+          <p className="mx-auto max-w-2xl text-xl font-medium text-gray-200 drop-shadow-lg sm:text-2xl">
             👨‍💼 Manage automated tournaments and view statistics
           </p>
         </div>
       </div>
 
-      <div className="px-4 sm:px-6 lg:px-8 pb-8">
+      <div className="px-4 pb-8 sm:px-6 lg:px-8">
         <div className="max-w-main mx-auto">
           {/* Message Alert */}
           {message && (
             <div
-              className={`relative overflow-hidden rounded-2xl mb-8 ${
+              className={`relative mb-8 overflow-hidden rounded-2xl ${
                 message.type === "success"
                   ? "border-2 border-green-500/40"
                   : "border-2 border-red-500/40"
@@ -194,10 +194,10 @@ export default function AdminDashboard() {
               <div className="relative p-6 backdrop-blur-xl">
                 <div className="flex gap-4">
                   <div
-                    className={`w-12 h-12 rounded-xl flex items-center justify-center border-2 flex-shrink-0 ${
+                    className={`flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-xl border-2 ${
                       message.type === "success"
-                        ? "bg-green-500/20 border-green-500/40"
-                        : "bg-red-500/20 border-red-500/40"
+                        ? "border-green-500/40 bg-green-500/20"
+                        : "border-red-500/40 bg-red-500/20"
                     }`}
                   >
                     <span className="text-3xl">
@@ -211,7 +211,7 @@ export default function AdminDashboard() {
                         : "text-red-300"
                     }`}
                   >
-                    <pre className="whitespace-pre-wrap font-sans text-base leading-relaxed">
+                    <pre className="font-sans text-base leading-relaxed whitespace-pre-wrap">
                       {message.text}
                     </pre>
                   </div>
@@ -221,19 +221,19 @@ export default function AdminDashboard() {
           )}
 
           {/* Quick Actions */}
-          <div className="relative overflow-hidden rounded-3xl mb-8">
-            <div className="absolute inset-0 bg-gradient-to-br from-gold/20 via-dark-card to-dark-card/80 backdrop-blur-xl" />
-            <div className="relative p-8 border border-gold-dark/30">
-              <div className="flex items-center gap-3 mb-6">
-                <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-gold/30 to-gold/10 flex items-center justify-center border border-gold/20">
+          <div className="relative mb-8 overflow-hidden rounded-3xl">
+            <div className="from-gold/20 via-dark-card to-dark-card/80 absolute inset-0 bg-gradient-to-br backdrop-blur-xl" />
+            <div className="border-gold-dark/30 relative border p-8">
+              <div className="mb-6 flex items-center gap-3">
+                <div className="from-gold/30 to-gold/10 border-gold/20 flex h-14 w-14 items-center justify-center rounded-xl border bg-gradient-to-br">
                   <span className="text-3xl">⚡</span>
                 </div>
-                <h2 className="text-3xl font-bold text-gold-gradient">
+                <h2 className="text-gold-gradient text-3xl font-bold">
                   Quick Actions
                 </h2>
               </div>
               <div className="space-y-4">
-                <div className="bg-dark-card/50 rounded-2xl p-6 border border-gold-dark/20">
+                <div className="bg-dark-card/50 border-gold-dark/20 rounded-2xl border p-6">
                   <Button
                     variant="primary"
                     onClick={runScheduler}
@@ -245,7 +245,7 @@ export default function AdminDashboard() {
                       ? "⏳ Processing..."
                       : "🚀 Create Next Tournaments"}
                   </Button>
-                  <p className="text-sm text-gray-400 leading-relaxed">
+                  <p className="text-sm leading-relaxed text-gray-400">
                     Creates tournaments for the nearest upcoming scheduled time
                     for all levels
                   </p>
@@ -265,53 +265,53 @@ export default function AdminDashboard() {
           {/* Overall Statistics */}
           {stats && (
             <>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-                <div className="bg-gradient-to-br from-gold/20 via-dark-card to-dark-card/80 backdrop-blur-xl border border-gold-dark/30 rounded-2xl p-6 shadow-2xl shadow-black/30 hover:shadow-gold/20 transition-all duration-300 hover:scale-105">
-                  <div className="flex items-center gap-3 mb-2">
-                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-gold/30 to-gold/10 flex items-center justify-center border border-gold/20">
+              <div className="mb-8 grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
+                <div className="from-gold/20 via-dark-card to-dark-card/80 border-gold-dark/30 hover:shadow-gold/20 rounded-2xl border bg-gradient-to-br p-6 shadow-2xl shadow-black/30 backdrop-blur-xl transition-all duration-300 hover:scale-105">
+                  <div className="mb-2 flex items-center gap-3">
+                    <div className="from-gold/30 to-gold/10 border-gold/20 flex h-12 w-12 items-center justify-center rounded-xl border bg-gradient-to-br">
                       <span className="text-2xl">🎮</span>
                     </div>
                   </div>
-                  <div className="text-gray-400 text-sm font-medium mb-1">
+                  <div className="mb-1 text-sm font-medium text-gray-400">
                     Total Tournaments
                   </div>
                   <div className="text-3xl font-black text-white">
                     {parseInt(stats.overall.total_tournaments) || 0}
                   </div>
                 </div>
-                <div className="bg-gradient-to-br from-blue-500/20 via-dark-card to-dark-card/80 backdrop-blur-xl border border-blue-500/30 rounded-2xl p-6 shadow-2xl shadow-black/30 hover:shadow-blue-500/20 transition-all duration-300 hover:scale-105">
-                  <div className="flex items-center gap-3 mb-2">
-                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500/30 to-blue-500/10 flex items-center justify-center border border-blue-500/20">
+                <div className="via-dark-card to-dark-card/80 rounded-2xl border border-blue-500/30 bg-gradient-to-br from-blue-500/20 p-6 shadow-2xl shadow-black/30 backdrop-blur-xl transition-all duration-300 hover:scale-105 hover:shadow-blue-500/20">
+                  <div className="mb-2 flex items-center gap-3">
+                    <div className="flex h-12 w-12 items-center justify-center rounded-xl border border-blue-500/20 bg-gradient-to-br from-blue-500/30 to-blue-500/10">
                       <span className="text-2xl">🏆</span>
                     </div>
                   </div>
-                  <div className="text-gray-400 text-sm font-medium mb-1">
+                  <div className="mb-1 text-sm font-medium text-gray-400">
                     Active Levels
                   </div>
                   <div className="text-3xl font-black text-white">
                     {parseInt(stats.overall.active_levels) || 0}
                   </div>
                 </div>
-                <div className="bg-gradient-to-br from-purple-500/20 via-dark-card to-dark-card/80 backdrop-blur-xl border border-purple-500/30 rounded-2xl p-6 shadow-2xl shadow-black/30 hover:shadow-purple-500/20 transition-all duration-300 hover:scale-105">
-                  <div className="flex items-center gap-3 mb-2">
-                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-500/30 to-purple-500/10 flex items-center justify-center border border-purple-500/20">
+                <div className="via-dark-card to-dark-card/80 rounded-2xl border border-purple-500/30 bg-gradient-to-br from-purple-500/20 p-6 shadow-2xl shadow-black/30 backdrop-blur-xl transition-all duration-300 hover:scale-105 hover:shadow-purple-500/20">
+                  <div className="mb-2 flex items-center gap-3">
+                    <div className="flex h-12 w-12 items-center justify-center rounded-xl border border-purple-500/20 bg-gradient-to-br from-purple-500/30 to-purple-500/10">
                       <span className="text-2xl">👥</span>
                     </div>
                   </div>
-                  <div className="text-gray-400 text-sm font-medium mb-1">
+                  <div className="mb-1 text-sm font-medium text-gray-400">
                     Total Participants
                   </div>
                   <div className="text-3xl font-black text-white">
                     {parseInt(stats.overall.total_participants) || 0}
                   </div>
                 </div>
-                <div className="bg-gradient-to-br from-green-500/20 via-dark-card to-dark-card/80 backdrop-blur-xl border border-green-500/30 rounded-2xl p-6 shadow-2xl shadow-black/30 hover:shadow-green-500/20 transition-all duration-300 hover:scale-105">
-                  <div className="flex items-center gap-3 mb-2">
-                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-green-500/30 to-green-500/10 flex items-center justify-center border border-green-500/20">
+                <div className="via-dark-card to-dark-card/80 rounded-2xl border border-green-500/30 bg-gradient-to-br from-green-500/20 p-6 shadow-2xl shadow-black/30 backdrop-blur-xl transition-all duration-300 hover:scale-105 hover:shadow-green-500/20">
+                  <div className="mb-2 flex items-center gap-3">
+                    <div className="flex h-12 w-12 items-center justify-center rounded-xl border border-green-500/20 bg-gradient-to-br from-green-500/30 to-green-500/10">
                       <span className="text-2xl">💰</span>
                     </div>
                   </div>
-                  <div className="text-gray-400 text-sm font-medium mb-1">
+                  <div className="mb-1 text-sm font-medium text-gray-400">
                     Total Prize Pool
                   </div>
                   <div className="text-3xl font-black text-emerald-400">
@@ -322,24 +322,24 @@ export default function AdminDashboard() {
               </div>
 
               {/* Level Controls */}
-              <div className="relative overflow-hidden rounded-3xl mb-8">
-                <div className="absolute inset-0 bg-gradient-to-br from-purple-500/20 via-dark-card to-dark-card/80 backdrop-blur-xl" />
-                <div className="relative p-8 border border-purple-500/30">
-                  <div className="flex items-center gap-3 mb-6">
-                    <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-purple-500/30 to-purple-500/10 flex items-center justify-center border border-purple-500/20">
+              <div className="relative mb-8 overflow-hidden rounded-3xl">
+                <div className="via-dark-card to-dark-card/80 absolute inset-0 bg-gradient-to-br from-purple-500/20 backdrop-blur-xl" />
+                <div className="relative border border-purple-500/30 p-8">
+                  <div className="mb-6 flex items-center gap-3">
+                    <div className="flex h-14 w-14 items-center justify-center rounded-xl border border-purple-500/20 bg-gradient-to-br from-purple-500/30 to-purple-500/10">
                       <span className="text-3xl">🎯</span>
                     </div>
-                    <h2 className="text-3xl font-bold text-gold-gradient">
+                    <h2 className="text-gold-gradient text-3xl font-bold">
                       Tournament Levels
                     </h2>
                   </div>
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                  <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
                     {["master", "diamond", "platinum", "gold"].map((level) => {
                       const levelData = stats.byLevel.find(
-                        (l) => l.automated_level === level
+                        (l) => l.automated_level === level,
                       );
                       const hasActive = stats.activeTournaments.some(
-                        (t) => t.automated_level === level
+                        (t) => t.automated_level === level,
                       );
 
                       const levelColors = {
@@ -356,26 +356,26 @@ export default function AdminDashboard() {
                         <div
                           key={level}
                           className={`relative overflow-hidden rounded-2xl backdrop-blur-xl transition-all duration-300 hover:scale-105 ${
-                            hasActive ? "shadow-lg shadow-gold/20" : ""
+                            hasActive ? "shadow-gold/20 shadow-lg" : ""
                           }`}
                         >
                           <div
                             className={`absolute inset-0 bg-gradient-to-br ${levelColors[level]}`}
                           />
-                          <div className="relative p-6 border border-white/10">
-                            <div className="text-center mb-4">
-                              <div className="w-16 h-16 mx-auto mb-3 rounded-xl bg-white/10 backdrop-blur-md flex items-center justify-center border border-white/20">
+                          <div className="relative border border-white/10 p-6">
+                            <div className="mb-4 text-center">
+                              <div className="mx-auto mb-3 flex h-16 w-16 items-center justify-center rounded-xl border border-white/20 bg-white/10 backdrop-blur-md">
                                 <span className="text-4xl">
                                   {level === "gold"
                                     ? "🥇"
                                     : level === "platinum"
-                                    ? "🥈"
-                                    : level === "diamond"
-                                    ? "💎"
-                                    : "👑"}
+                                      ? "🥈"
+                                      : level === "diamond"
+                                        ? "💎"
+                                        : "👑"}
                                 </span>
                               </div>
-                              <h3 className="text-2xl font-black text-white capitalize mb-2">
+                              <h3 className="mb-2 text-2xl font-black text-white capitalize">
                                 {level}
                               </h3>
                               <Badge
@@ -386,31 +386,31 @@ export default function AdminDashboard() {
                               </Badge>
                             </div>
 
-                            <div className="space-y-3 mb-4">
-                              <div className="flex justify-between items-center p-3 bg-black/20 rounded-lg">
-                                <span className="text-gray-300 text-sm font-medium">
+                            <div className="mb-4 space-y-3">
+                              <div className="flex items-center justify-between rounded-lg bg-black/20 p-3">
+                                <span className="text-sm font-medium text-gray-300">
                                   Tournaments
                                 </span>
-                                <span className="text-white font-bold text-lg">
+                                <span className="text-lg font-bold text-white">
                                   {parseInt(levelData?.tournament_count) || 0}
                                 </span>
                               </div>
-                              <div className="flex justify-between items-center p-3 bg-black/20 rounded-lg">
-                                <span className="text-gray-300 text-sm font-medium">
+                              <div className="flex items-center justify-between rounded-lg bg-black/20 p-3">
+                                <span className="text-sm font-medium text-gray-300">
                                   Participants
                                 </span>
-                                <span className="text-white font-bold text-lg">
+                                <span className="text-lg font-bold text-white">
                                   {parseInt(levelData?.total_participants) || 0}
                                 </span>
                               </div>
-                              <div className="flex justify-between items-center p-3 bg-black/20 rounded-lg">
-                                <span className="text-gray-300 text-sm font-medium">
+                              <div className="flex items-center justify-between rounded-lg bg-black/20 p-3">
+                                <span className="text-sm font-medium text-gray-300">
                                   Prize Pool
                                 </span>
-                                <span className="text-gold font-bold text-lg">
+                                <span className="text-gold text-lg font-bold">
                                   $
                                   {parseFloat(
-                                    levelData?.total_prize_pool || 0
+                                    levelData?.total_prize_pool || 0,
                                   ).toFixed(2)}
                                 </span>
                               </div>
@@ -445,23 +445,23 @@ export default function AdminDashboard() {
               </div>
 
               {/* Active Tournaments */}
-              <div className="relative overflow-hidden rounded-3xl mb-8">
-                <div className="absolute inset-0 bg-gradient-to-br from-orange-500/20 via-dark-card to-dark-card/80 backdrop-blur-xl" />
-                <div className="relative p-8 border border-orange-500/30">
-                  <div className="flex items-center gap-3 mb-6">
-                    <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-orange-500/30 to-orange-500/10 flex items-center justify-center border border-orange-500/20">
+              <div className="relative mb-8 overflow-hidden rounded-3xl">
+                <div className="via-dark-card to-dark-card/80 absolute inset-0 bg-gradient-to-br from-orange-500/20 backdrop-blur-xl" />
+                <div className="relative border border-orange-500/30 p-8">
+                  <div className="mb-6 flex items-center gap-3">
+                    <div className="flex h-14 w-14 items-center justify-center rounded-xl border border-orange-500/20 bg-gradient-to-br from-orange-500/30 to-orange-500/10">
                       <span className="text-3xl">🔥</span>
                     </div>
-                    <h2 className="text-3xl font-bold text-gold-gradient">
+                    <h2 className="text-gold-gradient text-3xl font-bold">
                       Active Tournaments
                     </h2>
                   </div>
                   {stats.activeTournaments.length === 0 ? (
-                    <div className="text-center py-12">
-                      <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-gradient-to-br from-gray-500/20 to-gray-500/5 flex items-center justify-center border-2 border-gray-500/20">
+                    <div className="py-12 text-center">
+                      <div className="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-full border-2 border-gray-500/20 bg-gradient-to-br from-gray-500/20 to-gray-500/5">
                         <span className="text-5xl">💤</span>
                       </div>
-                      <p className="text-gray-400 text-lg">
+                      <p className="text-lg text-gray-400">
                         No active tournaments
                       </p>
                     </div>
@@ -490,25 +490,25 @@ export default function AdminDashboard() {
                             key={tournament.id}
                             className="relative overflow-hidden rounded-2xl backdrop-blur-xl transition-all duration-300 hover:scale-[1.02]"
                           >
-                            <div className="absolute inset-0 bg-gradient-to-br from-dark-card/80 via-dark-card/60 to-dark-card/80" />
-                            <div className="relative p-6 border border-gold-dark/20">
-                              <div className="flex items-center justify-between flex-wrap gap-4">
+                            <div className="from-dark-card/80 via-dark-card/60 to-dark-card/80 absolute inset-0 bg-gradient-to-br" />
+                            <div className="border-gold-dark/20 relative border p-6">
+                              <div className="flex flex-wrap items-center justify-between gap-4">
                                 <div className="flex items-center gap-4">
-                                  <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-white/10 to-white/5 flex items-center justify-center border border-white/10">
+                                  <div className="flex h-14 w-14 items-center justify-center rounded-xl border border-white/10 bg-gradient-to-br from-white/10 to-white/5">
                                     <span className="text-3xl">
                                       {tournament.automated_level === "gold"
                                         ? "🥇"
                                         : tournament.automated_level ===
-                                          "platinum"
-                                        ? "🥈"
-                                        : tournament.automated_level ===
-                                          "diamond"
-                                        ? "💎"
-                                        : "👑"}
+                                            "platinum"
+                                          ? "🥈"
+                                          : tournament.automated_level ===
+                                              "diamond"
+                                            ? "💎"
+                                            : "👑"}
                                     </span>
                                   </div>
                                   <div>
-                                    <h3 className="font-bold text-white text-lg">
+                                    <h3 className="text-lg font-bold text-white">
                                       {tournament.title}
                                     </h3>
                                     <p className="text-sm text-gray-400">
@@ -517,28 +517,28 @@ export default function AdminDashboard() {
                                   </div>
                                 </div>
 
-                                <div className="flex items-center gap-4 flex-wrap">
+                                <div className="flex flex-wrap items-center gap-4">
                                   <Badge variant={tournament.status}>
                                     {tournament.status}
                                   </Badge>
-                                  <div className="text-center px-4 py-2 bg-white/5 rounded-lg border border-white/10">
-                                    <div className="text-xs text-gray-400 mb-1">
+                                  <div className="rounded-lg border border-white/10 bg-white/5 px-4 py-2 text-center">
+                                    <div className="mb-1 text-xs text-gray-400">
                                       Participants
                                     </div>
-                                    <div className="text-white font-bold text-lg">
+                                    <div className="text-lg font-bold text-white">
                                       {parseInt(tournament.participant_count) ||
                                         0}
                                       /{tournament.max_players}
                                     </div>
                                   </div>
-                                  <div className="text-center px-4 py-2 bg-gradient-to-r from-gold/20 to-yellow-600/20 rounded-lg border border-gold/30">
-                                    <div className="text-xs text-gold-dark mb-1">
+                                  <div className="from-gold/20 border-gold/30 rounded-lg border bg-gradient-to-r to-yellow-600/20 px-4 py-2 text-center">
+                                    <div className="text-gold-dark mb-1 text-xs">
                                       Prize Pool
                                     </div>
-                                    <div className="text-gold font-bold text-lg">
+                                    <div className="text-gold text-lg font-bold">
                                       $
                                       {parseFloat(
-                                        tournament.prize_pool_usd || 0
+                                        tournament.prize_pool_usd || 0,
                                       ).toFixed(2)}
                                     </div>
                                   </div>
@@ -554,22 +554,22 @@ export default function AdminDashboard() {
 
               {/* Recent Tournaments */}
               <div className="relative overflow-hidden rounded-3xl">
-                <div className="absolute inset-0 bg-gradient-to-br from-blue-500/20 via-dark-card to-dark-card/80 backdrop-blur-xl" />
-                <div className="relative p-8 border border-blue-500/30">
-                  <div className="flex items-center gap-3 mb-6">
-                    <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-blue-500/30 to-blue-500/10 flex items-center justify-center border border-blue-500/20">
+                <div className="via-dark-card to-dark-card/80 absolute inset-0 bg-gradient-to-br from-blue-500/20 backdrop-blur-xl" />
+                <div className="relative border border-blue-500/30 p-8">
+                  <div className="mb-6 flex items-center gap-3">
+                    <div className="flex h-14 w-14 items-center justify-center rounded-xl border border-blue-500/20 bg-gradient-to-br from-blue-500/30 to-blue-500/10">
                       <span className="text-3xl">📜</span>
                     </div>
-                    <h2 className="text-3xl font-bold text-gold-gradient">
+                    <h2 className="text-gold-gradient text-3xl font-bold">
                       Recent Tournaments
                     </h2>
                   </div>
                   {stats.recentTournaments.length === 0 ? (
-                    <div className="text-center py-12">
-                      <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-gradient-to-br from-gray-500/20 to-gray-500/5 flex items-center justify-center border-2 border-gray-500/20">
+                    <div className="py-12 text-center">
+                      <div className="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-full border-2 border-gray-500/20 bg-gradient-to-br from-gray-500/20 to-gray-500/5">
                         <span className="text-5xl">📋</span>
                       </div>
-                      <p className="text-gray-400 text-lg">
+                      <p className="text-lg text-gray-400">
                         No tournaments yet
                       </p>
                     </div>
@@ -596,22 +596,22 @@ export default function AdminDashboard() {
                         .map((tournament) => (
                           <div
                             key={tournament.id}
-                            className="flex items-center justify-between p-4 bg-dark-card/30 rounded-xl border border-white/10 hover:bg-dark-card/50 transition-all duration-300"
+                            className="bg-dark-card/30 hover:bg-dark-card/50 flex items-center justify-between rounded-xl border border-white/10 p-4 transition-all duration-300"
                           >
                             <div className="flex items-center gap-4">
-                              <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-white/10 to-white/5 flex items-center justify-center border border-white/10">
+                              <div className="flex h-10 w-10 items-center justify-center rounded-lg border border-white/10 bg-gradient-to-br from-white/10 to-white/5">
                                 <span className="text-2xl">
                                   {tournament.automated_level === "gold"
                                     ? "🥇"
                                     : tournament.automated_level === "platinum"
-                                    ? "🥈"
-                                    : tournament.automated_level === "diamond"
-                                    ? "💎"
-                                    : "👑"}
+                                      ? "🥈"
+                                      : tournament.automated_level === "diamond"
+                                        ? "💎"
+                                        : "👑"}
                                 </span>
                               </div>
                               <div>
-                                <p className="text-white font-semibold text-sm">
+                                <p className="text-sm font-semibold text-white">
                                   {tournament.title}
                                 </p>
                                 <p className="text-xs text-gray-400">

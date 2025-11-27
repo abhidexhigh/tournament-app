@@ -14,8 +14,8 @@ import {
   hasUserRole,
 } from "../lib/authHelpers";
 
-export default function AuthModal({ isOpen, onClose }) {
-  const [isLogin, setIsLogin] = useState(true);
+export default function AuthModal({ isOpen, onClose, initialMode = "login" }) {
+  const [isLogin, setIsLogin] = useState(initialMode === "login");
   const [formData, setFormData] = useState({
     username: "",
     email: "",
@@ -33,6 +33,16 @@ export default function AuthModal({ isOpen, onClose }) {
     setMounted(true);
     return () => setMounted(false);
   }, []);
+
+  // Reset form based on initialMode when modal opens
+  useEffect(() => {
+    if (isOpen) {
+      setIsLogin(initialMode === "login");
+      setFormData({ username: "", email: "", password: "" });
+      setErrors({});
+      setShowQuickLogin(false);
+    }
+  }, [isOpen, initialMode]);
 
   // Handle session changes - Only redirect when modal is open (during login process)
   useEffect(() => {
@@ -53,7 +63,7 @@ export default function AuthModal({ isOpen, onClose }) {
       // If user has a role, redirect to dashboard
       if (hasUserRole(user)) {
         router.push(
-          user.type === "host" ? "/host/dashboard" : "/player/dashboard"
+          user.type === "host" ? "/host/dashboard" : "/player/dashboard",
         );
         onClose();
       } else {
@@ -147,7 +157,7 @@ export default function AuthModal({ isOpen, onClose }) {
         const user = registerUser(
           formData.username,
           formData.email,
-          formData.password
+          formData.password,
         );
         if (user) {
           // Sign in after registration
@@ -225,25 +235,25 @@ export default function AuthModal({ isOpen, onClose }) {
     <div className="fixed inset-0 z-[10000] overflow-y-auto">
       {/* Backdrop */}
       <div
-        className="fixed inset-0 bg-black/80 backdrop-blur-sm animate-fadeIn"
+        className="animate-fadeIn fixed inset-0 bg-black/80 backdrop-blur-sm"
         onClick={onClose}
       />
 
       {/* Modal Container - Centered */}
       <div className="flex min-h-full items-center justify-center p-4">
-        <div className="relative w-full max-w-md animate-slideUp">
+        <div className="animate-slideUp relative w-full max-w-md">
           <Card
-            className="relative shadow-2xl shadow-gold/20"
+            className="shadow-gold/20 relative shadow-2xl"
             padding="p-6 sm:p-8"
           >
             {/* Close Button */}
             <button
               onClick={onClose}
-              className="absolute top-4 right-4 text-gray-400 hover:text-gold transition-colors duration-300 z-10 bg-dark-gray-card/50 rounded-full p-1.5 hover:bg-dark-gray-card"
+              className="hover:text-gold bg-dark-gray-card/50 hover:bg-dark-gray-card absolute top-4 right-4 z-10 rounded-full p-1.5 text-gray-400 transition-colors duration-300"
               aria-label="Close modal"
             >
               <svg
-                className="w-5 h-5"
+                className="h-5 w-5"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -258,9 +268,9 @@ export default function AuthModal({ isOpen, onClose }) {
             </button>
 
             {/* Secret Quick Login Trigger - Triple click the title */}
-            <div className="text-center mb-8">
+            <div className="mb-8 text-center">
               <h2
-                className="text-2xl sm:text-3xl font-bold text-gold-gradient cursor-pointer select-none hover:opacity-80 transition-opacity"
+                className="text-gold-gradient cursor-pointer text-2xl font-bold transition-opacity select-none hover:opacity-80 sm:text-3xl"
                 onClick={(e) => {
                   if (e.detail === 3) {
                     setShowQuickLogin(!showQuickLogin);
@@ -270,7 +280,7 @@ export default function AuthModal({ isOpen, onClose }) {
               >
                 {isLogin ? "Welcome Back!" : "Join the Arena"}
               </h2>
-              <p className="text-gray-400 text-sm mt-2">
+              <p className="mt-2 text-sm text-gray-400">
                 {isLogin
                   ? "Login to continue your journey"
                   : "Create an account and start competing"}
@@ -279,15 +289,15 @@ export default function AuthModal({ isOpen, onClose }) {
 
             {/* Quick Login Panel (Hidden by default) */}
             {showQuickLogin && (
-              <div className="mb-6 p-4 bg-gradient-to-br from-purple-900/30 to-blue-900/30 border border-purple-500/40 rounded-xl animate-slideDown backdrop-blur-sm">
-                <div className="flex items-center justify-between mb-3">
-                  <h3 className="text-sm font-bold text-gold flex items-center gap-2">
+              <div className="animate-slideDown mb-6 rounded-xl border border-purple-500/40 bg-gradient-to-br from-purple-900/30 to-blue-900/30 p-4 backdrop-blur-sm">
+                <div className="mb-3 flex items-center justify-between">
+                  <h3 className="text-gold flex items-center gap-2 text-sm font-bold">
                     <span>🚀</span>
                     <span>Quick Login (Demo)</span>
                   </h3>
                   <button
                     onClick={() => setShowQuickLogin(false)}
-                    className="text-gray-400 hover:text-white text-xs hover:bg-dark-gray-card/50 px-2 py-1 rounded transition-colors"
+                    className="hover:bg-dark-gray-card/50 rounded px-2 py-1 text-xs text-gray-400 transition-colors hover:text-white"
                   >
                     Hide
                   </button>
@@ -300,7 +310,7 @@ export default function AuthModal({ isOpen, onClose }) {
                     fullWidth
                     onClick={() => quickLogin("admin", true)}
                     disabled={loading}
-                    className="text-xs !bg-gradient-to-r !from-purple-600 !to-blue-600 hover:!from-purple-700 hover:!to-blue-700 !text-white border-0"
+                    className="border-0 !bg-gradient-to-r !from-purple-600 !to-blue-600 text-xs !text-white hover:!from-purple-700 hover:!to-blue-700"
                   >
                     👨‍💼 Admin
                   </Button>
@@ -356,7 +366,7 @@ export default function AuthModal({ isOpen, onClose }) {
               fullWidth
               onClick={handleGoogleSignIn}
               disabled={loading}
-              className="mb-6 !border-gold-dark/50 hover:!border-gold"
+              className="!border-gold-dark/50 hover:!border-gold mb-6"
             >
               <span className="flex items-center justify-center space-x-2">
                 <span className="text-xl">🔐</span>
@@ -367,10 +377,10 @@ export default function AuthModal({ isOpen, onClose }) {
             {/* Divider */}
             <div className="relative mb-6">
               <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-gold-dark/30"></div>
+                <div className="border-gold-dark/30 w-full border-t"></div>
               </div>
               <div className="relative flex justify-center text-sm">
-                <span className="px-3 bg-dark-gray-card text-gray-400">
+                <span className="bg-dark-gray-card px-3 text-gray-400">
                   Or continue with email
                 </span>
               </div>
@@ -426,13 +436,13 @@ export default function AuthModal({ isOpen, onClose }) {
                 {loading
                   ? "Processing..."
                   : isLogin
-                  ? "Login"
-                  : "Create Account"}
+                    ? "Login"
+                    : "Create Account"}
               </Button>
             </form>
 
             {/* Toggle Login/Register */}
-            <div className="mt-6 pt-4 border-t border-gold-dark/20 text-center">
+            <div className="border-gold-dark/20 mt-6 border-t pt-4 text-center">
               <button
                 type="button"
                 onClick={() => {
@@ -440,7 +450,7 @@ export default function AuthModal({ isOpen, onClose }) {
                   setErrors({});
                   setFormData({ username: "", email: "", password: "" });
                 }}
-                className="text-gray-400 hover:text-gold transition-colors duration-300 text-sm group"
+                className="hover:text-gold group text-sm text-gray-400 transition-colors duration-300"
                 disabled={loading}
               >
                 {isLogin ? (

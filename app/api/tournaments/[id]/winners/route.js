@@ -17,7 +17,7 @@ export async function POST(request, { params }) {
     if (!winners || !host_id) {
       return NextResponse.json(
         { success: false, error: "Winners and host_id are required" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -25,14 +25,14 @@ export async function POST(request, { params }) {
     if (!tournament) {
       return NextResponse.json(
         { success: false, error: "Tournament not found" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
     if (tournament.host_id !== host_id) {
       return NextResponse.json(
         { success: false, error: "Only the host can declare winners" },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
@@ -42,7 +42,7 @@ export async function POST(request, { params }) {
           success: false,
           error: "Tournament must be ongoing to declare winners",
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -90,7 +90,7 @@ export async function POST(request, { params }) {
   } catch (error) {
     return NextResponse.json(
       { success: false, error: error.message },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

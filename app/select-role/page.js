@@ -31,7 +31,7 @@ export default function SelectRolePage() {
       // If user already has a role, redirect to dashboard
       if (hasUserRole(user)) {
         router.push(
-          user.type === "host" ? "/host/dashboard" : "/player/dashboard"
+          user.type === "host" ? "/host/dashboard" : "/player/dashboard",
         );
       }
     }
@@ -50,7 +50,7 @@ export default function SelectRolePage() {
       // Redirect to appropriate dashboard
       setTimeout(() => {
         router.push(
-          selectedRole === "host" ? "/host/dashboard" : "/player/dashboard"
+          selectedRole === "host" ? "/host/dashboard" : "/player/dashboard",
         );
       }, 500);
     }
@@ -58,9 +58,9 @@ export default function SelectRolePage() {
 
   if (status === "loading") {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="flex min-h-screen items-center justify-center">
         <div className="text-center">
-          <div className="text-6xl mb-4">⏳</div>
+          <div className="mb-4 text-6xl">⏳</div>
           <p className="text-gray-400">Loading...</p>
         </div>
       </div>
@@ -68,10 +68,10 @@ export default function SelectRolePage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-4xl w-full">
-        <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold mb-2">
+    <div className="flex min-h-screen items-center justify-center px-4 py-12 sm:px-6 lg:px-8">
+      <div className="w-full max-w-4xl">
+        <div className="mb-8 text-center">
+          <h1 className="mb-2 text-4xl font-bold">
             <span className="text-gold-gradient">Choose Your Role</span>
           </h1>
           <p className="text-gray-400">
@@ -79,7 +79,7 @@ export default function SelectRolePage() {
           </p>
         </div>
 
-        <div className="grid md:grid-cols-2 gap-6 mb-8">
+        <div className="mb-8 grid gap-6 md:grid-cols-2">
           {/* Player Role */}
           <button
             onClick={() => setSelectedRole("player")}
@@ -90,13 +90,13 @@ export default function SelectRolePage() {
               glass
               className={`h-full transition-all duration-300 ${
                 selectedRole === "player"
-                  ? "border-gold shadow-lg shadow-gold/30 scale-105"
+                  ? "border-gold shadow-gold/30 scale-105 shadow-lg"
                   : ""
               }`}
             >
-              <div className="text-center mb-6">
-                <div className="text-7xl mb-4">🎮</div>
-                <h2 className="text-2xl font-bold text-gold mb-2">Player</h2>
+              <div className="mb-6 text-center">
+                <div className="mb-4 text-7xl">🎮</div>
+                <h2 className="text-gold mb-2 text-2xl font-bold">Player</h2>
                 <p className="text-gray-400">
                   Compete in tournaments and win prizes
                 </p>
@@ -106,8 +106,8 @@ export default function SelectRolePage() {
                 <li className="flex items-start space-x-3">
                   <span className="text-gold text-xl">✓</span>
                   <div>
-                    <p className="text-white font-medium">Join Tournaments</p>
-                    <p className="text-gray-400 text-sm">
+                    <p className="font-medium text-white">Join Tournaments</p>
+                    <p className="text-sm text-gray-400">
                       Participate in various gaming events
                     </p>
                   </div>
@@ -115,8 +115,8 @@ export default function SelectRolePage() {
                 <li className="flex items-start space-x-3">
                   <span className="text-gold text-xl">✓</span>
                   <div>
-                    <p className="text-white font-medium">Win Prizes</p>
-                    <p className="text-gray-400 text-sm">
+                    <p className="font-medium text-white">Win Prizes</p>
+                    <p className="text-sm text-gray-400">
                       Earn diamonds and rewards
                     </p>
                   </div>
@@ -124,17 +124,17 @@ export default function SelectRolePage() {
                 <li className="flex items-start space-x-3">
                   <span className="text-gold text-xl">✓</span>
                   <div>
-                    <p className="text-white font-medium">Track Progress</p>
-                    <p className="text-gray-400 text-sm">
+                    <p className="font-medium text-white">Track Progress</p>
+                    <p className="text-sm text-gray-400">
                       View your tournament history
                     </p>
                   </div>
                 </li>
               </ul>
 
-              <div className="mt-6 pt-6 border-t border-gold-dark/30">
+              <div className="border-gold-dark/30 mt-6 border-t pt-6">
                 <div className="flex items-center justify-between">
-                  <span className="text-gray-400 text-sm">
+                  <span className="text-sm text-gray-400">
                     Starting Balance
                   </span>
                   <div className="flex items-center space-x-2">
@@ -153,13 +153,13 @@ export default function SelectRolePage() {
               glass
               className={`h-full transition-all duration-300 ${
                 selectedRole === "host"
-                  ? "border-gold shadow-lg shadow-gold/30 scale-105"
+                  ? "border-gold shadow-gold/30 scale-105 shadow-lg"
                   : ""
               }`}
             >
-              <div className="text-center mb-6">
-                <div className="text-7xl mb-4">👑</div>
-                <h2 className="text-2xl font-bold text-gold mb-2">Host</h2>
+              <div className="mb-6 text-center">
+                <div className="mb-4 text-7xl">👑</div>
+                <h2 className="text-gold mb-2 text-2xl font-bold">Host</h2>
                 <p className="text-gray-400">Create and manage tournaments</p>
               </div>
 
@@ -167,8 +167,8 @@ export default function SelectRolePage() {
                 <li className="flex items-start space-x-3">
                   <span className="text-gold text-xl">✓</span>
                   <div>
-                    <p className="text-white font-medium">Create Tournaments</p>
-                    <p className="text-gray-400 text-sm">
+                    <p className="font-medium text-white">Create Tournaments</p>
+                    <p className="text-sm text-gray-400">
                       Host your own gaming events
                     </p>
                   </div>
@@ -176,8 +176,8 @@ export default function SelectRolePage() {
                 <li className="flex items-start space-x-3">
                   <span className="text-gold text-xl">✓</span>
                   <div>
-                    <p className="text-white font-medium">Manage Players</p>
-                    <p className="text-gray-400 text-sm">
+                    <p className="font-medium text-white">Manage Players</p>
+                    <p className="text-sm text-gray-400">
                       View participants and track progress
                     </p>
                   </div>
@@ -185,17 +185,17 @@ export default function SelectRolePage() {
                 <li className="flex items-start space-x-3">
                   <span className="text-gold text-xl">✓</span>
                   <div>
-                    <p className="text-white font-medium">Distribute Prizes</p>
-                    <p className="text-gray-400 text-sm">
+                    <p className="font-medium text-white">Distribute Prizes</p>
+                    <p className="text-sm text-gray-400">
                       Automatic prize distribution to winners
                     </p>
                   </div>
                 </li>
               </ul>
 
-              <div className="mt-6 pt-6 border-t border-gold-dark/30">
+              <div className="border-gold-dark/30 mt-6 border-t pt-6">
                 <div className="flex items-center justify-between">
-                  <span className="text-gray-400 text-sm">
+                  <span className="text-sm text-gray-400">
                     Starting Balance
                   </span>
                   <div className="flex items-center space-x-2">
@@ -218,7 +218,7 @@ export default function SelectRolePage() {
           >
             {loading ? "Setting up..." : "Continue"}
           </Button>
-          <p className="text-gray-500 text-sm mt-4">
+          <p className="mt-4 text-sm text-gray-500">
             You can change your role later in settings
           </p>
         </div>

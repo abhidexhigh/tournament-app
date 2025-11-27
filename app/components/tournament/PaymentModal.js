@@ -3,6 +3,7 @@
 import Card from "../Card";
 import Button from "../Button";
 import { getEntryFeeDisplayDual } from "../../lib/prizeCalculator";
+import { getTicketCount } from "../../lib/utils";
 
 export default function PaymentModal({
   show,
@@ -17,40 +18,51 @@ export default function PaymentModal({
   if (!show) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/90 backdrop-blur-sm flex items-center justify-center z-50 p-3 sm:p-4 animate-fadeIn overflow-y-auto">
-      <div className="max-w-2xl w-full my-4">
+    <div className="animate-fadeIn fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-black/90 p-3 backdrop-blur-sm sm:p-4">
+      <div className="my-4 w-full max-w-2xl">
         {/* Decorative background glow */}
-        <div className="absolute inset-0 bg-gradient-to-br from-gold/5 via-transparent to-purple-500/5 blur-3xl pointer-events-none" />
+        <div className="from-gold/5 pointer-events-none absolute inset-0 bg-gradient-to-br via-transparent to-purple-500/5 blur-3xl" />
 
-        <Card className="relative overflow-hidden border-2 border-gold-dark/30 shadow-2xl">
+        <Card className="border-gold-dark/30 relative overflow-hidden border-2 shadow-2xl">
           {/* Top golden accent line */}
-          <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-gold to-transparent" />
+          <div className="via-gold absolute top-0 right-0 left-0 h-1 bg-gradient-to-r from-transparent to-transparent" />
 
           {/* Header with icon */}
           <div className="relative">
-            <div className="flex items-start sm:items-center gap-2 sm:gap-3 mb-3 sm:mb-4">
-              <div className="flex-shrink-0 w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-gradient-to-br from-gold/20 to-gold/5 border-2 border-gold/30 flex items-center justify-center">
+            <div className="mb-3 flex items-start gap-2 sm:mb-4 sm:items-center sm:gap-3">
+              <div className="from-gold/20 to-gold/5 border-gold/30 flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full border-2 bg-gradient-to-br sm:h-10 sm:w-10">
                 <span className="text-xl sm:text-2xl">💳</span>
               </div>
-              <div className="flex-1 min-w-0">
-                <h2 className="text-lg sm:text-2xl font-bold text-gold-gradient">
+              <div className="min-w-0 flex-1">
+                <h2 className="text-gold-gradient text-lg font-bold sm:text-2xl">
                   Select Payment Method
                 </h2>
-                <p className="text-gray-400 text-xs mt-0.5">
+                <p className="mt-0.5 text-xs text-gray-400">
                   Choose how you&apos;d like to pay for this tournament
                 </p>
               </div>
             </div>
 
-            {/* Show info message for tournaments */}
-            {tournament.display_type === "tournament" && (
-              <div className="mb-3 sm:mb-4 p-2.5 sm:p-3 bg-gradient-to-r from-blue-500/10 to-purple-500/10 border border-blue-500/30 rounded-lg backdrop-blur-sm">
-                <div className="flex items-start sm:items-center gap-2">
-                  <div className="flex-shrink-0 w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-blue-500/20 flex items-center justify-center">
+            {/* Show info message */}
+            {tournament.display_type === "tournament" ? (
+              <div className="from-gold/10 border-gold/30 mb-3 rounded-lg border bg-gradient-to-r to-purple-500/10 p-2.5 backdrop-blur-sm sm:mb-4 sm:p-3">
+                <div className="flex items-start gap-2 sm:items-center">
+                  <div className="bg-gold/20 flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-lg sm:h-8 sm:w-8">
                     <span className="text-base sm:text-lg">⚡</span>
                   </div>
-                  <p className="text-blue-300 text-xs sm:text-sm font-medium">
-                    Tournaments can only be joined using tickets
+                  <p className="text-gold-light text-xs font-medium sm:text-sm">
+                    Tournaments can be joined using Tickets or Diamonds
+                  </p>
+                </div>
+              </div>
+            ) : (
+              <div className="from-gold/10 to-gold/5 border-gold/30 mb-3 rounded-lg border bg-gradient-to-r p-2.5 backdrop-blur-sm sm:mb-4 sm:p-3">
+                <div className="flex items-start gap-2 sm:items-center">
+                  <div className="bg-gold/20 flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-lg sm:h-8 sm:w-8">
+                    <span className="text-base sm:text-lg">🎪</span>
+                  </div>
+                  <p className="text-gold-light text-xs font-medium sm:text-sm">
+                    Events can only be joined using Diamonds
                   </p>
                 </div>
               </div>
@@ -59,61 +71,36 @@ export default function PaymentModal({
 
           {/* Payment Options */}
           <div
-            className={`grid grid-cols-1 gap-2 sm:gap-3 mb-3 sm:mb-4 ${
-              tournament.display_type === "tournament"
-                ? ""
-                : "sm:grid-cols-2 md:grid-cols-3"
+            className={`mb-3 grid grid-cols-1 gap-2 sm:mb-4 sm:gap-3 ${
+              tournament.display_type === "tournament" ? "sm:grid-cols-2" : ""
             }`}
           >
-            {/* Diamonds Option - Only for Events */}
-            {tournament.display_type === "event" && (
-              <PaymentOption
-                type="diamonds"
-                icon="💎"
-                label="Diamonds"
-                amount={`${getEntryFeeDisplayDual(tournament).diamonds} 💎`}
-                balance={user && `Balance: ${user.diamonds || 0} 💎`}
-                selected={paymentMethod === "diamonds"}
-                onClick={() => setPaymentMethod("diamonds")}
-                colorClass="gold"
-              />
-            )}
+            {/* Diamonds Option - Always available */}
+            <PaymentOption
+              type="diamonds"
+              icon="💎"
+              label="Diamonds"
+              amount={`${getEntryFeeDisplayDual(tournament).diamonds} 💎`}
+              balance={
+                user && `Balance: ${(user.diamonds || 0).toLocaleString()} 💎`
+              }
+              selected={paymentMethod === "diamonds"}
+              onClick={() => setPaymentMethod("diamonds")}
+              colorClass="gold"
+            />
 
-            {/* USD Option - Only for Events */}
-            {tournament.display_type === "event" && (
-              <PaymentOption
-                type="usd"
-                icon="💵"
-                label="USD"
-                amount={`$${getEntryFeeDisplayDual(tournament).usd}`}
-                balance={
-                  user &&
-                  `Balance: $${Number(user.usd_balance || 0).toFixed(2)}`
-                }
-                selected={paymentMethod === "usd"}
-                onClick={() => setPaymentMethod("usd")}
-                colorClass="green"
-              />
-            )}
-
-            {/* Tickets Option - Required for Tournaments, Optional for Events */}
-            {(tournament.display_type === "tournament" ||
-              tournament.accepts_tickets) && (
+            {/* Tickets Option - Only for Tournaments */}
+            {tournament.display_type === "tournament" && (
               <PaymentOption
                 type="tickets"
                 icon="🎫"
                 label="Tickets"
-                amount={`$${Number(tournament.entry_fee_usd || 0).toFixed(
-                  2
-                )} ticket`}
-                balance={
-                  user &&
-                  `Balance: ${
-                    (user.tickets?.ticket_010 || 0) +
-                    (user.tickets?.ticket_100 || 0) +
-                    (user.tickets?.ticket_1000 || 0)
-                  } 🎫`
-                }
+                amount={`${Math.ceil(Number(tournament.entry_fee_usd || 0))} ticket${
+                  Math.ceil(Number(tournament.entry_fee_usd || 0)) > 1
+                    ? "s"
+                    : ""
+                }`}
+                balance={user && `Balance: ${getTicketCount(user.tickets)} 🎫`}
                 selected={paymentMethod === "tickets"}
                 onClick={() => setPaymentMethod("tickets")}
                 colorClass="purple"
@@ -122,27 +109,27 @@ export default function PaymentModal({
           </div>
 
           {/* Entry Fee Summary */}
-          <div className="relative mb-3 sm:mb-4 p-2.5 sm:p-3 rounded-lg bg-gradient-to-br from-dark-primary to-dark-secondary border border-gold-dark/30 shadow-inner">
-            <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-gold/50 to-transparent" />
+          <div className="from-dark-primary to-dark-secondary border-gold-dark/30 relative mb-3 rounded-lg border bg-gradient-to-br p-2.5 shadow-inner sm:mb-4 sm:p-3">
+            <div className="via-gold/50 absolute top-0 right-0 left-0 h-px bg-gradient-to-r from-transparent to-transparent" />
             <div className="flex items-center justify-between gap-4">
-              <div className="flex-1 min-w-0">
-                <p className="text-gray-400 text-xs mb-0.5">Payment Method</p>
-                <p className="text-white font-bold text-xs sm:text-sm truncate">
+              <div className="min-w-0 flex-1">
+                <p className="mb-0.5 text-xs text-gray-400">Payment Method</p>
+                <p className="truncate text-xs font-bold text-white sm:text-sm">
                   {paymentMethod === "diamonds"
                     ? "💎 Diamonds"
                     : paymentMethod === "usd"
-                    ? "💵 USD"
-                    : "🎫 Tickets"}
+                      ? "💎 Diamonds"
+                      : "🎫 Tickets"}
                 </p>
               </div>
-              <div className="text-right flex-shrink-0">
-                <p className="text-gray-400 text-xs mb-0.5">Amount</p>
-                <p className="text-gold-gradient font-bold text-base sm:text-lg">
+              <div className="flex-shrink-0 text-right">
+                <p className="mb-0.5 text-xs text-gray-400">Amount</p>
+                <p className="text-gold-gradient text-base font-bold sm:text-lg">
                   {paymentMethod === "diamonds"
                     ? `${getEntryFeeDisplayDual(tournament).diamonds} 💎`
                     : paymentMethod === "usd"
-                    ? `$${getEntryFeeDisplayDual(tournament).usd}`
-                    : `$${Number(tournament.entry_fee_usd || 0).toFixed(2)}`}
+                      ? `${getEntryFeeDisplayDual(tournament).diamonds} 💎`
+                      : `${Math.ceil(Number(tournament.entry_fee_usd || 0))} 🎫`}
                 </p>
               </div>
             </div>
@@ -163,7 +150,7 @@ export default function PaymentModal({
               fullWidth
               onClick={onConfirm}
               disabled={loading}
-              className="relative overflow-hidden group"
+              className="group relative overflow-hidden"
             >
               <span className="relative z-10">
                 {loading ? (
@@ -174,7 +161,7 @@ export default function PaymentModal({
                 ) : (
                   <span className="flex items-center justify-center gap-2">
                     <span>Confirm & Join</span>
-                    <span className="group-hover:translate-x-1 transition-transform">
+                    <span className="transition-transform group-hover:translate-x-1">
                       →
                     </span>
                   </span>
@@ -241,42 +228,42 @@ function PaymentOption({
     <button
       type="button"
       onClick={onClick}
-      className={`group relative p-3 sm:p-4 rounded-lg border-2 transition-all duration-300 text-left overflow-hidden ${
+      className={`group relative overflow-hidden rounded-lg border-2 p-3 text-left transition-all duration-300 sm:p-4 ${
         selected ? `${styles.border} scale-[1.02]` : styles.border
       }`}
     >
       {/* Background gradient effect */}
       <div
-        className={`absolute inset-0 bg-gradient-to-br ${styles.gradient} to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300`}
+        className={`absolute inset-0 bg-gradient-to-br ${styles.gradient} to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100`}
       />
 
       <div className="relative">
-        <div className="flex items-center justify-between mb-1.5 sm:mb-2">
+        <div className="mb-1.5 flex items-center justify-between sm:mb-2">
           <div className="flex items-center space-x-2">
             <div
-              className={`w-8 h-8 sm:w-10 sm:h-10 rounded-lg flex items-center justify-center transition-all ${styles.iconBg}`}
+              className={`flex h-8 w-8 items-center justify-center rounded-lg transition-all sm:h-10 sm:w-10 ${styles.iconBg}`}
             >
               <span className="text-xl sm:text-2xl">{icon}</span>
             </div>
-            <p className="text-white font-bold text-sm sm:text-base">{label}</p>
+            <p className="text-sm font-bold text-white sm:text-base">{label}</p>
           </div>
           {selected && (
             <div
-              className={`w-4 h-4 sm:w-5 sm:h-5 rounded-full ${styles.checkBg} flex items-center justify-center flex-shrink-0`}
+              className={`h-4 w-4 rounded-full sm:h-5 sm:w-5 ${styles.checkBg} flex flex-shrink-0 items-center justify-center`}
             >
-              <span className="text-white text-[10px] sm:text-xs font-bold">
+              <span className="text-[10px] font-bold text-white sm:text-xs">
                 ✓
               </span>
             </div>
           )}
         </div>
         <div className="space-y-1">
-          <p className={`${styles.textColor} font-bold text-base sm:text-lg`}>
+          <p className={`${styles.textColor} text-base font-bold sm:text-lg`}>
             {amount}
           </p>
           {balance && (
-            <div className={`pt-1 sm:pt-1.5 border-t ${styles.borderTop}`}>
-              <p className="text-[10px] sm:text-xs text-gray-400">{balance}</p>
+            <div className={`border-t pt-1 sm:pt-1.5 ${styles.borderTop}`}>
+              <p className="text-[10px] text-gray-400 sm:text-xs">{balance}</p>
             </div>
           )}
         </div>

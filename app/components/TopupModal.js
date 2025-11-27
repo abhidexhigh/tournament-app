@@ -1,40 +1,62 @@
 "use client";
 
-import { useState } from "react";
-import {
-  TICKET_PACKAGES,
-  USD_PACKAGES,
-  DIAMOND_PACKAGES,
-  calculateTotalDiamonds,
-  calculateTotalUSD,
-} from "../lib/stripe";
+import { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import Card from "./Card";
 import Button from "./Button";
+import Input from "./Input";
 
 export default function TopupModal({ isOpen, onClose, user }) {
-  const [selectedPackage, setSelectedPackage] = useState(null);
+  const [diamondAmount, setDiamondAmount] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [activeTab, setActiveTab] = useState("tickets"); // 'tickets', 'usd' or 'diamonds'
+  const [mounted, setMounted] = useState(false);
 
-  if (!isOpen) return null;
+  // Handle mounting for portal
+  useEffect(() => {
+    setMounted(true);
+    return () => setMounted(false);
+  }, []);
 
-  const handlePurchase = async (packageData) => {
+  // Reset form when modal opens
+  useEffect(() => {
+    if (isOpen) {
+      setDiamondAmount("");
+      setError("");
+    }
+  }, [isOpen]);
+
+  if (!isOpen || !mounted) return null;
+
+  const handlePurchase = async () => {
+    const amount = parseInt(diamondAmount);
+
+    // Validation
+    if (!amount || amount < 1) {
+      setError("Please enter a valid amount (minimum 1 diamond)");
+      return;
+    }
+
+    if (amount > 100000) {
+      setError("Maximum purchase limit is 100,000 diamonds");
+      return;
+    }
+
     setLoading(true);
     setError("");
-    setSelectedPackage(packageData.id);
 
     try {
-      // Create checkout session
+      // Create checkout session with custom amount
       const response = await fetch("/api/stripe/create-checkout-session", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          packageId: packageData.id,
+          amount: amount,
           userId: user.id,
           userEmail: user.email,
+          currency: "diamonds",
         }),
       });
 
@@ -44,7 +66,7 @@ export default function TopupModal({ isOpen, onClose, user }) {
         throw new Error(data.error || "Failed to create checkout session");
       }
 
-      // Redirect to Stripe Checkout URL (modern approach)
+      // Redirect to Stripe Checkout
       if (data.url) {
         window.location.href = data.url;
       } else {
@@ -54,34 +76,31 @@ export default function TopupModal({ isOpen, onClose, user }) {
       console.error("Purchase error:", err);
       setError(err.message || "Failed to process payment. Please try again.");
       setLoading(false);
-      setSelectedPackage(null);
     }
   };
 
-  const currentPackages =
-    activeTab === "tickets"
-      ? TICKET_PACKAGES
-      : activeTab === "usd"
-      ? USD_PACKAGES
-      : DIAMOND_PACKAGES;
+  const calculatePrice = () => {
+    const amount = parseInt(diamondAmount) || 0;
+    return amount; // 1 Diamond = 1 USD
+  };
 
-  return (
-    <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-      <div className="max-w-6xl w-full max-h-[90vh] overflow-y-auto">
-        <div className="bg-dark-card/90 backdrop-blur-md border border-gold-dark/30 rounded-xl shadow-2xl p-6 md:p-8">
+  const modalContent = (
+    <div className="fixed inset-0 z-[10000] flex items-center justify-center bg-black/80 p-4 backdrop-blur-sm">
+      <div className="animate-slideUp w-full max-w-md">
+        <div className="bg-dark-card/95 border-gold-dark/30 rounded-xl border p-6 shadow-2xl backdrop-blur-md md:p-8">
           {/* Header */}
-          <div className="flex items-center justify-between mb-6">
+          <div className="mb-6 flex items-center justify-between">
             <div>
-              <h2 className="text-2xl font-bold text-gold mb-2">
-                💰 Top Up Wallet
+              <h2 className="text-gold mb-2 text-2xl font-bold">
+                💎 Buy Diamonds
               </h2>
-              <p className="text-gray-400 text-sm">
-                Choose to add Tickets, USD, or Diamonds to your wallet
+              <p className="text-sm text-gray-400">
+                Enter the amount of diamonds you want to purchase
               </p>
             </div>
             <button
               onClick={onClose}
-              className="text-gray-400 hover:text-white transition-colors text-2xl"
+              className="text-2xl text-gray-400 transition-colors hover:text-white"
               disabled={loading}
             >
               ✕
@@ -89,263 +108,116 @@ export default function TopupModal({ isOpen, onClose, user }) {
           </div>
 
           {/* Current Balance */}
-          <div className="grid grid-cols-3 gap-4 mb-6">
-            <div className="bg-dark-primary/50 border border-purple-500/30 rounded-lg p-4">
-              <div className="text-center">
-                <p className="text-gray-400 text-xs mb-1">🎫 Tickets</p>
-                <p className="text-xl font-bold text-purple-400">
-                  {(user?.tickets?.ticket_010 || 0) +
-                    (user?.tickets?.ticket_100 || 0) +
-                    (user?.tickets?.ticket_1000 || 0)}
-                </p>
-              </div>
-            </div>
-            <div className="bg-dark-primary/50 border border-green-500/30 rounded-lg p-4">
-              <div className="text-center">
-                <p className="text-gray-400 text-xs mb-1">💵 USD</p>
-                <p className="text-xl font-bold text-green-400">
-                  ${Number(user?.usd_balance || 0).toFixed(2)}
-                </p>
-              </div>
-            </div>
-            <div className="bg-dark-primary/50 border border-gold/30 rounded-lg p-4">
-              <div className="text-center">
-                <p className="text-gray-400 text-xs mb-1">💎 Diamonds</p>
-                <p className="text-xl font-bold text-gold">
-                  {user?.diamonds || 0}
-                </p>
-              </div>
+          <div className="from-gold/10 to-gold/5 border-gold/30 mb-6 rounded-lg border bg-gradient-to-br p-4">
+            <div className="text-center">
+              <p className="mb-1 text-xs text-gray-400">Current Balance</p>
+              <p className="text-gold text-3xl font-bold">
+                {(user?.diamonds || 0).toLocaleString()} 💎
+              </p>
             </div>
           </div>
 
-          {/* Tabs */}
-          <div className="flex gap-2 mb-6">
-            <button
-              onClick={() => setActiveTab("tickets")}
+          {/* Diamond Amount Input */}
+          <div className="mb-6">
+            <Input
+              label="Diamond Amount"
+              type="number"
+              value={diamondAmount}
+              onChange={(e) => {
+                setDiamondAmount(e.target.value);
+                setError("");
+              }}
+              placeholder="Enter amount (e.g., 100)"
+              icon="💎"
+              min="1"
+              max="100000"
               disabled={loading}
-              className={`flex-1 py-3 px-4 rounded-lg font-semibold transition-all text-sm ${
-                activeTab === "tickets"
-                  ? "bg-gradient-to-r from-purple-500 to-purple-600 text-white shadow-lg"
-                  : "bg-dark-primary/50 text-gray-400 hover:text-white border border-purple-500/30"
-              }`}
-            >
-              🎫 Tickets
-            </button>
-            <button
-              onClick={() => setActiveTab("usd")}
-              disabled={loading}
-              className={`flex-1 py-3 px-4 rounded-lg font-semibold transition-all text-sm ${
-                activeTab === "usd"
-                  ? "bg-gradient-to-r from-green-500 to-green-600 text-white shadow-lg"
-                  : "bg-dark-primary/50 text-gray-400 hover:text-white border border-green-500/30"
-              }`}
-            >
-              💵 USD
-            </button>
-            <button
-              onClick={() => setActiveTab("diamonds")}
-              disabled={loading}
-              className={`flex-1 py-3 px-4 rounded-lg font-semibold transition-all text-sm ${
-                activeTab === "diamonds"
-                  ? "bg-gradient-to-r from-gold to-gold-dark text-dark-primary shadow-lg"
-                  : "bg-dark-primary/50 text-gray-400 hover:text-white border border-gold/30"
-              }`}
-            >
-              💎 Diamonds
-            </button>
+            />
+            <p className="mt-2 text-xs text-gray-500">💡 1 Diamond = $1 USD</p>
           </div>
 
-          {/* Error Message */}
-          {error && (
-            <div className="bg-red-900/20 border border-red-500/30 text-red-300 rounded-lg p-4 mb-6">
-              <p className="text-sm">{error}</p>
+          {/* Price Display */}
+          {diamondAmount && parseInt(diamondAmount) > 0 && (
+            <div className="bg-dark-primary/50 border-gold-dark/30 mb-6 rounded-lg border p-4">
+              <div className="mb-3 flex items-center justify-between">
+                <span className="text-sm text-gray-400">You will receive:</span>
+                <span className="text-gold text-xl font-bold">
+                  {parseInt(diamondAmount).toLocaleString()} 💎
+                </span>
+              </div>
+              <div className="via-gold-dark/30 mb-3 h-px bg-gradient-to-r from-transparent to-transparent" />
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-gray-400">Total Price:</span>
+                <span className="text-2xl font-bold text-green-400">
+                  ${calculatePrice().toLocaleString()}
+                </span>
+              </div>
             </div>
           )}
 
-          {/* Package Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {currentPackages.map((pkg) => {
-              const isTickets = activeTab === "tickets";
-              const isUSD = activeTab === "usd";
-              const isDiamonds = activeTab === "diamonds";
+          {/* Error Message */}
+          {error && (
+            <div className="mb-4 rounded-lg border border-red-500/30 bg-red-500/10 p-3">
+              <p className="text-sm text-red-400">{error}</p>
+            </div>
+          )}
 
-              let total,
-                displayAmount,
-                icon,
-                colorClass,
-                borderClass,
-                popularBorder,
-                popularShadow;
-
-              if (isTickets) {
-                total = pkg.quantity;
-                displayAmount = pkg.quantity;
-                icon = "🎫";
-                colorClass = "text-purple-400";
-                borderClass = "border-purple-500/30 hover:border-purple-500/50";
-                popularBorder = "border-purple-500";
-                popularShadow = "shadow-purple-500/20";
-              } else if (isUSD) {
-                total = calculateTotalUSD(pkg);
-                displayAmount = pkg.amount;
-                icon = "💵";
-                colorClass = "text-green-400";
-                borderClass = "border-green-500/30 hover:border-green-500/50";
-                popularBorder = "border-green-500";
-                popularShadow = "shadow-green-500/20";
-              } else {
-                total = calculateTotalDiamonds(pkg);
-                displayAmount = pkg.diamonds;
-                icon = "💎";
-                colorClass = "text-gold";
-                borderClass = "border-gold-dark/30 hover:border-gold/50";
-                popularBorder = "border-gold";
-                popularShadow = "shadow-gold/20";
-              }
-
-              const isLoading = loading && selectedPackage === pkg.id;
-
-              return (
-                <div
-                  key={pkg.id}
-                  className={`relative bg-dark-card border-2 rounded-lg p-6 transition-all duration-300 ${
-                    pkg.popular
-                      ? `${popularBorder} shadow-lg ${popularShadow}`
-                      : borderClass
-                  }`}
+          {/* Quick Amount Buttons */}
+          <div className="mb-6">
+            <p className="mb-3 text-xs text-gray-400">Quick Select:</p>
+            <div className="grid grid-cols-4 gap-2">
+              {[10, 50, 100, 500].map((amount) => (
+                <button
+                  key={amount}
+                  onClick={() => setDiamondAmount(amount.toString())}
+                  disabled={loading}
+                  className="bg-dark-primary/50 hover:bg-gold/20 border-gold-dark/30 hover:border-gold/50 text-gold rounded-lg border px-3 py-2 text-sm font-semibold transition-all"
                 >
-                  {/* Popular Badge */}
-                  {pkg.popular && (
-                    <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
-                      <span
-                        className={`${
-                          isTickets
-                            ? "bg-gradient-to-r from-purple-500 to-purple-600"
-                            : isUSD
-                            ? "bg-gradient-to-r from-green-500 to-green-600"
-                            : "bg-gradient-to-r from-gold to-gold-dark"
-                        } text-white text-xs font-bold px-4 py-1 rounded-full shadow-lg`}
-                      >
-                        {pkg.label}
-                      </span>
-                    </div>
-                  )}
-
-                  {/* Package Details */}
-                  <div className="text-center mb-4">
-                    <div className="text-4xl mb-3">{icon}</div>
-                    {isTickets ? (
-                      <>
-                        <h3 className="text-xl font-bold text-white mb-1">
-                          {pkg.quantity}x ${pkg.ticket_value.toFixed(2)}
-                        </h3>
-                        <p className="text-gray-400 text-sm mb-2">
-                          {pkg.label}
-                        </p>
-                        <p className={`${colorClass} text-sm font-medium`}>
-                          Value: ${pkg.total_value.toFixed(2)}
-                        </p>
-                      </>
-                    ) : (
-                      <>
-                        <h3 className="text-2xl font-bold text-white mb-1">
-                          {isUSD ? "$" : ""}
-                          {displayAmount.toLocaleString()}
-                          {isUSD ? "" : " 💎"}
-                        </h3>
-                        {pkg.bonus && (
-                          <p className={`${colorClass} text-sm font-medium mb-2`}>
-                            + {isUSD ? "$" : ""}
-                            {pkg.bonus.toLocaleString()}
-                            {isUSD ? "" : " 💎"} Bonus 🎁
-                          </p>
-                        )}
-                        {!pkg.popular && (
-                          <p className="text-gray-400 text-sm mb-2">
-                            {pkg.label}
-                          </p>
-                        )}
-                      </>
-                    )}
-                  </div>
-
-                  {/* Total */}
-                  {(pkg.bonus || isTickets) && (
-                    <div className="bg-dark-primary/50 rounded-lg p-2 mb-4">
-                      <p className="text-center text-gray-300 text-sm">
-                        {isTickets ? (
-                          <>
-                            <span className="text-green-400 font-bold">
-                              Save ${(pkg.total_value - pkg.price).toFixed(2)}
-                            </span>
-                            <span className="text-gray-400"> (10% off)</span>
-                          </>
-                        ) : (
-                          <>
-                            Total:{" "}
-                            <span className={`${colorClass} font-bold`}>
-                              {isUSD ? "$" : ""}
-                              {total.toLocaleString()}
-                              {isUSD ? "" : " 💎"}
-                            </span>
-                          </>
-                        )}
-                      </p>
-                    </div>
-                  )}
-
-                  {/* Price */}
-                  <div className="text-center mb-4">
-                    <p
-                      className={`text-3xl font-bold ${
-                        isUSD ? "text-green-400" : isTickets ? "text-purple-400" : "text-gold"
-                      }`}
-                    >
-                      ${pkg.price.toFixed(2)}
-                    </p>
-                    <p className="text-gray-400 text-sm">USD</p>
-                  </div>
-
-                  {/* Buy Button */}
-                  <Button
-                    onClick={() => handlePurchase(pkg)}
-                    disabled={loading}
-                    className="w-full"
-                    variant={pkg.popular ? "primary" : "outline"}
-                  >
-                    {isLoading ? (
-                      <span className="flex items-center justify-center">
-                        <span className="animate-spin mr-2">⏳</span>
-                        Processing...
-                      </span>
-                    ) : (
-                      "Buy Now"
-                    )}
-                  </Button>
-                </div>
-              );
-            })}
+                  {amount}
+                </button>
+              ))}
+            </div>
           </div>
 
-          {/* Payment Info */}
-          <div className="mt-6 bg-dark-primary/50 border border-gold-dark/20 rounded-lg p-4">
-            <h4 className="text-gold font-medium mb-2 flex items-center gap-2">
-              🔒 Secure Payment Information
-            </h4>
-            <ul className="text-sm text-gray-300 space-y-1">
-              <li>• Powered by Stripe - Industry-leading payment security</li>
-              <li>
-                • Test mode: Use card 4242 4242 4242 4242 with any future date
-              </li>
-              <li>• Your payment information is never stored on our servers</li>
-              <li>
-                • Balance credited instantly after successful payment
-              </li>
-              <li>• All transactions are encrypted and secure</li>
-            </ul>
+          {/* Action Buttons */}
+          <div className="flex gap-3">
+            <Button
+              variant="secondary"
+              fullWidth
+              onClick={onClose}
+              disabled={loading}
+            >
+              Cancel
+            </Button>
+            <Button
+              variant="primary"
+              fullWidth
+              onClick={handlePurchase}
+              disabled={
+                loading || !diamondAmount || parseInt(diamondAmount) < 1
+              }
+            >
+              {loading ? (
+                <span className="flex items-center justify-center gap-2">
+                  <span className="animate-spin">⏳</span>
+                  Processing...
+                </span>
+              ) : (
+                `Buy for $${calculatePrice()}`
+              )}
+            </Button>
+          </div>
+
+          {/* Info Note */}
+          <div className="mt-4 rounded-lg border border-blue-500/30 bg-blue-500/10 p-3">
+            <p className="text-center text-xs text-blue-300">
+              🔒 Secure payment powered by Stripe
+            </p>
           </div>
         </div>
       </div>
     </div>
   );
+
+  return createPortal(modalContent, document.body);
 }

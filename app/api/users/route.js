@@ -10,7 +10,7 @@ export async function GET() {
   } catch (error) {
     return NextResponse.json(
       { success: false, error: error.message },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -25,7 +25,7 @@ export async function POST(request) {
     if (!username || !email || !type) {
       return NextResponse.json(
         { success: false, error: "Missing required fields" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -33,8 +33,11 @@ export async function POST(request) {
     if (clans !== undefined) {
       if (Array.isArray(clans) && clans.length > 1) {
         return NextResponse.json(
-          { success: false, error: "A user can only be part of one clan at a time" },
-          { status: 400 }
+          {
+            success: false,
+            error: "A user can only be part of one clan at a time",
+          },
+          { status: 400 },
         );
       }
     }
@@ -44,7 +47,7 @@ export async function POST(request) {
     if (existingUser) {
       return NextResponse.json(
         { success: false, error: "User with this email already exists" },
-        { status: 409 }
+        { status: 409 },
       );
     }
 
@@ -68,12 +71,12 @@ export async function POST(request) {
     if (error.message.includes("one clan at a time")) {
       return NextResponse.json(
         { success: false, error: error.message },
-        { status: 400 }
+        { status: 400 },
       );
     }
     return NextResponse.json(
       { success: false, error: error.message },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

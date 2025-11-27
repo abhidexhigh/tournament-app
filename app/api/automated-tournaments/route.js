@@ -46,7 +46,7 @@ export async function GET(request) {
     console.error("Error fetching automated tournaments:", error);
     return NextResponse.json(
       { success: false, error: error.message },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -64,7 +64,7 @@ export async function POST(request) {
     if (!session || session.user.type !== "game_owner") {
       return NextResponse.json(
         { success: false, error: "Unauthorized. Game owner access required." },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
@@ -80,7 +80,7 @@ export async function POST(request) {
     console.error("Error running manual scheduler:", error);
     return NextResponse.json(
       { success: false, error: error.message },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

@@ -6,16 +6,16 @@ import Image from "next/image";
 export default function MatchHistory({ matches, playerId }) {
   if (!matches || matches.length === 0) {
     return (
-      <div className="relative overflow-hidden rounded-2xl backdrop-blur-xl border border-gold-dark/20">
-        <div className="absolute inset-0 bg-gradient-to-br from-dark-card/60 via-dark-card/40 to-dark-card/60" />
-        <div className="relative text-center py-16 px-6">
-          <div className="w-24 h-24 mx-auto mb-6 rounded-full bg-gradient-to-br from-purple-500/20 to-purple-500/5 flex items-center justify-center border-2 border-purple-500/20">
+      <div className="border-gold-dark/20 relative overflow-hidden rounded-2xl border backdrop-blur-xl">
+        <div className="from-dark-card/60 via-dark-card/40 to-dark-card/60 absolute inset-0 bg-gradient-to-br" />
+        <div className="relative px-6 py-16 text-center">
+          <div className="mx-auto mb-6 flex h-24 w-24 items-center justify-center rounded-full border-2 border-purple-500/20 bg-gradient-to-br from-purple-500/20 to-purple-500/5">
             <span className="text-6xl">🎯</span>
           </div>
-          <h3 className="text-3xl font-bold text-white mb-3">
+          <h3 className="mb-3 text-3xl font-bold text-white">
             No Matches Played Yet
           </h3>
-          <p className="text-gray-400 text-lg mb-8 max-w-md mx-auto">
+          <p className="mx-auto mb-8 max-w-md text-lg text-gray-400">
             Start competing in tournaments to see your match results here!
           </p>
         </div>
@@ -100,8 +100,8 @@ export default function MatchHistory({ matches, playerId }) {
   });
 
   return (
-    <div className="relative overflow-hidden rounded-2xl backdrop-blur-xl border border-white/20">
-      <div className="absolute inset-0 bg-gradient-to-br from-dark-card/80 via-dark-card/60 to-dark-card/80" />
+    <div className="relative overflow-hidden rounded-2xl border border-white/20 backdrop-blur-xl">
+      <div className="from-dark-card/80 via-dark-card/60 to-dark-card/80 absolute inset-0 bg-gradient-to-br" />
 
       {/* Info Banner for Live/Upcoming Matches */}
       {(sortedMatches.some((m) => {
@@ -112,11 +112,11 @@ export default function MatchHistory({ matches, playerId }) {
           const p = getPlayerPerformance(m);
           return p && m.status === "upcoming";
         })) && (
-        <div className="hidden relative bg-white/5 border-b border-white/10 px-6 py-3">
+        <div className="relative hidden border-b border-white/10 bg-white/5 px-6 py-3">
           <div className="flex items-center gap-3 text-sm">
-            <span className="text-gray-400 text-lg">ℹ️</span>
+            <span className="text-lg text-gray-400">ℹ️</span>
             <div>
-              <span className="text-white font-semibold">
+              <span className="font-semibold text-white">
                 Match Information:{" "}
               </span>
               <span className="text-gray-400">
@@ -134,33 +134,33 @@ export default function MatchHistory({ matches, playerId }) {
       <div className="relative overflow-x-auto">
         <table className="w-full">
           {/* Table Header */}
-          <thead className="bg-white/5 border-b border-white/10">
+          <thead className="border-b border-white/10 bg-white/5">
             <tr>
-              <th className="px-4 py-4 text-left text-xs font-bold text-gray-400 uppercase tracking-wider">
+              <th className="px-4 py-4 text-left text-xs font-bold tracking-wider text-gray-400 uppercase">
                 Position
               </th>
-              <th className="px-4 py-4 text-left text-xs font-bold text-gray-400 uppercase tracking-wider">
+              <th className="px-4 py-4 text-left text-xs font-bold tracking-wider text-gray-400 uppercase">
                 Match
               </th>
-              <th className="px-4 py-4 text-left text-xs font-bold text-gray-400 uppercase tracking-wider">
+              <th className="px-4 py-4 text-left text-xs font-bold tracking-wider text-gray-400 uppercase">
                 Date
               </th>
-              <th className="px-4 py-4 text-center text-xs font-bold text-gray-400 uppercase tracking-wider">
+              <th className="px-4 py-4 text-center text-xs font-bold tracking-wider text-gray-400 uppercase">
                 Status
               </th>
-              <th className="px-4 py-4 text-right text-xs font-bold text-gray-400 uppercase tracking-wider">
+              <th className="px-4 py-4 text-right text-xs font-bold tracking-wider text-gray-400 uppercase">
                 Score
               </th>
-              <th className="px-4 py-4 text-center text-xs font-bold text-gray-400 uppercase tracking-wider">
+              <th className="px-4 py-4 text-center text-xs font-bold tracking-wider text-gray-400 uppercase">
                 Kills
               </th>
-              <th className="px-4 py-4 text-center text-xs font-bold text-gray-400 uppercase tracking-wider">
+              <th className="px-4 py-4 text-center text-xs font-bold tracking-wider text-gray-400 uppercase">
                 Deaths
               </th>
-              <th className="px-4 py-4 text-center text-xs font-bold text-gray-400 uppercase tracking-wider">
+              <th className="px-4 py-4 text-center text-xs font-bold tracking-wider text-gray-400 uppercase">
                 K/D
               </th>
-              <th className="px-4 py-4 text-right text-xs font-bold text-gray-400 uppercase tracking-wider">
+              <th className="px-4 py-4 text-right text-xs font-bold tracking-wider text-gray-400 uppercase">
                 Prize
               </th>
             </tr>
@@ -176,8 +176,8 @@ export default function MatchHistory({ matches, playerId }) {
                 <tr
                   key={match.id}
                   className={`${getRowBgClass(
-                    performance.position
-                  )} hover:bg-white/5 transition-colors duration-200`}
+                    performance.position,
+                  )} transition-colors duration-200 hover:bg-white/5`}
                 >
                   {/* Position */}
                   <td className="px-4 py-4 whitespace-nowrap">
@@ -185,7 +185,7 @@ export default function MatchHistory({ matches, playerId }) {
                       <div className="flex items-center gap-2">
                         <span className="text-xl text-gray-500">—</span>
                         <div className="flex flex-col items-start">
-                          <span className="text-[10px] text-gray-500 font-bold uppercase tracking-wider">
+                          <span className="text-[10px] font-bold tracking-wider text-gray-500 uppercase">
                             Upcoming
                           </span>
                           <span className="text-[9px] text-gray-600">
@@ -197,14 +197,14 @@ export default function MatchHistory({ matches, playerId }) {
                       <div className="flex items-center gap-2">
                         <div
                           className={`text-2xl ${getPositionColorClass(
-                            performance.position
+                            performance.position,
                           )}`}
                         >
                           {getPositionBadge(performance.position)}
                         </div>
                         {match.status === "ongoing" && (
                           <div className="flex flex-col items-start">
-                            <span className="text-[10px] text-gray-400 font-bold uppercase tracking-wider animate-pulse">
+                            <span className="animate-pulse text-[10px] font-bold tracking-wider text-gray-400 uppercase">
                               Live
                             </span>
                             <span className="text-[9px] text-gray-600">
@@ -218,35 +218,35 @@ export default function MatchHistory({ matches, playerId }) {
 
                   {/* Match Title */}
                   <td className="px-4 py-4">
-                    <div className="text-sm font-semibold text-gold-light-text line-clamp-2 max-w-xs">
+                    <div className="text-gold-light-text line-clamp-2 max-w-xs text-sm font-semibold">
                       {match.title}
                     </div>
-                    <div className="text-xs text-gold-light-text mt-1">
+                    <div className="text-gold-light-text mt-1 text-xs">
                       💎 {match.prizePool?.toLocaleString()} Pool
                     </div>
                   </td>
 
                   {/* Date */}
                   <td className="px-4 py-4 whitespace-nowrap">
-                    <div className="text-sm text-gold-light-text">
+                    <div className="text-gold-light-text text-sm">
                       {formatDate(match.date)}
                     </div>
-                    <div className="text-xs text-gold-light-text">
+                    <div className="text-gold-light-text text-xs">
                       {match.startTime}
                     </div>
                   </td>
 
                   {/* Status */}
-                  <td className="px-4 py-4 whitespace-nowrap text-center">
+                  <td className="px-4 py-4 text-center whitespace-nowrap">
                     {match.status === "ongoing" ? (
                       <div className="flex flex-col items-center gap-1">
                         <Badge
                           variant={match.status}
-                          className="capitalize text-xs"
+                          className="text-xs capitalize"
                         >
                           🔴 Live
                         </Badge>
-                        <span className="text-[10px] text-gold-light-text">
+                        <span className="text-gold-light-text text-[10px]">
                           In Progress
                         </span>
                       </div>
@@ -254,18 +254,18 @@ export default function MatchHistory({ matches, playerId }) {
                       <div className="flex flex-col items-center gap-1">
                         <Badge
                           variant={match.status}
-                          className="capitalize text-xs"
+                          className="text-xs capitalize"
                         >
                           Upcoming
                         </Badge>
-                        <span className="text-[10px] text-gold-light-text">
+                        <span className="text-gold-light-text text-[10px]">
                           Scheduled
                         </span>
                       </div>
                     ) : (
                       <Badge
                         variant={match.status}
-                        className="capitalize text-xs"
+                        className="text-xs capitalize"
                       >
                         {match.status}
                       </Badge>
@@ -273,8 +273,8 @@ export default function MatchHistory({ matches, playerId }) {
                   </td>
 
                   {/* Score */}
-                  <td className="px-4 py-4 whitespace-nowrap text-right">
-                    <div className="text-sm font-bold text-gold-light-text">
+                  <td className="px-4 py-4 text-right whitespace-nowrap">
+                    <div className="text-gold-light-text text-sm font-bold">
                       {match.status === "upcoming"
                         ? "—"
                         : performance.score?.toLocaleString() || "N/A"}
@@ -282,8 +282,8 @@ export default function MatchHistory({ matches, playerId }) {
                   </td>
 
                   {/* Kills */}
-                  <td className="px-4 py-4 whitespace-nowrap text-center">
-                    <div className="text-sm font-bold text-gold-light-text">
+                  <td className="px-4 py-4 text-center whitespace-nowrap">
+                    <div className="text-gold-light-text text-sm font-bold">
                       {match.status === "upcoming"
                         ? "—"
                         : performance.kills || 0}
@@ -291,8 +291,8 @@ export default function MatchHistory({ matches, playerId }) {
                   </td>
 
                   {/* Deaths */}
-                  <td className="px-4 py-4 whitespace-nowrap text-center">
-                    <div className="text-sm font-bold text-gold-light-text">
+                  <td className="px-4 py-4 text-center whitespace-nowrap">
+                    <div className="text-gold-light-text text-sm font-bold">
                       {match.status === "upcoming"
                         ? "—"
                         : performance.deaths || 0}
@@ -300,8 +300,8 @@ export default function MatchHistory({ matches, playerId }) {
                   </td>
 
                   {/* K/D Ratio */}
-                  <td className="px-4 py-4 whitespace-nowrap text-center">
-                    <div className="text-sm font-bold text-gold-light-text">
+                  <td className="px-4 py-4 text-center whitespace-nowrap">
+                    <div className="text-gold-light-text text-sm font-bold">
                       {match.status === "upcoming"
                         ? "—"
                         : performance.kdRatio || "0.0"}
@@ -309,21 +309,21 @@ export default function MatchHistory({ matches, playerId }) {
                   </td>
 
                   {/* Prize */}
-                  <td className="px-4 py-4 whitespace-nowrap text-right">
+                  <td className="px-4 py-4 text-right whitespace-nowrap">
                     {match.status === "upcoming" ||
                     match.status === "ongoing" ? (
-                      <div className="text-xs text-gold-light-text font-medium">
+                      <div className="text-gold-light-text text-xs font-medium">
                         TBD
                       </div>
                     ) : performance.prizeAmount > 0 ? (
-                      <div className="inline-flex items-center gap-1 px-3 py-1 rounded-lg bg-gold/20 border border-gold/30">
-                        <span className="text-sm font-black text-gold">
+                      <div className="bg-gold/20 border-gold/30 inline-flex items-center gap-1 rounded-lg border px-3 py-1">
+                        <span className="text-gold text-sm font-black">
                           {performance.prizeAmount.toLocaleString()}
                         </span>
                         <span className="text-xs">💎</span>
                       </div>
                     ) : (
-                      <span className="text-sm text-gold-light-text">—</span>
+                      <span className="text-gold-light-text text-sm">—</span>
                     )}
                   </td>
                 </tr>
@@ -334,7 +334,7 @@ export default function MatchHistory({ matches, playerId }) {
       </div>
 
       {/* Summary Footer */}
-      <div className="relative bg-white/5 border-t border-white/10 px-6 py-4">
+      <div className="relative border-t border-white/10 bg-white/5 px-6 py-4">
         <div className="flex flex-wrap items-center justify-between gap-4 text-sm">
           <div className="flex items-center gap-6">
             <div>
@@ -345,7 +345,7 @@ export default function MatchHistory({ matches, playerId }) {
             </div>
             <div>
               <span className="text-gold-light-text">Wins:</span>
-              <span className="ml-2 font-bold text-gold">
+              <span className="text-gold ml-2 font-bold">
                 {
                   sortedMatches.filter((m) => {
                     const p = getPlayerPerformance(m);
@@ -356,7 +356,7 @@ export default function MatchHistory({ matches, playerId }) {
             </div>
             <div>
               <span className="text-gray-400">Top 3:</span>
-              <span className="ml-2 font-bold text-gold">
+              <span className="text-gold ml-2 font-bold">
                 {
                   sortedMatches.filter((m) => {
                     const p = getPlayerPerformance(m);
@@ -368,7 +368,7 @@ export default function MatchHistory({ matches, playerId }) {
           </div>
           <div>
             <span className="text-gold-light-text">Total Prize:</span>
-            <span className="ml-2 font-black text-gold text-lg">
+            <span className="text-gold ml-2 text-lg font-black">
               {sortedMatches
                 .reduce((sum, m) => {
                   const p = getPlayerPerformance(m);

@@ -33,7 +33,7 @@ export const getCurrentTimestamp = () => {
 // Helper function to transform user object from database format to application format
 const transformUser = (user) => {
   if (!user) return null;
-  
+
   return {
     ...user,
     gameId: user.game_id, // Convert game_id to gameId
@@ -97,7 +97,7 @@ export const usersDb = {
             ticket_010: 0,
             ticket_100: 0,
             ticket_1000: 0,
-          }
+          },
         ),
       };
 
@@ -249,7 +249,7 @@ export const tournamentsDb = {
       if (!derivedExpiresAt && tournamentData.date && tournamentData.time) {
         try {
           const combinedDate = new Date(
-            `${tournamentData.date}T${tournamentData.time}`
+            `${tournamentData.date}T${tournamentData.time}`,
           );
           if (!isNaN(combinedDate.getTime())) {
             derivedExpiresAt = combinedDate.toISOString();

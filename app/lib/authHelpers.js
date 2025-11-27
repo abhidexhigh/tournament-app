@@ -53,7 +53,7 @@ export const updateUserRole = (userId, role) => {
 
   // Update current user
   const currentUser = JSON.parse(
-    localStorage.getItem(STORAGE_KEYS.USER) || "{}"
+    localStorage.getItem(STORAGE_KEYS.USER) || "{}",
   );
   if (currentUser.id === userId) {
     localStorage.setItem(STORAGE_KEYS.USER, JSON.stringify(users[userIndex]));
@@ -95,7 +95,7 @@ export const refreshUserFromAPI = async (userId) => {
 
       // Also update the users database in localStorage
       const users = JSON.parse(
-        localStorage.getItem(STORAGE_KEYS.USERS_DB) || "[]"
+        localStorage.getItem(STORAGE_KEYS.USERS_DB) || "[]",
       );
       const userIndex = users.findIndex((u) => u.id === userId);
       if (userIndex !== -1) {

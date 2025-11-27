@@ -26,13 +26,13 @@ export default function WinnerDeclarationModal({
     }));
 
   return (
-    <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-3 sm:p-4 overflow-y-auto">
-      <Card className="max-w-2xl w-full my-4">
-        <h2 className="text-xl sm:text-2xl font-bold text-gold-gradient mb-4 sm:mb-6">
+    <div className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-black/80 p-3 sm:p-4">
+      <Card className="my-4 w-full max-w-2xl">
+        <h2 className="text-gold-gradient mb-4 text-xl font-bold sm:mb-6 sm:text-2xl">
           🏆 Declare Winners
         </h2>
 
-        <div className="space-y-3 sm:space-y-4 mb-4 sm:mb-6">
+        <div className="mb-4 space-y-3 sm:mb-6 sm:space-y-4">
           <Select
             label="🥇 1st Place"
             name="first"
@@ -66,13 +66,13 @@ export default function WinnerDeclarationModal({
         </div>
 
         {errors.duplicate && (
-          <p className="text-red-400 text-xs sm:text-sm mb-3 sm:mb-4">
+          <p className="mb-3 text-xs text-red-400 sm:mb-4 sm:text-sm">
             {errors.duplicate}
           </p>
         )}
 
-        <div className="bg-dark-secondary p-3 sm:p-4 rounded-lg mb-4 sm:mb-6">
-          <p className="text-gray-400 text-xs sm:text-sm mb-2">
+        <div className="bg-dark-secondary mb-4 rounded-lg p-3 sm:mb-6 sm:p-4">
+          <p className="mb-2 text-xs text-gray-400 sm:text-sm">
             Prize Distribution:
           </p>
           <div className="space-y-1 text-xs sm:text-sm">
@@ -88,7 +88,7 @@ export default function WinnerDeclarationModal({
           </div>
         </div>
 
-        <div className="flex flex-col sm:flex-row gap-2 sm:gap-4">
+        <div className="flex flex-col gap-2 sm:flex-row sm:gap-4">
           <Button
             variant="secondary"
             fullWidth

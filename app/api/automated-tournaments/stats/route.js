@@ -15,7 +15,7 @@ export async function GET(request) {
     if (!session || session.user.type !== "game_owner") {
       return NextResponse.json(
         { success: false, error: "Unauthorized. Game owner access required." },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
@@ -94,7 +94,7 @@ export async function GET(request) {
     console.error("Error fetching automated tournament stats:", error);
     return NextResponse.json(
       { success: false, error: error.message },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

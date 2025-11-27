@@ -74,7 +74,7 @@ export function useCountdown({ date, time, expiresAt }) {
 
       const days = Math.floor(difference / (1000 * 60 * 60 * 24));
       const hours = Math.floor(
-        (difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
+        (difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60),
       );
       const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
       const seconds = Math.floor((difference % (1000 * 60)) / 1000);
@@ -189,7 +189,7 @@ export default function CountdownTimer({
 
       const days = Math.floor(difference / (1000 * 60 * 60 * 24));
       const hours = Math.floor(
-        (difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
+        (difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60),
       );
       const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
       const seconds = Math.floor((difference % (1000 * 60)) / 1000);
@@ -223,12 +223,12 @@ export default function CountdownTimer({
     // For default style, return full component
     return (
       <div
-        className={`flex items-center space-x-2 justify-center sm:justify-start text-red-400 text-sm font-medium ${className}`}
+        className={`flex items-center justify-center space-x-2 text-sm font-medium text-red-400 sm:justify-start ${className}`}
       >
-        <div className="w-8 h-8 sm:w-8 sm:h-8 2xl:w-10 2xl:h-10 rounded-lg bg-gradient-to-br from-white/10 to-white/5 flex items-center justify-center border border-white/10 flex-shrink-0">
+        <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg border border-white/10 bg-gradient-to-br from-white/10 to-white/5 sm:h-8 sm:w-8 2xl:h-10 2xl:w-10">
           <FaClock className="text-base sm:text-lg 2xl:text-xl" />
         </div>
-        <span className="text-red-400 font-medium text-sm tracking-wider">
+        <span className="text-sm font-medium tracking-wider text-red-400">
           {expiresAt ? "Joining Closed" : "Tournament Started"}
         </span>
       </div>
@@ -247,38 +247,38 @@ export default function CountdownTimer({
 
   if (style === "minimal") {
     return (
-      <div className="flex items-center space-x-2 justify-center sm:justify-start">
+      <div className="flex items-center justify-center space-x-2 sm:justify-start">
         {timeLeft.days > 0 && (
           <div className="flex flex-col items-center">
-            <span className="text-white font-bold text-lg leading-6">
+            <span className="text-lg leading-6 font-bold text-white">
               {timeLeft.days.toString().padStart(2, "0")}
             </span>
-            <span className="text-[10px] font-medium text-gold-text leading-3.5">
+            <span className="text-gold-text text-[10px] leading-3.5 font-medium">
               Days
             </span>
           </div>
         )}
         <div className="flex flex-col items-center">
-          <span className="text-white font-bold text-lg leading-6">
+          <span className="text-lg leading-6 font-bold text-white">
             {timeLeft.hours.toString().padStart(2, "0")}
           </span>
-          <span className="text-[10px] font-medium text-gold-text leading-3.5">
+          <span className="text-gold-text text-[10px] leading-3.5 font-medium">
             Hours
           </span>
         </div>
         <div className="flex flex-col items-center">
-          <span className="text-white font-bold text-lg leading-6">
+          <span className="text-lg leading-6 font-bold text-white">
             {timeLeft.minutes.toString().padStart(2, "0")}
           </span>
-          <span className="text-[10px] font-medium text-gold-text leading-3.5">
+          <span className="text-gold-text text-[10px] leading-3.5 font-medium">
             Min
           </span>
         </div>
         <div className="flex flex-col items-center">
-          <span className="text-white font-bold text-lg leading-6">
+          <span className="text-lg leading-6 font-bold text-white">
             {timeLeft.seconds.toString().padStart(2, "0")}
           </span>
-          <span className="text-[10px] font-medium text-gold-text leading-3.5">
+          <span className="text-gold-text text-[10px] leading-3.5 font-medium">
             Sec
           </span>
         </div>
@@ -288,44 +288,44 @@ export default function CountdownTimer({
 
   return (
     <div className={`text-gold text-sm font-medium ${className}`}>
-      <div className="flex items-center space-x-1 justify-center sm:justify-start">
-        <div className="w-8 h-8 sm:w-8 sm:h-8 2xl:w-10 2xl:h-10 rounded-lg bg-gradient-to-br from-white/10 to-white/5 flex items-center justify-center border border-white/10 flex-shrink-0">
+      <div className="flex items-center justify-center space-x-1 sm:justify-start">
+        <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg border border-white/10 bg-gradient-to-br from-white/10 to-white/5 sm:h-8 sm:w-8 2xl:h-10 2xl:w-10">
           <FaClock className="text-base sm:text-lg 2xl:text-xl" />
         </div>
         <span>{label || "Starts in"}:</span>
       </div>
-      <div className="flex items-center space-x-2 justify-center sm:justify-start">
+      <div className="flex items-center justify-center space-x-2 sm:justify-start">
         {timeLeft.days > 0 && (
           <div className="flex flex-col items-center">
-            <span className="text-white font-bold text-lg leading-6">
+            <span className="text-lg leading-6 font-bold text-white">
               {timeLeft.days.toString().padStart(2, "0")}
             </span>
-            <span className="text-[10px] font-medium text-gold-text leading-3.5">
+            <span className="text-gold-text text-[10px] leading-3.5 font-medium">
               Days
             </span>
           </div>
         )}
         <div className="flex flex-col items-center">
-          <span className="text-white font-bold text-lg leading-6">
+          <span className="text-lg leading-6 font-bold text-white">
             {timeLeft.hours.toString().padStart(2, "0")}
           </span>
-          <span className="text-[10px] font-medium text-gold-text leading-3.5">
+          <span className="text-gold-text text-[10px] leading-3.5 font-medium">
             Hours
           </span>
         </div>
         <div className="flex flex-col items-center">
-          <span className="text-white font-bold text-lg leading-6">
+          <span className="text-lg leading-6 font-bold text-white">
             {timeLeft.minutes.toString().padStart(2, "0")}
           </span>
-          <span className="text-[10px] font-medium text-gold-text leading-3.5">
+          <span className="text-gold-text text-[10px] leading-3.5 font-medium">
             Min
           </span>
         </div>
         <div className="flex flex-col items-center">
-          <span className="text-white font-bold text-lg leading-6">
+          <span className="text-lg leading-6 font-bold text-white">
             {timeLeft.seconds.toString().padStart(2, "0")}
           </span>
-          <span className="text-[10px] font-medium text-gold-text leading-3.5">
+          <span className="text-gold-text text-[10px] leading-3.5 font-medium">
             Sec
           </span>
         </div>

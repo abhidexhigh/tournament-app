@@ -47,7 +47,7 @@ export async function GET(request) {
     // Filter by player ID (check if player is in leaderboard)
     if (playerId) {
       matches = matches.filter((match) =>
-        match.leaderboard?.some((entry) => entry.playerId === playerId)
+        match.leaderboard?.some((entry) => entry.playerId === playerId),
       );
     }
 
@@ -69,7 +69,7 @@ export async function GET(request) {
     console.error("Error fetching matches:", error);
     return NextResponse.json(
       { success: false, error: "Failed to fetch matches" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -92,7 +92,7 @@ export async function POST(request) {
           error:
             "Missing required fields: tournamentId, title, date, startTime",
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -123,13 +123,13 @@ export async function POST(request) {
         data: newMatch,
         message: "Match created successfully",
       },
-      { status: 201 }
+      { status: 201 },
     );
   } catch (error) {
     console.error("Error creating match:", error);
     return NextResponse.json(
       { success: false, error: "Failed to create match" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

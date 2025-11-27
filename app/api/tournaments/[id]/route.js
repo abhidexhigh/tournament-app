@@ -11,7 +11,7 @@ export async function GET(request, { params }) {
     if (!tournament) {
       return NextResponse.json(
         { success: false, error: "Tournament not found" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -19,7 +19,7 @@ export async function GET(request, { params }) {
   } catch (error) {
     return NextResponse.json(
       { success: false, error: error.message },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -35,7 +35,7 @@ export async function PUT(request, { params }) {
     if (!updatedTournament) {
       return NextResponse.json(
         { success: false, error: "Tournament not found" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -43,7 +43,7 @@ export async function PUT(request, { params }) {
   } catch (error) {
     return NextResponse.json(
       { success: false, error: error.message },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

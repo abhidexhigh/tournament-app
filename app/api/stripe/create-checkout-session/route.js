@@ -1,13 +1,6 @@
 // API route: /api/stripe/create-checkout-session
 import { NextResponse } from "next/server";
 import Stripe from "stripe";
-import {
-  getPackageById,
-  calculateTotalDiamonds,
-  calculateTotalUSD,
-  isTicketPackage,
-  isUSDPackage,
-} from "../../../lib/stripe";
 
 // Initialize Stripe with secret key
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
@@ -16,61 +9,38 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
 
 export async function POST(request) {
   try {
-    const { packageId, userId, userEmail } = await request.json();
+    const { amount, userId, userEmail, currency } = await request.json();
 
     // Validate input
-    if (!packageId || !userId) {
+    if (!amount || !userId || !currency) {
       return NextResponse.json(
         { success: false, error: "Missing required fields" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
-    // Get package details
-    const packageData = getPackageById(packageId);
-    if (!packageData) {
+    // Validate amount
+    const diamondAmount = parseInt(amount);
+    if (isNaN(diamondAmount) || diamondAmount < 1) {
       return NextResponse.json(
-        { success: false, error: "Invalid package" },
-        { status: 400 }
+        { success: false, error: "Invalid amount (minimum 1 diamond)" },
+        { status: 400 },
       );
     }
 
-    const isTickets = isTicketPackage(packageId);
-    const isUSD = isUSDPackage(packageId);
-
-    let totalAmount, productName, productDescription, productImage, currency;
-
-    if (isTickets) {
-      totalAmount = packageData.quantity;
-      productName = `${
-        packageData.quantity
-      }x $${packageData.ticket_value.toFixed(2)} Tickets`;
-      productDescription = `${packageData.label} - Save ${(
-        ((packageData.total_value - packageData.price) /
-          packageData.total_value) *
-        100
-      ).toFixed(0)}%`;
-      productImage = "https://img.icons8.com/fluency/96/000000/ticket.png";
-      currency = "tickets";
-    } else if (isUSD) {
-      totalAmount = calculateTotalUSD(packageData);
-      const bonusText = packageData.bonus
-        ? ` + ${packageData.bonus} Bonus`
-        : "";
-      productName = `$${packageData.amount} USD${bonusText}`;
-      productDescription = `${packageData.label} - $${totalAmount} Total USD`;
-      productImage = "https://img.icons8.com/fluency/96/000000/money.png";
-      currency = "usd";
-    } else {
-      totalAmount = calculateTotalDiamonds(packageData);
-      const bonusText = packageData.bonus
-        ? ` + ${packageData.bonus} Bonus`
-        : "";
-      productName = `${packageData.diamonds} Diamonds${bonusText}`;
-      productDescription = `${packageData.label} - ${totalAmount} Total Diamonds`;
-      productImage = "https://img.icons8.com/fluency/96/000000/diamond.png";
-      currency = "diamonds";
+    if (diamondAmount > 100000) {
+      return NextResponse.json(
+        { success: false, error: "Maximum purchase limit is 100,000 diamonds" },
+        { status: 400 },
+      );
     }
+
+    // Calculate price: 1 Diamond = 1 USD
+    const priceInUSD = diamondAmount;
+
+    const productName = `${diamondAmount.toLocaleString()} Diamonds`;
+    const productDescription = `Purchase ${diamondAmount.toLocaleString()} diamonds for your wallet`;
+    const productImage = "https://img.icons8.com/fluency/96/000000/diamond.png";
 
     // Create Stripe checkout session
     const session = await stripe.checkout.sessions.create({
@@ -84,7 +54,7 @@ export async function POST(request) {
               description: productDescription,
               images: [productImage],
             },
-            unit_amount: Math.round(packageData.price * 100), // Convert to cents
+            unit_amount: Math.round(priceInUSD * 100), // Convert to cents
           },
           quantity: 1,
         },
@@ -95,10 +65,9 @@ export async function POST(request) {
       customer_email: userEmail,
       metadata: {
         userId: userId,
-        packageId: packageId,
-        amount: totalAmount.toString(),
-        currency: currency,
-        ticket_type: isTickets ? packageId : null,
+        amount: diamondAmount.toString(),
+        currency: "diamonds",
+        customPurchase: "true",
       },
       billing_address_collection: "auto",
     });
@@ -115,7 +84,7 @@ export async function POST(request) {
         success: false,
         error: error.message || "Failed to create checkout session",
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

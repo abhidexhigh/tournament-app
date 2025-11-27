@@ -12,9 +12,9 @@ export default function LoginPage() {
   }, [router]);
 
   return (
-    <div className="min-h-screen flex items-center justify-center">
+    <div className="flex min-h-screen items-center justify-center">
       <div className="text-center">
-        <div className="text-6xl mb-4">⏳</div>
+        <div className="mb-4 text-6xl">⏳</div>
         <p className="text-gray-400">Redirecting...</p>
       </div>
     </div>

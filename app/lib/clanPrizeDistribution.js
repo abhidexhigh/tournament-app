@@ -50,7 +50,7 @@ export const calculateClanBattlePrizeDistribution = (totalPrize, teamSize) => {
   // Top 3 performers get 9%, 6%, 5% respectively
   const top3Percentages = [0.09, 0.06, 0.05]; // 9%, 6%, 5%
   const top3Prizes = top3Percentages.map(
-    (percentage) => totalPrize * percentage
+    (percentage) => totalPrize * percentage,
   );
 
   // Remaining 80% distributed equally among other members
@@ -115,21 +115,21 @@ export const formatPrizeAmount = (amount, currency = "$") => {
 };
 
 /**
- * Convert USD to diamonds (1 USD = 100 diamonds)
+ * Convert USD to diamonds (1 USD = 1 diamond)
  * @param {number} usdAmount - Amount in USD
  * @returns {number} Amount in diamonds
  */
 export const usdToDiamonds = (usdAmount) => {
-  return Math.round(usdAmount * 100);
+  return Math.round(usdAmount);
 };
 
 /**
- * Convert diamonds to USD (100 diamonds = 1 USD)
+ * Convert diamonds to USD (1 diamond = 1 USD)
  * @param {number} diamonds - Amount in diamonds
  * @returns {number} Amount in USD
  */
 export const diamondsToUsd = (diamonds) => {
-  return diamonds / 100;
+  return diamonds;
 };
 
 /**
@@ -139,13 +139,13 @@ export const diamondsToUsd = (diamonds) => {
  */
 export const formatPrizeWithDiamonds = (usdAmount) => {
   if (usdAmount === undefined || usdAmount === null || isNaN(usdAmount)) {
-    return "$0 (0 💎)";
+    return "0 💎 ($0)";
   }
 
   const diamonds = usdToDiamonds(usdAmount);
   const formattedUsd = formatPrizeAmount(usdAmount);
 
-  return `${formattedUsd} (${diamonds.toLocaleString("en-US")} 💎)`;
+  return `${diamonds.toLocaleString("en-US")} 💎 (${formattedUsd})`;
 };
 
 /**
@@ -162,7 +162,7 @@ export const getClanBattlePrizeDisplay = (distribution) => {
   display += `🥇 **Top Performers:**\n`;
   topPerformers.forEach((performer) => {
     display += `• ${performer.position}${getOrdinalSuffix(
-      performer.position
+      performer.position,
     )} Place: ${formatPrizeAmount(performer.prize)} (${
       performer.percentage
     }%)\n`;
@@ -170,7 +170,7 @@ export const getClanBattlePrizeDisplay = (distribution) => {
 
   display += `\n👥 **Team Members:**\n`;
   display += `• ${remainingMembers.count} members: ${formatPrizeAmount(
-    remainingMembers.individualPrize
+    remainingMembers.individualPrize,
   )} each (80% total)\n`;
 
   return display;

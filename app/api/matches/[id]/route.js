@@ -44,7 +44,7 @@ export async function GET(request, { params }) {
     if (!match) {
       return NextResponse.json(
         { success: false, error: "Match not found" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -56,7 +56,7 @@ export async function GET(request, { params }) {
     console.error("Error fetching match:", error);
     return NextResponse.json(
       { success: false, error: "Failed to fetch match" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -72,7 +72,7 @@ export async function PUT(request, { params }) {
     if (matchIndex === -1) {
       return NextResponse.json(
         { success: false, error: "Match not found" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -94,7 +94,7 @@ export async function PUT(request, { params }) {
     console.error("Error updating match:", error);
     return NextResponse.json(
       { success: false, error: "Failed to update match" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -109,7 +109,7 @@ export async function DELETE(request, { params }) {
     if (matchIndex === -1) {
       return NextResponse.json(
         { success: false, error: "Match not found" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -124,7 +124,7 @@ export async function DELETE(request, { params }) {
     console.error("Error deleting match:", error);
     return NextResponse.json(
       { success: false, error: "Failed to delete match" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

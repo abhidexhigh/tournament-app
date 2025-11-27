@@ -18,11 +18,11 @@ export default function StatCard({
 
   return (
     <Card hover className="text-center">
-      <div className="text-4xl mb-3">{icon}</div>
-      <p className="text-gray-400 text-sm mb-2">{label}</p>
+      <div className="mb-3 text-4xl">{icon}</div>
+      <p className="mb-2 text-sm text-gray-400">{label}</p>
       <p className={`text-3xl font-bold ${colorClasses[color]}`}>{value}</p>
       {trend && (
-        <p className="text-gray-500 text-xs mt-2">
+        <p className="mt-2 text-xs text-gray-500">
           {trend > 0 ? "↑" : "↓"} {Math.abs(trend)}% from last month
         </p>
       )}

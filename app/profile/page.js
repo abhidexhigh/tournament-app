@@ -10,8 +10,8 @@ import Button from "../components/Button";
 import Input from "../components/Input";
 import Badge from "../components/Badge";
 import TopupModal from "../components/TopupModal";
-import { getTicketName } from "../lib/ticketConfig";
 import { getUserClans } from "../lib/dataLoader";
+import { getTicketCount } from "../lib/utils";
 
 function ProfileContent() {
   const { user, updateUser, refreshUser } = useUser();
@@ -104,16 +104,8 @@ function ProfileContent() {
             // Update user context with new balance
             updateUser(data.data.user);
 
-            let successMessage;
-            if (data.data.currency === "tickets") {
-              const ticketName = getTicketName(data.data.ticket_type);
-              successMessage = `Successfully added ${data.data.amount}x ${ticketName} tickets! 🎫`;
-            } else {
-              const currency =
-                data.data.currency === "usd" ? "USD" : "Diamonds";
-              const symbol = data.data.currency === "usd" ? "$" : "💎";
-              successMessage = `Successfully added ${symbol}${data.data.amount} ${currency} to your wallet!`;
-            }
+            // Show diamonds purchased
+            const successMessage = `Successfully purchased ${data.data.amount.toLocaleString()} 💎 Diamonds!`;
 
             setMessage({
               type: "success",
@@ -236,9 +228,9 @@ function ProfileContent() {
 
   if (status === "loading" || !user || paymentProcessing) {
     return (
-      <div className="min-h-screen bg-dark-primary flex items-center justify-center">
+      <div className="bg-dark-primary flex min-h-screen items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gold mx-auto mb-4"></div>
+          <div className="border-gold mx-auto mb-4 h-12 w-12 animate-spin rounded-full border-b-2"></div>
           <p className="text-gray-300">
             {paymentProcessing ? "Processing payment..." : "Loading profile..."}
           </p>
@@ -248,11 +240,11 @@ function ProfileContent() {
   }
 
   return (
-    <div className="min-h-screen py-8 relative">
+    <div className="relative min-h-screen py-8">
       {/* Background overlay */}
       <div className="absolute inset-0 bg-black/40"></div>
 
-      <div className="max-w-main mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+      <div className="max-w-main relative z-10 mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="mb-8">
           <div className="flex items-center justify-between">
@@ -262,13 +254,13 @@ function ProfileContent() {
                   router.push(
                     user?.type === "player"
                       ? "/player/dashboard"
-                      : "/host/dashboard"
+                      : "/host/dashboard",
                   )
                 }
                 className="text-gold hover:text-gold-light transition-colors"
               >
                 <svg
-                  className="w-6 h-6"
+                  className="h-6 w-6"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -281,7 +273,7 @@ function ProfileContent() {
                   />
                 </svg>
               </button>
-              <h1 className="text-3xl md:text-4xl font-bold text-gold-gradient">
+              <h1 className="text-gold-gradient text-3xl font-bold md:text-4xl">
                 Settings
               </h1>
             </div>
@@ -290,31 +282,31 @@ function ProfileContent() {
                 router.push(
                   user?.type === "player"
                     ? "/player/dashboard"
-                    : "/host/dashboard"
+                    : "/host/dashboard",
                 )
               }
-              className="px-6 py-2 bg-dark-primary/40 hover:bg-dark-card text-gold-light border border-gold-dark/30 rounded-lg transition-all"
+              className="bg-dark-primary/40 hover:bg-dark-card text-gold-light border-gold-dark/30 rounded-lg border px-6 py-2 transition-all"
             >
               Dashboard
             </button>
           </div>
-          <div className="h-px bg-gradient-to-r from-transparent via-gold-dark/30 to-transparent mt-4"></div>
+          <div className="via-gold-dark/30 mt-4 h-px bg-gradient-to-r from-transparent to-transparent"></div>
         </div>
 
         {/* Payment Success/Error Message */}
         {message.text && (
           <div
-            className={`mb-6 p-4 rounded-lg backdrop-blur-md ${
+            className={`mb-6 rounded-lg p-4 backdrop-blur-md ${
               message.type === "success"
-                ? "bg-green-900/20 border border-green-500/30 text-green-300"
-                : "bg-red-900/20 border border-red-500/30 text-red-300"
+                ? "border border-green-500/30 bg-green-900/20 text-green-300"
+                : "border border-red-500/30 bg-red-900/20 text-red-300"
             }`}
           >
             <div className="flex items-center justify-between">
               <span>{message.text}</span>
               <button
                 onClick={() => setMessage({ type: "", text: "" })}
-                className="text-gray-400 hover:text-white ml-4"
+                className="ml-4 text-gray-400 hover:text-white"
               >
                 ✕
               </button>
@@ -322,75 +314,61 @@ function ProfileContent() {
           </div>
         )}
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
           {/* Left Section - Profile Information */}
           <div className="lg:col-span-3">
-            <div className="bg-dark-primary/40 backdrop-blur-md border border-gold-dark/20 rounded-xl p-6 py-4 shadow-xl">
-              <div className="text-center w-full">
+            <div className="bg-dark-primary/40 border-gold-dark/20 rounded-xl border p-6 py-4 shadow-xl backdrop-blur-md">
+              <div className="w-full text-center">
                 <div className="flex items-center justify-center gap-x-4">
-                  <div className="w-24 h-24 rounded-full overflow-hidden mb-4 border-2 border-gold-dark/30">
+                  <div className="border-gold-dark/30 mb-4 h-24 w-24 overflow-hidden rounded-full border-2">
                     <Image
                       src={user.avatar}
                       alt="User Avatar"
                       width={96}
                       height={96}
-                      className="w-full h-full object-cover"
+                      className="h-full w-full object-cover"
                     />
                   </div>
                   <div className="flex flex-col items-start justify-start">
                     <h2 className="text-xl font-bold text-white">
                       {user.username}
                     </h2>
-                    <p className="text-gray-400 text-xs mb-0.5">{user.email}</p>
-                    <div className="inline-block px-3 py-0.5 bg-gold-dark/20 border border-gold-dark/40 rounded-full mb-3">
+                    <p className="mb-0.5 text-xs text-gray-400">{user.email}</p>
+                    <div className="bg-gold-dark/20 border-gold-dark/40 mb-3 inline-block rounded-full border px-3 py-0.5">
                       <span className="text-gold-light text-xs font-medium">
                         {user.type === "host" ? "Host" : "Player"}
                       </span>
                     </div>
                   </div>
                 </div>
-                {/* Tickets Display */}
-                <div className="bg-dark-primary/40 border border-gold-dark/20 rounded-lg p-3 mb-3">
-                  <div className="flex items-center justify-center gap-2">
-                    <span className="text-lg">🎫</span>
-                    <span className="text-gold-light text-xs font-medium uppercase tracking-wider">
-                      Tickets
-                    </span>
-                    <span className="text-2xl font-black text-white">
-                      {(user.tickets?.ticket_010 || 0) +
-                        (user.tickets?.ticket_100 || 0) +
-                        (user.tickets?.ticket_1000 || 0)}
-                    </span>
-                  </div>
-                </div>
-
                 {/* Diamonds */}
-                <div className="flex items-center justify-between bg-dark-primary/40 border border-gold-dark/20 rounded-lg p-3 mb-3">
+                <div className="bg-dark-primary/40 border-gold-dark/20 mb-3 flex items-center justify-between rounded-lg border p-3">
                   <div className="flex items-center gap-2">
-                    <span className="text-blue-400 text-lg">💎</span>
-                    <span className="text-gray-300 text-xs font-medium uppercase tracking-wider">
+                    <span className="text-lg text-blue-400">💎</span>
+                    <span className="text-xs font-medium tracking-wider text-gray-300 uppercase">
                       Diamonds
                     </span>
                   </div>
-                  <span className="text-white text-xl font-black">
-                    {user.diamonds}
+                  <span className="text-xl font-black text-white">
+                    {(user.diamonds || 0).toLocaleString()}
                   </span>
                 </div>
 
-                {/* USD Balance */}
-                <div className="flex items-center justify-between bg-dark-primary/40 border border-gold-dark/20 rounded-lg p-3 mb-4">
+                {/* Tickets Display (View Only) */}
+                <div className="bg-dark-primary/40 border-gold-dark/20 mb-3 flex items-center justify-between rounded-lg border p-3">
                   <div className="flex items-center gap-2">
-                    <span className="text-green-400 text-lg">$</span>
-                    <span className="text-gray-300 text-xs font-medium uppercase tracking-wider">
-                      USD Balance
+                    <span className="text-gold-light text-lg">🎫</span>
+                    <span className="text-xs font-medium tracking-wider text-gray-300 uppercase">
+                      Tickets
                     </span>
                   </div>
-                  <span className="text-white text-xl font-black">
-                    ${Number(user.usd_balance || 0).toFixed(2)}
+                  <span className="text-xl font-black text-white">
+                    {getTicketCount(user.tickets)}
                   </span>
                 </div>
-                <div className="h-[1px] bg-gradient-to-r from-transparent via-gold-dark/30 to-transparent my-4"></div>
-                <p className="text-gray-500 text-xs">
+
+                <div className="via-gold-dark/30 my-4 h-[1px] bg-gradient-to-r from-transparent to-transparent"></div>
+                <p className="text-xs text-gray-500">
                   Member Since :{" "}
                   {new Date(user.created_at).toLocaleDateString()}
                 </p>
@@ -399,9 +377,9 @@ function ProfileContent() {
           </div>
 
           {/* Middle Section - Game ID & Rank Settings */}
-          <div className="lg:col-span-5 space-y-6">
+          <div className="space-y-6 lg:col-span-5">
             {/* Game ID Settings */}
-            <div className="bg-dark-primary/40 backdrop-blur-md border border-gold-dark/20 rounded-xl p-6 py-4 shadow-xl">
+            <div className="bg-dark-primary/40 border-gold-dark/20 rounded-xl border p-6 py-4 shadow-xl backdrop-blur-md">
               <div className="flex items-center justify-between">
                 <h3 className="text-lg font-bold text-white">
                   Game ID Settings
@@ -409,10 +387,10 @@ function ProfileContent() {
                 {!isEditing && (
                   <button
                     onClick={() => setIsEditing(true)}
-                    className="flex items-center gap-2 px-4 py-2 bg-dark-primary/60 hover:bg-dark-primary border border-gold-dark/40 text-gold-light text-xs rounded-lg transition-all"
+                    className="bg-dark-primary/60 hover:bg-dark-primary border-gold-dark/40 text-gold-light flex items-center gap-2 rounded-lg border px-4 py-2 text-xs transition-all"
                   >
                     <svg
-                      className="w-4 h-4"
+                      className="h-4 w-4"
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"
@@ -430,7 +408,7 @@ function ProfileContent() {
               </div>
 
               <div className="mb-3">
-                <label className="block text-xs uppercase tracking-wider font-medium text-gray-400 mb-2">
+                <label className="mb-2 block text-xs font-medium tracking-wider text-gray-400 uppercase">
                   Game ID
                 </label>
                 {isEditing ? (
@@ -440,13 +418,13 @@ function ProfileContent() {
                       value={gameId}
                       onChange={(e) => setGameId(e.target.value)}
                       placeholder="Enter your game ID (e.g., PlayerName#1234)"
-                      className="w-full bg-dark-primary/60 border-gold-dark/30"
+                      className="bg-dark-primary/60 border-gold-dark/30 w-full"
                     />
                     <div className="flex space-x-3">
                       <Button
                         onClick={() => handleSave("gameId")}
                         disabled={isLoading}
-                        className="flex-1 bg-gold-dark hover:bg-gold text-dark-primary font-semibold"
+                        className="bg-gold-dark hover:bg-gold text-dark-primary flex-1 font-semibold"
                       >
                         {isLoading ? "Saving..." : "Save Changes"}
                       </Button>
@@ -460,12 +438,12 @@ function ProfileContent() {
                     </div>
                   </div>
                 ) : (
-                  <div className="bg-dark-primary/40 border border-gold-dark/30 rounded-lg p-4">
-                    <p className="text-white text-sm font-medium">
+                  <div className="bg-dark-primary/40 border-gold-dark/30 rounded-lg border p-4">
+                    <p className="text-sm font-medium text-white">
                       {user.gameId || "No game ID set"}
                     </p>
                     {!user.gameId && (
-                      <p className="text-gray-500 text-xs mt-1">
+                      <p className="mt-1 text-xs text-gray-500">
                         Click &quot;Edit Game ID&quot; to add your game ID
                       </p>
                     )}
@@ -475,21 +453,21 @@ function ProfileContent() {
             </div>
 
             {/* Rank Settings & Clan Memberships - Combined */}
-            <div className="bg-dark-primary/40 backdrop-blur-md border border-gold-dark/20 rounded-xl p-6 shadow-xl">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="bg-dark-primary/40 border-gold-dark/20 rounded-xl border p-6 shadow-xl backdrop-blur-md">
+              <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
                 {/* Rank Settings Column */}
-                <div className="border-r border-gold-dark/20">
-                  <div className="flex items-center justify-between mb-4">
+                <div className="border-gold-dark/20 border-r">
+                  <div className="mb-4 flex items-center justify-between">
                     <h3 className="text-lg font-bold text-white">
                       Rank Settings
                     </h3>
                     {!isEditingRank && (
                       <button
                         onClick={() => setIsEditingRank(true)}
-                        className="flex items-center gap-1 px-3 py-1.5 bg-dark-primary/60 hover:bg-dark-primary border border-gold-dark/40 text-gold-light text-xs rounded-lg transition-all"
+                        className="bg-dark-primary/60 hover:bg-dark-primary border-gold-dark/40 text-gold-light flex items-center gap-1 rounded-lg border px-3 py-1.5 text-xs transition-all"
                       >
                         <svg
-                          className="w-3 h-3"
+                          className="h-3 w-3"
                           fill="none"
                           stroke="currentColor"
                           viewBox="0 0 24 24"
@@ -507,7 +485,7 @@ function ProfileContent() {
                   </div>
 
                   <div>
-                    <label className="block text-xs uppercase tracking-wider font-medium text-gray-400 mb-2">
+                    <label className="mb-2 block text-xs font-medium tracking-wider text-gray-400 uppercase">
                       Current Rank
                     </label>
                     {isEditingRank ? (
@@ -515,7 +493,7 @@ function ProfileContent() {
                         <select
                           value={rank}
                           onChange={(e) => setRank(e.target.value)}
-                          className="w-full bg-dark-primary/60 border border-gold-dark/30 rounded-lg px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-gold focus:border-transparent"
+                          className="bg-dark-primary/60 border-gold-dark/30 focus:ring-gold w-full rounded-lg border px-4 py-3 text-white focus:border-transparent focus:ring-2 focus:outline-none"
                         >
                           <option value="">Select your rank</option>
                           <option value="Silver">Silver</option>
@@ -528,7 +506,7 @@ function ProfileContent() {
                           <Button
                             onClick={() => handleSave("rank")}
                             disabled={isLoading}
-                            className="flex-1 bg-gold-dark hover:bg-gold text-dark-primary font-semibold"
+                            className="bg-gold-dark hover:bg-gold text-dark-primary flex-1 font-semibold"
                           >
                             {isLoading ? "Saving..." : "Save"}
                           </Button>
@@ -546,27 +524,27 @@ function ProfileContent() {
                         {user.rank ? (
                           <div className="flex items-center gap-4">
                             {getRankEmblem(user.rank) ? (
-                              <div className="w-16 h-16 flex-shrink-0">
+                              <div className="h-16 w-16 flex-shrink-0">
                                 <Image
                                   src={getRankEmblem(user.rank)}
                                   alt={`${user.rank} Emblem`}
                                   width={64}
                                   height={64}
-                                  className="w-full h-full object-contain"
+                                  className="h-full w-full object-contain"
                                 />
                               </div>
                             ) : (
-                              <div className="w-12 h-12 flex items-center justify-center bg-gray-500/20 rounded-full border-2 border-gray-400">
+                              <div className="flex h-12 w-12 items-center justify-center rounded-full border-2 border-gray-400 bg-gray-500/20">
                                 <span className="text-2xl">🥈</span>
                               </div>
                             )}
                             <div className="flex-1">
-                              <p className="text-gray-400 text-xs uppercase tracking-wider mb-1">
+                              <p className="mb-1 text-xs tracking-wider text-gray-400 uppercase">
                                 Your Rank
                               </p>
                               <p
                                 className={`text-xl font-black ${getRankColor(
-                                  user.rank
+                                  user.rank,
                                 )}`}
                               >
                                 {user.rank}
@@ -574,9 +552,9 @@ function ProfileContent() {
                             </div>
                           </div>
                         ) : (
-                          <div className="text-center py-3">
-                            <p className="text-gray-400 text-sm">No rank set</p>
-                            <p className="text-gray-500 text-xs mt-1">
+                          <div className="py-3 text-center">
+                            <p className="text-sm text-gray-400">No rank set</p>
+                            <p className="mt-1 text-xs text-gray-500">
                               Click Edit to set
                             </p>
                           </div>
@@ -589,7 +567,7 @@ function ProfileContent() {
                 {/* Clan Memberships Column */}
                 {user.type === "player" && (
                   <div>
-                    <div className="flex items-center justify-between mb-4">
+                    <div className="mb-4 flex items-center justify-between">
                       <h3 className="text-lg font-bold text-white">
                         Clan Membership
                       </h3>
@@ -609,26 +587,26 @@ function ProfileContent() {
                     </div>
 
                     <div>
-                      <label className="block text-xs uppercase tracking-wider font-medium text-gray-400 mb-2">
+                      <label className="mb-2 block text-xs font-medium tracking-wider text-gray-400 uppercase">
                         Your Clan
                       </label>
                       {userClans.length === 0 ? (
                         <div className="bg-dark-primary/40 rounded-lg p-4 text-center">
-                          <div className="text-3xl mb-2">🏰</div>
-                          <p className="text-gray-400 text-xs">No clan</p>
+                          <div className="mb-2 text-3xl">🏰</div>
+                          <p className="text-xs text-gray-400">No clan</p>
                         </div>
                       ) : (
                         <div className="bg-dark-primary/40 rounded-lg p-4">
                           {userClans.slice(0, 1).map((clan) => (
                             <div key={clan.id}>
-                              <div className="flex items-center gap-3 mb-3">
-                                <div className="w-12 h-12 flex items-center justify-center">
+                              <div className="mb-3 flex items-center gap-3">
+                                <div className="flex h-12 w-12 items-center justify-center">
                                   <span className="text-3xl">
                                     {clan.emblem || "🏰"}
                                   </span>
                                 </div>
                                 <div className="flex-1">
-                                  <h4 className="text-white font-bold text-base">
+                                  <h4 className="text-base font-bold text-white">
                                     {clan.name}
                                   </h4>
                                   <p className="text-gold-light text-xs">
@@ -637,20 +615,20 @@ function ProfileContent() {
                                 </div>
                               </div>
 
-                              <div className="grid grid-cols-2 gap-2 pt-2 border-t border-gold-dark/20">
+                              <div className="border-gold-dark/20 grid grid-cols-2 gap-2 border-t pt-2">
                                 <div>
-                                  <p className="text-gray-500 text-xs mb-0.5">
+                                  <p className="mb-0.5 text-xs text-gray-500">
                                     Level
                                   </p>
-                                  <p className="text-gold-light font-bold text-sm">
+                                  <p className="text-gold-light text-sm font-bold">
                                     {clan.level}
                                   </p>
                                 </div>
                                 <div>
-                                  <p className="text-gray-500 text-xs mb-0.5">
+                                  <p className="mb-0.5 text-xs text-gray-500">
                                     Role
                                   </p>
-                                  <p className="text-white text-xs font-medium">
+                                  <p className="text-xs font-medium text-white">
                                     {clan.role === "leader"
                                       ? "👑 Leader"
                                       : "👤 Member"}
@@ -669,85 +647,42 @@ function ProfileContent() {
           </div>
           {/* Right Section - Top Up Wallet */}
           <div className="lg:col-span-4">
-            <div className="bg-dark-primary/40 backdrop-blur-md border border-gold-dark/20 rounded-xl p-6 py-4 shadow-xl">
-              <h3 className="text-lg font-bold text-white mb-2">
-                Top Up Wallet
+            <div className="bg-dark-primary/40 border-gold-dark/20 rounded-xl border p-6 py-4 shadow-xl backdrop-blur-md">
+              <h3 className="mb-2 text-lg font-bold text-white">
+                💎 Buy Diamonds
               </h3>
-              <p className="text-gray-400 text-xs mb-6">
-                Choose to add USD or Diamonds to your wallet
+              <p className="mb-6 text-xs text-gray-400">
+                Purchase diamonds for tournaments and rewards
               </p>
 
-              {/* Tickets Display */}
-              <div className="bg-dark-primary/40 border border-gold-dark/20 rounded-lg p-4 mb-6">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <span className="text-xl">🎫</span>
-                    <span className="text-gray-300 text-sm uppercase tracking-wider">
-                      Tickets
+              {/* Current Diamond Balance */}
+              <div className="from-gold/10 to-gold/5 border-gold/30 mb-6 rounded-lg border bg-gradient-to-br p-5">
+                <div className="text-center">
+                  <p className="mb-2 text-xs tracking-wider text-gray-400 uppercase">
+                    Current Balance
+                  </p>
+                  <div className="flex items-center justify-center gap-2">
+                    <span className="text-gold text-4xl font-black">
+                      {(user.diamonds || 0).toLocaleString()}
                     </span>
+                    <span className="text-2xl">💎</span>
                   </div>
-                  <span className="text-2xl font-black text-white">
-                    {(user.tickets?.ticket_010 || 0) +
-                      (user.tickets?.ticket_100 || 0) +
-                      (user.tickets?.ticket_1000 || 0)}
-                  </span>
                 </div>
               </div>
 
-              {/* Buy Tickets Button */}
+              {/* Buy Button */}
               <button
                 onClick={() => setShowTopupModal(true)}
-                className="w-full bg-gradient-to-r from-gold-dark to-gold hover:from-gold hover:to-gold-light text-dark-primary text-sm font-bold py-3 px-6 rounded-lg transition-all transform hover:scale-[1.02] shadow-lg mb-6"
+                className="from-gold-dark to-gold hover:from-gold hover:to-gold-light text-dark-primary mb-4 w-full transform rounded-lg bg-gradient-to-r px-6 py-4 text-base font-bold shadow-lg transition-all hover:scale-[1.02]"
               >
-                Buy Tickets
+                💎 Buy Diamonds
               </button>
 
-              {/* Ticket Selection Section */}
-              <div className="bg-dark-primary/40 border border-gold-dark/20 rounded-lg p-5">
-                <div className="flex items-center justify-between mb-4">
-                  <span className="text-gray-400 text-xs uppercase tracking-wider">
-                    $1 Tickets
-                  </span>
-                  <div className="flex items-center gap-3">
-                    <button className="w-8 h-8 flex items-center justify-center bg-dark-card hover:bg-gold-dark/20 border border-gold-dark/40 rounded text-gold-light text-lg font-bold transition-colors">
-                      −
-                    </button>
-                    <span className="text-xl font-black text-white w-12 text-center">
-                      10
-                    </span>
-                    <button className="w-8 h-8 flex items-center justify-center bg-dark-card hover:bg-gold-dark/20 border border-gold-dark/40 rounded text-gold-light text-lg font-bold transition-colors">
-                      +
-                    </button>
-                  </div>
-                </div>
-
-                <div className="mb-4">
-                  <div className="flex items-center justify-between text-xs text-gray-400 mb-1">
-                    <span>10 x $1.00</span>
-                    <span>Save $1.00 (10% off)</span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs text-gray-500">
-                      Value : $10.00
-                    </span>
-                  </div>
-                </div>
-
-                <div className="flex items-center justify-center mb-4">
-                  <div className="text-right">
-                    <div className="text-2xl font-black text-white">$9.00</div>
-                    <div className="text-xs text-gray-400 uppercase tracking-wider">
-                      USD
-                    </div>
-                  </div>
-                </div>
-
-                <button
-                  onClick={() => setShowTopupModal(true)}
-                  className="w-full bg-gradient-to-r from-gold-dark via-gold to-gold-light hover:from-gold hover:via-gold-light hover:to-gold text-dark-primary text-sm font-bold py-3 px-6 rounded-lg transition-all transform hover:scale-[1.02] shadow-lg border-2 border-gold-light/20"
-                >
-                  Buy Now
-                </button>
+              {/* Info */}
+              <div className="mb-6 rounded-lg border border-blue-500/30 bg-blue-500/10 p-3">
+                <p className="text-center text-xs text-blue-300">
+                  💡 1 Diamond = $1 USD | Secure payment via Stripe
+                </p>
               </div>
             </div>
           </div>
@@ -768,9 +703,9 @@ export default function ProfilePage() {
   return (
     <Suspense
       fallback={
-        <div className="min-h-screen bg-dark-primary flex items-center justify-center">
+        <div className="bg-dark-primary flex min-h-screen items-center justify-center">
           <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gold mx-auto mb-4"></div>
+            <div className="border-gold mx-auto mb-4 h-12 w-12 animate-spin rounded-full border-b-2"></div>
             <p className="text-gray-300">Loading profile...</p>
           </div>
         </div>

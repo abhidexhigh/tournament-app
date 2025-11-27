@@ -2,6 +2,7 @@
 
 import Card from "../Card";
 import Badge from "../Badge";
+import Image from "next/image";
 
 export default function ParticipantsTab({
   participants,
@@ -17,7 +18,7 @@ export default function ParticipantsTab({
 
   return (
     <Card className="bg-dark-gray-card/90">
-      <h2 className="text-xl font-bold text-gold mb-4">
+      <h2 className="text-gold mb-4 text-xl font-bold">
         Participants ({participants.length}/{maxPlayers})
       </h2>
       {participants.length === 0 && !isClanBattle ? (
@@ -43,10 +44,10 @@ export default function ParticipantsTab({
 
 function EmptyParticipants() {
   return (
-    <div className="text-center py-12">
-      <div className="text-6xl mb-4">👥</div>
-      <p className="text-gray-400 text-lg">No participants yet</p>
-      <p className="text-gray-500 text-sm mt-2">Be the first to join!</p>
+    <div className="py-12 text-center">
+      <div className="mb-4 text-6xl">👥</div>
+      <p className="text-lg text-gray-400">No participants yet</p>
+      <p className="mt-2 text-sm text-gray-500">Be the first to join!</p>
     </div>
   );
 }
@@ -71,10 +72,10 @@ function ClanBattleParticipantsList({
     const clan2Id = tournament.clan2_id;
 
     team1Participants = participants.filter((p) =>
-      p.clans?.some((c) => c.clan_id === clan1Id)
+      p.clans?.some((c) => c.clan_id === clan1Id),
     );
     team2Participants = participants.filter((p) =>
-      p.clans?.some((c) => c.clan_id === clan2Id)
+      p.clans?.some((c) => c.clan_id === clan2Id),
     );
   } else if (isAutoDivision) {
     // Auto division - split participants evenly
@@ -90,11 +91,11 @@ function ClanBattleParticipantsList({
   const team2Name = clan2?.name || (isClanSelection ? "Team 2" : "Team Bravo");
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
       {/* Team 1 */}
       <div>
-        <div className="flex items-center justify-between mb-4 pb-2 border-b border-gold-dark/30">
-          <h3 className="text-lg font-semibold text-gold">{team1Name}</h3>
+        <div className="border-gold-dark/30 mb-4 flex items-center justify-between border-b pb-2">
+          <h3 className="text-gold text-lg font-semibold">{team1Name}</h3>
           <span className="text-sm text-gray-400">
             {team1Participants.length}/{teamSize}
           </span>
@@ -124,8 +125,8 @@ function ClanBattleParticipantsList({
 
       {/* Team 2 */}
       <div>
-        <div className="flex items-center justify-between mb-4 pb-2 border-b border-gold-dark/30">
-          <h3 className="text-lg font-semibold text-gold">{team2Name}</h3>
+        <div className="border-gold-dark/30 mb-4 flex items-center justify-between border-b pb-2">
+          <h3 className="text-gold text-lg font-semibold">{team2Name}</h3>
           <span className="text-sm text-gray-400">
             {team2Participants.length}/{teamSize}
           </span>
@@ -158,12 +159,12 @@ function ClanBattleParticipantsList({
 
 function RegularParticipantsList({ participants, hostId, maxPlayers }) {
   const validParticipants = participants.filter(
-    (participant) => participant && participant.id
+    (participant) => participant && participant.id,
   );
   const emptySlots = Math.max(0, maxPlayers - validParticipants.length);
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-1">
+    <div className="grid grid-cols-1 gap-1 md:grid-cols-2 lg:grid-cols-2">
       {validParticipants.map((participant, index) => (
         <ParticipantCard
           key={participant.id}
@@ -191,12 +192,12 @@ function ParticipantCard({ participant, index, isHost, teamColor }) {
 
   return (
     <div
-      className={`flex items-center space-x-3 px-4 py-2 bg-gold-card-bg rounded-lg border ${borderColor} transition-colors`}
+      className={`bg-gold-card-bg flex items-center space-x-3 rounded-lg border px-4 py-2 ${borderColor} transition-colors`}
     >
-      <span className="text-gray-400 text-sm font-medium min-w-[2rem]">
+      <span className="min-w-[2rem] text-sm font-medium text-gray-400">
         #{index + 1}
       </span>
-      <img
+      <Image
         src={participant.avatar}
         alt={participant.username}
         width={24}
@@ -204,9 +205,9 @@ function ParticipantCard({ participant, index, isHost, teamColor }) {
         className="w-8"
       />
       <div className="flex-1">
-        <p className="text-white font-medium">{participant.username}</p>
+        <p className="font-medium text-white">{participant.username}</p>
         {participant.rank && (
-          <p className="text-gray-400 text-xs">{participant.rank} Rank</p>
+          <p className="text-xs text-gray-400">{participant.rank} Rank</p>
         )}
       </div>
       {isHost && (
@@ -220,8 +221,8 @@ function ParticipantCard({ participant, index, isHost, teamColor }) {
 
 function EmptySlot({ index }) {
   return (
-    <div className="flex items-center space-x-3 px-4 py-2 bg-[#48484b]/10 rounded-lg transition-colors min-h-[62px] shadow-sm">
-      <span className="text-gray-600 text-sm font-medium min-w-[2rem]">
+    <div className="flex min-h-[62px] items-center space-x-3 rounded-lg bg-[#48484b]/10 px-4 py-2 shadow-sm transition-colors">
+      <span className="min-w-[2rem] text-sm font-medium text-gray-600">
         #{index + 1}
       </span>
     </div>

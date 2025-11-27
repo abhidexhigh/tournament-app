@@ -2,40 +2,40 @@
 
 /* Cerapro Font Family */
 @font-face {
-  font-family: 'Cerapro';
-  src: url('/fonts/cerapro/CERAPRO-REGULAR.ttf') format('truetype');
+  font-family: "Cerapro";
+  src: url("/fonts/cerapro/CERAPRO-REGULAR.ttf") format("truetype");
   font-weight: 400;
   font-style: normal;
   font-display: swap;
 }
 
 @font-face {
-  font-family: 'Cerapro';
-  src: url('/fonts/cerapro/CERAPRO-REGULARITALIC.ttf') format('truetype');
+  font-family: "Cerapro";
+  src: url("/fonts/cerapro/CERAPRO-REGULARITALIC.ttf") format("truetype");
   font-weight: 400;
   font-style: italic;
   font-display: swap;
 }
 
 @font-face {
-  font-family: 'Cerapro';
-  src: url('/fonts/cerapro/CERAPRO-MEDIUM.ttf') format('truetype');
+  font-family: "Cerapro";
+  src: url("/fonts/cerapro/CERAPRO-MEDIUM.ttf") format("truetype");
   font-weight: 500;
   font-style: normal;
   font-display: swap;
 }
 
 @font-face {
-  font-family: 'Cerapro';
-  src: url('/fonts/cerapro/CERAPRO-MEDIUMITALIC.ttf') format('truetype');
+  font-family: "Cerapro";
+  src: url("/fonts/cerapro/CERAPRO-MEDIUMITALIC.ttf") format("truetype");
   font-weight: 500;
   font-style: italic;
   font-display: swap;
 }
 
 @font-face {
-  font-family: 'Cerapro';
-  src: url('/fonts/cerapro/CERAPRO-BOLD.ttf') format('truetype');
+  font-family: "Cerapro";
+  src: url("/fonts/cerapro/CERAPRO-BOLD.ttf") format("truetype");
   font-weight: 700;
   font-style: normal;
   font-display: swap;
@@ -47,7 +47,7 @@
   --color-dark-secondary: #13131a;
   --color-dark-secondary-accent: #0f0f0f;
   --color-dark-card: #1a1a24;
-  
+
   /* Golden theme colors */
   --color-gold-light: #ffd700;
   --color-gold: #fdf496;
@@ -55,11 +55,11 @@
   --color-gold-text: #fffac8;
   --color-gold-light-text: #e6d9c2;
   --color-gold-card-bg: #272525;
-  
+
   /* Accent colors */
   --color-accent-purple: #8b5cf6;
   --color-accent-blue: #3b82f6;
-  
+
   /* Custom max-width for main content */
   --max-width-main: 1460px;
 
@@ -82,20 +82,29 @@
 
 body {
   /* background: var(--background); */
-  background-image: url('/images/tournaments-bg.webp');
+  background-image: url("/images/tournaments-bg.webp");
   background-size: cover;
   background-position: bottom;
   background-repeat: no-repeat;
   background-attachment: fixed;
   color: var(--foreground);
-  font-family: 'Cerapro', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+  font-family:
+    "Cerapro",
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    "Roboto",
+    "Oxygen",
+    "Ubuntu",
+    "Cantarell",
+    sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
 /* Dashboard-specific background */
 body.dashboard-bg {
-  background-image: url('/images/dashboard-bg.webp');
+  background-image: url("/images/dashboard-bg.webp");
   background-position: center;
 }
 
@@ -128,7 +137,7 @@ body.dashboard-bg {
 
 /* Golden gradient background utility */
 .bg-gold-gradient {
-  background: linear-gradient(90deg, #A3713B, #FFF78F, #CFB266);
+  background: linear-gradient(90deg, #a3713b, #fff78f, #cfb266);
 }
 
 /* Glassmorphism effect */
@@ -166,31 +175,40 @@ body.dashboard-bg {
   background-repeat: no-repeat;
   border-radius: 0.75rem;
   /* border-radius: 12px; */
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 2px 4px rgba(0, 0, 0, 0.06);
+  box-shadow:
+    0 4px 6px rgba(0, 0, 0, 0.1),
+    0 2px 4px rgba(0, 0, 0, 0.06);
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   overflow: hidden;
 }
 
 .tournament-card::before {
-  content: '';
+  content: "";
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
   height: 1px;
-  background: linear-gradient(90deg,
+  background: linear-gradient(
+    90deg,
     transparent,
     #ffb70022,
     transparent,
     transparent,
-    transparent);
+    transparent
+  );
   background-size: 200% 100%;
   /* animation: shimmer 3s ease-in-out infinite; */
 }
 
 @keyframes shimmer {
-  0%, 100% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
+  0%,
+  100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
 }
 
 @keyframes fadeIn {
@@ -239,7 +257,7 @@ body.dashboard-bg {
 }
 
 .tournament-card:hover {
-  box-shadow: 
+  box-shadow:
     0 20px 25px -5px rgba(0, 0, 0, 0.2),
     0 10px 10px -5px rgba(0, 0, 0, 0.04),
     0 0 40px rgba(255, 184, 0, 0.15);
@@ -258,7 +276,12 @@ body.dashboard-bg {
   right: 12px;
   width: 2px;
   height: 80%;
-  background: linear-gradient(to bottom, rgb(208 135 0), rgb(253 244 150), rgb(208 135 0));
+  background: linear-gradient(
+    to bottom,
+    rgb(208 135 0),
+    rgb(253 244 150),
+    rgb(208 135 0)
+  );
   border-radius: 40%;
   opacity: 0.5;
   transition: opacity 0.3s ease;
@@ -277,7 +300,11 @@ body.dashboard-bg {
   justify-content: center;
   width: 60px;
   height: 60px;
-  background: radial-gradient(circle, rgba(255, 184, 0, 0.1) 0%, rgba(255, 184, 0, 0.02) 70%);
+  background: radial-gradient(
+    circle,
+    rgba(255, 184, 0, 0.1) 0%,
+    rgba(255, 184, 0, 0.02) 70%
+  );
   border-radius: 50%;
   border: 2px solid rgba(255, 184, 0, 0.2);
   transition: all 0.4s ease;
@@ -301,7 +328,11 @@ body.dashboard-bg {
   /* transform: scale(1.1) rotate(5deg); */
   border-color: rgba(255, 184, 0, 0.5);
   box-shadow: 0 0 30px rgba(255, 184, 0, 0.3);
-  background: radial-gradient(circle, rgba(255, 184, 0, 0.15) 0%, rgba(255, 184, 0, 0.03) 70%);
+  background: radial-gradient(
+    circle,
+    rgba(255, 184, 0, 0.15) 0%,
+    rgba(255, 184, 0, 0.03) 70%
+  );
 }
 
 /* Prize display box - Elevated Mini Card */
@@ -320,7 +351,7 @@ body.dashboard-bg {
 .tournament-card:hover .prize-display {
   background: linear-gradient(135deg, #1a1a24 0%, #13131a 100%);
   border-color: rgba(255, 184, 0, 0.4);
-  box-shadow: 
+  box-shadow:
     0 8px 15px rgba(0, 0, 0, 0.2),
     0 0 25px rgba(255, 184, 0, 0.15),
     inset 0 1px 0 rgba(255, 184, 0, 0.1);
@@ -399,12 +430,14 @@ body.dashboard-bg {
 }
 
 .chamfered-div {
-  clip-path: polygon(6px 0,
-        calc(100% - 6px) 0,
-        100% 6px,
-        100% calc(100% - 6px),
-        calc(100% - 6px) 100%,
-        6px 100%,
-        0 calc(100% - 6px),
-        0 6px);
+  clip-path: polygon(
+    6px 0,
+    calc(100% - 6px) 0,
+    100% 6px,
+    100% calc(100% - 6px),
+    calc(100% - 6px) 100%,
+    6px 100%,
+    0 calc(100% - 6px),
+    0 6px
+  );
 }

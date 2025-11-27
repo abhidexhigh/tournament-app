@@ -111,7 +111,7 @@ export const initializeMockTournaments = () => {
 
   localStorage.setItem(
     STORAGE_KEYS.TOURNAMENTS,
-    JSON.stringify(mockTournaments)
+    JSON.stringify(mockTournaments),
   );
 
   // Add some mock transactions for completed tournament
@@ -165,6 +165,6 @@ export const initializeMockTournaments = () => {
 
   localStorage.setItem(
     STORAGE_KEYS.TRANSACTIONS,
-    JSON.stringify(mockTransactions)
+    JSON.stringify(mockTransactions),
   );
 };

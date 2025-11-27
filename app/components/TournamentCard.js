@@ -35,12 +35,12 @@ export default function TournamentCard({ tournament }) {
         ? "Joining Closed"
         : "Tournament Started";
       return (
-        <div className="flex items-center gap-2 w-full sm:w-40 lg:w-44 border-x border-white/20 px-4 mx-auto">
-          <div className="w-8 h-8 sm:w-8 sm:h-8 2xl:w-10 2xl:h-10 rounded-lg bg-gradient-to-br from-white/10 to-white/5 flex items-center justify-center border border-white/10 flex-shrink-0">
-            <LuClock className="text-base sm:text-lg 2xl:text-xl text-red-400" />
+        <div className="mx-auto flex w-full items-center gap-2 border-x border-white/20 px-4 sm:w-40 lg:w-44">
+          <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg border border-white/10 bg-gradient-to-br from-white/10 to-white/5 sm:h-8 sm:w-8 2xl:h-10 2xl:w-10">
+            <LuClock className="text-base text-red-400 sm:text-lg 2xl:text-xl" />
           </div>
           <div className="min-w-0 flex-1">
-            <div className="text-red-400 font-bold text-wrap text-xs sm:text-sm 2xl:text-base truncate">
+            <div className="truncate text-xs font-bold text-wrap text-red-400 sm:text-sm 2xl:text-base">
               {message}
             </div>
           </div>
@@ -49,15 +49,15 @@ export default function TournamentCard({ tournament }) {
     }
 
     return (
-      <div className="flex items-center gap-2 w-full sm:w-40 lg:w-44 border-x border-white/20 px-4 mx-auto">
-        <div className="w-8 h-8 sm:w-8 sm:h-8 2xl:w-10 2xl:h-10 rounded-lg bg-gradient-to-br from-white/10 to-white/5 flex items-center justify-center border border-white/10 flex-shrink-0">
+      <div className="mx-auto flex w-full items-center gap-2 border-x border-white/20 px-4 sm:w-40 lg:w-44">
+        <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg border border-white/10 bg-gradient-to-br from-white/10 to-white/5 sm:h-8 sm:w-8 2xl:h-10 2xl:w-10">
           <LuClock className="text-base sm:text-lg 2xl:text-xl" />
         </div>
         <div className="min-w-0 flex-1">
-          <div className="text-[10px] sm:text-xs 2xl:text-sm text-gray-400 font-medium whitespace-nowrap">
+          <div className="text-[10px] font-medium whitespace-nowrap text-gray-400 sm:text-xs 2xl:text-sm">
             {label}
           </div>
-          <div className="text-gold-light-text font-bold text-xs sm:text-sm 2xl:text-base truncate">
+          <div className="text-gold-light-text truncate text-xs font-bold sm:text-sm 2xl:text-base">
             <CountdownTimer {...timerProps} style="minimal" />
           </div>
         </div>
@@ -70,10 +70,10 @@ export default function TournamentCard({ tournament }) {
       <div className="tournament-card group relative">
         <div className="status-stripe overflow-hidden" />
 
-        <div className="p-4 sm:px-6 sm:py-1 border border-[#ffb80033] rounded-xl">
-          <div className="flex flex-col lg:flex-row !items-center lg:items-start gap-4 min-h-[90px]">
+        <div className="rounded-xl border border-[#ffb80033] p-4 sm:px-6 sm:py-1">
+          <div className="flex min-h-[90px] flex-col !items-center gap-4 lg:flex-row lg:items-start">
             {/* Left Section: Icon + Title + Badges */}
-            <div className="flex items-start gap-3 sm:gap-6 flex-1 min-w-0 w-full">
+            <div className="flex w-full min-w-0 flex-1 items-start gap-3 sm:gap-6">
               {/* Tournament Icon */}
               <div className="flex-shrink-0">
                 {(() => {
@@ -88,7 +88,7 @@ export default function TournamentCard({ tournament }) {
                         alt={`${tournament.title} icon`}
                         width={96}
                         height={96}
-                        className="w-12 h-12 sm:w-16 sm:h-16 lg:w-20 lg:h-20 2xl:w-24 2xl:h-24 object-contain"
+                        className="h-12 w-12 object-contain sm:h-16 sm:w-16 lg:h-20 lg:w-20 2xl:h-24 2xl:w-24"
                         unoptimized
                       />
                     );
@@ -103,15 +103,15 @@ export default function TournamentCard({ tournament }) {
               </div>
 
               {/* Title and Badges */}
-              <div className="flex-1 min-w-0">
-                <div className="flex items-start gap-2 flex-wrap mb-2">
-                  <h3 className="sm:hidden text-xl sm:text-xl lg:text-2xl 2xl:text-2xl font-black text-gold-light-text group-hover:text-gold transition-colors duration-300 tracking-tight">
+              <div className="min-w-0 flex-1">
+                <div className="mb-2 flex flex-wrap items-start gap-2">
+                  <h3 className="text-gold-light-text group-hover:text-gold text-xl font-black tracking-tight transition-colors duration-300 sm:hidden sm:text-xl lg:text-2xl 2xl:text-2xl">
                     {tournament.title}
                   </h3>
                 </div>
 
-                <div className="items-center gap-2 flex-wrap mb-3">
-                  <h3 className="hidden sm:block text-xl sm:text-xl lg:text-xl 2xl:text-2xl font-black text-gold-light-text group-hover:text-gold transition-colors duration-300 tracking-tight mb-1">
+                <div className="mb-3 flex-wrap items-center gap-2">
+                  <h3 className="text-gold-light-text group-hover:text-gold mb-1 hidden text-xl font-black tracking-tight transition-colors duration-300 sm:block sm:text-xl lg:text-xl 2xl:text-2xl">
                     {tournament.title}
                   </h3>
                   <span className="flex items-center gap-2">
@@ -128,7 +128,7 @@ export default function TournamentCard({ tournament }) {
                         size="sm"
                         className="font-semibold"
                       >
-                        ⚡ Tournament
+                        Tournament
                       </Badge>
                     )}
                     {tournament.display_type === "event" && (
@@ -137,13 +137,13 @@ export default function TournamentCard({ tournament }) {
                         size="sm"
                         className="font-semibold"
                       >
-                        🎪 Event
+                        Event
                       </Badge>
                     )}
                     {(tournament.tournament_type ??
                       tournament.tournamentType) === "clan_battle" && (
                       <Badge variant="warning" size="sm">
-                        ⚔️ Clan
+                        Clan Battle
                       </Badge>
                     )}
                   </span>
@@ -152,17 +152,17 @@ export default function TournamentCard({ tournament }) {
             </div>
 
             {/* Stats Grid */}
-            <div className="grid grid-cols-2 sm:flex sm:flex-nowrap gap-3 sm:gap-2 lg:gap-4">
+            <div className="grid grid-cols-2 gap-3 sm:flex sm:flex-nowrap sm:gap-2 lg:gap-4">
               {/* Players */}
-              <div className="flex items-center gap-2 w-full sm:w-32 lg:w-36">
-                <div className="w-8 h-8 sm:w-8 sm:h-8 2xl:w-10 2xl:h-10 rounded-lg bg-gradient-to-br from-white/10 to-white/5 flex items-center justify-center border border-white/10 flex-shrink-0">
+              <div className="flex w-full items-center gap-2 sm:w-32 lg:w-36">
+                <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg border border-white/10 bg-gradient-to-br from-white/10 to-white/5 sm:h-8 sm:w-8 2xl:h-10 2xl:w-10">
                   <LuUsers className="text-base sm:text-lg 2xl:text-xl" />
                 </div>
                 <div className="min-w-0 flex-1">
-                  <div className="text-[10px] sm:text-xs 2xl:text-sm text-gray-400 font-medium whitespace-nowrap">
+                  <div className="text-[10px] font-medium whitespace-nowrap text-gray-400 sm:text-xs 2xl:text-sm">
                     Players
                   </div>
-                  <div className="text-gold-light-text font-bold text-sm sm:text-base 2xl:text-lg truncate">
+                  <div className="text-gold-light-text truncate text-sm font-bold sm:text-base 2xl:text-lg">
                     {tournament.participants.length}/
                     {tournament.max_players ?? tournament.maxPlayers}
                   </div>
@@ -170,17 +170,17 @@ export default function TournamentCard({ tournament }) {
               </div>
 
               {/* Entry Fee */}
-              <div className="flex items-center gap-2 w-full sm:w-32 lg:w-36">
-                <div className="w-8 h-8 sm:w-8 sm:h-8 2xl:w-10 2xl:h-10 rounded-lg bg-gradient-to-br from-white/10 to-white/5 flex items-center justify-center border border-white/10 flex-shrink-0">
+              <div className="flex w-full items-center gap-2 sm:w-32 lg:w-36">
+                <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg border border-white/10 bg-gradient-to-br from-white/10 to-white/5 sm:h-8 sm:w-8 2xl:h-10 2xl:w-10">
                   <TbMoneybag className="text-base sm:text-lg 2xl:text-xl" />
                 </div>
                 <div className="min-w-0 flex-1">
-                  <div className="text-[10px] sm:text-xs 2xl:text-sm text-gray-400 font-medium whitespace-nowrap">
+                  <div className="text-[10px] font-medium whitespace-nowrap text-gray-400 sm:text-xs 2xl:text-sm">
                     Entry Fee
                   </div>
-                  <div className="text-gold-light-text font-bold text-sm sm:text-base 2xl:text-lg truncate">
+                  <div className="text-gold-light-text truncate text-sm font-bold sm:text-base 2xl:text-lg">
                     {tournament.entry_fee ? (
-                      `$${getEntryFeeDisplayDual(tournament).usd}`
+                      `${getEntryFeeDisplayDual(tournament).diamonds} 💎`
                     ) : (
                       <span className="text-green-400">Free</span>
                     )}
@@ -189,15 +189,15 @@ export default function TournamentCard({ tournament }) {
               </div>
 
               {/* Schedule */}
-              <div className="flex items-center gap-2 w-full sm:w-32 lg:w-36">
-                <div className="w-8 h-8 sm:w-8 sm:h-8 2xl:w-10 2xl:h-10 rounded-lg bg-gradient-to-br from-white/10 to-white/5 flex items-center justify-center border border-white/10 flex-shrink-0">
+              <div className="flex w-full items-center gap-2 sm:w-32 lg:w-36">
+                <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg border border-white/10 bg-gradient-to-br from-white/10 to-white/5 sm:h-8 sm:w-8 2xl:h-10 2xl:w-10">
                   <LuCalendarDays className="text-base sm:text-lg 2xl:text-xl" />
                 </div>
                 <div className="min-w-0 flex-1">
-                  <div className="text-[10px] sm:text-xs 2xl:text-sm text-gray-400 font-medium whitespace-nowrap">
+                  <div className="text-[10px] font-medium whitespace-nowrap text-gray-400 sm:text-xs 2xl:text-sm">
                     Schedule
                   </div>
-                  <div className="text-gold-light-text font-bold text-xs sm:text-sm 2xl:text-base truncate">
+                  <div className="text-gold-light-text truncate text-xs font-bold sm:text-sm 2xl:text-base">
                     {formatDate(tournament.date)}
                   </div>
                 </div>
@@ -205,7 +205,7 @@ export default function TournamentCard({ tournament }) {
             </div>
 
             {/* Right Section: Countdown + Prize Pool */}
-            <div className="flex sm:flex-row flex-col items-stretch sm:items-center gap-3 sm:gap-4 w-full lg:w-auto">
+            <div className="flex w-full flex-col items-stretch gap-3 sm:flex-row sm:items-center sm:gap-4 lg:w-auto">
               {/* Countdown Logic */}
               {tournament.status === "upcoming" &&
                 isAutomated &&
@@ -233,15 +233,15 @@ export default function TournamentCard({ tournament }) {
                 )}
 
               {tournament.status === "ongoing" && !isAutomated && (
-                <div className="flex items-center gap-2 w-full sm:w-40 lg:w-44 border-x border-white/20 px-4 mx-auto">
-                  <div className="w-8 h-8 sm:w-8 sm:h-8 2xl:w-10 2xl:h-10 rounded-lg bg-gradient-to-br from-white/10 to-white/5 flex items-center justify-center border border-white/10 flex-shrink-0">
-                    <LuClock className="text-base sm:text-lg 2xl:text-xl text-red-400" />
+                <div className="mx-auto flex w-full items-center gap-2 border-x border-white/20 px-4 sm:w-40 lg:w-44">
+                  <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg border border-white/10 bg-gradient-to-br from-white/10 to-white/5 sm:h-8 sm:w-8 2xl:h-10 2xl:w-10">
+                    <LuClock className="text-base text-red-400 sm:text-lg 2xl:text-xl" />
                   </div>
                   <div className="min-w-0 flex-1">
-                    <div className="text-[10px] sm:text-xs 2xl:text-sm text-gray-400 font-medium whitespace-nowrap">
+                    <div className="text-[10px] font-medium whitespace-nowrap text-gray-400 sm:text-xs 2xl:text-sm">
                       Status
                     </div>
-                    <div className="text-red-400 font-bold text-xs sm:text-sm 2xl:text-base truncate">
+                    <div className="truncate text-xs font-bold text-red-400 sm:text-sm 2xl:text-base">
                       Started
                     </div>
                   </div>
@@ -250,18 +250,18 @@ export default function TournamentCard({ tournament }) {
 
               {/* Prize Pool */}
               {/* {tournament?.prize_pool !== 0 && ( */}
-              <div className="flex-shrink-0 w-full sm:w-32 lg:w-40">
+              <div className="w-full flex-shrink-0 sm:w-32 lg:w-40">
                 {tournament?.prize_pool !== 0 && (
                   <div className="prize-display">
                     <div className="text-center sm:text-left">
-                      <div className="text-[10px] sm:text-xs 2xl:text-sm text-gold font-medium mb-1 whitespace-nowrap">
+                      <div className="text-gold mb-1 text-[10px] font-medium whitespace-nowrap sm:text-xs 2xl:text-sm">
                         Prize Pool
                       </div>
-                      <div className="text-gold text-xl font-medium sm:text-lg 2xl:text-lg leading-none mb-1">
-                        ${getPrizePoolDisplayDual(tournament).usd}
-                      </div>
-                      <div className="text-gold-dark text-xs sm:text-xs 2xl:text-sm font-semibold">
+                      <div className="text-gold mb-1 text-xl leading-none font-medium sm:text-lg 2xl:text-lg">
                         {getPrizePoolDisplayDual(tournament).diamonds} 💎
+                      </div>
+                      <div className="text-gold-dark text-xs font-semibold sm:text-xs 2xl:text-sm">
+                        ${getPrizePoolDisplayDual(tournament).usd}
                       </div>
                     </div>
                   </div>
