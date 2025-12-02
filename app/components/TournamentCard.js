@@ -11,6 +11,7 @@ import {
   getPrizePoolDisplayDual,
   getEntryFeeDisplayDual,
 } from "../lib/prizeCalculator";
+import { formatEntryFee, formatPrizePool } from "../lib/currencyFormatter";
 
 export default function TournamentCard({ tournament }) {
   const formatDate = (dateStr) => {
@@ -180,7 +181,7 @@ export default function TournamentCard({ tournament }) {
                   </div>
                   <div className="text-gold-light-text truncate text-sm font-bold sm:text-base 2xl:text-lg">
                     {tournament.entry_fee ? (
-                      `${getEntryFeeDisplayDual(tournament).diamonds} 💎`
+                      formatEntryFee(tournament.entry_fee)
                     ) : (
                       <span className="text-green-400">Free</span>
                     )}
@@ -258,10 +259,7 @@ export default function TournamentCard({ tournament }) {
                         Prize Pool
                       </div>
                       <div className="text-gold mb-1 text-xl leading-none font-medium sm:text-lg 2xl:text-lg">
-                        {getPrizePoolDisplayDual(tournament).diamonds} 💎
-                      </div>
-                      <div className="text-gold-dark text-xs font-semibold sm:text-xs 2xl:text-sm">
-                        ${getPrizePoolDisplayDual(tournament).usd}
+                        {formatPrizePool(tournament.prize_pool)}
                       </div>
                     </div>
                   </div>

@@ -5,6 +5,11 @@ import {
   usersDb,
   transactionsDb,
 } from "../../../../lib/database";
+import { 
+  PRIMARY_CURRENCY,
+  CONVERSION_RATE,
+  getBalanceFieldName,
+} from "../../../../lib/currencyConfig";
 // Ticket imports removed - simplified to single ticket type (1 ticket = $1 USD)
 
 // POST /api/tournaments/[id]/join - Join tournament
@@ -82,24 +87,25 @@ export async function POST(request, { params }) {
     const entryFeeUSD = tournament.entry_fee_usd || 0;
     const requiresPayment = entryFee > 0 || entryFeeUSD > 0;
 
-    // Validate payment method based on display_type
-    // Tournaments can only use tickets, Events can use all three
+    // ===== TICKET FUNCTIONALITY COMMENTED OUT =====
+    // Old logic that forced tournaments to use tickets only
+    /*
     if (tournament.display_type === "tournament") {
       if (payment_method !== "tickets") {
         return NextResponse.json(
           {
             success: false,
-            error:
-              "Tournaments can only be joined using tickets. Please use tickets to join this tournament.",
+            error: "Tournaments can only be joined using tickets. Please use tickets to join this tournament.",
           },
           { status: 400 },
         );
       }
     }
+    */
 
-    // Validate payment method for ticket-based tournaments
+    // Validate payment method for ticket-based tournaments (COMMENTED OUT)
+    /*
     if (payment_method === "tickets") {
-      // Tournaments always accept tickets, Events need accepts_tickets flag
       const acceptsTickets =
         tournament.display_type === "tournament" || tournament.accepts_tickets;
       if (!acceptsTickets) {
@@ -113,11 +119,9 @@ export async function POST(request, { params }) {
       }
 
       if (requiresPayment) {
-        // Calculate tickets needed: 1 ticket = $1 USD
         const ticketsNeeded = Math.ceil(entryFeeUSD);
         const userTickets = user.tickets || 0;
 
-        // Check if user has enough tickets
         if (userTickets < ticketsNeeded) {
           return NextResponse.json(
             {
@@ -128,7 +132,9 @@ export async function POST(request, { params }) {
           );
         }
       }
-    } else if (payment_method === "diamonds") {
+    */
+    // } else 
+    if (payment_method === "diamonds") {
       // Check if user has enough diamonds for entry fee
       if (user.diamonds < entryFee) {
         return NextResponse.json(
@@ -141,11 +147,14 @@ export async function POST(request, { params }) {
       }
     } else if (payment_method === "usd") {
       // Check if user has enough USD for entry fee
-      if ((user.usd_balance || 0) < entryFeeUSD) {
+      const userBalance = user.balance || user.usd_balance || 0;
+      const requiredAmount = entryFeeUSD || (entryFee * CONVERSION_RATE.DIAMOND_TO_USD);
+      
+      if (userBalance < requiredAmount) {
         return NextResponse.json(
           {
             success: false,
-            error: `Insufficient USD! You need $${entryFeeUSD} to join this tournament.`,
+            error: `Insufficient USD! You need $${requiredAmount.toFixed(2)} to join this tournament. You have $${userBalance.toFixed(2)}.`,
           },
           { status: 400 },
         );
@@ -157,6 +166,8 @@ export async function POST(request, { params }) {
       const updatedTournament = await tournamentsDb.addParticipant(id, user_id);
 
       // Deduct entry fee based on payment method
+      // TICKET DEDUCTION COMMENTED OUT
+      /*
       if (payment_method === "tickets" && requiresPayment) {
         // Calculate tickets needed: 1 ticket = $1 USD
         const ticketsNeeded = Math.ceil(entryFeeUSD);
@@ -167,7 +178,6 @@ export async function POST(request, { params }) {
           tickets: currentTickets - ticketsNeeded,
         });
 
-        // Add transaction record
         await transactionsDb.create({
           user_id: user_id,
           type: "ticket_use",
@@ -175,6 +185,27 @@ export async function POST(request, { params }) {
           description: `Used ${ticketsNeeded} ticket${ticketsNeeded > 1 ? "s" : ""} for ${tournament.title}`,
           tournament_id: id,
           currency: "tickets",
+        });
+      }
+      */
+      // } else 
+      if (payment_method === "usd" && requiresPayment) {
+        // Deduct USD
+        const currentBalance = user.balance || user.usd_balance || 0;
+        const requiredAmount = entryFeeUSD || (entryFee * CONVERSION_RATE.DIAMOND_TO_USD);
+        
+        await usersDb.update(user_id, {
+          balance: currentBalance - requiredAmount,
+        });
+
+        // Add transaction record
+        await transactionsDb.create({
+          user_id: user_id,
+          type: "tournament_entry",
+          amount: -requiredAmount,
+          description: `Entry fee for ${tournament.title}`,
+          tournament_id: id,
+          currency: "usd",
         });
       } else if (entryFee > 0) {
         // Deduct diamonds (default)

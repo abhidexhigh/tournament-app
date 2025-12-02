@@ -1,0 +1,2368 @@
+{
+  "matches": [
+    {
+      "id": "match-1",
+      "tournamentId": "tournament_regular_1",
+      "title": "League of Legends Solo Queue - Grand Finals",
+      "date": "2025-12-13",
+      "startTime": "14:00",
+      "endTime": "23:00",
+      "prizePool": 40000,
+      "participants": 8,
+      "status": "completed",
+      "leaderboard": [
+        {
+          "playerId": "player1",
+          "username": "MysticMage",
+          "avatar": "🥷",
+          "position": 1,
+          "score": 5990,
+          "kills": 23,
+          "deaths": 15,
+          "kdRatio": "1.5",
+          "prizeAmount": 20000.0,
+          "traits": [
+            {
+              "name": "Guardian",
+              "numUnits": 4,
+              "currentTier": 1
+            },
+            {
+              "name": "Fury",
+              "numUnits": 1,
+              "currentTier": 2
+            },
+            {
+              "name": "Chaos",
+              "numUnits": 3,
+              "currentTier": 2
+            }
+          ],
+          "champions": [
+            {
+              "key": "Kazuha",
+              "coreRank": 1,
+              "items": ["GayaArmor", "Kiriti", "Kaminari"],
+              "tier": 2
+            },
+            {
+              "key": "Vortok",
+              "coreRank": 2,
+              "items": ["SilverBullet", "Aetheris"],
+              "tier": 1
+            },
+            {
+              "key": "Amarok",
+              "coreRank": 3,
+              "items": ["TenguYoroi", "Galea"],
+              "tier": 1
+            },
+            {
+              "key": "Ravos",
+              "coreRank": 4,
+              "items": ["ScaleHelmet", "Nandaka"],
+              "tier": 3
+            },
+            {
+              "key": "Nicothoe",
+              "coreRank": 5,
+              "items": ["Kunee"],
+              "tier": 2
+            },
+            {
+              "key": "Hecate",
+              "coreRank": 6,
+              "items": ["Bloodaxe", "LeaderArmor", "Simurgh"],
+              "tier": 1
+            },
+            {
+              "key": "Casimir",
+              "coreRank": 7,
+              "items": ["Osirian", "Cloak", "Excalibur"],
+              "tier": 2
+            }
+          ],
+          "augments": ["PoisonousShadows", "QuickStart", "investment++"],
+          "forces": [
+            {
+              "key": "Fire",
+              "numUnits": 1
+            },
+            {
+              "key": "Light",
+              "numUnits": 5
+            },
+            {
+              "key": "Storm",
+              "numUnits": 5
+            }
+          ],
+          "skillTree": ["SolarGuardian", "HandOfGod"]
+        },
+        {
+          "playerId": "player2",
+          "username": "FrostByte",
+          "avatar": "⚡",
+          "position": 2,
+          "score": 5394,
+          "kills": 18,
+          "deaths": 6,
+          "kdRatio": "3.0",
+          "prizeAmount": 10000.0,
+          "traits": [
+            {
+              "name": "Mirage",
+              "numUnits": 8,
+              "currentTier": 3
+            },
+            {
+              "name": "WildRush",
+              "numUnits": 5,
+              "currentTier": 1
+            }
+          ],
+          "champions": [
+            {
+              "key": "Kazuha",
+              "coreRank": 1,
+              "items": ["Kiriti", "Cloak"],
+              "tier": 2
+            },
+            {
+              "key": "Tian Long",
+              "coreRank": 2,
+              "items": ["WoodenBow", "Gladius", "RuyiBang"],
+              "tier": 1
+            },
+            {
+              "key": "Eclipse",
+              "coreRank": 3,
+              "items": [],
+              "tier": 2
+            },
+            {
+              "key": "Seiryu",
+              "coreRank": 4,
+              "items": [],
+              "tier": 2
+            },
+            {
+              "key": "Erebos",
+              "coreRank": 5,
+              "items": ["Bloodaxe", "Wygar", "SilverBullet"],
+              "tier": 3
+            },
+            {
+              "key": "Leviathan",
+              "coreRank": 6,
+              "items": ["ScaleHelmet", "Darius", "WizardHat"],
+              "tier": 3
+            },
+            {
+              "key": "Astarok",
+              "coreRank": 7,
+              "items": [],
+              "tier": 3
+            },
+            {
+              "key": "Hecate",
+              "coreRank": 8,
+              "items": ["Helmet"],
+              "tier": 2
+            },
+            {
+              "key": "Leizu",
+              "coreRank": 9,
+              "items": ["KoreanBow"],
+              "tier": 2
+            }
+          ],
+          "augments": ["SpecialRandomizer", "InfernalOnslaught", "XPSaver"],
+          "forces": [
+            {
+              "key": "Dark",
+              "numUnits": 3
+            },
+            {
+              "key": "Light",
+              "numUnits": 3
+            },
+            {
+              "key": "Water",
+              "numUnits": 2
+            }
+          ],
+          "skillTree": ["Doom", "KineticField", "DefenseMatrix", "HandOfGod"]
+        },
+        {
+          "playerId": "player3",
+          "username": "DragonSlayer",
+          "avatar": "❄️",
+          "position": 3,
+          "score": 4850,
+          "kills": 2,
+          "deaths": 6,
+          "kdRatio": "0.3",
+          "prizeAmount": 6000.0,
+          "traits": [
+            {
+              "name": "Blockbuster",
+              "numUnits": 2,
+              "currentTier": 2
+            },
+            {
+              "name": "Druid",
+              "numUnits": 3,
+              "currentTier": 0
+            },
+            {
+              "name": "Guardian",
+              "numUnits": 5,
+              "currentTier": 3
+            },
+            {
+              "name": "Fury",
+              "numUnits": 9,
+              "currentTier": 0
+            }
+          ],
+          "champions": [
+            {
+              "key": "Morwen",
+              "coreRank": 1,
+              "items": ["Galea"],
+              "tier": 1
+            },
+            {
+              "key": "Rusalka",
+              "coreRank": 2,
+              "items": [],
+              "tier": 2
+            },
+            {
+              "key": "Inugami",
+              "coreRank": 3,
+              "items": ["Bloodaxe"],
+              "tier": 3
+            },
+            {
+              "key": "Selene",
+              "coreRank": 4,
+              "items": [],
+              "tier": 3
+            },
+            {
+              "key": "Anastasia",
+              "coreRank": 5,
+              "items": ["Kavacha", "Osirian", "Stormhorn"],
+              "tier": 3
+            },
+            {
+              "key": "Morgoth",
+              "coreRank": 6,
+              "items": ["Kaminari", "WoodenWand", "Aetheris"],
+              "tier": 1
+            },
+            {
+              "key": "Podarge",
+              "coreRank": 7,
+              "items": [],
+              "tier": 3
+            },
+            {
+              "key": "Arina",
+              "coreRank": 8,
+              "items": [],
+              "tier": 1
+            },
+            {
+              "key": "Bakunawa",
+              "coreRank": 9,
+              "items": [],
+              "tier": 3
+            },
+            {
+              "key": "Gulmok",
+              "coreRank": 10,
+              "items": [],
+              "tier": 2
+            }
+          ],
+          "augments": ["ArcticDominion", "DivineRestoration", "TreasureVault"],
+          "forces": [
+            {
+              "key": "Dark",
+              "numUnits": 2
+            },
+            {
+              "key": "Fire",
+              "numUnits": 3
+            }
+          ],
+          "skillTree": ["LightningBolt", "Meteor"]
+        },
+        {
+          "playerId": "player4",
+          "username": "IronWill",
+          "avatar": "🛡️",
+          "position": 4,
+          "score": 4419,
+          "kills": 25,
+          "deaths": 5,
+          "kdRatio": "5.0",
+          "prizeAmount": 4000.0,
+          "traits": [
+            {
+              "name": "Druid",
+              "numUnits": 6,
+              "currentTier": 2
+            },
+            {
+              "name": "Blockbuster",
+              "numUnits": 2,
+              "currentTier": 0
+            },
+            {
+              "name": "WildRush",
+              "numUnits": 4,
+              "currentTier": 2
+            },
+            {
+              "name": "Fury",
+              "numUnits": 4,
+              "currentTier": 3
+            }
+          ],
+          "champions": [
+            {
+              "key": "Morwen",
+              "coreRank": 1,
+              "items": ["Wygar", "GayaArmor"],
+              "tier": 3
+            },
+            {
+              "key": "Huli Jing",
+              "coreRank": 2,
+              "items": ["Kiriti"],
+              "tier": 1
+            },
+            {
+              "key": "Thorin",
+              "coreRank": 3,
+              "items": ["Gladius", "JinJia", "Aegis"],
+              "tier": 3
+            },
+            {
+              "key": "Casimir",
+              "coreRank": 4,
+              "items": ["Kavacha", "Helmet", "JinJia"],
+              "tier": 1
+            },
+            {
+              "key": "Kiyohime",
+              "coreRank": 5,
+              "items": ["Pendragon’sCrown", "WoodenBow"],
+              "tier": 3
+            },
+            {
+              "key": "Mot",
+              "coreRank": 6,
+              "items": ["Frostguard", "Gladius"],
+              "tier": 1
+            },
+            {
+              "key": "Naga",
+              "coreRank": 7,
+              "items": ["WoodenWand", "Gladius", "LeaderArmor"],
+              "tier": 3
+            },
+            {
+              "key": "Zhuque",
+              "coreRank": 8,
+              "items": [],
+              "tier": 3
+            },
+            {
+              "key": "Shinigami",
+              "coreRank": 9,
+              "items": ["SilverBullet", "LeaderArmor"],
+              "tier": 3
+            }
+          ],
+          "augments": ["SpectralShift", "Endgame", "BlazingAssault"],
+          "forces": [
+            {
+              "key": "Light",
+              "numUnits": 2
+            },
+            {
+              "key": "Water",
+              "numUnits": 5
+            }
+          ],
+          "skillTree": ["OverCharge", "WindShear"]
+        },
+        {
+          "playerId": "player5",
+          "username": "VoidWalker",
+          "avatar": "🔮",
+          "position": 5,
+          "score": 3926,
+          "kills": 21,
+          "deaths": 15,
+          "kdRatio": "1.4",
+          "prizeAmount": 0,
+          "traits": [
+            {
+              "name": "Druid",
+              "numUnits": 6,
+              "currentTier": 0
+            },
+            {
+              "name": "WildRush",
+              "numUnits": 8,
+              "currentTier": 3
+            },
+            {
+              "name": "Guardian",
+              "numUnits": 6,
+              "currentTier": 0
+            },
+            {
+              "name": "Fury",
+              "numUnits": 1,
+              "currentTier": 2
+            }
+          ],
+          "champions": [
+            {
+              "key": "Osseus",
+              "coreRank": 1,
+              "items": [],
+              "tier": 3
+            },
+            {
+              "key": "Nordri",
+              "coreRank": 2,
+              "items": ["Bloodaxe", "Bayan", "Galea"],
+              "tier": 2
+            },
+            {
+              "key": "Tatsu",
+              "coreRank": 3,
+              "items": ["Kaminari", "ScaleHelmet", "GayaArmor"],
+              "tier": 1
+            },
+            {
+              "key": "Solarius",
+              "coreRank": 4,
+              "items": ["Jingong", "Cloak"],
+              "tier": 2
+            },
+            {
+              "key": "Kaen",
+              "coreRank": 5,
+              "items": [],
+              "tier": 3
+            },
+            {
+              "key": "Ignatius",
+              "coreRank": 6,
+              "items": ["Eaglewing", "Jingong", "Excalibur"],
+              "tier": 3
+            },
+            {
+              "key": "Brynhild",
+              "coreRank": 7,
+              "items": [],
+              "tier": 1
+            }
+          ],
+          "augments": ["Berserker’sWrath", "ItemReward", "FreeSpin"],
+          "forces": [
+            {
+              "key": "Storm",
+              "numUnits": 3
+            },
+            {
+              "key": "Dark",
+              "numUnits": 5
+            },
+            {
+              "key": "Water",
+              "numUnits": 5
+            }
+          ],
+          "skillTree": ["Wave", "Repel", "FireTrap", "ShallowGrave"]
+        },
+        {
+          "playerId": "player6",
+          "username": "SunKeeper",
+          "avatar": "🐉",
+          "position": 6,
+          "score": 3644,
+          "kills": 3,
+          "deaths": 19,
+          "kdRatio": "0.2",
+          "prizeAmount": 0,
+          "traits": [
+            {
+              "name": "Mirage",
+              "numUnits": 1,
+              "currentTier": 0
+            },
+            {
+              "name": "Fury",
+              "numUnits": 3,
+              "currentTier": 2
+            }
+          ],
+          "champions": [
+            {
+              "key": "Varcolac",
+              "coreRank": 1,
+              "items": ["Sword", "WizardHat", "Kaminari"],
+              "tier": 2
+            },
+            {
+              "key": "Morgoth",
+              "coreRank": 2,
+              "items": ["SilverBullet", "Helmet"],
+              "tier": 3
+            },
+            {
+              "key": "Astarok",
+              "coreRank": 3,
+              "items": ["Cloak"],
+              "tier": 2
+            },
+            {
+              "key": "Ao Guang",
+              "coreRank": 4,
+              "items": ["Sword", "Osirian"],
+              "tier": 2
+            },
+            {
+              "key": "Ladon",
+              "coreRank": 5,
+              "items": ["KoreanBow", "Stormhorn"],
+              "tier": 1
+            },
+            {
+              "key": "Tatsu",
+              "coreRank": 6,
+              "items": [],
+              "tier": 2
+            },
+            {
+              "key": "Hecate",
+              "coreRank": 7,
+              "items": ["Osirian"],
+              "tier": 3
+            },
+            {
+              "key": "Aradia",
+              "coreRank": 8,
+              "items": ["Cloak"],
+              "tier": 3
+            },
+            {
+              "key": "Sigrdrífa",
+              "coreRank": 9,
+              "items": ["Evalach", "Vesta", "Galea"],
+              "tier": 2
+            },
+            {
+              "key": "Casimir",
+              "coreRank": 10,
+              "items": ["Cloak", "Galea"],
+              "tier": 2
+            }
+          ],
+          "augments": ["BlessingofPurity", "Endgame++", "PoisonousShadows"],
+          "forces": [
+            {
+              "key": "Fire",
+              "numUnits": 6
+            },
+            {
+              "key": "Storm",
+              "numUnits": 3
+            }
+          ],
+          "skillTree": ["Freeze", "Reincarnation", "HealingRain"]
+        },
+        {
+          "playerId": "player7",
+          "username": "StarGazer",
+          "avatar": "🌌",
+          "position": 7,
+          "score": 3145,
+          "kills": 24,
+          "deaths": 10,
+          "kdRatio": "2.4",
+          "prizeAmount": 0,
+          "traits": [
+            {
+              "name": "Guardian",
+              "numUnits": 5,
+              "currentTier": 1
+            },
+            {
+              "name": "Blockbuster",
+              "numUnits": 7,
+              "currentTier": 2
+            },
+            {
+              "name": "Mirage",
+              "numUnits": 2,
+              "currentTier": 0
+            },
+            {
+              "name": "Fury",
+              "numUnits": 3,
+              "currentTier": 3
+            },
+            {
+              "name": "WildRush",
+              "numUnits": 4,
+              "currentTier": 2
+            }
+          ],
+          "champions": [
+            {
+              "key": "Wulver",
+              "coreRank": 1,
+              "items": ["EagleBonnet", "WizardHat"],
+              "tier": 1
+            },
+            {
+              "key": "Nergal",
+              "coreRank": 2,
+              "items": [],
+              "tier": 3
+            },
+            {
+              "key": "Magnus",
+              "coreRank": 3,
+              "items": ["Aegis", "RedHorn", "WoodenBow"],
+              "tier": 1
+            },
+            {
+              "key": "Amarok",
+              "coreRank": 4,
+              "items": [],
+              "tier": 1
+            },
+            {
+              "key": "Miho",
+              "coreRank": 5,
+              "items": ["RuyiBang", "Helmet"],
+              "tier": 2
+            },
+            {
+              "key": "Barghest",
+              "coreRank": 6,
+              "items": ["WoodenBow", "Gladius", "Nandaka"],
+              "tier": 3
+            },
+            {
+              "key": "Jujak",
+              "coreRank": 7,
+              "items": ["EagleBonnet", "Bayan"],
+              "tier": 1
+            },
+            {
+              "key": "Dvalin",
+              "coreRank": 8,
+              "items": ["WizardHat"],
+              "tier": 2
+            },
+            {
+              "key": "Tatsu",
+              "coreRank": 9,
+              "items": ["PlateArmor", "Eaglewing", "TenguYoroi"],
+              "tier": 3
+            },
+            {
+              "key": "Mot",
+              "coreRank": 10,
+              "items": [],
+              "tier": 2
+            }
+          ],
+          "augments": ["FeralCovenant", "ItemRandomizer", "Saver'sReroll"],
+          "forces": [
+            {
+              "key": "Fire",
+              "numUnits": 3
+            },
+            {
+              "key": "Water",
+              "numUnits": 5
+            },
+            {
+              "key": "Light",
+              "numUnits": 3
+            }
+          ],
+          "skillTree": ["ShallowGrave", "MoonBlessing", "Torrent", "Wave"]
+        },
+        {
+          "playerId": "player8",
+          "username": "ShadowNinja",
+          "avatar": "🔭",
+          "position": 8,
+          "score": 2417,
+          "kills": 18,
+          "deaths": 4,
+          "kdRatio": "4.5",
+          "prizeAmount": 0,
+          "traits": [
+            {
+              "name": "GirlCrush",
+              "numUnits": 5,
+              "currentTier": 0
+            },
+            {
+              "name": "Chaos",
+              "numUnits": 2,
+              "currentTier": 1
+            },
+            {
+              "name": "Guardian",
+              "numUnits": 9,
+              "currentTier": 2
+            },
+            {
+              "name": "WildRush",
+              "numUnits": 3,
+              "currentTier": 0
+            }
+          ],
+          "champions": [
+            {
+              "key": "Nergal",
+              "coreRank": 1,
+              "items": ["TenguYoroi"],
+              "tier": 3
+            },
+            {
+              "key": "Lyra",
+              "coreRank": 2,
+              "items": ["Aegis", "LeaderArmor", "Simurgh"],
+              "tier": 2
+            },
+            {
+              "key": "Arina",
+              "coreRank": 3,
+              "items": ["Bayan", "Simurgh", "Osirian"],
+              "tier": 3
+            },
+            {
+              "key": "Jormungandr",
+              "coreRank": 4,
+              "items": ["Kiriti", "Darius", "Stormhorn"],
+              "tier": 3
+            },
+            {
+              "key": "Zarok",
+              "coreRank": 5,
+              "items": ["Aegis", "TenguYoroi", "Simurgh"],
+              "tier": 3
+            },
+            {
+              "key": "Andvari",
+              "coreRank": 6,
+              "items": ["TenguYoroi"],
+              "tier": 2
+            },
+            {
+              "key": "Morwen",
+              "coreRank": 7,
+              "items": ["Osirian", "Kiriti", "Gladius"],
+              "tier": 1
+            },
+            {
+              "key": "Hestial",
+              "coreRank": 8,
+              "items": [],
+              "tier": 3
+            }
+          ],
+          "augments": [
+            "CinematicMasterpiece",
+            "ArcticDominion",
+            "RerollTactices"
+          ],
+          "forces": [
+            {
+              "key": "Light",
+              "numUnits": 1
+            },
+            {
+              "key": "Fire",
+              "numUnits": 2
+            },
+            {
+              "key": "Dark",
+              "numUnits": 5
+            }
+          ],
+          "skillTree": ["KineticField", "DefenseMatrix"]
+        }
+      ]
+    },
+    {
+      "id": "match-2",
+      "tournamentId": "tournament_regular_4",
+      "title": "League of Legends Solo Queue - Grand Finals",
+      "date": "2025-12-19",
+      "startTime": "17:00",
+      "endTime": "21:00",
+      "prizePool": 20000,
+      "participants": 8,
+      "status": "completed",
+      "leaderboard": [
+        {
+          "playerId": "player1",
+          "username": "MysticMage",
+          "avatar": "🥷",
+          "position": 1,
+          "score": 5801,
+          "kills": 5,
+          "deaths": 4,
+          "kdRatio": "1.2",
+          "prizeAmount": 10000.0,
+          "traits": [
+            {
+              "name": "Blockbuster",
+              "numUnits": 8,
+              "currentTier": 1
+            },
+            {
+              "name": "WildRush",
+              "numUnits": 3,
+              "currentTier": 2
+            },
+            {
+              "name": "Guardian",
+              "numUnits": 3,
+              "currentTier": 1
+            }
+          ],
+          "champions": [
+            {
+              "key": "Brokkr",
+              "coreRank": 1,
+              "items": ["LeaderArmor", "Cloak"],
+              "tier": 2
+            },
+            {
+              "key": "Ao Guang",
+              "coreRank": 2,
+              "items": ["Sekhem"],
+              "tier": 1
+            },
+            {
+              "key": "Artemis",
+              "coreRank": 3,
+              "items": ["Helmet", "Bloodaxe"],
+              "tier": 3
+            },
+            {
+              "key": "Callista",
+              "coreRank": 4,
+              "items": [],
+              "tier": 2
+            },
+            {
+              "key": "Astarok",
+              "coreRank": 5,
+              "items": [],
+              "tier": 3
+            },
+            {
+              "key": "Karna",
+              "coreRank": 6,
+              "items": ["SilverBullet", "Pendragon’sCrown", "JinJia"],
+              "tier": 3
+            },
+            {
+              "key": "Patayon",
+              "coreRank": 7,
+              "items": ["Vesta", "Nandaka"],
+              "tier": 3
+            },
+            {
+              "key": "Ladon",
+              "coreRank": 8,
+              "items": [],
+              "tier": 1
+            }
+          ],
+          "augments": ["WrathboundSigil", "Tempest'sFury", "XPSaver"],
+          "forces": [
+            {
+              "key": "Water",
+              "numUnits": 1
+            }
+          ],
+          "skillTree": ["LightningBolt", "GaleForce"]
+        },
+        {
+          "playerId": "player2",
+          "username": "VoidWalker",
+          "avatar": "⚡",
+          "position": 2,
+          "score": 5354,
+          "kills": 3,
+          "deaths": 6,
+          "kdRatio": "0.5",
+          "prizeAmount": 5000.0,
+          "traits": [
+            {
+              "name": "Chaos",
+              "numUnits": 1,
+              "currentTier": 3
+            },
+            {
+              "name": "Blockbuster",
+              "numUnits": 1,
+              "currentTier": 2
+            },
+            {
+              "name": "Mirage",
+              "numUnits": 7,
+              "currentTier": 1
+            },
+            {
+              "name": "WildRush",
+              "numUnits": 7,
+              "currentTier": 0
+            }
+          ],
+          "champions": [
+            {
+              "key": "Kaen",
+              "coreRank": 1,
+              "items": [],
+              "tier": 3
+            },
+            {
+              "key": "Dargrim",
+              "coreRank": 2,
+              "items": ["WoodenWand", "Jingong"],
+              "tier": 3
+            },
+            {
+              "key": "Orphne",
+              "coreRank": 3,
+              "items": ["LeaderArmor", "Aetheris"],
+              "tier": 1
+            },
+            {
+              "key": "Solarius",
+              "coreRank": 4,
+              "items": ["EyeOfRa", "Aegis", "Aetheris"],
+              "tier": 3
+            },
+            {
+              "key": "Rei",
+              "coreRank": 5,
+              "items": ["LeaderArmor", "Osirian", "EagleBonnet"],
+              "tier": 3
+            },
+            {
+              "key": "Vespera",
+              "coreRank": 6,
+              "items": [],
+              "tier": 1
+            },
+            {
+              "key": "Fiorella",
+              "coreRank": 7,
+              "items": [],
+              "tier": 2
+            },
+            {
+              "key": "Meliae",
+              "coreRank": 8,
+              "items": ["PlateArmor"],
+              "tier": 2
+            },
+            {
+              "key": "Casimir",
+              "coreRank": 9,
+              "items": [],
+              "tier": 2
+            },
+            {
+              "key": "Yumi",
+              "coreRank": 10,
+              "items": ["Cloak"],
+              "tier": 1
+            }
+          ],
+          "augments": ["FeralProwess", "GoldenReserve", "BadgeofGirlCrush"],
+          "forces": [
+            {
+              "key": "Water",
+              "numUnits": 2
+            },
+            {
+              "key": "Light",
+              "numUnits": 1
+            },
+            {
+              "key": "Dark",
+              "numUnits": 1
+            }
+          ],
+          "skillTree": ["Doom", "SolarGuardian", "Wave"]
+        },
+        {
+          "playerId": "player3",
+          "username": "DragonSlayer",
+          "avatar": "❄️",
+          "position": 3,
+          "score": 5074,
+          "kills": 3,
+          "deaths": 1,
+          "kdRatio": "3.0",
+          "prizeAmount": 3000.0,
+          "traits": [
+            {
+              "name": "Fury",
+              "numUnits": 3,
+              "currentTier": 3
+            },
+            {
+              "name": "GirlCrush",
+              "numUnits": 1,
+              "currentTier": 2
+            },
+            {
+              "name": "Guardian",
+              "numUnits": 7,
+              "currentTier": 1
+            },
+            {
+              "name": "Chaos",
+              "numUnits": 2,
+              "currentTier": 2
+            }
+          ],
+          "champions": [
+            {
+              "key": "Darius",
+              "coreRank": 1,
+              "items": ["LeaderArmor", "RedHorn", "Cloak"],
+              "tier": 1
+            },
+            {
+              "key": "Jujak",
+              "coreRank": 2,
+              "items": ["Vesta", "Sword"],
+              "tier": 1
+            },
+            {
+              "key": "Daji",
+              "coreRank": 3,
+              "items": ["Evalach", "WoodenBow"],
+              "tier": 1
+            },
+            {
+              "key": "Artemis",
+              "coreRank": 4,
+              "items": ["Raikiri", "KoreanBow", "Kaminari"],
+              "tier": 3
+            },
+            {
+              "key": "Patayon",
+              "coreRank": 5,
+              "items": ["LeaderArmor", "EagleBonnet", "LeaderArmor"],
+              "tier": 3
+            },
+            {
+              "key": "Hermes",
+              "coreRank": 6,
+              "items": ["Galea", "RuyiBang"],
+              "tier": 2
+            },
+            {
+              "key": "Garou",
+              "coreRank": 7,
+              "items": ["TenguYoroi"],
+              "tier": 2
+            },
+            {
+              "key": "Durin",
+              "coreRank": 8,
+              "items": ["Gladius", "Vesta", "GayaArmor"],
+              "tier": 1
+            },
+            {
+              "key": "Tatsu",
+              "coreRank": 9,
+              "items": [],
+              "tier": 3
+            },
+            {
+              "key": "Eitri",
+              "coreRank": 10,
+              "items": [],
+              "tier": 2
+            }
+          ],
+          "augments": ["HealthyBoost", "ComponentCrafter", "SpinBoost"],
+          "forces": [
+            {
+              "key": "Fire",
+              "numUnits": 6
+            },
+            {
+              "key": "Storm",
+              "numUnits": 2
+            },
+            {
+              "key": "Dark",
+              "numUnits": 2
+            }
+          ],
+          "skillTree": ["Doom", "HealingRain"]
+        },
+        {
+          "playerId": "player4",
+          "username": "SunKeeper",
+          "avatar": "🛡️",
+          "position": 4,
+          "score": 4658,
+          "kills": 3,
+          "deaths": 10,
+          "kdRatio": "0.3",
+          "prizeAmount": 2000.0,
+          "traits": [
+            {
+              "name": "Chaos",
+              "numUnits": 3,
+              "currentTier": 2
+            },
+            {
+              "name": "Guardian",
+              "numUnits": 5,
+              "currentTier": 1
+            }
+          ],
+          "champions": [
+            {
+              "key": "Patayon",
+              "coreRank": 1,
+              "items": ["Gladius", "Cloak", "KoreanBow"],
+              "tier": 1
+            },
+            {
+              "key": "Fiorella",
+              "coreRank": 2,
+              "items": ["WoodenBow"],
+              "tier": 2
+            },
+            {
+              "key": "Zilant",
+              "coreRank": 3,
+              "items": ["GayaArmor"],
+              "tier": 1
+            },
+            {
+              "key": "Aetheria",
+              "coreRank": 4,
+              "items": ["JinJia"],
+              "tier": 2
+            },
+            {
+              "key": "Woochi",
+              "coreRank": 5,
+              "items": ["Excalibur"],
+              "tier": 1
+            },
+            {
+              "key": "Magnus",
+              "coreRank": 6,
+              "items": [],
+              "tier": 3
+            },
+            {
+              "key": "Obsidian",
+              "coreRank": 7,
+              "items": [],
+              "tier": 3
+            },
+            {
+              "key": "Zhuque",
+              "coreRank": 8,
+              "items": [],
+              "tier": 2
+            }
+          ],
+          "augments": ["ToxicNightmare", "PhantomReflex", "LevelBoost"],
+          "forces": [
+            {
+              "key": "Dark",
+              "numUnits": 6
+            }
+          ],
+          "skillTree": ["KineticField", "Batswarn", "DefenseMatrix", "Meteor"]
+        },
+        {
+          "playerId": "player5",
+          "username": "NightHunter",
+          "avatar": "🔮",
+          "position": 5,
+          "score": 4022,
+          "kills": 3,
+          "deaths": 20,
+          "kdRatio": "0.2",
+          "prizeAmount": 0,
+          "traits": [
+            {
+              "name": "Chaos",
+              "numUnits": 5,
+              "currentTier": 2
+            },
+            {
+              "name": "Blockbuster",
+              "numUnits": 6,
+              "currentTier": 1
+            },
+            {
+              "name": "Fury",
+              "numUnits": 3,
+              "currentTier": 2
+            }
+          ],
+          "champions": [
+            {
+              "key": "Casimir",
+              "coreRank": 1,
+              "items": ["RuyiBang", "Sword"],
+              "tier": 2
+            },
+            {
+              "key": "Huli Jing",
+              "coreRank": 2,
+              "items": [],
+              "tier": 3
+            },
+            {
+              "key": "Ravana",
+              "coreRank": 3,
+              "items": ["Kavacha", "Kaminari"],
+              "tier": 1
+            },
+            {
+              "key": "Anastasia",
+              "coreRank": 4,
+              "items": ["Kiriti", "Osirian", "Eaglewing"],
+              "tier": 3
+            },
+            {
+              "key": "Elysia",
+              "coreRank": 5,
+              "items": ["Stormhorn", "Jingong"],
+              "tier": 3
+            },
+            {
+              "key": "Inugami",
+              "coreRank": 6,
+              "items": ["Gladius", "WoodenBow"],
+              "tier": 3
+            },
+            {
+              "key": "Dargrim",
+              "coreRank": 7,
+              "items": [],
+              "tier": 1
+            },
+            {
+              "key": "Alaric",
+              "coreRank": 8,
+              "items": ["Gladius", "Jingong"],
+              "tier": 1
+            },
+            {
+              "key": "Patayon",
+              "coreRank": 9,
+              "items": ["WizardHat", "Aetheris"],
+              "tier": 2
+            },
+            {
+              "key": "Magnus",
+              "coreRank": 10,
+              "items": [],
+              "tier": 1
+            }
+          ],
+          "augments": ["MarkofAnarchy", "GoldenReserve", "ItemCycle"],
+          "forces": [
+            {
+              "key": "Water",
+              "numUnits": 1
+            }
+          ],
+          "skillTree": ["HealingRain", "KineticField", "OverCharge"]
+        },
+        {
+          "playerId": "player6",
+          "username": "ShadowNinja",
+          "avatar": "🐉",
+          "position": 6,
+          "score": 3669,
+          "kills": 1,
+          "deaths": 1,
+          "kdRatio": "1.0",
+          "prizeAmount": 0,
+          "traits": [
+            {
+              "name": "Fury",
+              "numUnits": 6,
+              "currentTier": 2
+            },
+            {
+              "name": "GirlCrush",
+              "numUnits": 6,
+              "currentTier": 1
+            },
+            {
+              "name": "Blockbuster",
+              "numUnits": 1,
+              "currentTier": 2
+            },
+            {
+              "name": "Chaos",
+              "numUnits": 1,
+              "currentTier": 1
+            }
+          ],
+          "champions": [
+            {
+              "key": "Woochi",
+              "coreRank": 1,
+              "items": ["Galea", "WizardHat", "Kunee"],
+              "tier": 3
+            },
+            {
+              "key": "Grommash",
+              "coreRank": 2,
+              "items": [],
+              "tier": 1
+            },
+            {
+              "key": "Taliesin",
+              "coreRank": 3,
+              "items": [],
+              "tier": 2
+            },
+            {
+              "key": "Yama",
+              "coreRank": 4,
+              "items": ["Bloodaxe"],
+              "tier": 2
+            },
+            {
+              "key": "Garmr",
+              "coreRank": 5,
+              "items": ["Gladius"],
+              "tier": 1
+            },
+            {
+              "key": "Thrain",
+              "coreRank": 6,
+              "items": ["WoodenBow"],
+              "tier": 2
+            },
+            {
+              "key": "Zilant",
+              "coreRank": 7,
+              "items": [],
+              "tier": 2
+            },
+            {
+              "key": "Callista",
+              "coreRank": 8,
+              "items": [],
+              "tier": 3
+            }
+          ],
+          "augments": ["SpecialRandomizer", "CinematicStrike", "DoubleStreak"],
+          "forces": [
+            {
+              "key": "Storm",
+              "numUnits": 6
+            }
+          ],
+          "skillTree": ["DefenseMatrix", "GaleForce", "HealingRain"]
+        },
+        {
+          "playerId": "player7",
+          "username": "StarGazer",
+          "avatar": "🌌",
+          "position": 7,
+          "score": 3022,
+          "kills": 20,
+          "deaths": 10,
+          "kdRatio": "2.0",
+          "prizeAmount": 0,
+          "traits": [
+            {
+              "name": "Guardian",
+              "numUnits": 7,
+              "currentTier": 3
+            },
+            {
+              "name": "Blockbuster",
+              "numUnits": 6,
+              "currentTier": 1
+            },
+            {
+              "name": "Druid",
+              "numUnits": 6,
+              "currentTier": 2
+            }
+          ],
+          "champions": [
+            {
+              "key": "Xi Wangmu",
+              "coreRank": 1,
+              "items": ["EagleBonnet"],
+              "tier": 3
+            },
+            {
+              "key": "Casimir",
+              "coreRank": 2,
+              "items": ["Helmet"],
+              "tier": 1
+            },
+            {
+              "key": "Woochi",
+              "coreRank": 3,
+              "items": ["Raikiri", "PlateArmor"],
+              "tier": 2
+            },
+            {
+              "key": "Patayon",
+              "coreRank": 4,
+              "items": [],
+              "tier": 2
+            },
+            {
+              "key": "Erebos",
+              "coreRank": 5,
+              "items": ["EagleBonnet", "Bloodaxe"],
+              "tier": 2
+            },
+            {
+              "key": "Astarok",
+              "coreRank": 6,
+              "items": ["Eaglewing"],
+              "tier": 3
+            },
+            {
+              "key": "Darius",
+              "coreRank": 7,
+              "items": ["LeaderArmor", "LeaderArmor", "WoodenWand"],
+              "tier": 3
+            }
+          ],
+          "augments": ["LastHope", "LevelSpins", "Endgame"],
+          "forces": [
+            {
+              "key": "Fire",
+              "numUnits": 6
+            },
+            {
+              "key": "Dark",
+              "numUnits": 5
+            }
+          ],
+          "skillTree": ["Batswarn", "Meteor"]
+        },
+        {
+          "playerId": "player8",
+          "username": "LightningBolt",
+          "avatar": "🔭",
+          "position": 8,
+          "score": 2554,
+          "kills": 6,
+          "deaths": 1,
+          "kdRatio": "6.0",
+          "prizeAmount": 0,
+          "traits": [
+            {
+              "name": "Mirage",
+              "numUnits": 3,
+              "currentTier": 3
+            },
+            {
+              "name": "Blockbuster",
+              "numUnits": 1,
+              "currentTier": 3
+            },
+            {
+              "name": "Chaos",
+              "numUnits": 2,
+              "currentTier": 1
+            },
+            {
+              "name": "Fury",
+              "numUnits": 6,
+              "currentTier": 2
+            }
+          ],
+          "champions": [
+            {
+              "key": "Durin",
+              "coreRank": 1,
+              "items": ["Sekhem", "Kaminari"],
+              "tier": 3
+            },
+            {
+              "key": "Brokkr",
+              "coreRank": 2,
+              "items": [],
+              "tier": 3
+            },
+            {
+              "key": "Alberich",
+              "coreRank": 3,
+              "items": ["Sword"],
+              "tier": 2
+            },
+            {
+              "key": "Gormmash",
+              "coreRank": 4,
+              "items": [],
+              "tier": 1
+            },
+            {
+              "key": "Celaeno",
+              "coreRank": 5,
+              "items": ["TenguYoroi"],
+              "tier": 1
+            },
+            {
+              "key": "Hecate",
+              "coreRank": 6,
+              "items": ["Bloodaxe"],
+              "tier": 1
+            },
+            {
+              "key": "Daji",
+              "coreRank": 7,
+              "items": ["PlateArmor"],
+              "tier": 3
+            }
+          ],
+          "augments": ["XPBoost", "GoldenReserve", "SteadyIncome"],
+          "forces": [
+            {
+              "key": "Water",
+              "numUnits": 3
+            },
+            {
+              "key": "Fire",
+              "numUnits": 2
+            }
+          ],
+          "skillTree": [
+            "Reincarnation",
+            "SolarGuardian",
+            "Batswarn",
+            "GaleForce"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "match-3",
+      "tournamentId": "tournament_regular_9",
+      "title": "League of Legends Solo Queue - Grand Finals",
+      "date": "2025-12-19",
+      "startTime": "14:00",
+      "endTime": "22:00",
+      "prizePool": 50000,
+      "participants": 8,
+      "status": "completed",
+      "leaderboard": [
+        {
+          "playerId": "player1",
+          "username": "IronWill",
+          "avatar": "\ud83d\udee1\ufe0f",
+          "position": 1,
+          "score": 6092,
+          "kills": 3,
+          "deaths": 10,
+          "kdRatio": "0.3",
+          "prizeAmount": 25000.0,
+          "traits": [
+            {
+              "name": "Chaos",
+              "numUnits": 3,
+              "currentTier": 3
+            },
+            {
+              "name": "WildRush",
+              "numUnits": 2,
+              "currentTier": 3
+            }
+          ],
+          "champions": [
+            {
+              "key": "Merlin",
+              "coreRank": 1,
+              "items": ["KoreanBow", "Aegis", "WoodenWand"],
+              "tier": 3
+            },
+            {
+              "key": "Kiyohime",
+              "coreRank": 2,
+              "items": ["Kiriti"],
+              "tier": 3
+            },
+            {
+              "key": "Tiamat",
+              "coreRank": 3,
+              "items": [],
+              "tier": 2
+            },
+            {
+              "key": "Gormmash",
+              "coreRank": 4,
+              "items": ["EyeOfRa", "Osirian", "Evalach"],
+              "tier": 2
+            },
+            {
+              "key": "Vortok",
+              "coreRank": 5,
+              "items": ["Raikiri", "Evalach"],
+              "tier": 3
+            },
+            {
+              "key": "Alaric",
+              "coreRank": 6,
+              "items": ["Cloak", "Gladius", "WizardHat"],
+              "tier": 3
+            },
+            {
+              "key": "Thalia",
+              "coreRank": 7,
+              "items": ["Aetheris", "Evalach"],
+              "tier": 2
+            },
+            {
+              "key": "Durin",
+              "coreRank": 8,
+              "items": ["Vesta", "Helmet"],
+              "tier": 1
+            }
+          ],
+          "augments": ["TreasureVault", "BackupReroll", "FreeSpin"],
+          "forces": [
+            {
+              "key": "Water",
+              "numUnits": 3
+            },
+            {
+              "key": "Light",
+              "numUnits": 1
+            }
+          ],
+          "skillTree": ["HandOfGod", "SnowBlizzard"]
+        },
+        {
+          "playerId": "player2",
+          "username": "SunKeeper",
+          "avatar": "\ud83d\udc09",
+          "position": 2,
+          "score": 5357,
+          "kills": 13,
+          "deaths": 1,
+          "kdRatio": "13.0",
+          "prizeAmount": 12500.0,
+          "traits": [
+            {
+              "name": "Fury",
+              "numUnits": 2,
+              "currentTier": 3
+            },
+            {
+              "name": "Chaos",
+              "numUnits": 6,
+              "currentTier": 2
+            },
+            {
+              "name": "WildRush",
+              "numUnits": 5,
+              "currentTier": 1
+            },
+            {
+              "name": "Druid",
+              "numUnits": 9,
+              "currentTier": 3
+            },
+            {
+              "name": "Guardian",
+              "numUnits": 9,
+              "currentTier": 3
+            }
+          ],
+          "champions": [
+            {
+              "key": "Artemis",
+              "coreRank": 1,
+              "items": ["Kaminari", "Helmet", "LeaderArmor"],
+              "tier": 2
+            },
+            {
+              "key": "Gormmash",
+              "coreRank": 2,
+              "items": ["Kiriti", "WoodenBow"],
+              "tier": 2
+            },
+            {
+              "key": "Grimgor",
+              "coreRank": 3,
+              "items": ["ScaleHelmet"],
+              "tier": 3
+            },
+            {
+              "key": "Jujak",
+              "coreRank": 4,
+              "items": ["Sekhem", "TenguYoroi"],
+              "tier": 3
+            },
+            {
+              "key": "Aradia",
+              "coreRank": 5,
+              "items": ["Sekhem", "Cloak"],
+              "tier": 1
+            },
+            {
+              "key": "Casimir",
+              "coreRank": 6,
+              "items": ["Stormhorn", "Galea"],
+              "tier": 2
+            },
+            {
+              "key": "Ember",
+              "coreRank": 7,
+              "items": ["Helmet"],
+              "tier": 3
+            },
+            {
+              "key": "Thalia",
+              "coreRank": 8,
+              "items": ["TenguYoroi"],
+              "tier": 3
+            }
+          ],
+          "augments": ["ItemCycle", "GoldenReserve", "CrestoftheVerdant"],
+          "forces": [
+            {
+              "key": "Storm",
+              "numUnits": 4
+            }
+          ],
+          "skillTree": ["HandOfGod", "HealingRain"]
+        },
+        {
+          "playerId": "player3",
+          "username": "NightHunter",
+          "avatar": "\u26a1",
+          "position": 3,
+          "score": 5064,
+          "kills": 1,
+          "deaths": 12,
+          "kdRatio": "0.1",
+          "prizeAmount": 7500.0,
+          "traits": [
+            {
+              "name": "Fury",
+              "numUnits": 7,
+              "currentTier": 1
+            },
+            {
+              "name": "Guardian",
+              "numUnits": 6,
+              "currentTier": 3
+            },
+            {
+              "name": "Mirage",
+              "numUnits": 3,
+              "currentTier": 2
+            },
+            {
+              "name": "GirlCrush",
+              "numUnits": 7,
+              "currentTier": 3
+            },
+            {
+              "name": "Chaos",
+              "numUnits": 5,
+              "currentTier": 1
+            }
+          ],
+          "champions": [
+            {
+              "key": "Merlin",
+              "coreRank": 1,
+              "items": ["Galea", "WizardHat", "Galea"],
+              "tier": 1
+            },
+            {
+              "key": "Kaen",
+              "coreRank": 2,
+              "items": ["Jingong"],
+              "tier": 3
+            },
+            {
+              "key": "Brokkr",
+              "coreRank": 3,
+              "items": ["KoreanBow", "Excalibur"],
+              "tier": 2
+            },
+            {
+              "key": "Vortok",
+              "coreRank": 4,
+              "items": ["ScaleHelmet"],
+              "tier": 2
+            },
+            {
+              "key": "Thalia",
+              "coreRank": 5,
+              "items": ["LeaderArmor", "Kaminari"],
+              "tier": 2
+            },
+            {
+              "key": "Infernox",
+              "coreRank": 6,
+              "items": ["Sword"],
+              "tier": 3
+            },
+            {
+              "key": "Gormmash",
+              "coreRank": 7,
+              "items": ["JinJia", "GayaArmor"],
+              "tier": 3
+            },
+            {
+              "key": "Oinari",
+              "coreRank": 8,
+              "items": ["JinJia", "Sword", "PlateArmor"],
+              "tier": 3
+            },
+            {
+              "key": "Pontianak",
+              "coreRank": 9,
+              "items": ["Eaglewing"],
+              "tier": 1
+            }
+          ],
+          "augments": ["ChaoticSurge", "XPBoost", "DoubleStreak"],
+          "forces": [
+            {
+              "key": "Water",
+              "numUnits": 1
+            },
+            {
+              "key": "Storm",
+              "numUnits": 2
+            }
+          ],
+          "skillTree": ["GaleForce", "MoonBlessing"]
+        },
+        {
+          "playerId": "player4",
+          "username": "ShadowNinja",
+          "avatar": "\ud83d\udd2e",
+          "position": 4,
+          "score": 4607,
+          "kills": 3,
+          "deaths": 8,
+          "kdRatio": "0.4",
+          "prizeAmount": 5000.0,
+          "traits": [
+            {
+              "name": "Fury",
+              "numUnits": 7,
+              "currentTier": 3
+            },
+            {
+              "name": "Blockbuster",
+              "numUnits": 9,
+              "currentTier": 3
+            },
+            {
+              "name": "Chaos",
+              "numUnits": 2,
+              "currentTier": 1
+            },
+            {
+              "name": "WildRush",
+              "numUnits": 9,
+              "currentTier": 3
+            },
+            {
+              "name": "Mirage",
+              "numUnits": 2,
+              "currentTier": 1
+            }
+          ],
+          "champions": [
+            {
+              "key": "Shinigami",
+              "coreRank": 1,
+              "items": ["RedHorn", "Cloak"],
+              "tier": 2
+            },
+            {
+              "key": "Karna",
+              "coreRank": 2,
+              "items": ["Gladius", "Sekhem", "TenguYoroi"],
+              "tier": 3
+            },
+            {
+              "key": "Kaen",
+              "coreRank": 3,
+              "items": ["WoodenBow", "TenguYoroi"],
+              "tier": 3
+            },
+            {
+              "key": "Woochi",
+              "coreRank": 4,
+              "items": ["WoodenBow", "Jingong"],
+              "tier": 3
+            },
+            {
+              "key": "Astarok",
+              "coreRank": 5,
+              "items": ["Gladius"],
+              "tier": 3
+            },
+            {
+              "key": "Seiryu",
+              "coreRank": 6,
+              "items": ["WoodenBow", "Kiriti"],
+              "tier": 1
+            },
+            {
+              "key": "Vortok",
+              "coreRank": 7,
+              "items": [],
+              "tier": 1
+            }
+          ],
+          "augments": ["BackupReroll", "Queen\u2019sDominion", "GoldenReserve"],
+          "forces": [
+            {
+              "key": "Fire",
+              "numUnits": 5
+            }
+          ],
+          "skillTree": ["Doom", "HealingRain", "Meteor"]
+        },
+        {
+          "playerId": "player5",
+          "username": "MysticMage",
+          "avatar": "\ud83e\udd77",
+          "position": 5,
+          "score": 3819,
+          "kills": 1,
+          "deaths": 10,
+          "kdRatio": "0.1",
+          "prizeAmount": 0,
+          "traits": [
+            {
+              "name": "Fury",
+              "numUnits": 5,
+              "currentTier": 3
+            },
+            {
+              "name": "Blockbuster",
+              "numUnits": 2,
+              "currentTier": 2
+            },
+            {
+              "name": "Mirage",
+              "numUnits": 9,
+              "currentTier": 1
+            }
+          ],
+          "champions": [
+            {
+              "key": "Seiryu",
+              "coreRank": 1,
+              "items": [],
+              "tier": 2
+            },
+            {
+              "key": "Huli Jing",
+              "coreRank": 2,
+              "items": ["Aetheris"],
+              "tier": 3
+            },
+            {
+              "key": "Gormmash",
+              "coreRank": 3,
+              "items": [],
+              "tier": 3
+            },
+            {
+              "key": "Theron",
+              "coreRank": 4,
+              "items": ["Kiriti", "ScaleHelmet"],
+              "tier": 3
+            },
+            {
+              "key": "Durin",
+              "coreRank": 5,
+              "items": ["Excalibur", "Sekhem", "Sword"],
+              "tier": 2
+            },
+            {
+              "key": "Osseus",
+              "coreRank": 6,
+              "items": [],
+              "tier": 2
+            },
+            {
+              "key": "Andvari",
+              "coreRank": 7,
+              "items": ["Raikiri", "Stormhorn"],
+              "tier": 2
+            },
+            {
+              "key": "Zilant",
+              "coreRank": 8,
+              "items": ["Raikiri", "WoodenBow"],
+              "tier": 1
+            },
+            {
+              "key": "Magnus",
+              "coreRank": 9,
+              "items": [],
+              "tier": 2
+            },
+            {
+              "key": "Eitri",
+              "coreRank": 10,
+              "items": ["WoodenWand"],
+              "tier": 1
+            }
+          ],
+          "augments": ["ItemCycle", "GoldenReserve", "TreasureVault"],
+          "forces": [
+            {
+              "key": "Dark",
+              "numUnits": 6
+            }
+          ],
+          "skillTree": ["Repel", "HealingRain"]
+        },
+        {
+          "playerId": "player6",
+          "username": "FrostByte",
+          "avatar": "\ud83c\udf0c",
+          "position": 6,
+          "score": 3332,
+          "kills": 14,
+          "deaths": 10,
+          "kdRatio": "1.4",
+          "prizeAmount": 0,
+          "traits": [
+            {
+              "name": "Chaos",
+              "numUnits": 2,
+              "currentTier": 1
+            },
+            {
+              "name": "Druid",
+              "numUnits": 6,
+              "currentTier": 2
+            },
+            {
+              "name": "WildRush",
+              "numUnits": 9,
+              "currentTier": 2
+            }
+          ],
+          "champions": [
+            {
+              "key": "Hecate",
+              "coreRank": 1,
+              "items": ["Simurgh", "Gladius", "EagleBonnet"],
+              "tier": 3
+            },
+            {
+              "key": "Merlin",
+              "coreRank": 2,
+              "items": ["Jingong", "Gladius"],
+              "tier": 3
+            },
+            {
+              "key": "Vespera",
+              "coreRank": 3,
+              "items": ["Sekhem", "Stormhorn"],
+              "tier": 3
+            },
+            {
+              "key": "Aric",
+              "coreRank": 4,
+              "items": ["Sword"],
+              "tier": 2
+            },
+            {
+              "key": "Azog",
+              "coreRank": 5,
+              "items": [],
+              "tier": 2
+            },
+            {
+              "key": "Infernox",
+              "coreRank": 6,
+              "items": ["Kiriti"],
+              "tier": 3
+            },
+            {
+              "key": "Rowena",
+              "coreRank": 7,
+              "items": ["Osirian", "PlateArmor"],
+              "tier": 2
+            },
+            {
+              "key": "Callista",
+              "coreRank": 8,
+              "items": ["Helmet"],
+              "tier": 1
+            }
+          ],
+          "augments": ["ItemCycle", "GoldenReserve", "Saver'sReroll"],
+          "forces": [
+            {
+              "key": "Light",
+              "numUnits": 2
+            },
+            {
+              "key": "Water",
+              "numUnits": 3
+            }
+          ],
+          "skillTree": ["SnowBlizzard", "FireTrap"]
+        },
+        {
+          "playerId": "player7",
+          "username": "VoidWalker",
+          "avatar": "\ud83d\udd2d",
+          "position": 7,
+          "score": 3054,
+          "kills": 1,
+          "deaths": 12,
+          "kdRatio": "0.1",
+          "prizeAmount": 0,
+          "traits": [
+            {
+              "name": "Chaos",
+              "numUnits": 9,
+              "currentTier": 1
+            },
+            {
+              "name": "Blockbuster",
+              "numUnits": 7,
+              "currentTier": 3
+            },
+            {
+              "name": "Mirage",
+              "numUnits": 5,
+              "currentTier": 1
+            },
+            {
+              "name": "Druid",
+              "numUnits": 6,
+              "currentTier": 1
+            }
+          ],
+          "champions": [
+            {
+              "key": "Orphne",
+              "coreRank": 1,
+              "items": [],
+              "tier": 3
+            },
+            {
+              "key": "Casimir",
+              "coreRank": 2,
+              "items": [],
+              "tier": 3
+            },
+            {
+              "key": "Zilant",
+              "coreRank": 3,
+              "items": ["RedHorn", "LeaderArmor", "RedHorn"],
+              "tier": 3
+            },
+            {
+              "key": "Arina",
+              "coreRank": 4,
+              "items": ["Stormhorn", "Evalach"],
+              "tier": 3
+            },
+            {
+              "key": "Hecate",
+              "coreRank": 5,
+              "items": ["Raikiri", "JinJia"],
+              "tier": 3
+            },
+            {
+              "key": "Anastasia",
+              "coreRank": 6,
+              "items": ["LeaderArmor", "JinJia", "WoodenWand"],
+              "tier": 1
+            },
+            {
+              "key": "Daji",
+              "coreRank": 7,
+              "items": ["Galea"],
+              "tier": 1
+            },
+            {
+              "key": "Sigrdr\u00edfa",
+              "coreRank": 8,
+              "items": ["WoodenBow", "Vesta"],
+              "tier": 3
+            }
+          ],
+          "augments": ["LastHope", "GoldenReserve", "LevelSpins"],
+          "forces": [
+            {
+              "key": "Dark",
+              "numUnits": 4
+            },
+            {
+              "key": "Water",
+              "numUnits": 3
+            },
+            {
+              "key": "Storm",
+              "numUnits": 2
+            }
+          ],
+          "skillTree": ["Doom", "GaleForce"]
+        },
+        {
+          "playerId": "player8",
+          "username": "LightningBolt",
+          "avatar": "\ud83c\udf0c",
+          "position": 8,
+          "score": 2577,
+          "kills": 23,
+          "deaths": 6,
+          "kdRatio": "3.8",
+          "prizeAmount": 0,
+          "traits": [
+            {
+              "name": "Chaos",
+              "numUnits": 3,
+              "currentTier": 3
+            },
+            {
+              "name": "Guardian",
+              "numUnits": 6,
+              "currentTier": 3
+            },
+            {
+              "name": "WildRush",
+              "numUnits": 6,
+              "currentTier": 2
+            },
+            {
+              "name": "GirlCrush",
+              "numUnits": 1,
+              "currentTier": 2
+            },
+            {
+              "name": "Mirage",
+              "numUnits": 9,
+              "currentTier": 3
+            }
+          ],
+          "champions": [
+            {
+              "key": "Taliesin",
+              "coreRank": 1,
+              "items": ["Gladius", "Kavacha"],
+              "tier": 2
+            },
+            {
+              "key": "Jujak",
+              "coreRank": 2,
+              "items": [],
+              "tier": 1
+            },
+            {
+              "key": "Darius",
+              "coreRank": 3,
+              "items": ["GayaArmor"],
+              "tier": 2
+            },
+            {
+              "key": "Dargrim",
+              "coreRank": 4,
+              "items": ["Aegis", "Aetheris"],
+              "tier": 2
+            },
+            {
+              "key": "Celaeno",
+              "coreRank": 5,
+              "items": ["Bloodaxe"],
+              "tier": 3
+            },
+            {
+              "key": "Vespera",
+              "coreRank": 6,
+              "items": ["Vesta", "Aetheris"],
+              "tier": 3
+            },
+            {
+              "key": "Solarius",
+              "coreRank": 7,
+              "items": ["Kavacha"],
+              "tier": 1
+            }
+          ],
+          "augments": ["XPBoost", "PoisonousShadows", "GoldenReserve"],
+          "forces": [
+            {
+              "key": "Dark",
+              "numUnits": 6
+            },
+            {
+              "key": "Fire",
+              "numUnits": 4
+            }
+          ],
+          "skillTree": ["DefenseMatrix", "Batswarn", "Eclipse"]
+        }
+      ]
+    }
+  ],
+  "metadata": {
+    "totalMatches": 13,
+    "completedMatches": 8,
+    "ongoingMatches": 2,
+    "upcomingMatches": 3,
+    "totalPrizePool": 740000,
+    "totalParticipants": 161,
+    "averagePlayersPerMatch": 12.4,
+    "generatedAt": "2025-11-13T10:30:00Z",
+    "lastUpdated": "2025-11-13T20:00:00Z"
+  }
+}

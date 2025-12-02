@@ -12,6 +12,7 @@ import {
   getPrizePoolDisplayDual,
   getEntryFeeDisplayDual,
 } from "../../lib/prizeCalculator";
+import { formatEntryFee, formatPrizePool } from "../../lib/currencyFormatter";
 import TournamentStatCard from "./TournamentStatCard";
 import CountdownSection from "./CountdownSection";
 import Image from "next/image";
@@ -141,14 +142,9 @@ export default function TournamentHeader({
           {/* Entry Fee Card */}
           <TournamentStatCard icon={<TbMoneybag />} label="Entry Fee">
             {tournament.entry_fee ? (
-              <>
                 <p className="text-sm font-semibold text-white sm:text-base 2xl:text-lg">
-                  {getEntryFeeDisplayDual(tournament).diamonds} 💎
+                {formatEntryFee(tournament.entry_fee)}
                 </p>
-                <p className="text-gold text-xs 2xl:text-sm">
-                  ${getEntryFeeDisplayDual(tournament).usd}
-                </p>
-              </>
             ) : (
               <p className="text-sm font-semibold text-green-400 sm:text-base 2xl:text-lg">
                 Free
@@ -159,10 +155,7 @@ export default function TournamentHeader({
           {/* Prize Pool Card - Highlighted */}
           <TournamentStatCard label="Prize Pool" highlighted>
             <p className="text-gold text-base font-bold sm:text-lg 2xl:text-xl">
-              {getPrizePoolDisplayDual(tournament).diamonds} 💎
-            </p>
-            <p className="text-gold/90 text-xs sm:text-sm 2xl:text-base">
-              ${getPrizePoolDisplayDual(tournament).usd}
+              {formatPrizePool(tournament.prize_pool)}
             </p>
             {(tournament.prize_pool_type ?? tournament.prizePoolType) ===
               "entry-based" && (

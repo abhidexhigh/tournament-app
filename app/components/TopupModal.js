@@ -5,12 +5,21 @@ import { createPortal } from "react-dom";
 import Card from "./Card";
 import Button from "./Button";
 import Input from "./Input";
+import {
+  PRIMARY_CURRENCY,
+  getPrimaryCurrency,
+  CONVERSION_RATE,
+} from "../lib/currencyConfig";
 
 export default function TopupModal({ isOpen, onClose, user }) {
-  const [diamondAmount, setDiamondAmount] = useState("");
+  const [amount, setAmount] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [mounted, setMounted] = useState(false);
+  
+  const currencyInfo = getPrimaryCurrency();
+  const currencyType = PRIMARY_CURRENCY === "USD" ? "usd" : "diamonds";
+  const isUSD = PRIMARY_CURRENCY === "USD";
 
   // Handle mounting for portal
   useEffect(() => {
@@ -21,7 +30,7 @@ export default function TopupModal({ isOpen, onClose, user }) {
   // Reset form when modal opens
   useEffect(() => {
     if (isOpen) {
-      setDiamondAmount("");
+      setAmount("");
       setError("");
     }
   }, [isOpen]);
@@ -29,16 +38,16 @@ export default function TopupModal({ isOpen, onClose, user }) {
   if (!isOpen || !mounted) return null;
 
   const handlePurchase = async () => {
-    const amount = parseInt(diamondAmount);
+    const purchaseAmount = parseFloat(amount);
 
     // Validation
-    if (!amount || amount < 1) {
-      setError("Please enter a valid amount (minimum 1 diamond)");
+    if (!purchaseAmount || purchaseAmount < 1) {
+      setError(`Please enter a valid amount (minimum ${isUSD ? "$1" : "1 diamond"})`);
       return;
     }
 
-    if (amount > 100000) {
-      setError("Maximum purchase limit is 100,000 diamonds");
+    if (purchaseAmount > 100000) {
+      setError(`Maximum purchase limit is ${isUSD ? "$100,000" : "100,000 diamonds"}`);
       return;
     }
 
@@ -53,10 +62,10 @@ export default function TopupModal({ isOpen, onClose, user }) {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          amount: amount,
+          amount: purchaseAmount,
           userId: user.id,
           userEmail: user.email,
-          currency: "diamonds",
+          currency: currencyType,
         }),
       });
 
@@ -80,8 +89,20 @@ export default function TopupModal({ isOpen, onClose, user }) {
   };
 
   const calculatePrice = () => {
-    const amount = parseInt(diamondAmount) || 0;
-    return amount; // 1 Diamond = 1 USD
+    const purchaseAmount = parseFloat(amount) || 0;
+    if (isUSD) {
+      return purchaseAmount; // USD direct
+    } else {
+      return purchaseAmount * CONVERSION_RATE.DIAMOND_TO_USD; // Convert diamonds to USD for price
+    }
+  };
+
+  const getCurrentBalance = () => {
+    if (isUSD) {
+      return `$${(user?.balance || 0).toFixed(2)}`;
+    } else {
+      return `${(user?.diamonds || 0).toLocaleString()} 💎`;
+    }
   };
 
   const modalContent = (
@@ -92,10 +113,10 @@ export default function TopupModal({ isOpen, onClose, user }) {
           <div className="mb-6 flex items-center justify-between">
             <div>
               <h2 className="text-gold mb-2 text-2xl font-bold">
-                💎 Buy Diamonds
+                {currencyInfo.emoji} Buy {currencyInfo.displayName}
               </h2>
               <p className="text-sm text-gray-400">
-                Enter the amount of diamonds you want to purchase
+                Enter the amount you want to purchase
               </p>
             </div>
             <button
@@ -112,44 +133,50 @@ export default function TopupModal({ isOpen, onClose, user }) {
             <div className="text-center">
               <p className="mb-1 text-xs text-gray-400">Current Balance</p>
               <p className="text-gold text-3xl font-bold">
-                {(user?.diamonds || 0).toLocaleString()} 💎
+                {getCurrentBalance()}
               </p>
             </div>
           </div>
 
-          {/* Diamond Amount Input */}
+          {/* Amount Input */}
           <div className="mb-6">
             <Input
-              label="Diamond Amount"
+              label={`Amount (${currencyInfo.displayName})`}
               type="number"
-              value={diamondAmount}
+              value={amount}
               onChange={(e) => {
-                setDiamondAmount(e.target.value);
+                setAmount(e.target.value);
                 setError("");
               }}
-              placeholder="Enter amount (e.g., 100)"
-              icon="💎"
+              placeholder={isUSD ? "Enter USD amount (e.g., 100)" : "Enter diamond amount (e.g., 100)"}
+              icon={currencyInfo.emoji}
               min="1"
               max="100000"
+              step={isUSD ? "0.01" : "1"}
               disabled={loading}
             />
-            <p className="mt-2 text-xs text-gray-500">💡 1 Diamond = $1 USD</p>
+            <p className="mt-2 text-xs text-gray-500">
+              💡 {isUSD ? "Direct USD purchase" : `1 Diamond = $${CONVERSION_RATE.DIAMOND_TO_USD} USD`}
+            </p>
           </div>
 
           {/* Price Display */}
-          {diamondAmount && parseInt(diamondAmount) > 0 && (
+          {amount && parseFloat(amount) > 0 && (
             <div className="bg-dark-primary/50 border-gold-dark/30 mb-6 rounded-lg border p-4">
               <div className="mb-3 flex items-center justify-between">
                 <span className="text-sm text-gray-400">You will receive:</span>
                 <span className="text-gold text-xl font-bold">
-                  {parseInt(diamondAmount).toLocaleString()} 💎
+                  {isUSD 
+                    ? `$${parseFloat(amount).toFixed(2)}`
+                    : `${parseFloat(amount).toLocaleString()} 💎`
+                  }
                 </span>
               </div>
               <div className="via-gold-dark/30 mb-3 h-px bg-gradient-to-r from-transparent to-transparent" />
               <div className="flex items-center justify-between">
                 <span className="text-sm text-gray-400">Total Price:</span>
                 <span className="text-2xl font-bold text-green-400">
-                  ${calculatePrice().toLocaleString()}
+                  ${calculatePrice().toFixed(2)}
                 </span>
               </div>
             </div>
@@ -166,14 +193,14 @@ export default function TopupModal({ isOpen, onClose, user }) {
           <div className="mb-6">
             <p className="mb-3 text-xs text-gray-400">Quick Select:</p>
             <div className="grid grid-cols-4 gap-2">
-              {[10, 50, 100, 500].map((amount) => (
+              {[10, 50, 100, 500].map((quickAmount) => (
                 <button
-                  key={amount}
-                  onClick={() => setDiamondAmount(amount.toString())}
+                  key={quickAmount}
+                  onClick={() => setAmount(quickAmount.toString())}
                   disabled={loading}
                   className="bg-dark-primary/50 hover:bg-gold/20 border-gold-dark/30 hover:border-gold/50 text-gold rounded-lg border px-3 py-2 text-sm font-semibold transition-all"
                 >
-                  {amount}
+                  {isUSD ? `$${quickAmount}` : quickAmount}
                 </button>
               ))}
             </div>
@@ -194,7 +221,7 @@ export default function TopupModal({ isOpen, onClose, user }) {
               fullWidth
               onClick={handlePurchase}
               disabled={
-                loading || !diamondAmount || parseInt(diamondAmount) < 1
+                loading || !amount || parseFloat(amount) < 1
               }
             >
               {loading ? (
@@ -203,7 +230,7 @@ export default function TopupModal({ isOpen, onClose, user }) {
                   Processing...
                 </span>
               ) : (
-                `Buy for $${calculatePrice()}`
+                `Buy for $${calculatePrice().toFixed(2)}`
               )}
             </Button>
           </div>

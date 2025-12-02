@@ -1,4 +1,10 @@
 // Prize pool calculation utilities
+import {
+  formatPrizePool,
+  formatEntryFee,
+  getCurrencyDisplayObject,
+  getPrizePoolDisplay as getFormattedPrizePoolDisplay,
+} from './currencyFormatter';
 
 /**
  * Calculate the actual prize pool for a tournament
@@ -58,27 +64,16 @@ export const calculatePrizes = (tournament) => {
 };
 
 /**
- * Get prize pool display text
+ * Get prize pool display text (uses currency controller)
  * @param {Object} tournament - Tournament object
- * @returns {string} - Display text for prize pool
+ * @returns {string} - Display text for prize pool with currency
  */
 export const getPrizePoolDisplay = (tournament) => {
-  if (!tournament) return "0";
-
-  const actualPrizePool = calculateActualPrizePool(tournament);
-
-  if (tournament.prize_pool_type === "entry-based") {
-    const participantCount = tournament.participants?.length || 0;
-    const maxPrizePool = tournament.prize_pool;
-
-    return `${actualPrizePool.toLocaleString()} / ${maxPrizePool.toLocaleString()}`;
-  }
-
-  return actualPrizePool.toLocaleString();
+  return getFormattedPrizePoolDisplay(tournament);
 };
 
 /**
- * Get prize pool display with both USD and diamonds
+ * Get prize pool display with both USD and diamonds (uses currency controller)
  * @param {Object} tournament - Tournament object
  * @returns {Object} - Display object with USD and diamond amounts
  */
@@ -86,29 +81,26 @@ export const getPrizePoolDisplayDual = (tournament) => {
   if (!tournament) return { usd: "0", diamonds: "0" };
 
   const actualPrizePool = calculateActualPrizePool(tournament);
-  // 1 USD = 1 Diamond
-  const usdAmount = tournament.prize_pool_usd || actualPrizePool;
-  const diamondAmount = actualPrizePool;
+  const displayObj = getCurrencyDisplayObject(actualPrizePool);
 
   if (tournament.prize_pool_type === "entry-based") {
-    const participantCount = tournament.participants?.length || 0;
     const maxPrizePool = tournament.prize_pool;
-    const maxUsdAmount = tournament.prize_pool_usd || maxPrizePool;
+    const maxDisplayObj = getCurrencyDisplayObject(maxPrizePool);
 
     return {
-      usd: `${usdAmount.toLocaleString()} / ${maxUsdAmount.toLocaleString()}`,
-      diamonds: `${diamondAmount.toLocaleString()} / ${maxPrizePool.toLocaleString()}`,
+      usd: `${displayObj.secondary.amount.toLocaleString()} / ${maxDisplayObj.secondary.amount.toLocaleString()}`,
+      diamonds: `${displayObj.primary.amount.toLocaleString()} / ${maxDisplayObj.primary.amount.toLocaleString()}`,
     };
   }
 
   return {
-    usd: usdAmount.toLocaleString(),
-    diamonds: diamondAmount.toLocaleString(),
+    usd: displayObj.secondary.amount.toLocaleString(),
+    diamonds: displayObj.primary.amount.toLocaleString(),
   };
 };
 
 /**
- * Get entry fee display with both USD and diamonds
+ * Get entry fee display with both USD and diamonds (uses currency controller)
  * @param {Object} tournament - Tournament object
  * @returns {Object} - Display object with USD and diamond amounts
  */
@@ -116,12 +108,10 @@ export const getEntryFeeDisplayDual = (tournament) => {
   if (!tournament) return { usd: "0", diamonds: "0" };
 
   const entryFee = tournament.entry_fee || 0;
-  // 1 USD = 1 Diamond
-  const usdAmount = tournament.entry_fee_usd || entryFee;
-  const diamondAmount = entryFee;
+  const displayObj = getCurrencyDisplayObject(entryFee);
 
   return {
-    usd: usdAmount.toLocaleString(),
-    diamonds: diamondAmount.toLocaleString(),
+    usd: displayObj.secondary.amount.toLocaleString(),
+    diamonds: displayObj.primary.amount.toLocaleString(),
   };
 };

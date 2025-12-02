@@ -1,4 +1,13 @@
 // Clan Battle Prize Distribution Utilities
+import {
+  formatCurrency,
+  formatPrizePool,
+  getPrimaryCurrencyInfo,
+} from './currencyFormatter';
+import {
+  usdToDiamonds as convertUsdToDiamonds,
+  diamondsToUsd as convertDiamondsToUsd,
+} from './currencyConfig';
 
 /**
  * Calculate prize distribution for clan battle tournaments
@@ -97,55 +106,49 @@ export const calculateClanBattlePrizeDistribution = (totalPrize, teamSize) => {
 };
 
 /**
- * Format prize amount for display
- * @param {number} amount - Prize amount
- * @param {string} currency - Currency symbol (default: '$')
+ * Format prize amount for display (uses currency controller)
+ * @param {number} amount - Prize amount in USD
+ * @param {boolean} usePrimary - Use primary currency (default: true)
  * @returns {string} Formatted prize amount
  */
-export const formatPrizeAmount = (amount, currency = "$") => {
+export const formatPrizeAmount = (amount, usePrimary = true) => {
   // Handle undefined, null, or non-numeric values
   if (amount === undefined || amount === null || isNaN(amount)) {
-    return `${currency}0`;
+    return formatCurrency(0, usePrimary ? 'primary' : 'USD', true);
   }
 
-  return `${currency}${Number(amount).toLocaleString("en-US", {
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  })}`;
+  return formatPrizePool(amount);
 };
 
 /**
- * Convert USD to diamonds (1 USD = 1 diamond)
+ * Convert USD to diamonds (uses currency controller)
  * @param {number} usdAmount - Amount in USD
  * @returns {number} Amount in diamonds
  */
 export const usdToDiamonds = (usdAmount) => {
-  return Math.round(usdAmount);
+  return convertUsdToDiamonds(usdAmount);
 };
 
 /**
- * Convert diamonds to USD (1 diamond = 1 USD)
+ * Convert diamonds to USD (uses currency controller)
  * @param {number} diamonds - Amount in diamonds
  * @returns {number} Amount in USD
  */
 export const diamondsToUsd = (diamonds) => {
-  return diamonds;
+  return convertDiamondsToUsd(diamonds);
 };
 
 /**
- * Format prize amount with diamond equivalent
+ * Format prize amount with diamond equivalent (uses currency controller)
  * @param {number} usdAmount - Prize amount in USD
- * @returns {string} Formatted prize amount with diamond equivalent
+ * @returns {string} Formatted prize amount with both currencies
  */
 export const formatPrizeWithDiamonds = (usdAmount) => {
   if (usdAmount === undefined || usdAmount === null || isNaN(usdAmount)) {
-    return "0 💎 ($0)";
+    return formatCurrency(0, 'primary', true);
   }
 
-  const diamonds = usdToDiamonds(usdAmount);
-  const formattedUsd = formatPrizeAmount(usdAmount);
-
-  return `${diamonds.toLocaleString("en-US")} 💎 (${formattedUsd})`;
+  return formatPrizePool(usdAmount, true); // Force dual display
 };
 
 /**

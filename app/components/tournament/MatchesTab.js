@@ -302,6 +302,14 @@ function MatchCard({ match, index, isSelected, onClick }) {
 }
 
 function MatchLeaderboard({ match }) {
+  const isCompleted = match.status === "completed";
+
+  // Get 1st place and runner-up prize from data
+  const firstPlaceEntry = match.leaderboard.find((e) => e.position === 1);
+  const runnerUpEntry = match.leaderboard.find((e) => e.position === 2);
+  const firstPlacePrize = firstPlaceEntry?.prizeAmount || 0;
+  const runnerUpPrize = runnerUpEntry?.prizeAmount || 0;
+
   return (
     <Card glass className="!p-0">
       <div className="mb-4 p-3 pb-0 sm:mb-6 sm:p-4">
@@ -324,24 +332,39 @@ function MatchLeaderboard({ match }) {
           </span>
         </div>
       </div>
+
       <div>
         {match.leaderboard.map((entry) => (
-          <LeaderboardEntry key={entry.playerId} entry={entry} />
+          <LeaderboardEntry
+            key={entry.playerId}
+            entry={entry}
+            isCompleted={isCompleted}
+          />
         ))}
       </div>
     </Card>
   );
 }
 
-function LeaderboardEntry({ entry }) {
+function LeaderboardEntry({ entry, isCompleted }) {
   const positionIcons = {
     1: "https://res.cloudinary.com/dg0cmj6su/image/upload/v1763459457/First_xf1xz2.webp",
     2: "https://res.cloudinary.com/dg0cmj6su/image/upload/v1763459457/second_nak1rc.webp",
     3: "https://res.cloudinary.com/dg0cmj6su/image/upload/v1763459457/3rd_dxdd3t.webp",
   };
 
+  const isWinner = entry.position === 1;
+  const isRunnerUp = entry.position >= 2 && entry.position <= 10;
+  const hasPrize = isCompleted && entry.prizeAmount > 0;
+
   return (
-    <div className="bg-gold-card-bg flex flex-col gap-3 border-b border-white/20 p-3 px-4 sm:flex-row sm:items-center sm:justify-between sm:gap-0 sm:p-4 sm:px-8">
+    <div
+      className={`flex flex-col gap-3 border-b border-white/20 p-3 px-4 sm:flex-row sm:items-center sm:justify-between sm:gap-0 sm:p-4 sm:px-8 ${
+        isWinner && isCompleted
+          ? "bg-gradient-to-r from-yellow-900/20 to-transparent"
+          : "bg-gold-card-bg"
+      }`}
+    >
       <div className="flex items-center space-x-3 sm:space-x-4">
         <div className="flex items-center space-x-2">
           <span className="text-gold min-w-[2.5rem] text-xl font-bold sm:min-w-[3rem] sm:text-2xl">
@@ -360,25 +383,45 @@ function LeaderboardEntry({ entry }) {
           <div className="text-2xl sm:text-3xl">{entry.avatar}</div>
         </div>
         <div className="min-w-0 flex-1">
-          <p className="truncate text-sm font-bold text-white sm:text-base">
-            {entry.username}
-          </p>
+          <div className="flex items-center gap-2">
+            <p className="truncate text-sm font-bold text-white sm:text-base">
+              {entry.username}
+            </p>
+            {isWinner && isCompleted && (
+              <span className="bg-gold/20 text-gold rounded px-1.5 py-0.5 text-[10px] font-bold">
+                CHAMPION
+              </span>
+            )}
+          </div>
           <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-gray-400 sm:gap-x-4 sm:text-sm">
             <span>Score: {entry.score.toLocaleString()}</span>
             <span>Kills: {entry.kills}</span>
-            {/* <span>K/D: {entry.kdRatio}</span> */}
           </div>
         </div>
       </div>
       <div className="text-left sm:text-right">
-        {entry.prizeAmount > 0 && (
-          <div className="bg-gold/20 border-gold/40 inline-block rounded-lg border px-3 py-1.5 sm:px-4 sm:py-2">
+        {hasPrize && (
+          <div
+            className={`inline-block rounded-lg border px-3 py-1.5 sm:px-4 sm:py-2 ${
+              isWinner
+                ? "border-gold/50 bg-gradient-to-r from-yellow-500/20 to-amber-500/20"
+                : "bg-gold/20 border-gold/40"
+            }`}
+          >
             <p className="text-gold text-sm font-bold sm:text-base">
               +{entry.prizeAmount.toLocaleString()} 💎
             </p>
             <p className="text-gold/80 text-xs">
               (${entry.prizeAmount.toLocaleString()} USD)
             </p>
+            {/* {isWinner && (
+              <p className="mt-0.5 text-[10px] text-amber-400/80">
+                50% of pool
+              </p>
+            )}
+            {isRunnerUp && !isWinner && (
+              <p className="mt-0.5 text-[10px] text-gray-500">~5.56% of pool</p>
+            )} */}
           </div>
         )}
       </div>

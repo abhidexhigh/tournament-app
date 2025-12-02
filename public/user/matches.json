@@ -1,0 +1,878 @@
+{
+  "participants": [
+    {
+      "name": "BrinxD",
+      "imageUrl": "https://res.cloudinary.com/dg0cmj6su/image/upload/v1741170701/pngtree-video-game-character-icon-for-gamer-graphics-illustration-vector-png-image_15944189_xigomc.png",
+      "tag": "EUW",
+      "companionId": "b83f7c15-188a-43b3-bda3-aaa6d5ce90f0",
+      "lastRound": 40,
+      "level": 8,
+      "placement": 2,
+      "playersEliminated": 2,
+      "totalDamageToPlayers": 150,
+      "traits": [
+        {
+          "name": "Chaos",
+          "numUnits": 8,
+          "currentTier": 3
+        },
+        {
+          "name": "Druid",
+          "numUnits": 5,
+          "currentTier": 0
+        },
+        {
+          "name": "GirlCrush",
+          "numUnits": 3,
+          "currentTier": 1
+        },
+        {
+          "name": "Mirage",
+          "numUnits": 4,
+          "currentTier": 0
+        }
+      ],
+      "units": [
+        {
+          "key": "Shesha",
+          "coreRank": 2,
+          "items": ["Kunee", "Kiriti", "LeaderArmor"],
+          "tier": 2
+        },
+        {
+          "key": "Shinigami",
+          "coreRank": 4,
+          "items": ["ScaleHelmet", "Osirian", "EyeOfRa"],
+          "tier": 1
+        },
+        {
+          "key": "Grimgor",
+          "coreRank": 5,
+          "items": ["Simurgh", "Evalach", "Kaminari"],
+          "tier": 2
+        },
+        {
+          "key": "Orphne",
+          "coreRank": 2,
+          "items": ["Bayan", "Raikiri", "Gladius"],
+          "tier": 2
+        },
+        {
+          "key": "Tiamat",
+          "coreRank": 9,
+          "items": ["EyeOfRa", "Darius", "Raikiri"],
+          "tier": 1
+        },
+        {
+          "key": "Nordri",
+          "coreRank": 3,
+          "items": ["SilverBullet", "Bayan", "Cloak"],
+          "tier": 2
+        },
+        {
+          "key": "Zarok",
+          "coreRank": 3,
+          "items": ["Kiriti", "Pendragon’sCrown", "Kunee"],
+          "tier": 3
+        },
+        {
+          "key": "Karna",
+          "coreRank": 10,
+          "items": ["Simurgh", "Evalach", "Kaminari"],
+          "tier": 2
+        },
+        {
+          "key": "Aello",
+          "coreRank": 10,
+          "items": ["ScaleHelmet", "Osirian", "EyeOfRa"],
+          "tier": 2
+        },
+        {
+          "key": "Alberich",
+          "coreRank": 7,
+          "items": ["Raikiri", "Stormhorn", "Jingong"],
+          "tier": 3
+        }
+      ],
+      "augments": ["SavageMomentum", "WhirlwindofChaos", "PowerGrowth"],
+      "forces": [
+        {
+          "key": "Light",
+          "numUnits": 5
+        },
+        {
+          "key": "Dark",
+          "numUnits": 2
+        },
+        {
+          "key": "Storm",
+          "numUnits": 1
+        },
+        {
+          "key": "Fire",
+          "numUnits": 1
+        },
+        {
+          "key": "Water",
+          "numUnits": 1
+        }
+      ],
+      "skillTree": ["FireTrap", "Meteor", "Doom"]
+    },
+    {
+      "name": "DeathNightt",
+      "imageUrl": "https://res.cloudinary.com/dg0cmj6su/image/upload/v1741170701/pngtree-video-game-character-icon-for-gamer-graphics-illustration-vector-png-image_15944189_xigomc.png",
+      "tag": "EUW",
+      "companionId": "ba753e84-0f33-4b84-9f39-055f8bf107b3",
+      "lastRound": 34,
+      "level": 8,
+      "placement": 3,
+      "playersEliminated": 1,
+      "totalDamageToPlayers": 107,
+      "traits": [
+        {
+          "name": "Chaos",
+          "numUnits": 8,
+          "currentTier": 3
+        },
+        {
+          "name": "Druid",
+          "numUnits": 5,
+          "currentTier": 0
+        },
+        {
+          "name": "GirlCrush",
+          "numUnits": 3,
+          "currentTier": 1
+        },
+        {
+          "name": "Mirage",
+          "numUnits": 4,
+          "currentTier": 0
+        }
+      ],
+      "units": [
+        {
+          "key": "Circe",
+          "items": [],
+          "rarity": 1,
+          "tier": 2
+        },
+        {
+          "key": "Nergal",
+          "items": ["VikingArmor"],
+          "rarity": 1,
+          "tier": 2
+        },
+        {
+          "key": "Fuma",
+          "items": ["KoreanHelmet", "GreekArmor", "EgyptianWeapon"],
+          "rarity": 2,
+          "tier": 2
+        },
+        {
+          "key": "Meliae",
+          "items": ["IndianHelmet", "RomanArmor", "NativeAmericanWeapon"],
+          "rarity": 2,
+          "tier": 3
+        },
+        {
+          "key": "Aetheria",
+          "items": ["KnightWeapon"],
+          "rarity": 4,
+          "tier": 2
+        },
+        {
+          "key": "Orphne",
+          "items": ["VikingArmor", "EgyptianHelmet"],
+          "rarity": 4,
+          "tier": 1
+        },
+        {
+          "key": "Pyra",
+          "items": [],
+          "rarity": 4,
+          "tier": 2
+        },
+        {
+          "key": "Xi Wangmu",
+          "items": ["ChineseHelmet", "KoreanArmor"],
+          "rarity": 6,
+          "tier": 2
+        }
+      ],
+      "augments": ["SavageMomentum", "WhirlwindofChaos", "PowerGrowth"],
+      "forces": [
+        {
+          "key": "Light",
+          "numUnits": 5
+        },
+        {
+          "key": "Dark",
+          "numUnits": 2
+        },
+        {
+          "key": "Storm",
+          "numUnits": 1
+        },
+        {
+          "key": "Fire",
+          "numUnits": 1
+        },
+        {
+          "key": "Water",
+          "numUnits": 1
+        }
+      ],
+      "skillTree": ["FireTrap", "Meteor", "Doom"]
+    },
+    {
+      "name": "omaar063",
+      "imageUrl": "https://res.cloudinary.com/dg0cmj6su/image/upload/v1741170701/pngtree-video-game-character-icon-for-gamer-graphics-illustration-vector-png-image_15944189_xigomc.png",
+      "tag": "5063",
+      "companionId": "127829e1-6a49-45f7-b59d-f63c3f8b6e58",
+      "lastRound": 28,
+      "level": 9,
+      "placement": 6,
+      "playersEliminated": 0,
+      "totalDamageToPlayers": 52,
+      "traits": [
+        {
+          "name": "Chaos",
+          "numUnits": 8,
+          "currentTier": 3
+        },
+        {
+          "name": "Druid",
+          "numUnits": 5,
+          "currentTier": 0
+        },
+        {
+          "name": "GirlCrush",
+          "numUnits": 3,
+          "currentTier": 1
+        },
+        {
+          "name": "Mirage",
+          "numUnits": 4,
+          "currentTier": 0
+        }
+      ],
+      "units": [
+        {
+          "key": "Merope",
+          "items": [],
+          "rarity": 0,
+          "tier": 2
+        },
+        {
+          "key": "Aello",
+          "items": [],
+          "rarity": 0,
+          "tier": 2
+        },
+        {
+          "key": "Ocypete",
+          "items": [],
+          "rarity": 1,
+          "tier": 2
+        },
+        {
+          "key": "Nicothoe",
+          "items": ["PersianHelmet", "IndianWeapon"],
+          "rarity": 2,
+          "tier": 2
+        },
+        {
+          "key": "Celaeno",
+          "items": ["EgyptianWeapon", "KnightHelmet", "RomanArmor"],
+          "rarity": 2,
+          "tier": 2
+        },
+        {
+          "key": "Nicothoe",
+          "items": ["RomanArmor", "IndianHelmet", "NativeAmericanArmor"],
+          "rarity": 4,
+          "tier": 2
+        },
+        {
+          "key": "Morwen",
+          "items": ["EgyptianWeapon"],
+          "rarity": 4,
+          "tier": 2
+        },
+        {
+          "key": "Fiorella",
+          "items": [],
+          "rarity": 6,
+          "tier": 1
+        },
+        {
+          "key": "Yumi",
+          "items": ["IndianArmor"],
+          "rarity": 6,
+          "tier": 2
+        }
+      ],
+      "augments": ["QuickStart", "FreeShoping", "ItemCycle"],
+      "forces": [
+        {
+          "key": "Light",
+          "numUnits": 5
+        },
+        {
+          "key": "Dark",
+          "numUnits": 2
+        },
+        {
+          "key": "Storm",
+          "numUnits": 1
+        },
+        {
+          "key": "Fire",
+          "numUnits": 1
+        },
+        {
+          "key": "Water",
+          "numUnits": 1
+        }
+      ],
+      "skillTree": ["FireTrap", "Meteor", "Doom"]
+    },
+    {
+      "name": "Maxwell",
+      "imageUrl": "https://res.cloudinary.com/dg0cmj6su/image/upload/v1741170701/pngtree-video-game-character-icon-for-gamer-graphics-illustration-vector-png-image_15944189_xigomc.png",
+      "tag": "EUW",
+      "companionId": "48cd7725-a66e-4c23-a06d-a9d6e84b035d",
+      "lastRound": 27,
+      "level": 8,
+      "placement": 7,
+      "playersEliminated": 0,
+      "totalDamageToPlayers": 43,
+      "traits": [
+        {
+          "name": "Chaos",
+          "numUnits": 8,
+          "currentTier": 3
+        },
+        {
+          "name": "Druid",
+          "numUnits": 5,
+          "currentTier": 0
+        },
+        {
+          "name": "GirlCrush",
+          "numUnits": 3,
+          "currentTier": 1
+        },
+        {
+          "name": "Mirage",
+          "numUnits": 4,
+          "currentTier": 0
+        }
+      ],
+      "units": [
+        {
+          "key": "Rei",
+          "items": [],
+          "rarity": 2,
+          "tier": 1
+        },
+        {
+          "key": "Akane",
+          "items": ["EnglandWeapon", "EgyptianWeapon", "NativeAmericanWeapon"],
+          "rarity": 4,
+          "tier": 1
+        },
+        {
+          "key": "Hana",
+          "items": ["JapaneseHelmet", "RomanArmor", "ChineseWeapon"],
+          "rarity": 4,
+          "tier": 1
+        },
+        {
+          "key": "Pyra",
+          "items": ["KoreanArmor", "GreekMagicWeapon", "PersianHelmet"],
+          "rarity": 4,
+          "tier": 2
+        },
+        {
+          "key": "Fiorella",
+          "items": ["IndianHelmet"],
+          "rarity": 6,
+          "tier": 1
+        },
+        {
+          "key": "Kazuha",
+          "items": ["KoreanHelmet", "JapaneseArmor", "IndianWeapon"],
+          "rarity": 6,
+          "tier": 2
+        },
+        {
+          "key": "Leizu",
+          "items": [],
+          "rarity": 6,
+          "tier": 1
+        },
+        {
+          "key": "Ravana",
+          "items": ["PersianWeapon"],
+          "rarity": 6,
+          "tier": 1
+        },
+        {
+          "key": "Keres",
+          "items": [],
+          "rarity": 9,
+          "tier": 1
+        }
+      ],
+      "augments": ["QuickStart", "FreeShoping", "ItemCycle"],
+      "forces": [
+        {
+          "key": "Light",
+          "numUnits": 5
+        },
+        {
+          "key": "Dark",
+          "numUnits": 2
+        },
+        {
+          "key": "Storm",
+          "numUnits": 1
+        },
+        {
+          "key": "Fire",
+          "numUnits": 1
+        },
+        {
+          "key": "Water",
+          "numUnits": 1
+        }
+      ],
+      "skillTree": ["FireTrap", "Meteor", "Doom"]
+    },
+    {
+      "name": "raffaele wu",
+      "imageUrl": "https://res.cloudinary.com/dg0cmj6su/image/upload/v1741170701/pngtree-video-game-character-icon-for-gamer-graphics-illustration-vector-png-image_15944189_xigomc.png",
+      "tag": "EUW",
+      "companionId": "fafb2097-ba3c-4a39-a940-a3d516ac533a",
+      "lastRound": 33,
+      "level": 8,
+      "placement": 4,
+      "playersEliminated": 1,
+      "totalDamageToPlayers": 109,
+      "traits": [
+        {
+          "name": "Chaos",
+          "numUnits": 8,
+          "currentTier": 3
+        },
+        {
+          "name": "Druid",
+          "numUnits": 5,
+          "currentTier": 0
+        },
+        {
+          "name": "GirlCrush",
+          "numUnits": 3,
+          "currentTier": 1
+        },
+        {
+          "name": "Mirage",
+          "numUnits": 4,
+          "currentTier": 0
+        }
+      ],
+      "units": [
+        {
+          "key": "Circe",
+          "items": ["NativeAmericanArmor", "EgyptianWeapon"],
+          "rarity": 1,
+          "tier": 2
+        },
+        {
+          "key": "Pontianak",
+          "items": ["PersianHelmet"],
+          "rarity": 1,
+          "tier": 3
+        },
+        {
+          "key": "Aradia",
+          "items": ["GreekHelmet", "EnglandArmor", "EgyptianWeapon"],
+          "rarity": 2,
+          "tier": 2
+        },
+        {
+          "key": "Xi Wangmu",
+          "items": ["GreekMagicWeapon", "IndianArmor"],
+          "rarity": 2,
+          "tier": 2
+        },
+        {
+          "key": "Rei",
+          "items": [],
+          "rarity": 2,
+          "tier": 2
+        },
+        {
+          "key": "Akane",
+          "items": ["GreekHelmet", "IndianHelmet", "GreekArmor"],
+          "rarity": 4,
+          "tier": 2
+        },
+        {
+          "key": "Orphne",
+          "items": ["GreekHelmet", "RomanArmor", "RomanArmor"],
+          "rarity": 4,
+          "tier": 2
+        },
+        {
+          "key": "Karna",
+          "items": ["KoreanArmor", "ChineseWeapon", "RomanArmor"],
+          "rarity": 4,
+          "tier": 2
+        }
+      ],
+      "augments": ["QuickStart", "FreeShoping", "ItemCycle"],
+      "forces": [
+        {
+          "key": "Light",
+          "numUnits": 5
+        },
+        {
+          "key": "Dark",
+          "numUnits": 2
+        },
+        {
+          "key": "Storm",
+          "numUnits": 1
+        },
+        {
+          "key": "Fire",
+          "numUnits": 1
+        },
+        {
+          "key": "Water",
+          "numUnits": 1
+        }
+      ],
+      "skillTree": ["FireTrap", "Meteor", "Doom"]
+    },
+    {
+      "name": "Jhins Babygirl",
+      "imageUrl": "https://res.cloudinary.com/dg0cmj6su/image/upload/v1741170701/pngtree-video-game-character-icon-for-gamer-graphics-illustration-vector-png-image_15944189_xigomc.png",
+      "tag": "EUW",
+      "companionId": "7d15e4b3-de0e-43b6-bbfb-ca96615f8cc8",
+      "lastRound": 40,
+      "level": 8,
+      "placement": 1,
+      "playersEliminated": 3,
+      "totalDamageToPlayers": 200,
+      "traits": [
+        {
+          "name": "Chaos",
+          "numUnits": 8,
+          "currentTier": 3
+        },
+        {
+          "name": "Druid",
+          "numUnits": 5,
+          "currentTier": 0
+        },
+        {
+          "name": "GirlCrush",
+          "numUnits": 3,
+          "currentTier": 1
+        },
+        {
+          "name": "Mirage",
+          "numUnits": 4,
+          "currentTier": 0
+        }
+      ],
+      "units": [
+        {
+          "key": "Ravana",
+          "items": ["IndianHelmet"],
+          "rarity": 0,
+          "tier": 2
+        },
+        {
+          "key": "Keres",
+          "items": [],
+          "rarity": 0,
+          "tier": 2
+        },
+        {
+          "key": "Nergal",
+          "items": ["EgyptianWeapon", "ChineseWeapon", "EnglandArmor"],
+          "rarity": 1,
+          "tier": 3
+        },
+        {
+          "key": "Fuma",
+          "items": [],
+          "rarity": 1,
+          "tier": 2
+        },
+        {
+          "key": "Aradia",
+          "items": ["IndianHelmet"],
+          "rarity": 2,
+          "tier": 2
+        },
+        {
+          "key": "Hana",
+          "items": ["EgyptianWeapon"],
+          "rarity": 4,
+          "tier": 2
+        },
+        {
+          "key": "Yumi",
+          "items": ["VikingHelmet", "ChineseWeapon", "ChineseWeapon"],
+          "rarity": 6,
+          "tier": 3
+        },
+        {
+          "key": "Aradia",
+          "items": ["KnightWeapon", "RomanArmor", "IndianWeapon"],
+          "rarity": 6,
+          "tier": 2
+        }
+      ],
+      "augments": ["QuickStart", "FreeShoping", "ItemCycle"],
+      "forces": [
+        {
+          "key": "Light",
+          "numUnits": 5
+        },
+        {
+          "key": "Dark",
+          "numUnits": 2
+        },
+        {
+          "key": "Storm",
+          "numUnits": 1
+        },
+        {
+          "key": "Fire",
+          "numUnits": 1
+        },
+        {
+          "key": "Water",
+          "numUnits": 1
+        }
+      ],
+      "skillTree": ["FireTrap", "Meteor", "Doom"]
+    },
+    {
+      "name": "Cotao",
+      "imageUrl": "https://res.cloudinary.com/dg0cmj6su/image/upload/v1741170701/pngtree-video-game-character-icon-for-gamer-graphics-illustration-vector-png-image_15944189_xigomc.png",
+      "tag": "kme",
+      "companionId": "99f7e111-71e9-458b-a3b8-1a3e57c075fb",
+      "lastRound": 26,
+      "level": 7,
+      "placement": 8,
+      "playersEliminated": 0,
+      "totalDamageToPlayers": 44,
+      "traits": [
+        {
+          "name": "Chaos",
+          "numUnits": 8,
+          "currentTier": 3
+        },
+        {
+          "name": "Druid",
+          "numUnits": 5,
+          "currentTier": 0
+        },
+        {
+          "name": "GirlCrush",
+          "numUnits": 3,
+          "currentTier": 1
+        },
+        {
+          "name": "Mirage",
+          "numUnits": 4,
+          "currentTier": 0
+        }
+      ],
+      "units": [
+        {
+          "key": "Circe",
+          "items": ["RomanArmor", "NativeAmericanWeapon", "EgyptianHelmet"],
+          "rarity": 1,
+          "tier": 2
+        },
+        {
+          "key": "Meliae",
+          "items": ["ChineseWeapon", "RomanArmor", "EnglandHelmet"],
+          "rarity": 2,
+          "tier": 2
+        },
+        {
+          "key": "Xi Wangmu",
+          "items": ["IndianArmor"],
+          "rarity": 2,
+          "tier": 2
+        },
+        {
+          "key": "Aetheria",
+          "items": [],
+          "rarity": 4,
+          "tier": 2
+        },
+        {
+          "key": "Orphne",
+          "items": ["EgyptianHelmet", "ChineseWeapon"],
+          "rarity": 4,
+          "tier": 2
+        },
+        {
+          "key": "Akane",
+          "items": ["KnightHelmet", "VikingArmor"],
+          "rarity": 4,
+          "tier": 1
+        },
+        {
+          "key": "Orphne",
+          "items": [],
+          "rarity": 4,
+          "tier": 1
+        }
+      ],
+      "augments": ["QuickStart", "FreeShoping", "ItemCycle"],
+      "forces": [
+        {
+          "key": "Light",
+          "numUnits": 5
+        },
+        {
+          "key": "Dark",
+          "numUnits": 2
+        },
+        {
+          "key": "Storm",
+          "numUnits": 1
+        },
+        {
+          "key": "Fire",
+          "numUnits": 1
+        },
+        {
+          "key": "Water",
+          "numUnits": 1
+        }
+      ],
+      "skillTree": ["FireTrap", "Meteor", "Doom"]
+    },
+    {
+      "name": "Jiggidy",
+      "imageUrl": "https://res.cloudinary.com/dg0cmj6su/image/upload/v1741170701/pngtree-video-game-character-icon-for-gamer-graphics-illustration-vector-png-image_15944189_xigomc.png",
+      "tag": "EUW",
+      "companionId": "21d7dc7e-27b0-4120-aad2-ec7bc5a095f8",
+      "lastRound": 31,
+      "level": 7,
+      "placement": 5,
+      "playersEliminated": 0,
+      "totalDamageToPlayers": 88,
+      "traits": [
+        {
+          "name": "Chaos",
+          "numUnits": 8,
+          "currentTier": 3
+        },
+        {
+          "name": "Druid",
+          "numUnits": 5,
+          "currentTier": 0
+        },
+        {
+          "name": "GirlCrush",
+          "numUnits": 3,
+          "currentTier": 1
+        },
+        {
+          "name": "Mirage",
+          "numUnits": 4,
+          "currentTier": 0
+        }
+      ],
+      "units": [
+        {
+          "key": "Pyra",
+          "items": ["EgyptianHelmet", "EgyptianWeapon", "EnglandArmor"],
+          "rarity": 0,
+          "tier": 3
+        },
+        {
+          "key": "Merope",
+          "items": [],
+          "rarity": 0,
+          "tier": 2
+        },
+        {
+          "key": "Aello",
+          "items": ["VikingHelmet", "PersianArmor", "EgyptianWeapon"],
+          "rarity": 1,
+          "tier": 3
+        },
+        {
+          "key": "Pontianak",
+          "items": [],
+          "rarity": 1,
+          "tier": 2
+        },
+        {
+          "key": "Nergal",
+          "items": [],
+          "rarity": 1,
+          "tier": 2
+        },
+        {
+          "key": "Ocypete",
+          "items": ["GreekMagicWeapon", "PersianHelmet", "KnightWeapon"],
+          "rarity": 2,
+          "tier": 3
+        },
+        {
+          "key": "Ravana",
+          "items": [],
+          "rarity": 6,
+          "tier": 1
+        },
+        {
+          "key": "Keres",
+          "items": [],
+          "rarity": 9,
+          "tier": 1
+        }
+      ],
+      "augments": ["QuickStart", "FreeShoping", "ItemCycle"],
+      "forces": [
+        {
+          "key": "Light",
+          "numUnits": 5
+        },
+        {
+          "key": "Dark",
+          "numUnits": 2
+        },
+        {
+          "key": "Storm",
+          "numUnits": 1
+        },
+        {
+          "key": "Fire",
+          "numUnits": 1
+        },
+        {
+          "key": "Water",
+          "numUnits": 1
+        }
+      ],
+      "skillTree": ["FireTrap", "Meteor", "Doom"]
+    }
+  ]
+}

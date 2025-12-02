@@ -1,6 +1,8 @@
 // Automated Tournament System for Force of Rune
 // Auto-creates tournaments at specified intervals
 
+import { CONVERSION_RATE } from "./currencyConfig";
+
 const AUTOMATED_LEVELS = {
   gold: {
     name: "Gold",
@@ -8,11 +10,11 @@ const AUTOMATED_LEVELS = {
     scheduleType: "hourly",
     duration: 1 * 60 * 60 * 1000, // 1 hour duration
     entryFeeUsd: 0, // Free entry
-    entryFeeDiamonds: 0,
+    entryFeeDiamonds: 0 * CONVERSION_RATE.USD_TO_DIAMOND,
     prizePoolType: "fixed",
-    prizePoolMultiplier: 100,
-    fixedPrizePoolUsd: 0, // Fixed $10 prize pool for free tournaments
-    fixedPrizePoolDiamonds: 0, // Fixed 1000 diamonds prize pool
+    prizePoolMultiplier: CONVERSION_RATE.USD_TO_DIAMOND,
+    fixedPrizePoolUsd: 0, // Free tournament
+    fixedPrizePoolDiamonds: 0 * CONVERSION_RATE.USD_TO_DIAMOND,
     maxPlayers: 100,
     minRank: "Gold",
     icon: "🥇",
@@ -23,9 +25,11 @@ const AUTOMATED_LEVELS = {
     scheduleType: "fixed",
     duration: 1 * 60 * 60 * 1000, // 1 hour duration
     entryFeeUsd: 1,
-    entryFeeDiamonds: 100,
+    entryFeeDiamonds: 1 * CONVERSION_RATE.USD_TO_DIAMOND,
     prizePoolType: "fixed",
-    prizePoolMultiplier: 100,
+    prizePoolMultiplier: CONVERSION_RATE.USD_TO_DIAMOND,
+    fixedPrizePoolUsd: 100, // $100 prize pool
+    fixedPrizePoolDiamonds: 100 * CONVERSION_RATE.USD_TO_DIAMOND,
     maxPlayers: 100,
     minRank: "Platinum",
     icon: "🥈",
@@ -36,9 +40,11 @@ const AUTOMATED_LEVELS = {
     scheduleType: "fixed",
     duration: 2 * 60 * 60 * 1000, // 2 hours duration
     entryFeeUsd: 2,
-    entryFeeDiamonds: 200,
+    entryFeeDiamonds: 2 * CONVERSION_RATE.USD_TO_DIAMOND,
     prizePoolType: "fixed",
-    prizePoolMultiplier: 100,
+    prizePoolMultiplier: CONVERSION_RATE.USD_TO_DIAMOND,
+    fixedPrizePoolUsd: 200, // $200 prize pool
+    fixedPrizePoolDiamonds: 200 * CONVERSION_RATE.USD_TO_DIAMOND,
     maxPlayers: 100,
     minRank: "Diamond",
     icon: "💎",
@@ -49,9 +55,11 @@ const AUTOMATED_LEVELS = {
     scheduleType: "fixed",
     duration: 3 * 60 * 60 * 1000, // 3 hours duration
     entryFeeUsd: 10,
-    entryFeeDiamonds: 1000,
+    entryFeeDiamonds: 10 * CONVERSION_RATE.USD_TO_DIAMOND,
     prizePoolType: "fixed",
-    prizePoolMultiplier: 100,
+    prizePoolMultiplier: CONVERSION_RATE.USD_TO_DIAMOND,
+    fixedPrizePoolUsd: 1000, // $1000 prize pool
+    fixedPrizePoolDiamonds: 1000 * CONVERSION_RATE.USD_TO_DIAMOND,
     maxPlayers: 100,
     minRank: "Master",
     icon: "👑",
@@ -230,14 +238,14 @@ export const createAutomatedTournamentData = (
 
   const expiryTime = calculateExpiryTime(startTime, level);
 
-  // Use fixed prize pool for free tournaments, otherwise calculate based on entry fee
+  // Use fixed prize pool if defined, otherwise calculate based on entry fee
   const prizePoolUsd =
-    config.entryFeeUsd === 0
-      ? config.fixedPrizePoolUsd || 0
+    config.fixedPrizePoolUsd !== undefined
+      ? config.fixedPrizePoolUsd
       : config.entryFeeUsd * config.prizePoolMultiplier;
   const prizePoolDiamonds =
-    config.entryFeeDiamonds === 0
-      ? config.fixedPrizePoolDiamonds || 0
+    config.fixedPrizePoolDiamonds !== undefined
+      ? config.fixedPrizePoolDiamonds
       : config.entryFeeDiamonds * config.prizePoolMultiplier;
 
   // Format date and time

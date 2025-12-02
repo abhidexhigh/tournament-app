@@ -13,6 +13,7 @@ import { selectTournamentIcon } from "../../lib/iconSelector";
 import { useUser } from "../../contexts/UserContext";
 import { getClanOptions, initializeClans } from "../../lib/clans";
 import { getEntryPriceOptions } from "../../lib/ticketConfig";
+import { CONVERSION_RATE, PRIMARY_CURRENCY } from "../../lib/currencyConfig";
 
 function CreateTournamentContent() {
   const { user } = useUser();
@@ -208,12 +209,12 @@ function CreateTournamentContent() {
         max_players: parseInt(formData.maxPlayers),
         min_rank: formData.minRank,
         prize_pool_type: formData.prizePoolType,
-        prize_pool: parseInt(formData.prizePool) * 100, // Convert USD to diamonds
+        prize_pool: parseInt(formData.prizePool) * CONVERSION_RATE.USD_TO_DIAMOND, // Convert using currency config
         prize_pool_usd: parseInt(formData.prizePool), // Store USD amount
         prize_split_first: formData.prizeSplitFirst,
         prize_split_second: formData.prizeSplitSecond,
         prize_split_third: formData.prizeSplitThird,
-        entry_fee: parseFloat(formData.entryFee) * 100, // Convert USD to diamonds
+        entry_fee: parseFloat(formData.entryFee) * CONVERSION_RATE.USD_TO_DIAMOND, // Convert using currency config
         entry_fee_usd: parseFloat(formData.entryFee), // Store USD amount
         rules: formData.rules,
         image: selectTournamentIcon({
@@ -248,80 +249,107 @@ function CreateTournamentContent() {
   };
 
   return (
-    <div className="min-h-screen px-4 py-8 sm:px-6 lg:px-8">
-      <div className="mx-auto max-w-4xl">
+    <div className="min-h-screen bg-gradient-to-b from-dark-primary via-dark-primary to-dark-secondary px-3 py-6 sm:px-6 sm:py-10">
+      <div className="mx-auto max-w-3xl">
+        {/* Back Button */}
+        <button
+          type="button"
+          onClick={() => router.push("/host/dashboard")}
+          className="group mb-6 inline-flex items-center gap-2 text-sm text-gray-400 transition-all hover:text-white"
+        >
+          <span className="transition-transform group-hover:-translate-x-1">←</span>
+          <span>Back to Dashboard</span>
+        </button>
+
         {/* Header */}
-        <div className="mb-8">
-          <h1 className="mb-2 text-4xl font-bold">
-            <span className="text-gold-gradient">Create Tournament</span>
+        <div className="mb-8 text-center">
+          <div className="mb-4 inline-flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-gold/20 to-gold/5 text-4xl">
+            🏆
+          </div>
+          <h1 className="mb-2 text-3xl font-bold text-white sm:text-4xl">
+            Create New Tournament
           </h1>
           <p className="text-gray-400">
-            Set up your tournament and invite players to compete
+            Fill in the details to launch your tournament
           </p>
         </div>
 
         {/* Form */}
-        <Card>
-          <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Game Selection */}
-            <div>
-              <label className="mb-3 block text-sm font-medium text-gray-300">
-                Game <span className="text-gold">*</span>
-              </label>
-              <select
-                name="game"
-                value={formData.game}
-                onChange={handleInputChange}
-                className="bg-dark-card border-gold-dark/30 focus:ring-gold w-full rounded-lg border px-4 py-3 text-white focus:border-transparent focus:ring-2 focus:outline-none"
-                required
-              >
-                <option value="">Select a game</option>
-                <option value="Force of Rune">Force of Rune</option>
-                <option value="League of Legends">League of Legends</option>
-                <option value="Dota 2">Dota 2</option>
-                <option value="Counter-Strike 2">Counter-Strike 2</option>
-                <option value="Valorant">Valorant</option>
-                <option value="Apex Legends">Apex Legends</option>
-                <option value="Fortnite">Fortnite</option>
-                <option value="Rocket League">Rocket League</option>
-                <option value="Overwatch 2">Overwatch 2</option>
-                <option value="Call of Duty: Warzone">
-                  Call of Duty: Warzone
-                </option>
-                <option value="Other">Other</option>
-              </select>
-              {errors.game && (
-                <p className="mt-2 text-sm text-red-400">{errors.game}</p>
-              )}
-              <p className="mt-2 text-sm text-gray-400">
-                💡 Choose the game for your tournament
-              </p>
+        <form onSubmit={handleSubmit} className="space-y-6">
+            {/* Basic Information */}
+            <div className="rounded-2xl border border-white/5 bg-gradient-to-b from-white/5 to-transparent p-6 shadow-xl backdrop-blur-xl">
+              <div className="space-y-5">
+                <Input
+                  label="Tournament Title"
+                  name="title"
+                  value={formData.title}
+                  onChange={handleInputChange}
+                  placeholder="e.g., Summer Championship 2024"
+                  icon="🏆"
+                  error={errors.title}
+                  required
+                />
+
+                <div>
+                  <label className="mb-2 block text-sm font-semibold text-white">
+                    Select Game <span className="text-gold">*</span>
+                  </label>
+                  <select
+                    name="game"
+                    value={formData.game}
+                    onChange={handleInputChange}
+                    className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3.5 text-white backdrop-blur-sm transition-all hover:border-white/20 focus:border-gold/50 focus:outline-none focus:ring-2 focus:ring-gold/20"
+                    required
+                  >
+                    <option value="" className="bg-dark-card">Choose your game</option>
+                    <option value="Force of Rune" className="bg-dark-card">🎮 Force of Rune</option>
+                    <option value="League of Legends" className="bg-dark-card">⚔️ League of Legends</option>
+                    <option value="Dota 2" className="bg-dark-card">🛡️ Dota 2</option>
+                    <option value="Counter-Strike 2" className="bg-dark-card">🔫 Counter-Strike 2</option>
+                    <option value="Valorant" className="bg-dark-card">🎯 Valorant</option>
+                    <option value="Apex Legends" className="bg-dark-card">🏃 Apex Legends</option>
+                    <option value="Fortnite" className="bg-dark-card">🏗️ Fortnite</option>
+                    <option value="Rocket League" className="bg-dark-card">🚗 Rocket League</option>
+                    <option value="Overwatch 2" className="bg-dark-card">🦸 Overwatch 2</option>
+                    <option value="Call of Duty: Warzone" className="bg-dark-card">☠️ Call of Duty: Warzone</option>
+                    <option value="Other" className="bg-dark-card">🎲 Other</option>
+                  </select>
+                  {errors.game && (
+                    <p className="mt-2 text-xs text-red-400">{errors.game}</p>
+                  )}
+                </div>
+              </div>
             </div>
 
             {/* Tournament Type */}
-            <div>
-              <label className="mb-3 block text-sm font-medium text-gray-300">
-                Tournament Type <span className="text-gold">*</span>
-              </label>
-              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+            <div className="rounded-2xl border border-white/5 bg-gradient-to-b from-white/5 to-transparent p-6 shadow-xl backdrop-blur-xl">
+              <h3 className="mb-4 text-sm font-semibold uppercase tracking-wider text-gray-400">
+                Tournament Format
+              </h3>
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                 <button
                   type="button"
                   onClick={() =>
                     setFormData({ ...formData, tournamentType: "regular" })
                   }
-                  className={`rounded-lg border-2 p-4 text-left transition-all duration-300 ${
+                  className={`group relative rounded-xl border-2 p-6 text-left transition-all ${
                     formData.tournamentType === "regular"
                       ? "border-gold bg-gold/10"
-                      : "border-gold-dark/30 hover:border-gold/50"
+                      : "border-white/10 bg-transparent hover:border-white/20 hover:bg-white/5"
                   }`}
                 >
-                  <div className="mb-2 flex items-center space-x-3">
-                    <span className="text-2xl">🏆</span>
-                    <p className="font-bold text-white">Regular</p>
-                  </div>
+                  <div className="mb-4 text-4xl">🏆</div>
+                  <h4 className="mb-2 text-lg font-bold text-white">Regular</h4>
                   <p className="text-sm text-gray-400">
-                    Standard tournament for individual players
+                    Individual players compete
                   </p>
+                  {formData.tournamentType === "regular" && (
+                    <div className="absolute right-4 top-4">
+                      <div className="flex h-6 w-6 items-center justify-center rounded-full bg-gold text-xs font-bold text-black">
+                        ✓
+                      </div>
+                    </div>
+                  )}
                 </button>
 
                 <button
@@ -329,461 +357,318 @@ function CreateTournamentContent() {
                   onClick={() =>
                     setFormData({ ...formData, tournamentType: "clan_battle" })
                   }
-                  className={`rounded-lg border-2 p-4 text-left transition-all duration-300 ${
+                  className={`group relative rounded-xl border-2 p-6 text-left transition-all ${
                     formData.tournamentType === "clan_battle"
                       ? "border-gold bg-gold/10"
-                      : "border-gold-dark/30 hover:border-gold/50"
+                      : "border-white/10 bg-transparent hover:border-white/20 hover:bg-white/5"
                   }`}
                 >
-                  <div className="mb-2 flex items-center space-x-3">
-                    <span className="text-2xl">⚔️</span>
-                    <p className="font-bold text-white">Clan Battle</p>
-                  </div>
+                  <div className="mb-4 text-4xl">⚔️</div>
+                  <h4 className="mb-2 text-lg font-bold text-white">Clan Battle</h4>
                   <p className="text-sm text-gray-400">
-                    Team-based tournament with clan vs clan battles
+                    Clan vs clan competition
                   </p>
+                  {formData.tournamentType === "clan_battle" && (
+                    <div className="absolute right-4 top-4">
+                      <div className="flex h-6 w-6 items-center justify-center rounded-full bg-gold text-xs font-bold text-black">
+                        ✓
+                      </div>
+                    </div>
+                  )}
                 </button>
               </div>
-            </div>
 
-            {/* Accept Ticket Payments Toggle */}
-            <div className="rounded-lg border border-purple-500/30 bg-purple-500/5 p-4">
-              <label className="flex cursor-pointer items-center">
-                <input
-                  type="checkbox"
-                  checked={formData.acceptsTickets}
-                  onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      acceptsTickets: e.target.checked,
-                      entryFee: 0,
-                    })
-                  }
-                  className="bg-dark-card h-5 w-5 rounded border-purple-500/30 text-purple-500 focus:ring-2 focus:ring-purple-500"
-                />
-                <div className="ml-3">
-                  <span className="font-medium text-white">
-                    🎫 Accept Ticket Payments
-                  </span>
-                  <p className="mt-1 text-sm text-gray-400">
-                    Allow players to join using tickets with fixed entry fees
-                    ($0.10, $1.00, $10.00)
-                  </p>
-                </div>
-              </label>
-              {!formData.acceptsTickets && entryPriceOptions.length > 0 && (
-                <div className="mt-4 grid grid-cols-1 gap-4 md:grid-cols-3">
-                  {entryPriceOptions.map((option) => (
-                    <div
-                      key={option.value}
-                      className="bg-dark-card/80 rounded-lg border border-purple-500/20 p-4"
+              {/* Clan Battle Mode Selection */}
+              {formData.tournamentType === "clan_battle" && (
+                <>
+                  <div className="my-6 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent" />
+                  
+                  <h4 className="mb-4 text-sm font-semibold uppercase tracking-wider text-gray-400">
+                    Battle Mode
+                  </h4>
+                  <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setFormData({
+                          ...formData,
+                          clanBattleMode: "auto_division",
+                        })
+                      }
+                      className={`relative rounded-xl border-2 p-5 text-left transition-all ${
+                        formData.clanBattleMode === "auto_division"
+                          ? "border-gold bg-gold/10"
+                          : "border-white/10 hover:border-white/20 hover:bg-white/5"
+                      }`}
                     >
-                      <p className="font-semibold text-white">{option.label}</p>
-                      <p className="mt-1 text-sm text-purple-300">
-                        {option.description}
+                      <div className="mb-3 text-3xl">🎯</div>
+                      <h5 className="mb-1 font-bold text-white">Auto-Division</h5>
+                      <p className="text-xs text-gray-400">
+                        System balances teams
                       </p>
-                      <p className="mt-2 text-xs text-gray-400">
-                        {option.diamonds_equivalent} 💎 equivalent
+                      {formData.clanBattleMode === "auto_division" && (
+                        <div className="absolute right-3 top-3">
+                          <div className="flex h-5 w-5 items-center justify-center rounded-full bg-gold text-[10px] font-bold text-black">
+                            ✓
+                          </div>
+                        </div>
+                      )}
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setFormData({
+                          ...formData,
+                          clanBattleMode: "clan_selection",
+                        })
+                      }
+                      className={`relative rounded-xl border-2 p-5 text-left transition-all ${
+                        formData.clanBattleMode === "clan_selection"
+                          ? "border-gold bg-gold/10"
+                          : "border-white/10 hover:border-white/20 hover:bg-white/5"
+                      }`}
+                    >
+                      <div className="mb-3 text-3xl">👥</div>
+                      <h5 className="mb-1 font-bold text-white">Clan Selection</h5>
+                      <p className="text-xs text-gray-400">
+                        Choose specific clans
                       </p>
+                      {formData.clanBattleMode === "clan_selection" && (
+                        <div className="absolute right-3 top-3">
+                          <div className="flex h-5 w-5 items-center justify-center rounded-full bg-gold text-[10px] font-bold text-black">
+                            ✓
+                          </div>
+                        </div>
+                      )}
+                    </button>
+                  </div>
+
+                  {/* Clan Selection Fields */}
+                  {formData.clanBattleMode === "clan_selection" && (
+                    <div className="mt-5 grid grid-cols-1 gap-4 sm:grid-cols-2">
+                      <div>
+                        <label className="mb-2 block text-sm font-semibold text-white">
+                          First Clan <span className="text-gold">*</span>
+                        </label>
+                        <select
+                          name="clan1_id"
+                          value={formData.clan1_id}
+                          onChange={handleInputChange}
+                          className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-white backdrop-blur-sm transition-all hover:border-white/20 focus:border-gold/50 focus:outline-none focus:ring-2 focus:ring-gold/20"
+                          required
+                        >
+                          <option value="" className="bg-dark-card">Select first clan</option>
+                          {clanOptions.map((option) => (
+                            <option key={option.value} value={option.value} className="bg-dark-card">
+                              {option.label}
+                            </option>
+                          ))}
+                        </select>
+                        {errors.clan1_id && (
+                          <p className="mt-1.5 text-xs text-red-400">
+                            {errors.clan1_id}
+                          </p>
+                        )}
+                      </div>
+
+                      <div>
+                        <label className="mb-2 block text-sm font-semibold text-white">
+                          Second Clan <span className="text-gold">*</span>
+                        </label>
+                        <select
+                          name="clan2_id"
+                          value={formData.clan2_id}
+                          onChange={handleInputChange}
+                          className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-white backdrop-blur-sm transition-all hover:border-white/20 focus:border-gold/50 focus:outline-none focus:ring-2 focus:ring-gold/20"
+                          required
+                        >
+                          <option value="" className="bg-dark-card">Select second clan</option>
+                          {clanOptions.map((option) => (
+                            <option key={option.value} value={option.value} className="bg-dark-card">
+                              {option.label}
+                            </option>
+                          ))}
+                        </select>
+                        {errors.clan2_id && (
+                          <p className="mt-1.5 text-xs text-red-400">
+                            {errors.clan2_id}
+                          </p>
+                        )}
+                      </div>
                     </div>
-                  ))}
-                </div>
+                  )}
+                </>
               )}
             </div>
 
-            {/* Clan Battle Mode Selection */}
-            {formData.tournamentType === "clan_battle" && (
-              <div>
-                <label className="mb-3 block text-sm font-medium text-gray-300">
-                  Clan Battle Mode <span className="text-gold">*</span>
-                </label>
-                <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                  <button
-                    type="button"
-                    onClick={() =>
-                      setFormData({
-                        ...formData,
-                        clanBattleMode: "auto_division",
-                      })
-                    }
-                    className={`rounded-lg border-2 p-4 text-left transition-all duration-300 ${
-                      formData.clanBattleMode === "auto_division"
-                        ? "border-gold bg-gold/10"
-                        : "border-gold-dark/30 hover:border-gold/50"
-                    }`}
-                  >
-                    <div className="mb-2 flex items-center space-x-3">
-                      <span className="text-2xl">🎯</span>
-                      <p className="font-bold text-white">Auto-Division</p>
-                    </div>
-                    <p className="text-sm text-gray-400">
-                      Up to 60 players join, system divides into 2 teams of 30
-                    </p>
-                  </button>
+            {/* Schedule & Participants */}
+            <div className="rounded-2xl border border-white/5 bg-gradient-to-b from-white/5 to-transparent p-6 shadow-xl backdrop-blur-xl">
+              <h3 className="mb-5 text-sm font-semibold uppercase tracking-wider text-gray-400">
+                Schedule & Requirements
+              </h3>
+              
+              <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
+                <Input
+                  label="Tournament Date"
+                  name="date"
+                  type="date"
+                  value={formData.date}
+                  onChange={handleInputChange}
+                  icon="📅"
+                  error={errors.date}
+                  required
+                />
+                <Input
+                  label="Start Time"
+                  name="time"
+                  type="time"
+                  value={formData.time}
+                  onChange={handleInputChange}
+                  icon="⏰"
+                  error={errors.time}
+                  required
+                />
+              </div>
 
-                  <button
-                    type="button"
-                    onClick={() =>
-                      setFormData({
-                        ...formData,
-                        clanBattleMode: "clan_selection",
-                      })
+              <div className="my-6 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent" />
+
+              <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
+                <div>
+                  <Input
+                    label={
+                      formData.tournamentType === "clan_battle"
+                        ? "Players per Clan"
+                        : "Maximum Players"
                     }
-                    className={`rounded-lg border-2 p-4 text-left transition-all duration-300 ${
-                      formData.clanBattleMode === "clan_selection"
-                        ? "border-gold bg-gold/10"
-                        : "border-gold-dark/30 hover:border-gold/50"
-                    }`}
-                  >
-                    <div className="mb-2 flex items-center space-x-3">
-                      <span className="text-2xl">👥</span>
-                      <p className="font-bold text-white">Clan Selection</p>
-                    </div>
-                    <p className="text-sm text-gray-400">
-                      Host selects 2 specific clans (max 30 players each)
+                    name="maxPlayers"
+                    type="number"
+                    value={formData.maxPlayers}
+                    onChange={handleInputChange}
+                    placeholder={
+                      formData.tournamentType === "clan_battle"
+                        ? "8-30"
+                        : "12-100"
+                    }
+                    icon="👥"
+                    error={errors.maxPlayers}
+                    required
+                    min={
+                      formData.tournamentType === "regular"
+                        ? 12
+                        : formData.tournamentType === "clan_battle"
+                          ? 8
+                          : 2
+                    }
+                    max={
+                      formData.tournamentType === "regular"
+                        ? 100
+                        : formData.tournamentType === "clan_battle"
+                          ? 30
+                          : 1000
+                    }
+                  />
+                  {formData.maxPlayers && (
+                    <p className="mt-1.5 text-xs text-gray-500">
+                      {formData.tournamentType === "clan_battle"
+                        ? `Total: ${formData.maxPlayers * 2} players`
+                        : `${formData.maxPlayers} total players`}
                     </p>
-                  </button>
+                  )}
+                </div>
+
+                <div>
+                  <label className="mb-2 block text-sm font-semibold text-white">
+                    Minimum Rank <span className="text-gold">*</span>
+                  </label>
+                  <select
+                    name="minRank"
+                    value={formData.minRank}
+                    onChange={handleInputChange}
+                    className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3.5 text-white backdrop-blur-sm transition-all hover:border-white/20 focus:border-gold/50 focus:outline-none focus:ring-2 focus:ring-gold/20"
+                    required
+                  >
+                    <option value="" className="bg-dark-card">Select minimum rank</option>
+                    <option value="Silver" className="bg-dark-card">🥈 Silver</option>
+                    <option value="Gold" className="bg-dark-card">🥇 Gold</option>
+                    <option value="Platinum" className="bg-dark-card">💠 Platinum</option>
+                    <option value="Diamond" className="bg-dark-card">💎 Diamond</option>
+                    <option value="Master" className="bg-dark-card">👑 Master</option>
+                  </select>
+                  {errors.minRank && (
+                    <p className="mt-1.5 text-xs text-red-400">{errors.minRank}</p>
+                  )}
                 </div>
               </div>
-            )}
-
-            {/* Clan Selection Fields */}
-            {formData.tournamentType === "clan_battle" &&
-              formData.clanBattleMode === "clan_selection" && (
-                <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                  <div>
-                    <label className="mb-3 block text-sm font-medium text-gray-300">
-                      First Clan <span className="text-gold">*</span>
-                    </label>
-                    <select
-                      name="clan1_id"
-                      value={formData.clan1_id}
-                      onChange={handleInputChange}
-                      className="bg-dark-card border-gold-dark/30 focus:ring-gold w-full rounded-lg border px-4 py-3 text-white focus:border-transparent focus:ring-2 focus:outline-none"
-                      required
-                    >
-                      <option value="">Select first clan</option>
-                      {clanOptions.map((option) => (
-                        <option key={option.value} value={option.value}>
-                          {option.label}
-                        </option>
-                      ))}
-                    </select>
-                    {errors.clan1_id && (
-                      <p className="mt-2 text-sm text-red-400">
-                        {errors.clan1_id}
-                      </p>
-                    )}
-                  </div>
-
-                  <div>
-                    <label className="mb-3 block text-sm font-medium text-gray-300">
-                      Second Clan <span className="text-gold">*</span>
-                    </label>
-                    <select
-                      name="clan2_id"
-                      value={formData.clan2_id}
-                      onChange={handleInputChange}
-                      className="bg-dark-card border-gold-dark/30 focus:ring-gold w-full rounded-lg border px-4 py-3 text-white focus:border-transparent focus:ring-2 focus:outline-none"
-                      required
-                    >
-                      <option value="">Select second clan</option>
-                      {clanOptions.map((option) => (
-                        <option key={option.value} value={option.value}>
-                          {option.label}
-                        </option>
-                      ))}
-                    </select>
-                    {errors.clan2_id && (
-                      <p className="mt-2 text-sm text-red-400">
-                        {errors.clan2_id}
-                      </p>
-                    )}
-                  </div>
-                </div>
-              )}
-
-            {/* Tournament Title */}
-            <Input
-              label="Tournament Title"
-              name="title"
-              value={formData.title}
-              onChange={handleInputChange}
-              placeholder="Enter tournament name"
-              icon="🏆"
-              error={errors.title}
-              required
-            />
-
-            {/* Date and Time */}
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-              <Input
-                label="Tournament Date"
-                name="date"
-                type="date"
-                value={formData.date}
-                onChange={handleInputChange}
-                icon="📅"
-                error={errors.date}
-                required
-              />
-              <Input
-                label="Start Time"
-                name="time"
-                type="time"
-                value={formData.time}
-                onChange={handleInputChange}
-                icon="⏰"
-                error={errors.time}
-                required
-              />
             </div>
 
-            {/* Max Players */}
-            <div>
-              <Input
-                label={
-                  formData.tournamentType === "clan_battle"
-                    ? "Maximum Players per Clan (8-30)"
-                    : "Maximum Players (12-100)"
-                }
-                name="maxPlayers"
-                type="number"
-                value={formData.maxPlayers}
-                onChange={handleInputChange}
-                placeholder={
-                  formData.tournamentType === "clan_battle"
-                    ? "e.g., 20 (8-30 per clan)"
-                    : "e.g., 50 (12-100)"
-                }
-                icon="👥"
-                error={errors.maxPlayers}
-                required
-                min={
-                  formData.tournamentType === "regular"
-                    ? 12
-                    : formData.tournamentType === "clan_battle"
-                      ? 8
-                      : 2
-                }
-                max={
-                  formData.tournamentType === "regular"
-                    ? 100
-                    : formData.tournamentType === "clan_battle"
-                      ? 30
-                      : 1000
-                }
-              />
-              <p className="mt-2 text-sm text-gray-400">
-                💡{" "}
-                {formData.tournamentType === "regular"
-                  ? "Regular tournaments require 12-100 players for competitive matches"
-                  : formData.tournamentType === "clan_battle"
-                    ? formData.clanBattleMode === "auto_division"
-                      ? "Auto-Division: 8-30 players per clan (system divides into 2 teams, total 16-60 players)"
-                      : "Clan Selection: 8-30 players per clan (2 clans compete, total 16-60 players)"
-                    : "Maximum number of players who can join this tournament"}
-              </p>
-            </div>
+            {/* Prize Pool */}
+            <div className="rounded-2xl border border-white/5 bg-gradient-to-b from-white/5 to-transparent p-6 shadow-xl backdrop-blur-xl">
+              <h3 className="mb-5 text-sm font-semibold uppercase tracking-wider text-gray-400">
+                Prize Configuration
+              </h3>
 
-            {/* Minimum Rank Required */}
-            <div>
-              <label className="mb-3 block text-sm font-medium text-gray-300">
-                Minimum Rank Required <span className="text-gold">*</span>
-              </label>
-              <select
-                name="minRank"
-                value={formData.minRank}
-                onChange={handleInputChange}
-                className="bg-dark-card border-gold-dark/30 focus:ring-gold w-full rounded-lg border px-4 py-3 text-white focus:border-transparent focus:ring-2 focus:outline-none"
-                required
-              >
-                <option value="">Select minimum rank</option>
-                <option value="Silver">Silver</option>
-                <option value="Gold">Gold</option>
-                <option value="Platinum">Platinum</option>
-                <option value="Diamond">Diamond</option>
-                <option value="Master">Master</option>
-              </select>
-              {errors.minRank && (
-                <p className="mt-2 text-sm text-red-400">{errors.minRank}</p>
-              )}
-              <p className="mt-2 text-sm text-gray-400">
-                💡 Only players with this rank or higher can join the tournament
-              </p>
-            </div>
-
-            {/* Prize Pool Type */}
-            <div>
-              <label className="mb-3 block text-sm font-medium text-gray-300">
-                Prize Pool Type <span className="text-gold">*</span>
-              </label>
-              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+              <div className="mb-5 flex gap-3">
                 <button
                   type="button"
                   onClick={() =>
                     setFormData({ ...formData, prizePoolType: "fixed" })
                   }
-                  className={`rounded-lg border-2 p-4 text-left transition-all duration-300 ${
+                  className={`flex-1 rounded-xl border-2 px-4 py-3 text-sm font-semibold transition-all ${
                     formData.prizePoolType === "fixed"
-                      ? "border-gold bg-gold/10"
-                      : "border-gold-dark/30 hover:border-gold/50"
+                      ? "border-gold bg-gold/10 text-white"
+                      : "border-white/10 text-gray-400 hover:border-white/20 hover:text-white"
                   }`}
                 >
-                  <div className="mb-2 flex items-center space-x-3">
-                    <span className="text-2xl">💰</span>
-                    <p className="font-bold text-white">Fixed Prize Pool</p>
-                  </div>
-                  <p className="text-sm text-gray-400">
-                    Set a fixed prize amount that doesn&apos;t change
-                  </p>
+                  💰 Fixed
                 </button>
-
                 <button
                   type="button"
                   onClick={() =>
                     setFormData({ ...formData, prizePoolType: "entry-based" })
                   }
-                  className={`rounded-lg border-2 p-4 text-left transition-all duration-300 ${
+                  className={`flex-1 rounded-xl border-2 px-4 py-3 text-sm font-semibold transition-all ${
                     formData.prizePoolType === "entry-based"
-                      ? "border-gold bg-gold/10"
-                      : "border-gold-dark/30 hover:border-gold/50"
+                      ? "border-gold bg-gold/10 text-white"
+                      : "border-white/10 text-gray-400 hover:border-white/20 hover:text-white"
                   }`}
                 >
-                  <div className="mb-2 flex items-center space-x-3">
-                    <span className="text-2xl">📊</span>
-                    <p className="font-bold text-white">Entry-Based Pool</p>
-                  </div>
-                  <p className="text-sm text-gray-400">
-                    Prize scales with number of participants
-                  </p>
+                  📊 Entry-Based
                 </button>
               </div>
-            </div>
 
-            {/* Prize Pool Amount */}
-            <div>
               <Input
                 label={
                   formData.prizePoolType === "fixed"
-                    ? "Prize Pool (Diamonds)"
-                    : "Maximum Prize Pool (Diamonds)"
+                    ? `Prize Pool (${PRIMARY_CURRENCY === "USD" ? "USD" : "Diamonds"})`
+                    : `Max Prize Pool (${PRIMARY_CURRENCY === "USD" ? "USD" : "Diamonds"})`
                 }
                 name="prizePool"
                 type="number"
                 value={formData.prizePool}
                 onChange={handleInputChange}
-                placeholder="e.g., 500"
-                icon="💎"
+                placeholder="e.g., 1000"
+                icon={PRIMARY_CURRENCY === "USD" ? "💵" : "💎"}
                 error={errors.prizePool}
                 required
               />
-              {formData.prizePoolType === "entry-based" && (
-                <p className="mt-2 text-sm text-gray-400">
-                  💡 Prize will be calculated as: (Current Players / Max
-                  Players) × Max Prize Pool
-                  {formData.maxPlayers && formData.prizePool && (
-                    <span className="text-gold mt-1 block">
-                      Example: If 50 players join out of {formData.maxPlayers},
-                      prize will be{" "}
-                      {Math.floor(
-                        (50 / parseInt(formData.maxPlayers)) *
-                          parseInt(formData.prizePool),
-                      ).toLocaleString()}{" "}
-                      💎 ($
-                      {Math.floor(
-                        (50 / parseInt(formData.maxPlayers)) *
-                          parseInt(formData.prizePool),
-                      ).toLocaleString()}{" "}
-                      USD)
-                    </span>
-                  )}
+              {formData.prizePoolType === "entry-based" && formData.maxPlayers && formData.prizePool && (
+                <p className="mt-1.5 text-xs text-gray-500">
+                  Example: 50 players ={" "}
+                  {Math.floor((50 / parseInt(formData.maxPlayers)) * parseInt(formData.prizePool)).toLocaleString()}{" "}
+                  {PRIMARY_CURRENCY === "USD" ? "$" : "💎"}
                 </p>
               )}
-              <p className="mt-2 text-sm text-gray-400">💡 1 USD = 1 Diamond</p>
-            </div>
 
-            {/* Entry Fee - Conditional UI based on acceptsTickets */}
-            {formData.acceptsTickets ? (
-              /* Fixed Entry Price Options for Ticket-Based Entry */
+              <div className="my-6 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent" />
+
               <div>
-                <label className="mb-3 block text-sm font-medium text-gray-300">
-                  Entry Fee <span className="text-gold">*</span>
+                <label className="mb-3 block text-sm font-semibold text-white">
+                  Prize Distribution <span className="text-gold">*</span>
                 </label>
-                <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-                  {entryPriceOptions.map((option) => (
-                    <button
-                      key={option.value}
-                      type="button"
-                      onClick={() =>
-                        setFormData({ ...formData, entryFee: option.value })
-                      }
-                      className={`relative rounded-lg border-2 p-4 text-left transition-all duration-300 ${
-                        formData.entryFee === option.value
-                          ? "border-purple-500 bg-purple-500/10"
-                          : "border-purple-500/30 hover:border-purple-500/50"
-                      }`}
-                    >
-                      {option.popular && (
-                        <span className="bg-gold text-dark-primary absolute -top-2 -right-2 rounded-full px-2 py-1 text-xs font-bold">
-                          Popular
-                        </span>
-                      )}
-                      <div className="mb-2 flex items-center space-x-3">
-                        <span className="text-2xl">🎫</span>
-                        <p className="font-bold text-white">{option.label}</p>
-                      </div>
-                      <p className="mb-1 text-sm text-purple-400">
-                        {option.description}
-                      </p>
-                      <p className="text-xs text-gray-400">
-                        {option.diamonds_equivalent} 💎 equivalent
-                      </p>
-                    </button>
-                  ))}
-                </div>
-                <p className="mt-2 text-sm text-gray-400">
-                  💡 Players can use matching tickets or pay with diamonds/USD
-                </p>
-              </div>
-            ) : (
-              /* Manual Entry Fee Input for Regular Entry */
-              <div>
-                <Input
-                  label="Entry Fee (USD)"
-                  name="entryFee"
-                  type="number"
-                  value={formData.entryFee}
-                  onChange={handleInputChange}
-                  placeholder="e.g., 1"
-                  icon="💰"
-                  min="0"
-                  max="100"
-                  error={errors.entryFee}
-                  required
-                />
-                <p className="mt-2 text-sm text-gray-400">
-                  💡 Players will need to pay this amount to join the
-                  tournament. Set to 0 for free entry.
-                  {formData.entryFee > 0 && (
-                    <span className="text-gold mt-1 block">
-                      Entry fee: ${formData.entryFee} USD (
-                      {(formData.entryFee * 100).toLocaleString()} 💎)
-                    </span>
-                  )}
-                </p>
-              </div>
-            )}
-
-            {/* Prize Split */}
-            <div>
-              <label className="mb-3 block text-sm font-medium text-gray-300">
-                Prize Distribution <span className="text-gold">*</span>
-              </label>
-              <div className="grid grid-cols-3 gap-4">
-                <div>
+                <div className="grid grid-cols-3 gap-3">
                   <Input
-                    label="1st Place (%)"
+                    label="1st (%)"
                     name="prizeSplitFirst"
                     type="number"
                     value={formData.prizeSplitFirst}
@@ -792,10 +677,8 @@ function CreateTournamentContent() {
                     max="100"
                     icon="🥇"
                   />
-                </div>
-                <div>
                   <Input
-                    label="2nd Place (%)"
+                    label="2nd (%)"
                     name="prizeSplitSecond"
                     type="number"
                     value={formData.prizeSplitSecond}
@@ -804,10 +687,8 @@ function CreateTournamentContent() {
                     max="100"
                     icon="🥈"
                   />
-                </div>
-                <div>
                   <Input
-                    label="3rd Place (%)"
+                    label="3rd (%)"
                     name="prizeSplitThird"
                     type="number"
                     value={formData.prizeSplitThird}
@@ -817,60 +698,183 @@ function CreateTournamentContent() {
                     icon="🥉"
                   />
                 </div>
+                {errors.prizeSplit && (
+                  <p className="mt-2 text-xs text-red-400">{errors.prizeSplit}</p>
+                )}
+                <div className="mt-3 flex items-center justify-between rounded-xl border border-white/10 bg-black/20 px-4 py-2.5">
+                  <span className="text-sm text-gray-400">Total Distribution</span>
+                  <span className={`text-lg font-bold ${
+                    (formData.prizeSplitFirst + formData.prizeSplitSecond + formData.prizeSplitThird) === 100
+                      ? "text-green-400"
+                      : "text-red-400"
+                  }`}>
+                    {formData.prizeSplitFirst + formData.prizeSplitSecond + formData.prizeSplitThird}%
+                  </span>
+                </div>
               </div>
-              {errors.prizeSplit && (
-                <p className="mt-2 text-sm text-red-400">{errors.prizeSplit}</p>
+            </div>
+
+            {/* Entry Fee */}
+            <div className="rounded-2xl border border-white/5 bg-gradient-to-b from-white/5 to-transparent p-6 shadow-xl backdrop-blur-xl">
+              <h3 className="mb-5 text-sm font-semibold uppercase tracking-wider text-gray-400">
+                Entry Fee
+              </h3>
+
+              {/* Ticket Toggle */}
+              <div className="mb-5 rounded-xl border border-purple-400/20 bg-purple-500/10 p-4">
+                <label className="flex cursor-pointer items-center">
+                  <input
+                    type="checkbox"
+                    checked={formData.acceptsTickets}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        acceptsTickets: e.target.checked,
+                        entryFee: 0,
+                      })
+                    }
+                    className="h-5 w-5 rounded border-purple-400/30 text-purple-500 transition-all focus:ring-2 focus:ring-purple-400/50"
+                  />
+                  <div className="ml-3 flex-1">
+                    <div className="flex items-center gap-2">
+                      <span className="text-lg">🎫</span>
+                      <span className="font-semibold text-white">Ticket Payments</span>
+                    </div>
+                    <p className="mt-0.5 text-xs text-gray-400">
+                      Fixed entry fees: $0.10, $1.00, $10.00
+                    </p>
+                  </div>
+                </label>
+              </div>
+
+              {/* Entry Fee Options */}
+              {formData.acceptsTickets ? (
+                <div className="grid grid-cols-3 gap-3">
+                  {entryPriceOptions.map((option) => (
+                    <button
+                      key={option.value}
+                      type="button"
+                      onClick={() =>
+                        setFormData({ ...formData, entryFee: option.value })
+                      }
+                      className={`relative rounded-xl border-2 p-4 text-center transition-all ${
+                        formData.entryFee === option.value
+                          ? "border-purple-500 bg-purple-500/10"
+                          : "border-purple-400/20 hover:border-purple-400/40"
+                      }`}
+                    >
+                      <div className="mb-2 text-2xl">🎫</div>
+                      <p className="text-sm font-bold text-white">{option.label}</p>
+                      <p className="mt-1 text-xs text-gray-400">{option.diamonds_equivalent} 💎</p>
+                      {formData.entryFee === option.value && (
+                        <div className="absolute -right-1 -top-1">
+                          <div className="flex h-5 w-5 items-center justify-center rounded-full bg-purple-500 text-[10px] font-bold text-white">
+                            ✓
+                          </div>
+                        </div>
+                      )}
+                    </button>
+                  ))}
+                </div>
+              ) : (
+                <div>
+                  <Input
+                    label={`Entry Fee (${PRIMARY_CURRENCY === "USD" ? "USD" : "Diamonds"})`}
+                    name="entryFee"
+                    type="number"
+                    value={formData.entryFee}
+                    onChange={handleInputChange}
+                    placeholder="0 for free entry"
+                    icon={PRIMARY_CURRENCY === "USD" ? "💵" : "💎"}
+                    min="0"
+                    max="10000"
+                    error={errors.entryFee}
+                    required
+                  />
+                  <p className={`mt-2 text-xs ${formData.entryFee > 0 ? "text-green-400" : "text-gray-500"}`}>
+                    {formData.entryFee > 0
+                      ? `✓ Paid entry: ${formData.entryFee} ${PRIMARY_CURRENCY === "USD" ? "$" : "💎"}`
+                      : "💡 Free entry tournament"}
+                  </p>
+                </div>
               )}
-              <p className="mt-2 text-sm text-gray-500">
-                Total:{" "}
-                {formData.prizeSplitFirst +
-                  formData.prizeSplitSecond +
-                  formData.prizeSplitThird}
-                % (must equal 100%)
-              </p>
             </div>
 
             {/* Rules */}
-            <Textarea
-              label="Tournament Rules"
-              name="rules"
-              value={formData.rules}
-              onChange={handleInputChange}
-              placeholder="Enter the tournament rules and regulations..."
-              rows={6}
-              error={errors.rules}
-              required
-            />
+            <div className="rounded-2xl border border-white/5 bg-gradient-to-b from-white/5 to-transparent p-6 shadow-xl backdrop-blur-xl">
+              <h3 className="mb-4 text-sm font-semibold uppercase tracking-wider text-gray-400">
+                Tournament Rules
+              </h3>
+              <Textarea
+                label="Rules & Regulations"
+                name="rules"
+                value={formData.rules}
+                onChange={handleInputChange}
+                placeholder="Enter tournament rules, requirements, and any special conditions..."
+                rows={6}
+                error={errors.rules}
+                required
+              />
+              <div className="mt-3 flex items-center justify-between rounded-xl border border-white/10 bg-black/20 px-4 py-2">
+                <div className="text-xs">
+                  {formData.rules.length >= 20 ? (
+                    <span className="text-green-400">✓ Rules are valid</span>
+                  ) : (
+                    <span className="text-gray-500">Minimum 20 characters</span>
+                  )}
+                </div>
+                <div className={`text-xs font-mono ${
+                  formData.rules.length >= 20 ? "text-green-400" : "text-gray-500"
+                }`}>
+                  {formData.rules.length} / 20
+                </div>
+              </div>
+            </div>
 
             {/* Error Message */}
             {errors.submit && (
-              <div className="rounded-lg border border-red-500/30 bg-red-500/10 p-4">
-                <p className="text-sm text-red-400">{errors.submit}</p>
+              <div className="rounded-2xl border border-red-500/20 bg-red-500/10 p-5 backdrop-blur-xl">
+                <div className="flex items-start gap-3">
+                  <span className="text-2xl">⚠️</span>
+                  <div className="flex-1">
+                    <p className="font-semibold text-red-400">Error Creating Tournament</p>
+                    <p className="mt-1 text-sm text-red-300">{errors.submit}</p>
+                  </div>
+                </div>
               </div>
             )}
 
             {/* Action Buttons */}
-            <div className="flex gap-4 pt-4">
-              <Button
-                type="button"
-                variant="secondary"
-                fullWidth
-                onClick={() => router.push("/host/dashboard")}
-                disabled={loading}
-              >
-                Cancel
-              </Button>
-              <Button
-                type="submit"
-                variant="primary"
-                fullWidth
-                disabled={loading}
-              >
-                {loading ? "Creating..." : "Create Tournament (Free)"}
-              </Button>
+            <div className="sticky bottom-0 z-10 -mx-3 -mb-6 border-t border-white/5 bg-dark-primary/95 p-4 backdrop-blur-xl sm:relative sm:mx-0 sm:mb-0 sm:rounded-2xl sm:border sm:bg-gradient-to-b sm:from-white/5 sm:to-transparent sm:p-6">
+              <div className="flex gap-3">
+                <button
+                  type="button"
+                  onClick={() => router.push("/host/dashboard")}
+                  disabled={loading}
+                  className="flex-1 rounded-xl border-2 border-white/10 bg-transparent px-6 py-3.5 font-semibold text-white transition-all hover:border-white/20 hover:bg-white/5 disabled:opacity-50"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="flex-1 rounded-xl border-2 border-gold bg-gradient-to-r from-gold to-yellow-600 px-6 py-3.5 font-semibold text-black shadow-lg shadow-gold/20 transition-all hover:shadow-xl hover:shadow-gold/30 disabled:opacity-50"
+                >
+                  {loading ? (
+                    <span className="flex items-center justify-center gap-2">
+                      <span className="animate-spin">⏳</span>
+                      <span>Creating...</span>
+                    </span>
+                  ) : (
+                    <span className="flex items-center justify-center gap-2">
+                      <span>🏆</span>
+                      <span>Create Tournament</span>
+                    </span>
+                  )}
+                </button>
+              </div>
             </div>
           </form>
-        </Card>
       </div>
     </div>
   );

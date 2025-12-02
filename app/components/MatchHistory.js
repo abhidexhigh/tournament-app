@@ -2,8 +2,10 @@
 
 import Badge from "./Badge";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 
 export default function MatchHistory({ matches, playerId }) {
+  const router = useRouter();
   if (!matches || matches.length === 0) {
     return (
       <div className="border-gold-dark/20 relative overflow-hidden rounded-2xl border backdrop-blur-xl">
@@ -175,9 +177,10 @@ export default function MatchHistory({ matches, playerId }) {
               return (
                 <tr
                   key={match.id}
+                  // onClick={() => router.push(`/match/${match.id}`)}
                   className={`${getRowBgClass(
                     performance.position,
-                  )} transition-colors duration-200 hover:bg-white/5`}
+                  )} transition-colors duration-200 hover:bg-white/10`}
                 >
                   {/* Position */}
                   <td className="px-4 py-4 whitespace-nowrap">
@@ -218,11 +221,18 @@ export default function MatchHistory({ matches, playerId }) {
 
                   {/* Match Title */}
                   <td className="px-4 py-4">
-                    <div className="text-gold-light-text line-clamp-2 max-w-xs text-sm font-semibold">
-                      {match.title}
-                    </div>
-                    <div className="text-gold-light-text mt-1 text-xs">
-                      💎 {match.prizePool?.toLocaleString()} Pool
+                    <div className="group flex items-center gap-2">
+                      <div>
+                        <div className="text-gold-light-text group-hover:text-gold line-clamp-2 max-w-xs text-sm font-semibold transition-colors">
+                          {match.title}
+                        </div>
+                        <div className="text-gold-light-text mt-1 text-xs">
+                          💎 {match.prizePool?.toLocaleString()} Pool
+                        </div>
+                      </div>
+                      <span className="text-gray-500 opacity-0 transition-opacity group-hover:opacity-100">
+                        →
+                      </span>
                     </div>
                   </td>
 

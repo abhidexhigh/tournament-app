@@ -15,6 +15,12 @@ import {
   generateClanBattleLeaderboard,
   generateRegularLeaderboard,
 } from "../../lib/leaderboardGenerator";
+import {
+  getDefaultPaymentMethod,
+  validateTournamentPayment,
+  canJoinTournament,
+} from "../../lib/currencyHelper";
+import { SINGLE_CURRENCY_MODE } from "../../lib/currencyConfig";
 
 // Import new components
 import TournamentHeader from "../../components/tournament/TournamentHeader";
@@ -48,10 +54,17 @@ export default function TournamentDetailsPage() {
   const [host, setHost] = useState(null);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
 
-  // Set default payment method based on display_type
+  // Set default payment method based on currency mode and display_type
   useEffect(() => {
-    if (tournament && tournament.display_type === "tournament") {
-      setPaymentMethod("tickets");
+    if (tournament) {
+      // In single currency mode, always use primary currency (ignore tickets)
+      if (SINGLE_CURRENCY_MODE) {
+        const defaultMethod = getDefaultPaymentMethod();
+        setPaymentMethod(defaultMethod);
+      } else if (tournament.display_type === "tournament") {
+        // In dual currency mode, respect display_type
+        setPaymentMethod("tickets");
+      }
     }
   }, [tournament]);
 
@@ -215,8 +228,19 @@ export default function TournamentDetailsPage() {
       return;
     }
 
-    // Validate ticket selection for ticket-based entry
-    if (paymentMethod === "tickets") {
+    // In single currency mode, validate payment using currency helper
+    if (SINGLE_CURRENCY_MODE) {
+      const validation = validateTournamentPayment(user, tournament);
+      if (!validation.valid) {
+        alert(validation.error);
+        return;
+      }
+      // Set payment method to primary currency
+      setPaymentMethod(validation.paymentMethod);
+    }
+
+    // Validate ticket selection for ticket-based entry (only in dual currency mode)
+    if (!SINGLE_CURRENCY_MODE && paymentMethod === "tickets") {
       const entryFeeUsd = Number(tournament.entry_fee_usd || 0);
       let ticketType = selectedTicketType;
 
@@ -288,26 +312,36 @@ export default function TournamentDetailsPage() {
     setLoading(true);
 
     try {
-      // Determine final ticket type for payment
-      let finalTicketType = selectedTicketType;
-      if (paymentMethod === "tickets" && !finalTicketType) {
-        const entryFeeUsd = Number(tournament.entry_fee_usd || 0);
-        if (Math.abs(entryFeeUsd - 0.1) < 0.01) {
-          finalTicketType = "ticket_010";
-        } else if (Math.abs(entryFeeUsd - 1.0) < 0.01) {
-          finalTicketType = "ticket_100";
-        } else if (Math.abs(entryFeeUsd - 10.0) < 0.01) {
-          finalTicketType = "ticket_1000";
+      // Prepare payment data based on currency mode
+      let paymentData = {};
+
+      if (SINGLE_CURRENCY_MODE) {
+        // In single currency mode, use primary currency
+        const effectivePaymentMethod = getDefaultPaymentMethod();
+        paymentData = {
+          payment_method: effectivePaymentMethod,
+        };
+      } else {
+        // In dual currency mode, handle tickets and other payment methods
+        let finalTicketType = selectedTicketType;
+        if (paymentMethod === "tickets" && !finalTicketType) {
+          const entryFeeUsd = Number(tournament.entry_fee_usd || 0);
+          if (Math.abs(entryFeeUsd - 0.1) < 0.01) {
+            finalTicketType = "ticket_010";
+          } else if (Math.abs(entryFeeUsd - 1.0) < 0.01) {
+            finalTicketType = "ticket_100";
+          } else if (Math.abs(entryFeeUsd - 10.0) < 0.01) {
+            finalTicketType = "ticket_1000";
+          }
         }
-      }
 
-      // Prepare payment data
-      const paymentData = {
-        payment_method: paymentMethod,
-      };
+        paymentData = {
+          payment_method: paymentMethod,
+        };
 
-      if (paymentMethod === "tickets" && finalTicketType) {
-        paymentData.ticket_type = finalTicketType;
+        if (paymentMethod === "tickets" && finalTicketType) {
+          paymentData.ticket_type = finalTicketType;
+        }
       }
 
       const updatedTournament = await tournamentsApi.join(
@@ -465,24 +499,24 @@ export default function TournamentDetailsPage() {
         />
       ),
     },
-    {
-      id: "matches",
-      label: "Matches",
-      // badge: tournament.status === "completed" ? leaderboard.length : null,
-      content: <MatchesTab />,
-    },
-    {
-      id: "participants",
-      label: "Participants",
-      content: (
-        <ParticipantsTab
-          participants={participants}
-          tournament={tournament}
-          clan1={clan1}
-          clan2={clan2}
-        />
-      ),
-    },
+    // {
+    //   id: "matches",
+    //   label: "Matches",
+    //   // badge: tournament.status === "completed" ? leaderboard.length : null,
+    //   content: <MatchesTab />,
+    // },
+    // {
+    //   id: "participants",
+    //   label: "Participants",
+    //   content: (
+    //     <ParticipantsTab
+    //       participants={participants}
+    //       tournament={tournament}
+    //       clan1={clan1}
+    //       clan2={clan2}
+    //     />
+    //   ),
+    // },
     {
       id: "rules",
       label: "Rules",

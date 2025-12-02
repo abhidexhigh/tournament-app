@@ -9,6 +9,12 @@ import Image from "next/image";
 import AuthModal from "./AuthModal";
 import TopupModal from "./TopupModal";
 import { getTicketCount } from "../lib/utils";
+import {
+  SINGLE_CURRENCY_MODE,
+  getPrimaryCurrency,
+  getUserBalance,
+} from "../lib/currencyConfig";
+import { getUserBalanceDisplay } from "../lib/currencyHelper";
 
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -82,16 +88,16 @@ export default function Navbar() {
                   {user.type === "game_owner" ? "Admin Dashboard" : "Dashboard"}
                 </Link>
 
-                {/* Diamond Balance - Clickable */}
+                {/* Currency Balance - Clickable */}
                 <button
                   onClick={() => setIsTopupModalOpen(true)}
                   className="from-gold/20 to-gold/5 border-gold/40 hover:border-gold hover:bg-gold/30 hover:shadow-gold/30 group flex items-center space-x-2 rounded-lg border bg-gradient-to-br px-3 py-1.5 transition-all duration-300 hover:shadow-lg"
                 >
                   <span className="text-lg transition-transform duration-200 group-hover:scale-110">
-                    💎
+                    {getPrimaryCurrency().emoji}
                   </span>
                   <span className="text-gold text-sm font-bold">
-                    {(user.diamonds || 0).toLocaleString()}
+                    {getUserBalanceDisplay(user).formatted}
                   </span>
                 </button>
 
@@ -162,15 +168,49 @@ export default function Navbar() {
                           💰 Wallet Balance
                         </p>
                         <div className="space-y-2">
+                          {SINGLE_CURRENCY_MODE ? (
+                            /* Single Currency Mode - Show only primary currency */
+                            <>
+                              <div className="flex items-center justify-between px-2">
+                                <div className="flex items-center space-x-2">
+                                  <span className="text-xl">
+                                    {getPrimaryCurrency().emoji}
+                                  </span>
+                                  <span className="text-gold text-sm font-bold">
+                                    {getPrimaryCurrency().displayName}
+                                  </span>
+                                </div>
+                                <span className="text-gold font-bold">
+                                  {getUserBalanceDisplay(user).formatted}
+                                </span>
+                              </div>
+                              {/* Still show tickets if not in single currency mode for tickets */}
+                              {!SINGLE_CURRENCY_MODE && (
+                                <div className="flex items-center justify-between px-2">
+                                  <div className="flex items-center space-x-2">
+                                    <span className="text-xl">🎫</span>
+                                    <span className="text-sm font-bold text-gray-300">
+                                      Total Tickets
+                                    </span>
+                                  </div>
+                                  <span className="font-bold text-purple-400">
+                                    {getTicketCount(user.tickets)}
+                                  </span>
+                                </div>
+                              )}
+                            </>
+                          ) : (
+                            /* Dual Currency Mode - Show all balances */
+                            <>
                           <div className="flex items-center justify-between px-2">
                             <div className="flex items-center space-x-2">
-                              <span className="text-xl">💎</span>
+                                  <span className="text-xl">{getPrimaryCurrency().emoji}</span>
                               <span className="text-gold text-sm font-bold">
-                                Diamonds
+                                    {getPrimaryCurrency().displayName}
                               </span>
                             </div>
                             <span className="text-gold font-bold">
-                              {(user.diamonds || 0).toLocaleString()}
+                                  {getUserBalanceDisplay(user).formatted}
                             </span>
                           </div>
                           <div className="flex items-center justify-between px-2">
@@ -184,6 +224,8 @@ export default function Navbar() {
                               {getTicketCount(user.tickets)}
                             </span>
                           </div>
+                            </>
+                          )}
                         </div>
                       </div>
 
@@ -358,9 +400,9 @@ export default function Navbar() {
                       }}
                       className="from-gold/20 to-gold/5 border-gold/40 hover:border-gold flex items-center space-x-2 rounded-lg border bg-gradient-to-br px-3 py-1.5 transition-all active:scale-95"
                     >
-                      <span className="text-gold text-lg">💎</span>
+                      <span className="text-gold text-lg">{getPrimaryCurrency().emoji}</span>
                       <span className="text-gold font-bold">
-                        {(user.diamonds || 0).toLocaleString()}
+                        {getUserBalanceDisplay(user).formatted}
                       </span>
                       <span className="text-gold/70 text-xs">+</span>
                     </button>
