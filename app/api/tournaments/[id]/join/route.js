@@ -147,8 +147,8 @@ export async function POST(request, { params }) {
       }
     } else if (payment_method === "usd") {
       // Check if user has enough USD for entry fee
-      const userBalance = user.balance || user.usd_balance || 0;
-      const requiredAmount = entryFeeUSD || (entryFee * CONVERSION_RATE.DIAMOND_TO_USD);
+      const userBalance = Number(user.balance || user.usd_balance || 0);
+      const requiredAmount = Number(entryFeeUSD || (entryFee * CONVERSION_RATE.DIAMOND_TO_USD));
       
       if (userBalance < requiredAmount) {
         return NextResponse.json(
@@ -191,8 +191,8 @@ export async function POST(request, { params }) {
       // } else 
       if (payment_method === "usd" && requiresPayment) {
         // Deduct USD
-        const currentBalance = user.balance || user.usd_balance || 0;
-        const requiredAmount = entryFeeUSD || (entryFee * CONVERSION_RATE.DIAMOND_TO_USD);
+        const currentBalance = Number(user.balance || user.usd_balance || 0);
+        const requiredAmount = Number(entryFeeUSD || (entryFee * CONVERSION_RATE.DIAMOND_TO_USD));
         
         await usersDb.update(user_id, {
           balance: currentBalance - requiredAmount,
@@ -207,7 +207,7 @@ export async function POST(request, { params }) {
           tournament_id: id,
           currency: "usd",
         });
-      } else if (entryFee > 0) {
+      } else if (Number(entryFee) > 0) {
         // Deduct diamonds (default)
         await usersDb.updateDiamonds(user_id, -entryFee);
 

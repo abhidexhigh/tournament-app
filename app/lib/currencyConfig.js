@@ -12,7 +12,7 @@
  * - Secondary currency is completely hidden
  * - Users can only join tournaments with PRIMARY_CURRENCY
  */
-export const PRIMARY_CURRENCY = "DIAMOND"; // 'USD' or 'DIAMOND'
+export const PRIMARY_CURRENCY = "USD"; // 'USD' or 'DIAMOND'
 
 /**
  * SINGLE CURRENCY MODE
