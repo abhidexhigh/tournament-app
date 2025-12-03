@@ -72,8 +72,8 @@ export default function TournamentCard({ tournament }) {
         <div className="status-stripe overflow-hidden" />
 
         <div className="rounded-xl border border-[#ffb80033] p-4 sm:px-6 sm:py-1">
-          {/* ============ MOBILE LAYOUT ============ */}
-          <div className="flex flex-col gap-3 sm:hidden">
+          {/* ============ MOBILE LAYOUT (now using separate MobileTournamentCard) ============ */}
+          <div className="hidden flex-col gap-3">
             {/* Mobile Header: Icon + Title */}
             <div className="flex items-start gap-3">
               {/* Tournament Icon */}

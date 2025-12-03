@@ -5,6 +5,7 @@ import { tournamentsApi } from "./lib/api";
 import { useUser } from "./contexts/UserContext";
 import { getClanById } from "./lib/dataLoader";
 import TournamentCard from "./components/TournamentCard";
+import MobileTournamentCard from "./components/MobileTournamentCard";
 import FilterBar from "./components/FilterBar";
 import EmptyState from "./components/EmptyState";
 
@@ -124,10 +125,20 @@ export default function Home() {
             setSearchQuery={setSearchQuery}
           />
 
-          {/* Tournament List */}
-          <div className="space-y-8">
+          {/* Tournament List - Desktop */}
+          <div className="hidden space-y-8 sm:block">
             {filteredTournaments.map((tournament) => (
               <TournamentCard key={tournament.id} tournament={tournament} />
+            ))}
+          </div>
+
+          {/* Tournament List - Mobile */}
+          <div className="space-y-3 sm:hidden">
+            {filteredTournaments.map((tournament) => (
+              <MobileTournamentCard
+                key={tournament.id}
+                tournament={tournament}
+              />
             ))}
           </div>
 

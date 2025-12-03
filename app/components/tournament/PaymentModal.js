@@ -79,16 +79,16 @@ export default function PaymentModal({
               </span>
               <span className="text-gold bg-gold/10 rounded-full px-3 py-1 text-xs font-bold">
                 {tournament?.display_type === "tournament"
-                  ? "🏆 Tournament"
-                  : "🎪 Event"}
+                  ? "Tournament"
+                  : "Event"}
               </span>
             </div>
             <h3 className="mb-2 text-base font-bold text-white">
               {tournament?.title}
             </h3>
             <div className="flex items-center gap-4 text-xs text-gray-400">
-              <span>👥 {tournament?.max_players} Players</span>
-              <span>📅 {tournament?.date}</span>
+              <span>{tournament?.max_players} Players</span>
+              <span>{tournament?.date}</span>
             </div>
           </div>
 
