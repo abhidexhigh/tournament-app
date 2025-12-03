@@ -3,6 +3,7 @@
 import Card from "../Card";
 import Button from "../Button";
 import Select from "../Select";
+import { PRIMARY_CURRENCY, getPrimaryCurrency } from "../../lib/currencyConfig";
 
 export default function WinnerDeclarationModal({
   show,
@@ -77,13 +78,13 @@ export default function WinnerDeclarationModal({
           </p>
           <div className="space-y-1 text-xs sm:text-sm">
             <p className="text-white">
-              🥇 1st: {prizes.first.toLocaleString()} 💎
+              🥇 1st: {PRIMARY_CURRENCY === "USD" ? "$" : ""}{prizes.first.toLocaleString()}{PRIMARY_CURRENCY === "DIAMOND" ? " 💎" : ""}
             </p>
             <p className="text-white">
-              🥈 2nd: {prizes.second.toLocaleString()} 💎
+              🥈 2nd: {PRIMARY_CURRENCY === "USD" ? "$" : ""}{prizes.second.toLocaleString()}{PRIMARY_CURRENCY === "DIAMOND" ? " 💎" : ""}
             </p>
             <p className="text-white">
-              🥉 3rd: {prizes.third.toLocaleString()} 💎
+              🥉 3rd: {PRIMARY_CURRENCY === "USD" ? "$" : ""}{prizes.third.toLocaleString()}{PRIMARY_CURRENCY === "DIAMOND" ? " 💎" : ""}
             </p>
           </div>
         </div>

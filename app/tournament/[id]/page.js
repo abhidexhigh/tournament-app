@@ -30,6 +30,7 @@ import PrizeDistributionTab from "../../components/tournament/PrizeDistributionT
 import MatchesTab from "../../components/tournament/MatchesTab";
 import ParticipantsTab from "../../components/tournament/ParticipantsTab";
 import RulesTab from "../../components/tournament/RulesTab";
+import TopupModal from "../../components/TopupModal";
 
 export default function TournamentDetailsPage() {
   const params = useParams();
@@ -53,6 +54,7 @@ export default function TournamentDetailsPage() {
   const [selectedTicketType, setSelectedTicketType] = useState(null);
   const [host, setHost] = useState(null);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
+  const [showTopupModal, setShowTopupModal] = useState(false);
 
   // Set default payment method based on currency mode and display_type
   useEffect(() => {
@@ -582,6 +584,17 @@ export default function TournamentDetailsPage() {
           loading={loading}
           onConfirm={handleJoinTournament}
           onCancel={() => setShowPaymentModal(false)}
+          onAddMoney={() => {
+            setShowPaymentModal(false);
+            setShowTopupModal(true);
+          }}
+        />
+
+        {/* Topup Modal for adding money */}
+        <TopupModal
+          isOpen={showTopupModal}
+          onClose={() => setShowTopupModal(false)}
+          user={user}
         />
       </div>
     </div>

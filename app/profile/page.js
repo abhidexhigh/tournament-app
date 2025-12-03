@@ -12,6 +12,7 @@ import Badge from "../components/Badge";
 import TopupModal from "../components/TopupModal";
 import { getUserClans } from "../lib/dataLoader";
 import { getTicketCount } from "../lib/utils";
+import { PRIMARY_CURRENCY, getPrimaryCurrency, getUserBalance } from "../lib/currencyConfig";
 
 function ProfileContent() {
   const { user, updateUser, refreshUser } = useUser();
@@ -104,8 +105,9 @@ function ProfileContent() {
             // Update user context with new balance
             updateUser(data.data.user);
 
-            // Show diamonds purchased
-            const successMessage = `Successfully purchased ${data.data.amount.toLocaleString()} 💎 Diamonds!`;
+            // Show purchased amount
+            const currencyInfo = getPrimaryCurrency();
+            const successMessage = `Successfully purchased ${currencyInfo.emoji}${data.data.amount.toLocaleString()} ${currencyInfo.displayName}!`;
 
             setMessage({
               type: "success",
@@ -341,16 +343,16 @@ function ProfileContent() {
                     </div>
                   </div>
                 </div>
-                {/* Diamonds */}
+                {/* Primary Currency Balance */}
                 <div className="bg-dark-primary/40 border-gold-dark/20 mb-3 flex items-center justify-between rounded-lg border p-3">
                   <div className="flex items-center gap-2">
-                    <span className="text-lg text-blue-400">💎</span>
+                    <span className="text-lg text-blue-400">{getPrimaryCurrency().emoji}</span>
                     <span className="text-xs font-medium tracking-wider text-gray-300 uppercase">
-                      Diamonds
+                      {getPrimaryCurrency().displayName}
                     </span>
                   </div>
                   <span className="text-xl font-black text-white">
-                    {(user.diamonds || 0).toLocaleString()}
+                    {PRIMARY_CURRENCY === "USD" ? `$${getUserBalance(user).toLocaleString()}` : `${getUserBalance(user).toLocaleString()}`}
                   </span>
                 </div>
 
@@ -649,13 +651,13 @@ function ProfileContent() {
           <div className="lg:col-span-4">
             <div className="bg-dark-primary/40 border-gold-dark/20 rounded-xl border p-6 py-4 shadow-xl backdrop-blur-md">
               <h3 className="mb-2 text-lg font-bold text-white">
-                💎 Buy Diamonds
+                {getPrimaryCurrency().emoji} Buy {getPrimaryCurrency().displayName}
               </h3>
               <p className="mb-6 text-xs text-gray-400">
-                Purchase diamonds for tournaments and rewards
+                Purchase {getPrimaryCurrency().displayName.toLowerCase()} for tournaments and rewards
               </p>
 
-              {/* Current Diamond Balance */}
+              {/* Current Balance */}
               <div className="from-gold/10 to-gold/5 border-gold/30 mb-6 rounded-lg border bg-gradient-to-br p-5">
                 <div className="text-center">
                   <p className="mb-2 text-xs tracking-wider text-gray-400 uppercase">
@@ -663,9 +665,9 @@ function ProfileContent() {
                   </p>
                   <div className="flex items-center justify-center gap-2">
                     <span className="text-gold text-4xl font-black">
-                      {(user.diamonds || 0).toLocaleString()}
+                      {PRIMARY_CURRENCY === "USD" ? `$${getUserBalance(user).toLocaleString()}` : getUserBalance(user).toLocaleString()}
                     </span>
-                    <span className="text-2xl">💎</span>
+                    {PRIMARY_CURRENCY === "DIAMOND" && <span className="text-2xl">💎</span>}
                   </div>
                 </div>
               </div>
@@ -675,13 +677,13 @@ function ProfileContent() {
                 onClick={() => setShowTopupModal(true)}
                 className="from-gold-dark to-gold hover:from-gold hover:to-gold-light text-dark-primary mb-4 w-full transform rounded-lg bg-gradient-to-r px-6 py-4 text-base font-bold shadow-lg transition-all hover:scale-[1.02]"
               >
-                💎 Buy Diamonds
+                {getPrimaryCurrency().emoji} Buy {getPrimaryCurrency().displayName}
               </button>
 
               {/* Info */}
               <div className="mb-6 rounded-lg border border-blue-500/30 bg-blue-500/10 p-3">
                 <p className="text-center text-xs text-blue-300">
-                  💡 1 Diamond = $1 USD | Secure payment via Stripe
+                  💡 Secure payment via Stripe
                 </p>
               </div>
             </div>

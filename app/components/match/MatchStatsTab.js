@@ -2,6 +2,7 @@
 
 import Card from "../Card";
 import Image from "next/image";
+import { PRIMARY_CURRENCY, getPrimaryCurrency } from "../../lib/currencyConfig";
 
 export default function MatchStatsTab({ match, playerPerformance, user }) {
   if (!user) {
@@ -157,7 +158,7 @@ export default function MatchStatsTab({ match, playerPerformance, user }) {
             </div>
             <div className="bg-gold/20 border-gold/30 rounded-xl border px-6 py-3">
               <p className="text-gold text-3xl font-black">
-                {playerPerformance.prizeAmount.toLocaleString()} 💎
+                {PRIMARY_CURRENCY === "USD" ? "$" : ""}{playerPerformance.prizeAmount.toLocaleString()}{PRIMARY_CURRENCY === "DIAMOND" ? " 💎" : ""}
               </p>
             </div>
           </div>

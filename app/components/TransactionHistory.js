@@ -3,8 +3,11 @@
 import Card from "./Card";
 // Simplified tickets - no need for ticket config anymore
 import Badge from "./Badge";
+import { PRIMARY_CURRENCY, getPrimaryCurrency } from "../lib/currencyConfig";
 
 export default function TransactionHistory({ transactions = [] }) {
+  const currencyInfo = getPrimaryCurrency();
+  
   const formatDate = (timestamp) => {
     const date = new Date(timestamp);
     return date.toLocaleDateString("en-US", {
@@ -19,8 +22,8 @@ export default function TransactionHistory({ transactions = [] }) {
   const getTransactionIcon = (type, currency) => {
     if (type === "wallet_topup") {
       if (currency === "tickets") return "🎫";
-      if (currency === "usd") return "💵";
-      return "💎";
+      if (currency === "usd") return "$";
+      return currencyInfo.emoji;
     }
     const icons = {
       prize_won: "🏆",
@@ -31,7 +34,7 @@ export default function TransactionHistory({ transactions = [] }) {
       tournament_entry: "🎮",
       ticket_use: "🎫",
     };
-    return icons[type] || "💎";
+    return icons[type] || currencyInfo.emoji;
   };
 
   const getTransactionColor = (amount, currency) => {
@@ -47,7 +50,10 @@ export default function TransactionHistory({ transactions = [] }) {
       const absAmount = Math.abs(amount);
       return `${prefix}${absAmount} ticket${absAmount !== 1 ? "s" : ""} 🎫`;
     }
-    // Show everything in Diamonds (1 USD = 1 Diamond)
+    // Format based on primary currency
+    if (PRIMARY_CURRENCY === "USD") {
+      return `${prefix}$${Math.abs(amount).toLocaleString()}`;
+    }
     return `${prefix}${Math.abs(amount).toLocaleString()} 💎`;
   };
 

@@ -5,6 +5,7 @@ import Badge from "../Badge";
 import { LuCalendarDays, LuUsers, LuClock } from "react-icons/lu";
 import { TbTrophy } from "react-icons/tb";
 import Image from "next/image";
+import { PRIMARY_CURRENCY, getPrimaryCurrency } from "../../lib/currencyConfig";
 
 export default function MatchHeader({ match, user, playerPerformance }) {
   const formatDate = (dateStr) => {
@@ -142,7 +143,7 @@ export default function MatchHeader({ match, user, playerPerformance }) {
             highlighted
           >
             <p className="text-gold text-base font-bold sm:text-lg">
-              {match.prizePool?.toLocaleString()} 💎
+              {PRIMARY_CURRENCY === "USD" ? "$" : ""}{match.prizePool?.toLocaleString()}{PRIMARY_CURRENCY === "DIAMOND" ? " 💎" : ""}
             </p>
           </StatCard>
         </div>
@@ -202,7 +203,7 @@ export default function MatchHeader({ match, user, playerPerformance }) {
                 <div className="bg-gold/10 border-gold/30 rounded-lg border px-4 py-2">
                   <p className="text-gold text-xs">Prize Won</p>
                   <p className="text-gold text-lg font-bold">
-                    {playerPerformance.prizeAmount.toLocaleString()} 💎
+                    {PRIMARY_CURRENCY === "USD" ? "$" : ""}{playerPerformance.prizeAmount.toLocaleString()}{PRIMARY_CURRENCY === "DIAMOND" ? " 💎" : ""}
                   </p>
                 </div>
               )}

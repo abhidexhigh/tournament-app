@@ -45,47 +45,18 @@ export default function TournamentHeader({
     (tournament.tournament_type ?? tournament.tournamentType) === "clan_battle";
 
   return (
-    <Card glass className="mb-4">
-      {/* Mobile: Stack everything vertically */}
+    <Card glass className="relative mb-4 overflow-hidden">
+      {/* Top accent line */}
+      <div className="via-gold-dark/50 absolute top-0 right-0 left-0 h-[2px] bg-gradient-to-r from-transparent to-transparent" />
+
+      {/* Main Content */}
       <div className="mb-4 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
         {/* Title and Icon Section */}
-        <div className="flex items-start space-x-3 sm:items-center sm:space-x-4">
+        <div className="flex flex-1 items-start space-x-3 sm:items-center sm:space-x-4 lg:flex-shrink-0 lg:flex-grow-0 lg:basis-auto">
           <TournamentIcon tournament={tournament} />
-          <div className="min-w-0 flex-1">
-            <h1 className="text-gold-gradient text-xl font-bold break-words sm:text-xl lg:text-2xl 2xl:text-3xl">
-              {tournament.title}
-            </h1>
-            {/* Host Name */}
-            <div className="mt-1">
-              <div className="text-xs text-gray-400 sm:text-sm 2xl:text-base">
-                <div className="font-medium text-white">
-                  {tournament.is_automated ? (
-                    <>Admin</>
-                  ) : host ? (
-                    <div className="flex items-center gap-1">
-                      <Image
-                        src={host.avatar}
-                        alt={host.username}
-                        width={20}
-                        height={20}
-                        className="h-5 w-5 rounded-full sm:h-6 sm:w-6 2xl:h-7 2xl:w-7"
-                      />
-                      <span className="text-sm font-medium text-white 2xl:text-base">
-                        {host.username}
-                      </span>
-                    </div>
-                  ) : (
-                    "Loading..."
-                  )}
-                </div>
-              </div>
-            </div>
-            <div className="mt-2 flex items-center gap-2">
-              {!tournament.is_automated && isClanBattle && (
-                <Badge variant="warning" size="sm">
-                  Clan Battle
-                </Badge>
-              )}
+          <div className="min-w-0">
+            {/* Badges Row */}
+            <div className="mb-1.5 flex flex-wrap items-center gap-1.5">
               <Badge
                 variant={tournament.status}
                 size="sm"
@@ -93,16 +64,49 @@ export default function TournamentHeader({
               >
                 {tournament.status}
               </Badge>
+              {!tournament.is_automated && isClanBattle && (
+                <Badge variant="warning" size="sm">
+                  ⚔️ Clan Battle
+                </Badge>
+              )}
+            </div>
+
+            {/* Title */}
+            <h1 className="text-gold-gradient text-xl leading-tight font-bold break-words sm:text-xl lg:text-2xl 2xl:text-3xl">
+              {tournament.title}
+            </h1>
+
+            {/* Host Info */}
+            <div className="mt-1.5 flex items-center gap-1.5 text-xs text-gray-400 sm:text-sm">
+              <span>Hosted by</span>
+              {tournament.is_automated ? (
+                <span className="text-gold-dark font-medium">System</span>
+              ) : host ? (
+                <div className="flex items-center gap-1.5">
+                  <Image
+                    src={host.avatar}
+                    alt={host.username}
+                    width={20}
+                    height={20}
+                    className="ring-gold-dark/30 h-5 w-5 rounded-full ring-1 sm:h-5 sm:w-5"
+                  />
+                  <span className="font-medium text-white">
+                    {host.username}
+                  </span>
+                </div>
+              ) : (
+                <span className="text-gray-500">Loading...</span>
+              )}
             </div>
           </div>
         </div>
 
-        {/* Stats Cards - Grid on mobile, horizontal on desktop */}
-        <div className="grid w-full grid-cols-2 gap-2 sm:grid-cols-3 lg:flex lg:w-auto lg:justify-end">
+        {/* Stats Cards - Mobile: 2-col, Tablet: flex wrap, Desktop: flex row */}
+        <div className="grid w-full grid-cols-2 gap-2 md:flex md:w-auto md:flex-wrap md:justify-end md:gap-3 lg:flex-shrink-0 lg:flex-nowrap">
           {/* Countdown Timer Section */}
           {(tournament.status === "upcoming" ||
             tournament.status === "ongoing") && (
-            <div className="col-span-2 flex items-center gap-2 border-white/20 sm:col-span-3 lg:col-span-1 lg:w-[156px] lg:border-r">
+            <div className="border-gold-dark/20 bg-dark-card/50 md:bg-dark-card/50 lg:border-gold-dark/20 col-span-2 flex items-center gap-2 rounded-lg border p-2.5 md:w-auto md:min-w-[140px] md:rounded-lg md:border lg:w-[160px] lg:rounded-none lg:border-0 lg:border-r lg:bg-transparent lg:p-0 lg:pr-4">
               <CountdownSection tournament={tournament} />
             </div>
           )}
@@ -142,9 +146,9 @@ export default function TournamentHeader({
           {/* Entry Fee Card */}
           <TournamentStatCard icon={<TbMoneybag />} label="Entry Fee">
             {tournament.entry_fee ? (
-                <p className="text-sm font-semibold text-white sm:text-base 2xl:text-lg">
+              <p className="text-sm font-semibold text-white sm:text-base 2xl:text-lg">
                 {formatEntryFee(tournament.entry_fee)}
-                </p>
+              </p>
             ) : (
               <p className="text-sm font-semibold text-green-400 sm:text-base 2xl:text-lg">
                 Free
@@ -167,8 +171,10 @@ export default function TournamentHeader({
         </div>
       </div>
 
-      <div className="via-gold-dark/50 h-[1px] bg-gradient-to-r from-transparent to-transparent" />
+      {/* Separator */}
+      <div className="via-gold-dark/30 h-px bg-gradient-to-r from-transparent to-transparent" />
 
+      {/* Bottom Section */}
       <div className="flex flex-col gap-4 pt-4 lg:flex-row lg:items-center lg:justify-between">
         {/* Clan Battle Details */}
         {isClanBattle && (
@@ -180,31 +186,39 @@ export default function TournamentHeader({
         )}
 
         {/* Action Buttons */}
-        <div className="flex w-full flex-col gap-2 lg:ml-auto lg:w-auto lg:min-w-[200px]">
+        <div className="flex w-full flex-col gap-2 md:flex-row md:justify-end lg:ml-auto lg:w-auto lg:min-w-[200px]">
           {canJoin && (
             <Button variant="primary" onClick={onJoin} disabled={loading}>
-              {tournament.entry_fee
-                ? "Join Tournament"
-                : "Join Tournament (Free)"}
+              {loading ? (
+                <span className="flex items-center gap-2">
+                  <span className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
+                  Joining...
+                </span>
+              ) : tournament.entry_fee ? (
+                "Join Tournament"
+              ) : (
+                "Join Free"
+              )}
             </Button>
           )}
 
           {isHost && tournament.status === "upcoming" && (
             <Button variant="primary" onClick={onStart}>
-              Start Tournament
+              🚀 Start Tournament
             </Button>
           )}
 
           {isHost && tournament.status === "ongoing" && (
             <Button variant="primary" onClick={onDeclareWinners}>
-              Declare Winners
+              🏆 Declare Winners
             </Button>
           )}
 
           {isParticipant && (
-            <Badge variant="success" className="text-center">
-              You are Registered ✓
-            </Badge>
+            <div className="flex items-center justify-center gap-2 rounded-lg border border-green-500/30 bg-green-500/10 px-4 py-2.5">
+              <span className="text-green-400">✓</span>
+              <span className="font-semibold text-green-400">Registered</span>
+            </div>
           )}
         </div>
       </div>
@@ -219,20 +233,24 @@ function TournamentIcon({ tournament }) {
   if (isImageUrl) {
     return (
       <div className="flex-shrink-0">
-        <Image
-          src={icon}
-          alt={`${tournament.title} icon`}
-          width={96}
-          height={96}
-          className="border-gold-dark/20 h-12 w-12 rounded-lg border object-contain sm:h-16 sm:w-16 lg:h-20 lg:w-20"
-          unoptimized
-        />
+        <div className="relative">
+          <Image
+            src={icon}
+            alt={`${tournament.title} icon`}
+            width={96}
+            height={96}
+            className="border-gold-dark/30 bg-dark-card h-14 w-14 rounded-xl border object-contain p-1 sm:h-16 sm:w-16 lg:h-20 lg:w-20"
+            unoptimized
+          />
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="flex-shrink-0 text-3xl sm:text-4xl lg:text-6xl">{icon}</div>
+    <div className="border-gold-dark/30 bg-dark-card flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-xl border text-3xl sm:h-16 sm:w-16 sm:text-4xl lg:h-20 lg:w-20 lg:text-5xl">
+      {icon}
+    </div>
   );
 }
 
@@ -241,80 +259,67 @@ function ClanBattleDetails({ tournament, clan1, clan2 }) {
     (tournament.clan_battle_mode ?? tournament.clanBattleMode) ===
     "clan_selection";
 
+  if (!isClanSelection) return null;
+
   return (
     <div className="w-full lg:flex-1">
-      {/* Mobile View - Stacked Layout */}
+      {/* Mobile/Tablet View */}
       <div className="lg:hidden">
-        <div className="mb-3 flex items-center gap-2">
-          <div className="flex h-7 w-7 items-center justify-center rounded-md bg-gray-500/20 text-sm 2xl:h-8 2xl:w-8 2xl:text-base">
-            <GiCrossedAxes />
+        <div className="border-gold-dark/20 bg-dark-card/50 rounded-lg border p-3">
+          <div className="mb-2.5 flex items-center gap-2">
+            <div className="bg-gold-dark/20 text-gold-dark flex h-7 w-7 items-center justify-center rounded-md text-sm">
+              <GiCrossedAxes />
+            </div>
+            <h3 className="text-sm font-bold text-white">Clan Battle</h3>
           </div>
-          <h3 className="text-sm font-bold text-white 2xl:text-base">
-            Clan Battle
-          </h3>
+          <div className="flex items-center justify-between gap-3">
+            {/* Clan 1 */}
+            <div className="border-gold-dark/20 bg-dark-primary/50 flex-1 rounded-md border px-3 py-2 text-center">
+              <p className="truncate text-sm font-semibold text-white">
+                {clan1 ? `${clan1.emblem} ${clan1.name}` : "TBD"}
+              </p>
+            </div>
+
+            <span className="text-gold text-xs font-bold">VS</span>
+
+            {/* Clan 2 */}
+            <div className="border-gold-dark/20 bg-dark-primary/50 flex-1 rounded-md border px-3 py-2 text-center">
+              <p className="truncate text-sm font-semibold text-white">
+                {clan2 ? `${clan2.emblem} ${clan2.name}` : "TBD"}
+              </p>
+            </div>
+          </div>
         </div>
-        {isClanSelection && (
-          <div className="space-y-2">
-            <div className="rounded-md border border-white/20 bg-black/50 p-2.5">
-              <p className="mb-1 text-xs text-gray-400 2xl:text-sm">Clan 1</p>
-              <p className="text-sm font-semibold text-white 2xl:text-base">
-                {clan1
-                  ? `${clan1.emblem} ${clan1.name} [${clan1.tag}]`
-                  : "Not specified"}
-              </p>
-            </div>
-            <div className="flex items-center justify-center">
-              <div className="bg-gold/10 border-gold/30 rounded-full border px-4 py-1">
-                <span className="text-gold text-xs font-bold 2xl:text-sm">
-                  VS
-                </span>
-              </div>
-            </div>
-            <div className="rounded-md border border-white/20 bg-black/50 p-2.5">
-              <p className="mb-1 text-xs text-gray-400 2xl:text-sm">Clan 2</p>
-              <p className="text-sm font-semibold text-white 2xl:text-base">
-                {clan2
-                  ? `${clan2.emblem} ${clan2.name} [${clan2.tag}]`
-                  : "Not specified"}
-              </p>
-            </div>
-          </div>
-        )}
       </div>
 
       {/* Desktop View - Horizontal Layout */}
-      <div className="hidden px-3 lg:block">
-        {isClanSelection && (
-          <div className="flex items-center gap-8">
-            <div className="flex items-center gap-2">
-              <div className="flex h-8 w-8 items-center justify-center rounded-md bg-gray-500/20 text-base 2xl:h-10 2xl:w-10 2xl:text-lg">
-                <GiCrossedAxes />
-              </div>
-              <h3 className="text-base font-bold text-white 2xl:text-lg">
-                Clan Details
-              </h3>
+      <div className="hidden lg:block">
+        <div className="flex items-center gap-6">
+          <div className="flex items-center gap-2">
+            <div className="bg-gold-dark/20 text-gold-dark flex h-8 w-8 items-center justify-center rounded-md text-base 2xl:h-10 2xl:w-10 2xl:text-lg">
+              <GiCrossedAxes />
             </div>
-            <>
-              <div className="rounded-md border border-white/20 bg-black/50 p-2.5">
-                <p className="text-sm font-semibold whitespace-nowrap text-white 2xl:text-base">
-                  {clan1
-                    ? `${clan1.emblem} ${clan1.name} [${clan1.tag}]`
-                    : "Not specified"}
-                </p>
-              </div>
-              <span className="text-sm font-semibold text-white 2xl:text-base">
-                vs
-              </span>
-              <div className="rounded-md border border-white/20 bg-black/50 p-2.5">
-                <p className="text-sm font-semibold whitespace-nowrap text-white 2xl:text-base">
-                  {clan2
-                    ? `${clan2.emblem} ${clan2.name} [${clan2.tag}]`
-                    : "Not specified"}
-                </p>
-              </div>
-            </>
+            <span className="text-sm font-medium text-gray-400">
+              Clan Battle:
+            </span>
           </div>
-        )}
+
+          {/* Clan 1 */}
+          <div className="border-gold-dark/30 bg-dark-card/80 rounded-lg border px-4 py-2">
+            <p className="text-sm font-semibold whitespace-nowrap text-white 2xl:text-base">
+              {clan1 ? `${clan1.emblem} ${clan1.name} [${clan1.tag}]` : "TBD"}
+            </p>
+          </div>
+
+          <span className="text-gold text-sm font-bold">VS</span>
+
+          {/* Clan 2 */}
+          <div className="border-gold-dark/30 bg-dark-card/80 rounded-lg border px-4 py-2">
+            <p className="text-sm font-semibold whitespace-nowrap text-white 2xl:text-base">
+              {clan2 ? `${clan2.emblem} ${clan2.name} [${clan2.tag}]` : "TBD"}
+            </p>
+          </div>
+        </div>
       </div>
     </div>
   );

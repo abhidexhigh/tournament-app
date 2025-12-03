@@ -214,7 +214,7 @@ export default function FilterBar({
 
       {/* Main Filter Bar */}
       <div className="relative z-10 mb-8">
-        <div className="border-gold-dark/20 rounded-2xl p-4 shadow-2xl shadow-black/30 backdrop-blur-xl sm:px-4 sm:py-0">
+        <div className="border-gold-dark/20 rounded-2xl px-4 shadow-2xl shadow-black/30 backdrop-blur-xl sm:px-4 sm:py-0">
           <div className="relative flex flex-col gap-5 lg:grid lg:grid-cols-3 lg:items-center lg:gap-4">
             {/* Left: Status Dropdown */}
             <div className="flex w-full justify-start space-y-3 lg:w-auto lg:justify-start">

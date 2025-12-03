@@ -3,9 +3,20 @@
 import Badge from "./Badge";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { PRIMARY_CURRENCY, getPrimaryCurrency } from "../lib/currencyConfig";
 
 export default function MatchHistory({ matches, playerId }) {
   const router = useRouter();
+  const currencyInfo = getPrimaryCurrency();
+
+  // Format currency based on config
+  const formatCurrency = (amount) => {
+    if (PRIMARY_CURRENCY === "USD") {
+      return `$${Number(amount).toLocaleString()}`;
+    }
+    return `${Number(amount).toLocaleString()} 💎`;
+  };
+
   if (!matches || matches.length === 0) {
     return (
       <div className="border-gold-dark/20 relative overflow-hidden rounded-2xl border backdrop-blur-xl">
@@ -227,7 +238,7 @@ export default function MatchHistory({ matches, playerId }) {
                           {match.title}
                         </div>
                         <div className="text-gold-light-text mt-1 text-xs">
-                          💎 {match.prizePool?.toLocaleString()} Pool
+                          {formatCurrency(match.prizePool || 0)} Pool
                         </div>
                       </div>
                       <span className="text-gray-500 opacity-0 transition-opacity group-hover:opacity-100">
@@ -328,9 +339,8 @@ export default function MatchHistory({ matches, playerId }) {
                     ) : performance.prizeAmount > 0 ? (
                       <div className="bg-gold/20 border-gold/30 inline-flex items-center gap-1 rounded-lg border px-3 py-1">
                         <span className="text-gold text-sm font-black">
-                          {performance.prizeAmount.toLocaleString()}
+                          {formatCurrency(performance.prizeAmount)}
                         </span>
-                        <span className="text-xs">💎</span>
                       </div>
                     ) : (
                       <span className="text-gold-light-text text-sm">—</span>
@@ -379,13 +389,12 @@ export default function MatchHistory({ matches, playerId }) {
           <div>
             <span className="text-gold-light-text">Total Prize:</span>
             <span className="text-gold ml-2 text-lg font-black">
-              {sortedMatches
-                .reduce((sum, m) => {
+              {formatCurrency(
+                sortedMatches.reduce((sum, m) => {
                   const p = getPlayerPerformance(m);
                   return sum + (p?.prizeAmount || 0);
-                }, 0)
-                .toLocaleString()}{" "}
-              💎
+                }, 0),
+              )}
             </span>
           </div>
         </div>

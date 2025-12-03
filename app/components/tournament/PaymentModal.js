@@ -11,7 +11,7 @@ import {
   getUserBalance,
   getPrimaryCurrency,
 } from "../../lib/currencyConfig";
-import { 
+import {
   getUserBalanceDisplay,
   validateTournamentPayment,
 } from "../../lib/currencyHelper";
@@ -25,6 +25,7 @@ export default function PaymentModal({
   loading,
   onConfirm,
   onCancel,
+  onAddMoney,
 }) {
   if (!show) return null;
 
@@ -32,7 +33,7 @@ export default function PaymentModal({
   const currencyInfo = getPrimaryCurrency();
   const userBalanceDisplay = getUserBalanceDisplay(user);
   const entryFeeFormatted = formatEntryFee(tournament?.entry_fee || 0);
-  
+
   // Validate payment
   const validation = validateTournamentPayment(user, tournament);
   const hasInsufficientBalance = !validation.valid;
@@ -73,9 +74,13 @@ export default function PaymentModal({
           {/* Tournament Info Card */}
           <div className="from-dark-primary to-dark-secondary border-gold-dark/30 mb-4 rounded-lg border bg-gradient-to-br p-4">
             <div className="mb-3 flex items-center justify-between">
-              <span className="text-sm font-medium text-gray-400">Tournament</span>
-              <span className="text-gold rounded-full bg-gold/10 px-3 py-1 text-xs font-bold">
-                {tournament?.display_type === "tournament" ? "🏆 Tournament" : "🎪 Event"}
+              <span className="text-sm font-medium text-gray-400">
+                Tournament
+              </span>
+              <span className="text-gold bg-gold/10 rounded-full px-3 py-1 text-xs font-bold">
+                {tournament?.display_type === "tournament"
+                  ? "🏆 Tournament"
+                  : "🎪 Event"}
               </span>
             </div>
             <h3 className="mb-2 text-base font-bold text-white">
@@ -101,19 +106,25 @@ export default function PaymentModal({
             </div>
 
             {/* Balance Info */}
-            <div className={`rounded-lg border p-4 ${
-              hasInsufficientBalance 
-                ? 'border-red-500/30 bg-red-500/10' 
-                : 'border-green-500/30 bg-green-500/10'
-            }`}>
+            <div
+              className={`rounded-lg border p-4 ${
+                hasInsufficientBalance
+                  ? "border-red-500/30 bg-red-500/10"
+                  : "border-green-500/30 bg-green-500/10"
+              }`}
+            >
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <span className={`text-lg ${hasInsufficientBalance ? 'text-red-400' : 'text-green-400'}`}>
-                    {hasInsufficientBalance ? '⚠️' : '✓'}
+                  <span
+                    className={`text-lg ${hasInsufficientBalance ? "text-red-400" : "text-green-400"}`}
+                  >
+                    {hasInsufficientBalance ? "⚠️" : "✓"}
                   </span>
                   <div>
                     <p className="text-xs text-gray-400">Your Balance</p>
-                    <p className={`text-base font-bold ${hasInsufficientBalance ? 'text-red-400' : 'text-green-400'}`}>
+                    <p
+                      className={`text-base font-bold ${hasInsufficientBalance ? "text-red-400" : "text-green-400"}`}
+                    >
                       {userBalanceDisplay.formatted}
                     </p>
                   </div>
@@ -122,10 +133,9 @@ export default function PaymentModal({
                   <div className="text-right">
                     <p className="text-xs text-gray-400">After Join</p>
                     <p className="text-base font-bold text-gray-300">
-                      {PRIMARY_CURRENCY === "USD" 
+                      {PRIMARY_CURRENCY === "USD"
                         ? `$${(userBalance - entryFeeAmount).toFixed(2)}`
-                        : `${(userBalance - entryFeeAmount).toLocaleString()} 💎`
-                      }
+                        : `${(userBalance - entryFeeAmount).toLocaleString()} 💎`}
                     </p>
                   </div>
                 )}
@@ -135,34 +145,43 @@ export default function PaymentModal({
             {/* Insufficient Balance Warning */}
             {hasInsufficientBalance && (
               <div className="rounded-lg border border-red-500/30 bg-red-500/10 p-3">
-                <div className="flex items-start gap-2">
+                <div className="flex items-center gap-2">
                   <span className="text-lg">❌</span>
                   <div>
-                    <p className="text-sm font-semibold text-red-400">Insufficient Balance</p>
-                    <p className="mt-1 text-xs text-red-300">
-                      {validation.error || `You need ${entryFeeFormatted} to join this tournament.`}
+                    <p className="text-sm font-semibold text-red-400">
+                      Insufficient Balance
+                    </p>
+                    <p className="mt-0.5 text-xs text-red-300">
+                      {validation.error ||
+                        `You need ${entryFeeFormatted} to join this tournament.`}
                     </p>
                   </div>
                 </div>
               </div>
             )}
 
-            {/* Payment Method Info */}
-            <div className="border-gold-dark/20 rounded-lg border bg-dark-secondary/50 p-3">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <span className="text-gold text-xl">{currencyInfo.emoji}</span>
-                  <div>
-                    <p className="text-xs text-gray-400">Payment Method</p>
-                    <p className="text-sm font-bold text-white">{currencyInfo.displayName}</p>
-                  </div>
+            {/* Add Money Button - Show when balance is insufficient */}
+            {hasInsufficientBalance && onAddMoney && (
+              <button
+                onClick={onAddMoney}
+                className="from-gold/20 to-gold/10 border-gold/50 hover:from-gold/30 hover:to-gold/20 hover:border-gold/70 group flex w-full items-center justify-center gap-3 rounded-lg border bg-gradient-to-r px-4 py-3 transition-all duration-200"
+              >
+                <span className="bg-gold/20 flex h-8 w-8 items-center justify-center rounded-full text-lg transition-transform group-hover:scale-110">
+                  {currencyInfo.emoji}
+                </span>
+                <div className="text-left">
+                  <p className="text-gold text-sm font-bold">
+                    Add Money to Wallet
+                  </p>
+                  <p className="text-xs text-gray-400">
+                    Top up your balance to join
+                  </p>
                 </div>
-                <div className="flex items-center gap-1 rounded-full bg-gold/10 px-3 py-1">
-                  <span className="text-xs font-semibold text-gold">Selected</span>
-                  <span className="text-gold text-sm">✓</span>
-                </div>
-              </div>
-            </div>
+                <span className="text-gold ml-auto text-lg transition-transform group-hover:translate-x-1">
+                  →
+                </span>
+              </button>
+            )}
           </div>
 
           {/* Action Buttons */}
@@ -208,7 +227,8 @@ export default function PaymentModal({
           {/* Info Footer */}
           <div className="mt-4 rounded-lg border border-blue-500/30 bg-blue-500/10 p-3">
             <p className="text-center text-xs text-blue-300">
-              🔒 Secure transaction • {currencyInfo.displayName} will be deducted from your balance
+              🔒 Secure transaction • {currencyInfo.displayName} will be
+              deducted from your balance
             </p>
           </div>
 

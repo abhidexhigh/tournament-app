@@ -11,7 +11,7 @@ export default function Button({
   className = "",
 }) {
   const baseStyles =
-    "font-bold rounded-lg transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed inline-flex items-center justify-center";
+    "font-bold rounded-lg transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed inline-flex items-center justify-center active:scale-[0.98]";
 
   const variants = {
     primary:

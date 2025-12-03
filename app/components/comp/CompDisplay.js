@@ -6,6 +6,7 @@ import ForceIcon from "./ForceIcon";
 import AugmentIcon from "./AugmentIcon";
 import SkillTreeIcon from "./SkillTreeIcon";
 import ChampionCard from "./ChampionCard";
+import { PRIMARY_CURRENCY } from "../../lib/currencyConfig";
 
 export default function CompDisplay({
   playerData,
@@ -159,7 +160,7 @@ export default function CompDisplay({
                 </span>
                 {prizeAmount > 0 && (
                   <span className="bg-gold/10 text-gold rounded-full px-1.5 py-0.5 font-semibold">
-                    +{prizeAmount.toLocaleString()} 💎
+                    +{PRIMARY_CURRENCY === "USD" ? "$" : ""}{prizeAmount.toLocaleString()}{PRIMARY_CURRENCY === "DIAMOND" ? " 💎" : ""}
                   </span>
                 )}
               </div>

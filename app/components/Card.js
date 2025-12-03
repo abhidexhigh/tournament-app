@@ -10,7 +10,7 @@ export default function Card({
   const baseStyles =
     "bg-dark-gray-card border border-gold-dark/30 rounded-2xl transition-all duration-300";
   const hoverStyles = hover
-    ? "hover:border-gold hover:shadow-lg hover:shadow-gold/30 cursor-pointer"
+    ? "hover:border-gold hover:shadow-lg hover:shadow-gold/30 cursor-pointer active:scale-[0.99]"
     : "";
   const glassStyles = glass ? "glass-effect" : "";
 

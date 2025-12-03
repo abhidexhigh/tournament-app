@@ -11,6 +11,7 @@ import {
   hasUserRole,
 } from "../lib/authHelpers";
 import { getCurrentUser } from "../lib/auth";
+import { PRIMARY_CURRENCY, getPrimaryCurrency } from "../lib/currencyConfig";
 
 export default function SelectRolePage() {
   const [selectedRole, setSelectedRole] = useState(null);
@@ -138,8 +139,8 @@ export default function SelectRolePage() {
                     Starting Balance
                   </span>
                   <div className="flex items-center space-x-2">
-                    <span className="text-gold text-xl">💎</span>
-                    <span className="text-gold font-bold">1,000</span>
+                    <span className="text-gold text-xl">{getPrimaryCurrency().emoji}</span>
+                    <span className="text-gold font-bold">{PRIMARY_CURRENCY === "USD" ? "$1,000" : "1,000"}</span>
                   </div>
                 </div>
               </div>
@@ -199,8 +200,8 @@ export default function SelectRolePage() {
                     Starting Balance
                   </span>
                   <div className="flex items-center space-x-2">
-                    <span className="text-gold text-xl">💎</span>
-                    <span className="text-gold font-bold">5,000</span>
+                    <span className="text-gold text-xl">{getPrimaryCurrency().emoji}</span>
+                    <span className="text-gold font-bold">{PRIMARY_CURRENCY === "USD" ? "$5,000" : "5,000"}</span>
                   </div>
                 </div>
               </div>

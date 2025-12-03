@@ -3,6 +3,7 @@
 import Card from "../Card";
 import { LuCalendarDays, LuClock, LuUsers, LuGamepad2 } from "react-icons/lu";
 import { TbTrophy, TbTarget } from "react-icons/tb";
+import { PRIMARY_CURRENCY, getPrimaryCurrency } from "../../lib/currencyConfig";
 
 export default function MatchDetailsTab({ match }) {
   const formatDate = (dateStr) => {
@@ -86,7 +87,7 @@ export default function MatchDetailsTab({ match }) {
             <div>
               <p className="text-xs text-gray-400">Prize Pool</p>
               <p className="text-gold font-semibold">
-                {match.prizePool?.toLocaleString()} 💎
+                {PRIMARY_CURRENCY === "USD" ? "$" : ""}{match.prizePool?.toLocaleString()}{PRIMARY_CURRENCY === "DIAMOND" ? " 💎" : ""}
               </p>
             </div>
           </div>

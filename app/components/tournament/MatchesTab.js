@@ -6,6 +6,7 @@ import { LuCalendarDays, LuUsers } from "react-icons/lu";
 import { FaTrophy, FaClock } from "react-icons/fa";
 import matchesData from "../../../data/matches.json";
 import Image from "next/image";
+import { PRIMARY_CURRENCY, getPrimaryCurrency } from "../../lib/currencyConfig";
 
 export default function MatchesTab() {
   const [matchFilter, setMatchFilter] = useState("all");
@@ -284,9 +285,8 @@ function MatchCard({ match, index, isSelected, onClick }) {
 
             {/* Prize pool */}
             <div className="flex items-center space-x-1">
-              <span className="text-gold text-base sm:text-lg">💎</span>
               <span className="text-gold text-xs font-bold sm:text-sm">
-                {match.prizePool.toLocaleString()}
+                {PRIMARY_CURRENCY === "USD" ? `$${match.prizePool.toLocaleString()}` : `${match.prizePool.toLocaleString()} 💎`}
               </span>
             </div>
           </div>
@@ -328,7 +328,7 @@ function MatchLeaderboard({ match }) {
             </span>
           </div>
           <span className="text-gold text-sm font-semibold sm:text-base">
-            {match.prizePool.toLocaleString()} 💎
+            {PRIMARY_CURRENCY === "USD" ? `$${match.prizePool.toLocaleString()}` : `${match.prizePool.toLocaleString()} 💎`}
           </span>
         </div>
       </div>
@@ -409,10 +409,7 @@ function LeaderboardEntry({ entry, isCompleted }) {
             }`}
           >
             <p className="text-gold text-sm font-bold sm:text-base">
-              +{entry.prizeAmount.toLocaleString()} 💎
-            </p>
-            <p className="text-gold/80 text-xs">
-              (${entry.prizeAmount.toLocaleString()} USD)
+              +{PRIMARY_CURRENCY === "USD" ? `$${entry.prizeAmount.toLocaleString()}` : `${entry.prizeAmount.toLocaleString()} 💎`}
             </p>
             {/* {isWinner && (
               <p className="mt-0.5 text-[10px] text-amber-400/80">

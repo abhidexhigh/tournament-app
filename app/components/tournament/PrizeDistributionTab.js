@@ -3,6 +3,8 @@
 import Card from "../Card";
 import { formatPrizeAmount } from "../../lib/clanPrizeDistribution";
 import Image from "next/image";
+import { formatPrizePool, getPrimaryCurrencyInfo } from "../../lib/currencyFormatter";
+import { PRIMARY_CURRENCY, getPrimaryCurrency } from "../../lib/currencyConfig";
 export default function PrizeDistributionTab({
   tournament,
   prizeDistribution,
@@ -22,6 +24,7 @@ export default function PrizeDistributionTab({
 
 function RegularPrizeDistribution({ tournament, prizes }) {
   const totalPrizePool = prizes.first + prizes.second + prizes.third;
+  const currencyInfo = getPrimaryCurrency();
 
   // 1st place gets 50%
   const firstPlacePrize = Math.round(totalPrizePool * 0.5);
@@ -36,6 +39,14 @@ function RegularPrizeDistribution({ tournament, prizes }) {
     prize: perPositionPrize,
     percent: perPositionPercent,
   }));
+  
+  // Format currency based on config
+  const formatCurrency = (amount) => {
+    if (PRIMARY_CURRENCY === "USD") {
+      return `$${amount.toLocaleString()}`;
+    }
+    return `${amount.toLocaleString()} 💎`;
+  };
 
   return (
     <Card>
@@ -71,10 +82,7 @@ function RegularPrizeDistribution({ tournament, prizes }) {
               Winner takes 50% of prize pool
             </p>
             <p className="text-gold text-3xl font-bold">
-              {firstPlacePrize.toLocaleString()} 💎
-            </p>
-            <p className="text-gold/80 mt-1 text-sm">
-              (${firstPlacePrize.toLocaleString()} USD)
+              {formatCurrency(firstPlacePrize)}
             </p>
           </div>
         </div>
@@ -95,10 +103,7 @@ function RegularPrizeDistribution({ tournament, prizes }) {
                 Each position receives:
               </p>
               <p className="text-gold text-2xl font-bold">
-                {perPositionPrize.toLocaleString()} 💎
-              </p>
-              <p className="text-gold/80 text-sm">
-                (${perPositionPrize.toLocaleString()} USD)
+                {formatCurrency(perPositionPrize)}
               </p>
               <p className="mt-2 text-xs text-gray-500">
                 {perPositionPercent}% of total prize pool each
@@ -116,7 +121,7 @@ function RegularPrizeDistribution({ tournament, prizes }) {
                       {pos.position}
                     </span>
                     <span className="text-xs text-gray-400">
-                      {pos.prize.toLocaleString()} 💎
+                      {formatCurrency(pos.prize)}
                     </span>
                   </div>
                 ))}
@@ -128,11 +133,8 @@ function RegularPrizeDistribution({ tournament, prizes }) {
                 <span className="text-gray-400">Total for runner-ups:</span>
                 <div className="text-right">
                   <span className="text-gold font-semibold">
-                    {remainingPrize.toLocaleString()} 💎
+                    {formatCurrency(remainingPrize)}
                   </span>
-                  <div className="text-gold/80 text-xs">
-                    (${remainingPrize.toLocaleString()} USD)
-                  </div>
                 </div>
               </div>
             </div>
@@ -146,11 +148,8 @@ function RegularPrizeDistribution({ tournament, prizes }) {
           <span className="text-gold font-semibold">Total Prize Pool:</span>
           <div className="text-right">
             <span className="text-gold text-xl font-bold">
-              {totalPrizePool.toLocaleString()} 💎
+              {formatCurrency(totalPrizePool)}
             </span>
-            <div className="text-gold/80 text-sm">
-              (${totalPrizePool.toLocaleString()} USD)
-            </div>
           </div>
         </div>
       </div>
@@ -159,6 +158,16 @@ function RegularPrizeDistribution({ tournament, prizes }) {
 }
 
 function ClanBattlePrizeDistribution({ prizeDistribution }) {
+  const currencyInfo = getPrimaryCurrency();
+  
+  // Format currency based on config
+  const formatCurrency = (amount) => {
+    if (PRIMARY_CURRENCY === "USD") {
+      return `$${Number(amount).toLocaleString()}`;
+    }
+    return `${Number(amount).toLocaleString()} 💎`;
+  };
+  
   if (!prizeDistribution) {
     return (
       <Card className="px-10">
@@ -207,11 +216,8 @@ function ClanBattlePrizeDistribution({ prizeDistribution }) {
           <span className="text-gold font-semibold">Total Prize Pool:</span>
           <div className="text-right">
             <span className="text-gold text-xl font-bold">
-              {prizeDistribution.totalPrize.toLocaleString()} 💎
+              {formatCurrency(prizeDistribution.totalPrize)}
             </span>
-            <div className="text-gold/80 text-sm">
-              ({formatPrizeAmount(prizeDistribution.totalPrize)})
-            </div>
           </div>
         </div>
         <p className="mt-1 text-sm text-gray-400">
@@ -223,6 +229,14 @@ function ClanBattlePrizeDistribution({ prizeDistribution }) {
 }
 
 function TopPerformersSection({ performers }) {
+  // Format currency based on config
+  const formatCurrency = (amount) => {
+    if (PRIMARY_CURRENCY === "USD") {
+      return `$${Number(amount).toLocaleString()}`;
+    }
+    return `${Number(amount).toLocaleString()} 💎`;
+  };
+  
   const icons = [
     "https://res.cloudinary.com/dg0cmj6su/image/upload/v1763459457/First_xf1xz2.webp",
     "https://res.cloudinary.com/dg0cmj6su/image/upload/v1763459457/second_nak1rc.webp",
@@ -264,10 +278,7 @@ function TopPerformersSection({ performers }) {
             </div>
             <div className="text-right">
               <p className="text-gold text-lg font-bold">
-                {performer.prize.toLocaleString()} 💎
-              </p>
-              <p className="text-gold/80 text-sm">
-                ({formatPrizeAmount(performer.prize)})
+                {formatCurrency(performer.prize)}
               </p>
             </div>
           </div>
@@ -278,6 +289,14 @@ function TopPerformersSection({ performers }) {
 }
 
 function TeamMembersSection({ remainingMembers }) {
+  // Format currency based on config
+  const formatCurrency = (amount) => {
+    if (PRIMARY_CURRENCY === "USD") {
+      return `$${Number(amount).toLocaleString()}`;
+    }
+    return `${Number(amount).toLocaleString()} 💎`;
+  };
+  
   return (
     <div>
       <h5 className="border-gold-dark/30 mb-2 flex items-center gap-2 border-l-2 pl-4 text-base font-medium text-white">
@@ -290,28 +309,22 @@ function TeamMembersSection({ remainingMembers }) {
           </span>
           <div className="text-right">
             <span className="text-gold text-lg font-bold">
-              {remainingMembers.individualPrize.toLocaleString()} 💎 each
+              {formatCurrency(remainingMembers.individualPrize)} each
             </span>
-            <div className="text-gold/80 text-sm">
-              ({formatPrizeAmount(remainingMembers.individualPrize)})
-            </div>
           </div>
         </div>
         <p className="text-sm text-gray-400">
           Equal distribution of 80% total prize pool
         </p>
         <div className="mt-3 border-t border-gray-600 pt-3">
-          <div className="flex items-end justify-between text-sm">
-            <span className="text-gray-400">Total for team members:</span>
-            <div className="text-right">
-              <span className="text-gold font-semibold">
-                {remainingMembers.totalPrize.toLocaleString()} 💎
-              </span>
-              <div className="text-gold/80 text-xs">
-                ({formatPrizeAmount(remainingMembers.totalPrize)})
+            <div className="flex items-end justify-between text-sm">
+              <span className="text-gray-400">Total for team members:</span>
+              <div className="text-right">
+                <span className="text-gold font-semibold">
+                  {formatCurrency(remainingMembers.totalPrize)}
+                </span>
               </div>
             </div>
-          </div>
         </div>
       </div>
     </div>

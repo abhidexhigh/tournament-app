@@ -6,48 +6,46 @@ export default function TournamentStatCard({
   highlighted = false,
   children,
 }) {
-  return (
-    <div
-      className={`flex w-full items-start gap-2 border-white/20 p-2 sm:p-2.5 lg:w-[156px] lg:border-r ${
-        highlighted
-          ? "border-gold/40 hover:border-gold/40 shadow-gold/10 rounded-lg border shadow-md transition-all"
-          : ""
-      }`}
-    >
-      {!highlighted && (
-        <div className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-md bg-gray-500/20 text-base sm:h-8 sm:w-8 sm:text-lg 2xl:h-10 2xl:w-10 2xl:text-xl">
-          {icon}
+  if (highlighted) {
+    return (
+      <div className="border-gold-dark/40 from-gold-dark/15 to-gold-dark/5 flex w-full items-center justify-center rounded-lg border bg-gradient-to-br p-3 md:w-auto md:min-w-[130px] lg:w-[140px]">
+        <div className="text-center">
+          <p className="text-gold-dark mb-0.5 text-[10px] font-semibold tracking-wider uppercase">
+            {label}
+          </p>
+          {children || (
+            <>
+              <p className="text-gold text-lg font-bold sm:text-xl 2xl:text-2xl">
+                {value}
+              </p>
+              {subtitle && (
+                <p className="text-gold/60 text-[10px] sm:text-xs">
+                  {subtitle}
+                </p>
+              )}
+            </>
+          )}
         </div>
-      )}
-      <div className={`min-w-0 flex-1 ${highlighted ? "text-center" : ""}`}>
-        <p
-          className={`text-xs font-medium tracking-wider 2xl:text-sm ${
-            highlighted ? "text-gold/80 mb-1 font-semibold" : "text-gold-text"
-          }`}
-        >
+      </div>
+    );
+  }
+
+  return (
+    <div className="border-gold-dark/20 bg-dark-card/50 md:bg-dark-card/50 lg:border-gold-dark/20 flex w-full items-start gap-2.5 rounded-lg border p-2.5 md:w-auto md:min-w-[130px] md:rounded-lg md:border lg:w-[140px] lg:rounded-none lg:border-0 lg:border-r lg:bg-transparent">
+      <div className="bg-gold-dark/20 text-gold-dark flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg text-base sm:h-9 sm:w-9 sm:text-lg">
+        {icon}
+      </div>
+      <div className="min-w-0 flex-1">
+        <p className="text-[10px] font-medium tracking-wider text-gray-400 sm:text-xs">
           {label}
         </p>
         {children || (
           <>
-            <p
-              className={`font-semibold ${
-                highlighted
-                  ? "text-gold text-base font-bold sm:text-lg 2xl:text-xl"
-                  : "text-sm text-white sm:text-base 2xl:text-lg"
-              }`}
-            >
+            <p className="text-sm font-semibold text-white sm:text-base">
               {value}
             </p>
             {subtitle && (
-              <p
-                className={`text-xs 2xl:text-sm ${
-                  highlighted
-                    ? "text-gold/90 sm:text-sm 2xl:text-base"
-                    : "text-gray-300"
-                }`}
-              >
-                {subtitle}
-              </p>
+              <p className="text-[10px] text-gray-400 sm:text-xs">{subtitle}</p>
             )}
           </>
         )}

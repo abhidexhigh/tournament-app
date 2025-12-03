@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { CompDisplay } from "../comp";
+import { PRIMARY_CURRENCY, getPrimaryCurrency } from "../../lib/currencyConfig";
 
 export default function LeaderboardTab({
   leaderboard,
@@ -100,10 +101,9 @@ export default function LeaderboardTab({
           <div className="flex items-center gap-2 rounded-full bg-gold/10 px-3 py-1.5">
             <span className="text-xs text-gray-500">Total Prize:</span>
             <span className="text-base font-bold text-gold">
-              {leaderboard
+              {PRIMARY_CURRENCY === "USD" ? "$" : ""}{leaderboard
                 .reduce((sum, entry) => sum + (entry.prizeAmount || 0), 0)
-                .toLocaleString()}{" "}
-              💎
+                .toLocaleString()}{PRIMARY_CURRENCY === "DIAMOND" ? " 💎" : ""}
             </span>
           </div>
         </div>
