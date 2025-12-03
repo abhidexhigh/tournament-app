@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
 import { useState, useEffect, useRef } from "react";
+import { createPortal } from "react-dom";
 import { useSession, signOut } from "next-auth/react";
 import { useUser } from "../contexts/UserContext";
 import Image from "next/image";
@@ -22,6 +23,7 @@ export default function Navbar() {
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [authModalMode, setAuthModalMode] = useState("login");
   const [isTopupModalOpen, setIsTopupModalOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const dropdownRef = useRef(null);
   const router = useRouter();
   const pathname = usePathname();
@@ -31,6 +33,12 @@ export default function Navbar() {
   const handleLogout = async () => {
     await signOut({ callbackUrl: "/" });
   };
+
+  // Mount state for portal
+  useEffect(() => {
+    setMounted(true);
+    return () => setMounted(false);
+  }, []);
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -202,28 +210,30 @@ export default function Navbar() {
                           ) : (
                             /* Dual Currency Mode - Show all balances */
                             <>
-                          <div className="flex items-center justify-between px-2">
-                            <div className="flex items-center space-x-2">
-                                  <span className="text-xl">{getPrimaryCurrency().emoji}</span>
-                              <span className="text-gold text-sm font-bold">
+                              <div className="flex items-center justify-between px-2">
+                                <div className="flex items-center space-x-2">
+                                  <span className="text-xl">
+                                    {getPrimaryCurrency().emoji}
+                                  </span>
+                                  <span className="text-gold text-sm font-bold">
                                     {getPrimaryCurrency().displayName}
-                              </span>
-                            </div>
-                            <span className="text-gold font-bold">
+                                  </span>
+                                </div>
+                                <span className="text-gold font-bold">
                                   {getUserBalanceDisplay(user).formatted}
-                            </span>
-                          </div>
-                          <div className="flex items-center justify-between px-2">
-                            <div className="flex items-center space-x-2">
-                              <span className="text-xl">🎫</span>
-                              <span className="text-sm font-bold text-gray-300">
-                                Total Tickets
-                              </span>
-                            </div>
-                            <span className="font-bold text-purple-400">
-                              {getTicketCount(user.tickets)}
-                            </span>
-                          </div>
+                                </span>
+                              </div>
+                              <div className="flex items-center justify-between px-2">
+                                <div className="flex items-center space-x-2">
+                                  <span className="text-xl">🎫</span>
+                                  <span className="text-sm font-bold text-gray-300">
+                                    Total Tickets
+                                  </span>
+                                </div>
+                                <span className="font-bold text-purple-400">
+                                  {getTicketCount(user.tickets)}
+                                </span>
+                              </div>
                             </>
                           )}
                         </div>
@@ -336,7 +346,7 @@ export default function Navbar() {
           </button>
         </div>
       </div>
-      <div className="-mt-3 flex items-center justify-between">
+      <div className="-mt-3 hidden h-3 w-full items-center justify-between md:flex">
         <Image
           src="/images/nav-border-left.webp"
           alt="Navbar Background"
@@ -353,115 +363,201 @@ export default function Navbar() {
         />
       </div>
 
-      {/* Mobile Navigation */}
-      {isMenuOpen && (
-        <div className="bg-dark-card border-gold-dark/20 border-t md:hidden">
-          <div className="space-y-3 px-4 pt-2 pb-4">
-            <Link
-              href="/"
-              className="hover:text-gold block py-2 text-gray-300 transition-colors duration-300"
+      {/* Mobile Navigation - Slide-in Drawer (Portal) */}
+      {mounted &&
+        createPortal(
+          <div className="md:hidden">
+            {/* Backdrop Overlay */}
+            <div
+              className={`fixed inset-0 z-[9998] bg-black/70 backdrop-blur-sm transition-opacity duration-300 ${
+                isMenuOpen ? "opacity-100" : "pointer-events-none opacity-0"
+              }`}
               onClick={() => setIsMenuOpen(false)}
+            />
+
+            {/* Drawer Panel */}
+            <div
+              className={`fixed top-0 right-0 z-[9999] h-full w-[85%] max-w-sm transform shadow-2xl transition-transform duration-300 ease-out ${
+                isMenuOpen ? "translate-x-0" : "translate-x-full"
+              }`}
+              style={{ backgroundColor: "#0a0a0f" }}
             >
-              Tournaments
-            </Link>
-
-            {user && user.type ? (
-              <>
-                <Link
-                  href={
-                    user.type === "host"
-                      ? "/host/dashboard"
-                      : user.type === "game_owner"
-                        ? "/admin/dashboard"
-                        : "/player/dashboard"
-                  }
-                  className="hover:text-gold block py-2 text-gray-300 transition-colors duration-300"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  {user.type === "game_owner" ? "Admin Dashboard" : "Dashboard"}
-                </Link>
-
-                <div className="border-gold-dark/30 space-y-3 border-t pt-3">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-2">
-                      <Image
-                        src={user.avatar}
-                        alt="Avatar"
-                        className="h-8 w-8 rounded-full"
-                      />
-                      <span className="font-medium text-white">
-                        {user.username}
-                      </span>
-                    </div>
-                    <button
-                      onClick={() => {
-                        setIsTopupModalOpen(true);
-                        setIsMenuOpen(false);
-                      }}
-                      className="from-gold/20 to-gold/5 border-gold/40 hover:border-gold flex items-center space-x-2 rounded-lg border bg-gradient-to-br px-3 py-1.5 transition-all active:scale-95"
-                    >
-                      <span className="text-gold text-lg">{getPrimaryCurrency().emoji}</span>
-                      <span className="text-gold font-bold">
-                        {getUserBalanceDisplay(user).formatted}
-                      </span>
-                      <span className="text-gold/70 text-xs">+</span>
-                    </button>
+              <div
+                className="border-gold/20 flex h-full flex-col border-l"
+                style={{
+                  background:
+                    "linear-gradient(to bottom, #1a1a24 0%, #101015 50%, #0a0a0f 100%)",
+                }}
+              >
+                {/* Drawer Header */}
+                <div className="flex items-center justify-between px-5 py-4">
+                  <div className="flex items-center gap-2">
+                    <span className="text-2xl">⚔️</span>
+                    <span className="text-gold-gradient text-lg font-bold">
+                      Force of Rune
+                    </span>
                   </div>
-
-                  <Link
-                    href="/profile"
-                    className="hover:text-gold block w-full py-2 text-center text-gray-300 transition-colors duration-300"
-                    onClick={() => setIsMenuOpen(false)}
-                  >
-                    Profile
-                  </Link>
-
                   <button
-                    onClick={() => {
-                      handleLogout();
-                      setIsMenuOpen(false);
-                    }}
-                    className="bg-dark-primary text-gold border-gold-dark/50 hover:bg-gold hover:text-dark-primary w-full rounded-lg border px-4 py-2 text-center font-medium transition-all duration-300"
+                    onClick={() => setIsMenuOpen(false)}
+                    className="text-gray-400 transition-colors hover:text-white"
                   >
-                    Logout
+                    <svg
+                      className="h-6 w-6"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M6 18L18 6M6 6l12 12"
+                      />
+                    </svg>
                   </button>
                 </div>
-              </>
-            ) : status === "authenticated" && session?.user ? (
-              <Link
-                href="/select-role"
-                className="bg-gold-gradient text-dark-primary hover:shadow-gold/50 block w-full rounded-lg px-6 py-2 text-center font-bold transition-all duration-300 hover:shadow-lg"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                Select Role
-              </Link>
-            ) : (
-              <div className="space-y-3">
-                <button
-                  onClick={() => {
-                    setAuthModalMode("login");
-                    setIsAuthModalOpen(true);
-                    setIsMenuOpen(false);
-                  }}
-                  className="text-gold border-gold-dark/50 hover:bg-gold/10 hover:border-gold block w-full rounded-lg border px-6 py-2 text-center font-semibold transition-all duration-300"
-                >
-                  Login
-                </button>
-                <button
-                  onClick={() => {
-                    setAuthModalMode("register");
-                    setIsAuthModalOpen(true);
-                    setIsMenuOpen(false);
-                  }}
-                  className="bg-gold-gradient text-dark-primary hover:shadow-gold/50 block w-full rounded-lg px-6 py-2 text-center font-bold transition-all duration-300 hover:shadow-lg"
-                >
-                  Register
-                </button>
+
+                {/* Navigation Links */}
+                <div className="flex-1 px-5 py-2">
+                  <nav className="space-y-1">
+                    <Link
+                      href="/"
+                      onClick={() => setIsMenuOpen(false)}
+                      className={`block rounded-lg px-4 py-3.5 text-base font-medium transition-all active:scale-[0.98] ${
+                        pathname === "/"
+                          ? "bg-gold/10 text-gold"
+                          : "text-gray-300 hover:bg-white/5 hover:text-white"
+                      }`}
+                    >
+                      Tournaments
+                    </Link>
+
+                    {user && user.type && (
+                      <>
+                        <Link
+                          href={
+                            user.type === "host"
+                              ? "/host/dashboard"
+                              : user.type === "game_owner"
+                                ? "/admin/dashboard"
+                                : "/player/dashboard"
+                          }
+                          onClick={() => setIsMenuOpen(false)}
+                          className={`block rounded-lg px-4 py-3.5 text-base font-medium transition-all active:scale-[0.98] ${
+                            pathname.includes("dashboard")
+                              ? "bg-gold/10 text-gold"
+                              : "text-gray-300 hover:bg-white/5 hover:text-white"
+                          }`}
+                        >
+                          {user.type === "game_owner"
+                            ? "Admin Dashboard"
+                            : "Dashboard"}
+                        </Link>
+
+                        <Link
+                          href="/profile"
+                          onClick={() => setIsMenuOpen(false)}
+                          className={`block rounded-lg px-4 py-3.5 text-base font-medium transition-all active:scale-[0.98] ${
+                            pathname === "/profile"
+                              ? "bg-gold/10 text-gold"
+                              : "text-gray-300 hover:bg-white/5 hover:text-white"
+                          }`}
+                        >
+                          Profile
+                        </Link>
+                      </>
+                    )}
+                  </nav>
+                </div>
+
+                {/* Bottom Section - Profile & Actions */}
+                <div className="mt-auto border-t border-white/10 px-5 py-5">
+                  {user && user.type ? (
+                    <div className="space-y-4">
+                      {/* User Info + Balance */}
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                          <Image
+                            src={user.avatar}
+                            alt="Avatar"
+                            width={40}
+                            height={40}
+                            className="h-10 w-10 rounded-full"
+                          />
+                          <div>
+                            <p className="text-sm font-semibold text-white">
+                              {user.username}
+                            </p>
+                            <p className="text-xs text-gray-500 capitalize">
+                              {user.type}
+                            </p>
+                          </div>
+                        </div>
+                        <button
+                          onClick={() => {
+                            setIsTopupModalOpen(true);
+                            setIsMenuOpen(false);
+                          }}
+                          className="border-gold/30 hover:border-gold/50 flex items-center gap-2 rounded-lg border bg-black/20 px-3 py-2 transition-all active:scale-[0.97]"
+                        >
+                          <span className="text-sm">
+                            {getPrimaryCurrency().emoji}
+                          </span>
+                          <span className="text-gold text-sm font-bold">
+                            {getUserBalanceDisplay(user).formatted}
+                          </span>
+                        </button>
+                      </div>
+
+                      {/* Logout */}
+                      <button
+                        onClick={() => {
+                          handleLogout();
+                          setIsMenuOpen(false);
+                        }}
+                        className="w-full rounded-lg py-3 text-center text-sm font-medium text-red-400 transition-all hover:bg-red-500/10 active:scale-[0.98]"
+                      >
+                        Sign Out
+                      </button>
+                    </div>
+                  ) : status === "authenticated" && session?.user ? (
+                    <Link
+                      href="/select-role"
+                      onClick={() => setIsMenuOpen(false)}
+                      className="bg-gold-gradient text-dark-primary block w-full rounded-lg py-3.5 text-center font-bold transition-all active:scale-[0.98]"
+                    >
+                      Select Role
+                    </Link>
+                  ) : (
+                    <div className="space-y-3">
+                      <button
+                        onClick={() => {
+                          setAuthModalMode("login");
+                          setIsAuthModalOpen(true);
+                          setIsMenuOpen(false);
+                        }}
+                        className="text-gold border-gold/30 hover:bg-gold/10 w-full rounded-lg border py-3 text-center font-semibold transition-all active:scale-[0.98]"
+                      >
+                        Login
+                      </button>
+                      <button
+                        onClick={() => {
+                          setAuthModalMode("register");
+                          setIsAuthModalOpen(true);
+                          setIsMenuOpen(false);
+                        }}
+                        className="bg-gold-gradient text-dark-primary w-full rounded-lg py-3 text-center font-bold transition-all active:scale-[0.98]"
+                      >
+                        Create Account
+                      </button>
+                    </div>
+                  )}
+                </div>
               </div>
-            )}
-          </div>
-        </div>
-      )}
+            </div>
+          </div>,
+          document.body,
+        )}
 
       {/* Auth Modal */}
       <AuthModal

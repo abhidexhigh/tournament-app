@@ -187,11 +187,19 @@ export default function FilterBar({
   setSearchQuery,
 }) {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [isMobileSearchOpen, setIsMobileSearchOpen] = useState(false);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (isDropdownOpen && !event.target.closest(".status-dropdown")) {
         setIsDropdownOpen(false);
+      }
+      // Close mobile search when clicking outside
+      if (
+        isMobileSearchOpen &&
+        !event.target.closest(".mobile-search-container")
+      ) {
+        setIsMobileSearchOpen(false);
       }
     };
 
@@ -199,7 +207,7 @@ export default function FilterBar({
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, [isDropdownOpen]);
+  }, [isDropdownOpen, isMobileSearchOpen]);
 
   return (
     <>
@@ -213,11 +221,11 @@ export default function FilterBar({
       </div>
 
       {/* Main Filter Bar */}
-      <div className="relative z-10 mb-8">
+      <div className="relative z-10 mb-4 lg:mb-8">
         <div className="border-gold-dark/20 rounded-2xl px-4 shadow-2xl shadow-black/30 backdrop-blur-xl sm:px-4 sm:py-0">
-          <div className="relative flex flex-col gap-5 lg:grid lg:grid-cols-3 lg:items-center lg:gap-4">
+          <div className="relative flex items-center justify-between gap-3 lg:grid lg:grid-cols-3 lg:items-center lg:gap-4">
             {/* Left: Status Dropdown */}
-            <div className="flex w-full justify-start space-y-3 lg:w-auto lg:justify-start">
+            <div className="flex-1 lg:flex-none">
               <StatusDropdown
                 activeTab={activeTab}
                 setActiveTab={setActiveTab}
@@ -234,14 +242,99 @@ export default function FilterBar({
               />
             </div>
 
-            {/* Right: Search */}
-            <div className="flex justify-end lg:justify-end">
-              <SearchBar
-                searchQuery={searchQuery}
-                setSearchQuery={setSearchQuery}
-              />
+            {/* Right: Search Icon (Mobile) / Search Bar (Desktop) */}
+            <div className="flex items-center justify-end lg:justify-end">
+              {/* Mobile Search Icon */}
+              <button
+                onClick={() => setIsMobileSearchOpen(!isMobileSearchOpen)}
+                className={`mobile-search-container flex h-12 w-12 items-center justify-center rounded-xl border transition-all duration-200 active:scale-95 lg:hidden ${
+                  isMobileSearchOpen || searchQuery
+                    ? "border-gold bg-gold/20 text-gold"
+                    : "border-gold-dark/30 hover:border-gold/50 bg-black/20 text-gray-400 hover:text-white"
+                }`}
+              >
+                <svg
+                  className="h-5 w-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                  />
+                </svg>
+                {/* Active indicator dot */}
+                {searchQuery && !isMobileSearchOpen && (
+                  <span className="bg-gold absolute -top-1 -right-1 h-3 w-3 rounded-full" />
+                )}
+              </button>
+
+              {/* Desktop Search Bar */}
+              <div className="hidden lg:block">
+                <SearchBar
+                  searchQuery={searchQuery}
+                  setSearchQuery={setSearchQuery}
+                />
+              </div>
             </div>
           </div>
+        </div>
+      </div>
+
+      {/* Mobile Search Bar - Expandable (Below Filter Bar) */}
+      <div
+        className={`mobile-search-container overflow-hidden transition-all duration-300 ease-out lg:hidden ${
+          isMobileSearchOpen ? "mb-6 max-h-20 opacity-100" : "max-h-0 opacity-0"
+        }`}
+      >
+        <div className="relative">
+          <div className="pointer-events-none absolute inset-y-0 left-0 z-10 flex items-center pl-4">
+            <svg
+              className="text-gold h-5 w-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+              />
+            </svg>
+          </div>
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="Search tournaments..."
+            autoFocus={isMobileSearchOpen}
+            className="border-gold/30 focus:border-gold bg-dark-card/80 w-full rounded-xl border py-3 pr-11 pl-12 text-sm font-medium text-white placeholder-gray-400 transition-all duration-300 focus:outline-none"
+          />
+          {searchQuery && (
+            <button
+              onClick={() => setSearchQuery("")}
+              className="text-gold absolute inset-y-0 right-0 flex items-center pr-4"
+              aria-label="Clear search"
+            >
+              <svg
+                className="h-5 w-5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M6 18L18 6M6 6l12 12"
+                />
+              </svg>
+            </button>
+          )}
         </div>
       </div>
     </>
