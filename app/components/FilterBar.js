@@ -212,7 +212,7 @@ export default function FilterBar({
   return (
     <>
       {/* Display Type Tabs - Mobile Only (on top) */}
-      <div className="mb-6 lg:hidden">
+      <div className="mb-4 lg:hidden">
         <DisplayTypeTabs
           displayTypeTab={displayTypeTab}
           setDisplayTypeTab={setDisplayTypeTab}

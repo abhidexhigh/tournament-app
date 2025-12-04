@@ -5,7 +5,13 @@ import Image from "next/image";
 import Badge from "./Badge";
 import CountdownTimer from "./CountdownTimer";
 import { getTournamentIcon } from "../lib/iconSelector";
-import { LuUsers, LuClock, LuChevronRight } from "react-icons/lu";
+import {
+  LuUsers,
+  LuClock,
+  LuChevronRight,
+  LuTrophy,
+  LuTicket,
+} from "react-icons/lu";
 import { formatEntryFee, formatPrizePool } from "../lib/currencyFormatter";
 
 export default function MobileTournamentCard({ tournament }) {
@@ -15,88 +21,74 @@ export default function MobileTournamentCard({ tournament }) {
   const icon = getTournamentIcon(tournament);
   const isImageUrl = typeof icon === "string" && icon.startsWith("http");
 
-  // Get status color
-  const getStatusGradient = () => {
+  // Get accent color based on status
+  const getAccentColor = () => {
     if (tournament.status === "ongoing") {
-      return "from-red-500/20 to-orange-500/20 border-red-500/30";
+      return "border-l-red-500";
     }
-    return "from-gold/10 to-amber-500/10 border-gold/20";
+    return "border-l-gold";
   };
 
   return (
     <Link href={`/tournament/${tournament.id}`} className="block">
-      <div className="group relative overflow-hidden rounded-xl border border-white/10 bg-gradient-to-br from-[#13131a] to-[#0f0f14] transition-all duration-300 active:scale-[0.98]">
-        {/* Gradient overlay on hover/active */}
-        <div className="from-gold/5 pointer-events-none absolute inset-0 bg-gradient-to-r via-transparent to-transparent opacity-0 transition-opacity group-active:opacity-100" />
+      <div
+        className={`group relative overflow-hidden rounded-2xl border border-l-4 border-white/10 bg-gradient-to-br from-[#16161d] to-[#0e0e12] transition-all duration-300 active:scale-[0.98] ${getAccentColor()}`}
+      >
+        {/* Subtle gradient overlay */}
+        <div className="from-gold/[0.03] pointer-events-none absolute inset-0 bg-gradient-to-r to-transparent" />
 
-        {/* Main Content */}
-        <div className="flex items-stretch">
-          {/* Left Section - Icon & Prize */}
-          <div
-            className={`relative flex w-24 flex-col items-center justify-center bg-gradient-to-br ${getStatusGradient()} p-3`}
-          >
+        {/* Card Content */}
+        <div className="relative p-4">
+          {/* Top Row - Icon, Title & Status */}
+          <div className="mb-4 flex items-start gap-3">
             {/* Tournament Icon */}
-            <div className="mb-2">
-              {isImageUrl ? (
-                <Image
-                  src={icon}
-                  alt={`${tournament.title} icon`}
-                  width={48}
-                  height={48}
-                  className="h-12 w-12 object-contain"
-                  unoptimized
-                />
-              ) : (
-                <span className="text-4xl">{icon}</span>
+            <div className="relative flex-shrink-0">
+              <div className="flex h-14 w-14 items-center justify-center rounded-xl border border-white/10 bg-gradient-to-br from-white/10 to-white/5">
+                {isImageUrl ? (
+                  <Image
+                    src={icon}
+                    alt={`${tournament.title} icon`}
+                    width={40}
+                    height={40}
+                    className="h-10 w-10 object-contain"
+                    unoptimized
+                  />
+                ) : (
+                  <span className="text-3xl">{icon}</span>
+                )}
+              </div>
+              {/* Live Pulse */}
+              {tournament.status === "ongoing" && (
+                <span className="absolute -top-1 -right-1 flex h-3.5 w-3.5">
+                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-red-500 opacity-75" />
+                  <span className="relative inline-flex h-3.5 w-3.5 rounded-full border-2 border-[#16161d] bg-red-500" />
+                </span>
               )}
             </div>
 
-            {/* Prize Pool */}
-            {tournament?.prize_pool !== 0 && (
-              <div className="text-center">
-                <div className="text-gold text-sm leading-tight font-bold">
-                  {formatPrizePool(tournament.prize_pool)}
-                </div>
-                <div className="text-[9px] tracking-wide text-gray-400 uppercase">
-                  Prize
-                </div>
-              </div>
-            )}
-
-            {/* Live Indicator */}
-            {tournament.status === "ongoing" && (
-              <div className="absolute top-2 left-2 flex items-center gap-1">
-                <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-red-500" />
-                <span className="text-[8px] font-bold text-red-400 uppercase">
-                  Live
-                </span>
-              </div>
-            )}
-          </div>
-
-          {/* Right Section - Details */}
-          <div className="flex min-w-0 flex-1 flex-col justify-between p-3">
-            {/* Title & Badge Row */}
-            <div className="mb-2">
-              <div className="mb-1.5 flex items-start justify-between gap-2">
-                <h3 className="text-gold-light-text line-clamp-2 text-sm leading-tight font-bold">
+            {/* Title & Badges */}
+            <div className="min-w-0 flex-1">
+              <div className="mb-2 flex items-start justify-between gap-2">
+                <h3 className="text-gold-light-text line-clamp-2 text-xl leading-snug font-bold">
                   {tournament.title}
                 </h3>
-                <LuChevronRight className="mt-0.5 flex-shrink-0 text-gray-500" />
+                <LuChevronRight className="mt-0.5 flex-shrink-0 text-lg text-gray-500" />
               </div>
-              <div className="flex flex-wrap gap-1.5">
+              <div className="flex flex-wrap gap-2">
                 <Badge
                   variant={tournament.status}
                   size="sm"
-                  className="!px-1.5 !py-0.5 !text-[9px] !capitalize"
+                  className="!px-2.5 !py-1 !text-xs !font-medium !capitalize"
                 >
-                  {tournament.status}
+                  {tournament.status === "ongoing"
+                    ? "🔴 Live"
+                    : tournament.status}
                 </Badge>
                 {tournament.display_type === "tournament" && (
                   <Badge
                     variant="primary"
                     size="sm"
-                    className="!px-1.5 !py-0.5 !text-[9px]"
+                    className="!px-2.5 !py-1 !text-xs !font-medium"
                   >
                     Tournament
                   </Badge>
@@ -105,110 +97,130 @@ export default function MobileTournamentCard({ tournament }) {
                   <Badge
                     variant="secondary"
                     size="sm"
-                    className="!px-1.5 !py-0.5 !text-[9px]"
+                    className="!px-2.5 !py-1 !text-xs !font-medium"
                   >
                     Event
                   </Badge>
                 )}
               </div>
             </div>
+          </div>
 
-            {/* Stats Row */}
-            <div className="flex items-center gap-3 text-xs">
-              {/* Players */}
-              <div className="flex items-center gap-1.5">
-                <LuUsers className="text-gold-dark text-sm" />
-                <span className="text-gray-300">
-                  <span className="font-semibold text-white">
-                    {tournament.participants.length}
-                  </span>
-                  <span className="text-gray-500">/</span>
-                  <span className="text-gray-400">
-                    {tournament.max_players ?? tournament.maxPlayers}
-                  </span>
+          {/* Stats Grid */}
+          <div className="mb-3 grid grid-cols-3 gap-2">
+            {/* Prize Pool */}
+            <div className="from-gold/10 border-gold/20 rounded-xl border bg-gradient-to-br to-amber-500/5 p-2.5">
+              <div className="mb-1 flex items-center gap-1.5">
+                <LuTrophy className="text-sm text-gray-400" />
+                <span className="text-[11px] font-medium tracking-wide text-gray-400 uppercase">
+                  Prize
                 </span>
               </div>
+              <div className="text-gold text-base font-bold">
+                {tournament?.prize_pool !== 0
+                  ? formatPrizePool(tournament.prize_pool)
+                  : "—"}
+              </div>
+            </div>
 
-              {/* Divider */}
-              <div className="h-3 w-px bg-white/10" />
-
-              {/* Entry Fee */}
-              <div className="flex items-center gap-1">
-                <span className="text-gray-400">Entry:</span>
-                <span
-                  className={`font-semibold ${tournament.entry_fee ? "text-gold-light-text" : "text-green-400"}`}
-                >
-                  {tournament.entry_fee
-                    ? formatEntryFee(tournament.entry_fee)
-                    : "Free"}
+            {/* Players */}
+            <div className="rounded-xl border border-white/10 bg-white/5 p-2.5">
+              <div className="mb-1 flex items-center gap-1.5">
+                <LuUsers className="text-sm text-gray-400" />
+                <span className="text-[11px] font-medium tracking-wide text-gray-400 uppercase">
+                  Players
+                </span>
+              </div>
+              <div className="text-base font-bold text-white">
+                {tournament.participants.length}
+                <span className="font-normal text-gray-500">/</span>
+                <span className="text-sm font-medium text-gray-400">
+                  {tournament.max_players ?? tournament.maxPlayers}
                 </span>
               </div>
             </div>
 
-            {/* Countdown Row */}
-            <div className="mt-2 flex items-center gap-1.5 rounded-lg bg-white/5 px-2 py-1.5">
-              <LuClock className="text-gold-dark text-sm" />
-              <div className="flex items-center gap-1.5 text-xs">
-                {tournament.status === "upcoming" &&
-                  isAutomated &&
-                  tournament.expires_at && (
-                    <>
-                      <span className="text-gray-400">Closes in</span>
-                      <span className="text-gold font-semibold">
-                        <CountdownTimer
-                          expiresAt={tournament.expires_at}
-                          style="compact"
-                        />
-                      </span>
-                    </>
-                  )}
+            {/* Entry Fee */}
+            <div className="rounded-xl border border-white/10 bg-white/5 p-2.5">
+              <div className="mb-1 flex items-center gap-1.5">
+                <LuTicket className="text-sm text-gray-400" />
+                <span className="text-[11px] font-medium tracking-wide text-gray-400 uppercase">
+                  Entry
+                </span>
+              </div>
+              <div
+                className={`text-base font-bold ${tournament.entry_fee ? "text-gold-light-text" : "text-emerald-400"}`}
+              >
+                {tournament.entry_fee
+                  ? formatEntryFee(tournament.entry_fee)
+                  : "Free"}
+              </div>
+            </div>
+          </div>
 
-                {tournament.status === "upcoming" && !isAutomated && (
+          {/* Countdown Bar */}
+          <div className="flex items-center gap-2 rounded-xl border border-white/5 bg-white/5 px-3 py-2.5">
+            <LuClock className="text-gold flex-shrink-0 text-base" />
+            <div className="flex items-center gap-2 text-sm">
+              {tournament.status === "upcoming" &&
+                isAutomated &&
+                tournament.expires_at && (
                   <>
-                    <span className="text-gray-400">Starts in</span>
-                    <span className="text-gold font-semibold">
+                    <span className="text-gray-400">Closes in</span>
+                    <span className="text-gold font-bold">
                       <CountdownTimer
-                        date={tournament.date}
-                        time={tournament.time}
+                        expiresAt={tournament.expires_at}
                         style="compact"
                       />
                     </span>
                   </>
                 )}
 
-                {tournament.status === "ongoing" &&
-                  isAutomated &&
-                  tournament.expires_at && (
-                    <>
-                      <span className="text-gray-400">Join before</span>
-                      <span className="text-gold font-semibold">
-                        <CountdownTimer
-                          expiresAt={tournament.expires_at}
-                          style="compact"
-                        />
-                      </span>
-                    </>
-                  )}
-
-                {tournament.status === "ongoing" && !isAutomated && (
-                  <span className="font-semibold text-red-400">
-                    🔴 Live Now
+              {tournament.status === "upcoming" && !isAutomated && (
+                <>
+                  <span className="text-gray-400">Starts in</span>
+                  <span className="text-gold font-bold">
+                    <CountdownTimer
+                      date={tournament.date}
+                      time={tournament.time}
+                      style="compact"
+                    />
                   </span>
+                </>
+              )}
+
+              {tournament.status === "ongoing" &&
+                isAutomated &&
+                tournament.expires_at && (
+                  <>
+                    <span className="text-gray-400">Join before</span>
+                    <span className="text-gold font-bold">
+                      <CountdownTimer
+                        expiresAt={tournament.expires_at}
+                        style="compact"
+                      />
+                    </span>
+                  </>
                 )}
-              </div>
+
+              {tournament.status === "ongoing" && !isAutomated && (
+                <span className="font-bold text-red-400">
+                  Match in Progress
+                </span>
+              )}
             </div>
           </div>
         </div>
 
-        {/* Progress Bar - Player Fill */}
-        {/* <div className="h-1 w-full bg-black/30">
+        {/* Fill Progress Indicator */}
+        <div className="h-1 w-full bg-black/40">
           <div
-            className="h-full bg-gradient-to-r from-gold/60 to-gold transition-all duration-500"
+            className="from-gold/70 to-gold h-full bg-gradient-to-r transition-all duration-500"
             style={{
               width: `${Math.min(100, (tournament.participants.length / (tournament.max_players ?? tournament.maxPlayers)) * 100)}%`,
             }}
           />
-        </div> */}
+        </div>
       </div>
     </Link>
   );

@@ -114,7 +114,7 @@ export default function Home() {
   return (
     <div className="min-h-screen">
       <div className="px-4 pb-8 sm:px-6 lg:px-8">
-        <div className="max-w-main mx-auto mt-8">
+        <div className="max-w-main mx-auto mt-4">
           {/* Filter Bar Component */}
           <FilterBar
             activeTab={activeTab}
