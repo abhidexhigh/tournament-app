@@ -10,9 +10,13 @@ import Button from "../components/Button";
 import Input from "../components/Input";
 import Badge from "../components/Badge";
 import TopupModal from "../components/TopupModal";
+import ProfileSkeleton from "../components/skeletons/ProfileSkeleton";
 import { getUserClans } from "../lib/dataLoader";
-import { getTicketCount } from "../lib/utils";
-import { PRIMARY_CURRENCY, getPrimaryCurrency, getUserBalance } from "../lib/currencyConfig";
+import {
+  PRIMARY_CURRENCY,
+  getPrimaryCurrency,
+  getUserBalance,
+} from "../lib/currencyConfig";
 
 function ProfileContent() {
   const { user, updateUser, refreshUser } = useUser();
@@ -229,170 +233,218 @@ function ProfileContent() {
   };
 
   if (status === "loading" || !user || paymentProcessing) {
-    return (
-      <div className="bg-dark-primary flex min-h-screen items-center justify-center">
-        <div className="text-center">
-          <div className="border-gold mx-auto mb-4 h-12 w-12 animate-spin rounded-full border-b-2"></div>
-          <p className="text-gray-300">
-            {paymentProcessing ? "Processing payment..." : "Loading profile..."}
-          </p>
-        </div>
-      </div>
-    );
+    return <ProfileSkeleton />;
   }
 
   return (
-    <div className="relative min-h-screen py-8">
-      {/* Background overlay */}
-      <div className="absolute inset-0 bg-black/40"></div>
+    <div className="bg-dark-primary relative min-h-screen overflow-hidden">
+      {/* Ambient Background Effects */}
+      <div className="pointer-events-none absolute inset-0">
+        <div className="bg-gold-dark/5 absolute top-0 right-0 h-[600px] w-[600px] rounded-full blur-[120px]"></div>
+        <div className="bg-gold-dark/5 absolute bottom-0 left-0 h-[400px] w-[400px] rounded-full blur-[100px]"></div>
+        <div className="bg-gold/3 absolute top-1/2 left-1/2 h-[300px] w-[300px] -translate-x-1/2 -translate-y-1/2 rounded-full blur-[80px]"></div>
+        {/* Grid pattern */}
+        <div className="absolute inset-0 bg-[linear-gradient(rgba(212,175,55,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(212,175,55,0.02)_1px,transparent_1px)] bg-[size:60px_60px]"></div>
+      </div>
 
-      <div className="max-w-main relative z-10 mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Header */}
-        <div className="mb-8">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <button
-                onClick={() =>
-                  router.push(
-                    user?.type === "player"
-                      ? "/player/dashboard"
-                      : "/host/dashboard",
-                  )
-                }
-                className="text-gold hover:text-gold-light transition-colors"
-              >
-                <svg
-                  className="h-6 w-6"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M6 18L18 6M6 6l12 12"
-                  />
-                </svg>
-              </button>
-              <h1 className="text-gold-gradient text-3xl font-bold md:text-4xl">
-                Settings
-              </h1>
-            </div>
-            <button
-              onClick={() =>
-                router.push(
-                  user?.type === "player"
-                    ? "/player/dashboard"
-                    : "/host/dashboard",
-                )
-              }
-              className="bg-dark-primary/40 hover:bg-dark-card text-gold-light border-gold-dark/30 rounded-lg border px-6 py-2 transition-all"
+      <div className="relative z-10 mx-auto max-w-7xl px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
+        {/* Navigation Bar */}
+        <nav className="mb-6 flex items-center justify-between sm:mb-10">
+          <button
+            onClick={() =>
+              router.push(
+                user?.type === "player"
+                  ? "/player/dashboard"
+                  : "/host/dashboard",
+              )
+            }
+            className="group border-gold-dark/20 bg-dark-gray-card hover:border-gold-dark/40 hover:bg-gold-dark/20 hover:text-gold flex items-center gap-2 rounded-full border px-4 py-2 text-sm text-white/70 backdrop-blur-sm transition-all sm:gap-3 sm:px-5 sm:py-2.5"
+          >
+            <svg
+              className="h-4 w-4 transition-transform group-hover:-translate-x-1"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
             >
-              Dashboard
-            </button>
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={1.5}
+                d="M10 19l-7-7m0 0l7-7m-7 7h18"
+              />
+            </svg>
+            <span className="hidden sm:inline">Back to Dashboard</span>
+            <span className="sm:hidden">Back</span>
+          </button>
+          <div className="flex items-center gap-2">
+            <span className="hidden text-xs tracking-widest text-white/30 uppercase sm:inline">
+              Profile Settings
+            </span>
+            <div className="bg-gold h-1.5 w-1.5 animate-pulse rounded-full"></div>
           </div>
-          <div className="via-gold-dark/30 mt-4 h-px bg-gradient-to-r from-transparent to-transparent"></div>
-        </div>
+        </nav>
 
-        {/* Payment Success/Error Message */}
+        {/* Alert Message */}
         {message.text && (
           <div
-            className={`mb-6 rounded-lg p-4 backdrop-blur-md ${
+            className={`mb-6 flex items-center justify-between rounded-xl border px-4 py-3 backdrop-blur-md sm:mb-8 sm:px-6 sm:py-4 ${
               message.type === "success"
-                ? "border border-green-500/30 bg-green-900/20 text-green-300"
-                : "border border-red-500/30 bg-red-900/20 text-red-300"
+                ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-300"
+                : "border-red-500/30 bg-red-500/10 text-red-300"
             }`}
           >
-            <div className="flex items-center justify-between">
-              <span>{message.text}</span>
-              <button
-                onClick={() => setMessage({ type: "", text: "" })}
-                className="ml-4 text-gray-400 hover:text-white"
-              >
-                ✕
-              </button>
+            <div className="flex items-center gap-3">
+              <span className="text-lg">
+                {message.type === "success" ? "✓" : "!"}
+              </span>
+              <span className="text-sm">{message.text}</span>
             </div>
+            <button
+              onClick={() => setMessage({ type: "", text: "" })}
+              className="text-white/50 transition-colors hover:text-white"
+            >
+              <svg
+                className="h-5 w-5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={1.5}
+                  d="M6 18L18 6M6 6l12 12"
+                />
+              </svg>
+            </button>
           </div>
         )}
 
-        <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
-          {/* Left Section - Profile Information */}
-          <div className="lg:col-span-3">
-            <div className="bg-dark-primary/40 border-gold-dark/20 rounded-xl border p-6 py-4 shadow-xl backdrop-blur-md">
-              <div className="w-full text-center">
-                <div className="flex items-center justify-center gap-x-4">
-                  <div className="border-gold-dark/30 mb-4 h-24 w-24 overflow-hidden rounded-full border-2">
-                    <Image
-                      src={user.avatar}
-                      alt="User Avatar"
-                      width={96}
-                      height={96}
-                      className="h-full w-full object-cover"
-                    />
-                  </div>
-                  <div className="flex flex-col items-start justify-start">
-                    <h2 className="text-xl font-bold text-white">
-                      {user.username}
-                    </h2>
-                    <p className="mb-0.5 text-xs text-gray-400">{user.email}</p>
-                    <div className="bg-gold-dark/20 border-gold-dark/40 mb-3 inline-block rounded-full border px-3 py-0.5">
-                      <span className="text-gold-light text-xs font-medium">
-                        {user.type === "host" ? "Host" : "Player"}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-                {/* Primary Currency Balance */}
-                <div className="bg-dark-primary/40 border-gold-dark/20 mb-3 flex items-center justify-between rounded-lg border p-3">
-                  <div className="flex items-center gap-2">
-                    <span className="text-lg text-blue-400">{getPrimaryCurrency().emoji}</span>
-                    <span className="text-xs font-medium tracking-wider text-gray-300 uppercase">
-                      {getPrimaryCurrency().displayName}
-                    </span>
-                  </div>
-                  <span className="text-xl font-black text-white">
-                    {PRIMARY_CURRENCY === "USD" ? `$${getUserBalance(user).toLocaleString()}` : `${getUserBalance(user).toLocaleString()}`}
-                  </span>
-                </div>
+        {/* Hero Profile Section */}
+        <div className="border-gold-dark/20 bg-dark-gray-card relative mb-6 overflow-hidden rounded-2xl border p-5 sm:mb-8 sm:rounded-3xl sm:p-8 lg:p-10">
+          {/* Decorative elements */}
+          <div className="bg-gold-dark/10 absolute top-0 right-0 h-40 w-40 rounded-full blur-3xl sm:h-64 sm:w-64"></div>
+          <div className="bg-gold/5 absolute bottom-0 left-1/3 h-32 w-32 rounded-full blur-2xl sm:h-48 sm:w-48"></div>
 
-                {/* Tickets Display (View Only) */}
-                <div className="bg-dark-primary/40 border-gold-dark/20 mb-3 flex items-center justify-between rounded-lg border p-3">
-                  <div className="flex items-center gap-2">
-                    <span className="text-gold-light text-lg">🎫</span>
-                    <span className="text-xs font-medium tracking-wider text-gray-300 uppercase">
-                      Tickets
-                    </span>
-                  </div>
-                  <span className="text-xl font-black text-white">
-                    {getTicketCount(user.tickets)}
-                  </span>
+          <div className="relative flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
+            {/* Left: Avatar + User Info */}
+            <div className="flex flex-col items-center gap-5 sm:flex-row sm:gap-6">
+              {/* Avatar */}
+              <div className="relative flex-shrink-0">
+                <div className="bg-gold-gradient absolute -inset-1 rounded-full opacity-75 blur"></div>
+                <div className="border-gold-dark/50 relative h-20 w-20 overflow-hidden rounded-full border-2 sm:h-28 sm:w-28">
+                  <Image
+                    src={user.avatar}
+                    alt="Avatar"
+                    width={112}
+                    height={112}
+                    className="h-full w-full object-cover"
+                  />
                 </div>
-
-                <div className="via-gold-dark/30 my-4 h-[1px] bg-gradient-to-r from-transparent to-transparent"></div>
-                <p className="text-xs text-gray-500">
-                  Member Since :{" "}
-                  {new Date(user.created_at).toLocaleDateString()}
-                </p>
+                <div className="border-dark-primary bg-gold text-dark-primary absolute -right-1 -bottom-1 flex h-7 w-7 items-center justify-center rounded-full border-2 text-[10px] font-bold sm:h-9 sm:w-9 sm:text-xs">
+                  {user.type === "host" ? "H" : "P"}
+                </div>
               </div>
+
+              {/* User Info */}
+              <div className="text-center sm:text-left">
+                <h1 className="text-gold-gradient mb-1 text-xl font-bold tracking-tight sm:text-2xl lg:text-3xl">
+                  {user.username}
+                </h1>
+                <p className="mb-2 text-sm text-white/40">{user.email}</p>
+                <div className="flex flex-wrap items-center justify-center gap-2 sm:justify-start">
+                  <span className="bg-gold-dark/20 text-gold-light rounded-full px-3 py-1 text-xs font-medium">
+                    {user.type === "host" ? "🎮 Host" : "⚔️ Player"}
+                  </span>
+                  <span className="text-xs text-white/30">
+                    Since{" "}
+                    {new Date(user.created_at).toLocaleDateString("en-US", {
+                      month: "short",
+                      year: "numeric",
+                    })}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* Right: Balance + Buy Button */}
+            <div className="border-gold-dark/30 bg-dark-primary/50 flex flex-col items-center gap-4 rounded-2xl border p-4 sm:flex-row sm:gap-6 sm:p-5 lg:p-6">
+              {/* Balance */}
+              <div className="text-center">
+                <p className="mb-1 text-[10px] tracking-widest text-white/50 uppercase sm:text-xs">
+                  Balance
+                </p>
+                <div className="flex items-center justify-center gap-2">
+                  <span className="text-2xl">{getPrimaryCurrency().emoji}</span>
+                  <span className="text-gold text-3xl font-black sm:text-4xl">
+                    {PRIMARY_CURRENCY === "USD"
+                      ? `$${getUserBalance(user).toLocaleString()}`
+                      : getUserBalance(user).toLocaleString()}
+                  </span>
+                </div>
+              </div>
+
+              {/* Divider */}
+              <div className="bg-gold-dark/30 hidden h-14 w-px sm:block"></div>
+              <div className="bg-gold-dark/30 h-px w-full sm:hidden"></div>
+
+              {/* Buy Button */}
+              <button
+                onClick={() => setShowTopupModal(true)}
+                className="bg-gold-gradient group/btn text-dark-primary shadow-gold/25 hover:shadow-gold/40 relative w-full overflow-hidden rounded-xl px-6 py-3 font-bold shadow-lg transition-all hover:scale-[1.02] sm:w-auto sm:px-8 sm:py-3.5"
+              >
+                <span className="relative z-10 flex items-center justify-center gap-2">
+                  <svg
+                    className="h-5 w-5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+                    />
+                  </svg>
+                  <span>Buy {getPrimaryCurrency().displayName}</span>
+                </span>
+              </button>
             </div>
           </div>
 
-          {/* Middle Section - Game ID & Rank Settings */}
-          <div className="space-y-6 lg:col-span-5">
-            {/* Game ID Settings */}
-            <div className="bg-dark-primary/40 border-gold-dark/20 rounded-xl border p-6 py-4 shadow-xl backdrop-blur-md">
-              <div className="flex items-center justify-between">
-                <h3 className="text-lg font-bold text-white">
-                  Game ID Settings
-                </h3>
-                {!isEditing && (
-                  <button
-                    onClick={() => setIsEditing(true)}
-                    className="bg-dark-primary/60 hover:bg-dark-primary border-gold-dark/40 text-gold-light flex items-center gap-2 rounded-lg border px-4 py-2 text-xs transition-all"
-                  >
+          {/* Stripe Badge */}
+          <div className="mt-4 flex items-center justify-center gap-2 lg:justify-end">
+            <svg
+              className="text-gold-dark h-3.5 w-3.5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={1.5}
+                d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
+              />
+            </svg>
+            <span className="text-[10px] text-white/40 sm:text-xs">
+              Secure payments via Stripe
+            </span>
+          </div>
+        </div>
+
+        {/* Settings Cards Grid */}
+        <div className="grid gap-4 sm:gap-6 lg:grid-cols-3">
+          {/* Game ID Card */}
+          <div className="group border-gold-dark/20 bg-dark-gray-card hover:border-gold-dark/40 relative overflow-hidden rounded-2xl border p-5 transition-all sm:p-6">
+            <div className="bg-gold-dark/10 group-hover:bg-gold-dark/20 absolute top-0 right-0 h-20 w-20 rounded-full blur-2xl transition-all"></div>
+            <div className="relative">
+              <div className="mb-4 flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="bg-gold-dark/20 text-gold flex h-10 w-10 items-center justify-center rounded-xl">
                     <svg
-                      className="h-4 w-4"
+                      className="h-5 w-5"
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"
@@ -400,294 +452,257 @@ function ProfileContent() {
                       <path
                         strokeLinecap="round"
                         strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"
+                        strokeWidth={1.5}
+                        d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"
                       />
                     </svg>
-                    Edit Game ID
+                  </div>
+                  <h3 className="text-base font-semibold text-white sm:text-lg">
+                    Game ID
+                  </h3>
+                </div>
+                {!isEditing && (
+                  <button
+                    onClick={() => setIsEditing(true)}
+                    className="border-gold-dark/30 bg-gold-dark/10 text-gold-light hover:border-gold-dark/50 hover:bg-gold-dark/20 rounded-lg border px-3 py-1.5 text-xs transition-all"
+                  >
+                    Edit
                   </button>
                 )}
               </div>
 
-              <div className="mb-3">
-                <label className="mb-2 block text-xs font-medium tracking-wider text-gray-400 uppercase">
-                  Game ID
-                </label>
-                {isEditing ? (
-                  <div className="space-y-3">
-                    <Input
-                      type="text"
-                      value={gameId}
-                      onChange={(e) => setGameId(e.target.value)}
-                      placeholder="Enter your game ID (e.g., PlayerName#1234)"
-                      className="bg-dark-primary/60 border-gold-dark/30 w-full"
-                    />
-                    <div className="flex space-x-3">
-                      <Button
-                        onClick={() => handleSave("gameId")}
-                        disabled={isLoading}
-                        className="bg-gold-dark hover:bg-gold text-dark-primary flex-1 font-semibold"
-                      >
-                        {isLoading ? "Saving..." : "Save Changes"}
-                      </Button>
-                      <Button
-                        onClick={() => handleCancel("gameId")}
-                        variant="outline"
-                        className="flex-1"
-                      >
-                        Cancel
-                      </Button>
-                    </div>
-                  </div>
-                ) : (
-                  <div className="bg-dark-primary/40 border-gold-dark/30 rounded-lg border p-4">
-                    <p className="text-sm font-medium text-white">
-                      {user.gameId || "No game ID set"}
-                    </p>
-                    {!user.gameId && (
-                      <p className="mt-1 text-xs text-gray-500">
-                        Click &quot;Edit Game ID&quot; to add your game ID
-                      </p>
-                    )}
-                  </div>
-                )}
-              </div>
-            </div>
-
-            {/* Rank Settings & Clan Memberships - Combined */}
-            <div className="bg-dark-primary/40 border-gold-dark/20 rounded-xl border p-6 shadow-xl backdrop-blur-md">
-              <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-                {/* Rank Settings Column */}
-                <div className="border-gold-dark/20 border-r">
-                  <div className="mb-4 flex items-center justify-between">
-                    <h3 className="text-lg font-bold text-white">
-                      Rank Settings
-                    </h3>
-                    {!isEditingRank && (
-                      <button
-                        onClick={() => setIsEditingRank(true)}
-                        className="bg-dark-primary/60 hover:bg-dark-primary border-gold-dark/40 text-gold-light flex items-center gap-1 rounded-lg border px-3 py-1.5 text-xs transition-all"
-                      >
-                        <svg
-                          className="h-3 w-3"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"
-                          />
-                        </svg>
-                        Edit
-                      </button>
-                    )}
-                  </div>
-
-                  <div>
-                    <label className="mb-2 block text-xs font-medium tracking-wider text-gray-400 uppercase">
-                      Current Rank
-                    </label>
-                    {isEditingRank ? (
-                      <div className="space-y-3">
-                        <select
-                          value={rank}
-                          onChange={(e) => setRank(e.target.value)}
-                          className="bg-dark-primary/60 border-gold-dark/30 focus:ring-gold w-full rounded-lg border px-4 py-3 text-white focus:border-transparent focus:ring-2 focus:outline-none"
-                        >
-                          <option value="">Select your rank</option>
-                          <option value="Silver">Silver</option>
-                          <option value="Gold">Gold</option>
-                          <option value="Platinum">Platinum</option>
-                          <option value="Diamond">Diamond</option>
-                          <option value="Master">Master</option>
-                        </select>
-                        <div className="flex space-x-3">
-                          <Button
-                            onClick={() => handleSave("rank")}
-                            disabled={isLoading}
-                            className="bg-gold-dark hover:bg-gold text-dark-primary flex-1 font-semibold"
-                          >
-                            {isLoading ? "Saving..." : "Save"}
-                          </Button>
-                          <Button
-                            onClick={() => handleCancel("rank")}
-                            variant="outline"
-                            className="flex-1"
-                          >
-                            Cancel
-                          </Button>
-                        </div>
-                      </div>
-                    ) : (
-                      <div className="bg-dark-primary/40 rounded-lg p-4">
-                        {user.rank ? (
-                          <div className="flex items-center gap-4">
-                            {getRankEmblem(user.rank) ? (
-                              <div className="h-16 w-16 flex-shrink-0">
-                                <Image
-                                  src={getRankEmblem(user.rank)}
-                                  alt={`${user.rank} Emblem`}
-                                  width={64}
-                                  height={64}
-                                  className="h-full w-full object-contain"
-                                />
-                              </div>
-                            ) : (
-                              <div className="flex h-12 w-12 items-center justify-center rounded-full border-2 border-gray-400 bg-gray-500/20">
-                                <span className="text-2xl">🥈</span>
-                              </div>
-                            )}
-                            <div className="flex-1">
-                              <p className="mb-1 text-xs tracking-wider text-gray-400 uppercase">
-                                Your Rank
-                              </p>
-                              <p
-                                className={`text-xl font-black ${getRankColor(
-                                  user.rank,
-                                )}`}
-                              >
-                                {user.rank}
-                              </p>
-                            </div>
-                          </div>
-                        ) : (
-                          <div className="py-3 text-center">
-                            <p className="text-sm text-gray-400">No rank set</p>
-                            <p className="mt-1 text-xs text-gray-500">
-                              Click Edit to set
-                            </p>
-                          </div>
-                        )}
-                      </div>
-                    )}
+              {isEditing ? (
+                <div className="space-y-3">
+                  <Input
+                    type="text"
+                    value={gameId}
+                    onChange={(e) => setGameId(e.target.value)}
+                    placeholder="PlayerName#1234"
+                    className="border-gold-dark/30 bg-dark-primary focus:border-gold focus:ring-gold/20 w-full rounded-xl text-sm text-white placeholder-white/30"
+                  />
+                  <div className="flex gap-2">
+                    <Button
+                      onClick={() => handleSave("gameId")}
+                      disabled={isLoading}
+                      className="bg-gold-gradient text-dark-primary hover:shadow-gold/30 flex-1 rounded-xl py-2.5 text-xs font-semibold hover:shadow-lg"
+                    >
+                      {isLoading ? "Saving..." : "Save"}
+                    </Button>
+                    <Button
+                      onClick={() => handleCancel("gameId")}
+                      variant="outline"
+                      className="border-gold-dark/30 hover:bg-gold-dark/10 flex-1 rounded-xl py-2.5 text-xs text-white/70"
+                    >
+                      Cancel
+                    </Button>
                   </div>
                 </div>
+              ) : (
+                <div className="bg-dark-primary/50 rounded-xl p-4">
+                  <p className="font-mono text-sm text-white sm:text-base">
+                    {user.gameId || "Not set"}
+                  </p>
+                  {!user.gameId && (
+                    <p className="mt-1 text-xs text-white/30">
+                      Click edit to add your game ID
+                    </p>
+                  )}
+                </div>
+              )}
+            </div>
+          </div>
 
-                {/* Clan Memberships Column */}
-                {user.type === "player" && (
-                  <div>
-                    <div className="mb-4 flex items-center justify-between">
-                      <h3 className="text-lg font-bold text-white">
-                        Clan Membership
-                      </h3>
-                      <button
-                        onClick={async () => {
-                          try {
-                            const clans = await getUserClans(user.id);
-                            setUserClans(clans);
-                          } catch (error) {
-                            console.error("Error refreshing clan data:", error);
-                          }
-                        }}
-                        className="text-gold-light hover:text-gold text-xs transition-colors"
-                      >
-                        🔄 Refresh
-                      </button>
-                    </div>
+          {/* Rank Card */}
+          <div className="group border-gold-dark/20 bg-dark-gray-card hover:border-gold-dark/40 relative overflow-hidden rounded-2xl border p-5 transition-all sm:p-6">
+            <div className="bg-gold-dark/10 group-hover:bg-gold-dark/20 absolute top-0 right-0 h-20 w-20 rounded-full blur-2xl transition-all"></div>
+            <div className="relative">
+              <div className="mb-4 flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="bg-gold-dark/20 text-gold flex h-10 w-10 items-center justify-center rounded-xl">
+                    <svg
+                      className="h-5 w-5"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={1.5}
+                        d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"
+                      />
+                    </svg>
+                  </div>
+                  <h3 className="text-base font-semibold text-white sm:text-lg">
+                    Rank
+                  </h3>
+                </div>
+                {!isEditingRank && (
+                  <button
+                    onClick={() => setIsEditingRank(true)}
+                    className="border-gold-dark/30 bg-gold-dark/10 text-gold-light hover:border-gold-dark/50 hover:bg-gold-dark/20 rounded-lg border px-3 py-1.5 text-xs transition-all"
+                  >
+                    Edit
+                  </button>
+                )}
+              </div>
 
-                    <div>
-                      <label className="mb-2 block text-xs font-medium tracking-wider text-gray-400 uppercase">
-                        Your Clan
-                      </label>
-                      {userClans.length === 0 ? (
-                        <div className="bg-dark-primary/40 rounded-lg p-4 text-center">
-                          <div className="mb-2 text-3xl">🏰</div>
-                          <p className="text-xs text-gray-400">No clan</p>
+              {isEditingRank ? (
+                <div className="space-y-3">
+                  <select
+                    value={rank}
+                    onChange={(e) => setRank(e.target.value)}
+                    className="border-gold-dark/30 bg-dark-primary focus:border-gold focus:ring-gold/20 w-full rounded-xl border px-4 py-3 text-sm text-white focus:outline-none"
+                  >
+                    <option value="" className="bg-dark-primary">
+                      Select rank
+                    </option>
+                    <option value="Silver" className="bg-dark-primary">
+                      Silver
+                    </option>
+                    <option value="Gold" className="bg-dark-primary">
+                      Gold
+                    </option>
+                    <option value="Platinum" className="bg-dark-primary">
+                      Platinum
+                    </option>
+                    <option value="Diamond" className="bg-dark-primary">
+                      Diamond
+                    </option>
+                    <option value="Master" className="bg-dark-primary">
+                      Master
+                    </option>
+                  </select>
+                  <div className="flex gap-2">
+                    <Button
+                      onClick={() => handleSave("rank")}
+                      disabled={isLoading}
+                      className="bg-gold-gradient text-dark-primary hover:shadow-gold/30 flex-1 rounded-xl py-2.5 text-xs font-semibold hover:shadow-lg"
+                    >
+                      {isLoading ? "Saving..." : "Save"}
+                    </Button>
+                    <Button
+                      onClick={() => handleCancel("rank")}
+                      variant="outline"
+                      className="border-gold-dark/30 hover:bg-gold-dark/10 flex-1 rounded-xl py-2.5 text-xs text-white/70"
+                    >
+                      Cancel
+                    </Button>
+                  </div>
+                </div>
+              ) : (
+                <div className="bg-dark-primary/50 flex items-center gap-4 rounded-xl p-4">
+                  {user.rank ? (
+                    <>
+                      {getRankEmblem(user.rank) ? (
+                        <div className="h-14 w-14 flex-shrink-0 sm:h-16 sm:w-16">
+                          <Image
+                            src={getRankEmblem(user.rank)}
+                            alt={user.rank}
+                            width={64}
+                            height={64}
+                            className="h-full w-full object-contain"
+                          />
                         </div>
                       ) : (
-                        <div className="bg-dark-primary/40 rounded-lg p-4">
-                          {userClans.slice(0, 1).map((clan) => (
-                            <div key={clan.id}>
-                              <div className="mb-3 flex items-center gap-3">
-                                <div className="flex h-12 w-12 items-center justify-center">
-                                  <span className="text-3xl">
-                                    {clan.emblem || "🏰"}
-                                  </span>
-                                </div>
-                                <div className="flex-1">
-                                  <h4 className="text-base font-bold text-white">
-                                    {clan.name}
-                                  </h4>
-                                  <p className="text-gold-light text-xs">
-                                    [{clan.tag}]
-                                  </p>
-                                </div>
-                              </div>
-
-                              <div className="border-gold-dark/20 grid grid-cols-2 gap-2 border-t pt-2">
-                                <div>
-                                  <p className="mb-0.5 text-xs text-gray-500">
-                                    Level
-                                  </p>
-                                  <p className="text-gold-light text-sm font-bold">
-                                    {clan.level}
-                                  </p>
-                                </div>
-                                <div>
-                                  <p className="mb-0.5 text-xs text-gray-500">
-                                    Role
-                                  </p>
-                                  <p className="text-xs font-medium text-white">
-                                    {clan.role === "leader"
-                                      ? "👑 Leader"
-                                      : "👤 Member"}
-                                  </p>
-                                </div>
-                              </div>
-                            </div>
-                          ))}
+                        <div className="bg-gold-dark/20 flex h-12 w-12 items-center justify-center rounded-full text-2xl">
+                          🥈
                         </div>
                       )}
+                      <div>
+                        <p className="text-xs tracking-wider text-white/40 uppercase">
+                          Current
+                        </p>
+                        <p
+                          className={`text-xl font-bold sm:text-2xl ${getRankColor(user.rank)}`}
+                        >
+                          {user.rank}
+                        </p>
+                      </div>
+                    </>
+                  ) : (
+                    <div className="w-full py-2 text-center">
+                      <p className="text-sm text-white/50">No rank set</p>
+                      <p className="text-xs text-white/30">
+                        Click edit to select
+                      </p>
                     </div>
+                  )}
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Clan Card */}
+          {user.type === "player" && (
+            <div className="group border-gold-dark/20 bg-dark-gray-card hover:border-gold-dark/40 relative overflow-hidden rounded-2xl border p-5 transition-all sm:p-6">
+              <div className="bg-gold-dark/10 group-hover:bg-gold-dark/20 absolute top-0 right-0 h-20 w-20 rounded-full blur-2xl transition-all"></div>
+              <div className="relative">
+                <div className="mb-4 flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="bg-gold-dark/20 text-gold flex h-10 w-10 items-center justify-center rounded-xl">
+                      <svg
+                        className="h-5 w-5"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={1.5}
+                          d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
+                        />
+                      </svg>
+                    </div>
+                    <h3 className="text-base font-semibold text-white sm:text-lg">
+                      Clan
+                    </h3>
+                  </div>
+                  <button
+                    onClick={async () => {
+                      try {
+                        const clans = await getUserClans(user.id);
+                        setUserClans(clans);
+                      } catch (e) {
+                        console.error(e);
+                      }
+                    }}
+                    className="hover:text-gold text-xs text-white/40 transition-colors"
+                  >
+                    ↻ Refresh
+                  </button>
+                </div>
+
+                {userClans.length === 0 ? (
+                  <div className="bg-dark-primary/50 rounded-xl p-6 text-center">
+                    <div className="mb-2 text-3xl">🏰</div>
+                    <p className="text-sm text-white/50">No clan joined</p>
+                  </div>
+                ) : (
+                  <div className="bg-dark-primary/50 rounded-xl p-4">
+                    {userClans.slice(0, 1).map((clan) => (
+                      <div key={clan.id} className="flex items-center gap-4">
+                        <span className="text-3xl">{clan.emblem || "🏰"}</span>
+                        <div className="min-w-0 flex-1">
+                          <h4 className="truncate font-semibold text-white">
+                            {clan.name}
+                          </h4>
+                          <p className="text-gold text-xs">[{clan.tag}]</p>
+                          <div className="mt-2 flex gap-4 text-xs text-white/40">
+                            <span>Lv. {clan.level}</span>
+                            <span>
+                              {clan.role === "leader" ? "👑 Leader" : "Member"}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
                   </div>
                 )}
               </div>
             </div>
-          </div>
-          {/* Right Section - Top Up Wallet */}
-          <div className="lg:col-span-4">
-            <div className="bg-dark-primary/40 border-gold-dark/20 rounded-xl border p-6 py-4 shadow-xl backdrop-blur-md">
-              <h3 className="mb-2 text-lg font-bold text-white">
-                {getPrimaryCurrency().emoji} Buy {getPrimaryCurrency().displayName}
-              </h3>
-              <p className="mb-6 text-xs text-gray-400">
-                Purchase {getPrimaryCurrency().displayName.toLowerCase()} for tournaments and rewards
-              </p>
-
-              {/* Current Balance */}
-              <div className="from-gold/10 to-gold/5 border-gold/30 mb-6 rounded-lg border bg-gradient-to-br p-5">
-                <div className="text-center">
-                  <p className="mb-2 text-xs tracking-wider text-gray-400 uppercase">
-                    Current Balance
-                  </p>
-                  <div className="flex items-center justify-center gap-2">
-                    <span className="text-gold text-4xl font-black">
-                      {PRIMARY_CURRENCY === "USD" ? `$${getUserBalance(user).toLocaleString()}` : getUserBalance(user).toLocaleString()}
-                    </span>
-                    {PRIMARY_CURRENCY === "DIAMOND" && <span className="text-2xl">💎</span>}
-                  </div>
-                </div>
-              </div>
-
-              {/* Buy Button */}
-              <button
-                onClick={() => setShowTopupModal(true)}
-                className="from-gold-dark to-gold hover:from-gold hover:to-gold-light text-dark-primary mb-4 w-full transform rounded-lg bg-gradient-to-r px-6 py-4 text-base font-bold shadow-lg transition-all hover:scale-[1.02]"
-              >
-                {getPrimaryCurrency().emoji} Buy {getPrimaryCurrency().displayName}
-              </button>
-
-              {/* Info */}
-              <div className="mb-6 rounded-lg border border-blue-500/30 bg-blue-500/10 p-3">
-                <p className="text-center text-xs text-blue-300">
-                  💡 Secure payment via Stripe
-                </p>
-              </div>
-            </div>
-          </div>
+          )}
         </div>
 
         {/* Topup Modal */}
@@ -703,16 +718,7 @@ function ProfileContent() {
 
 export default function ProfilePage() {
   return (
-    <Suspense
-      fallback={
-        <div className="bg-dark-primary flex min-h-screen items-center justify-center">
-          <div className="text-center">
-            <div className="border-gold mx-auto mb-4 h-12 w-12 animate-spin rounded-full border-b-2"></div>
-            <p className="text-gray-300">Loading profile...</p>
-          </div>
-        </div>
-      }
-    >
+    <Suspense fallback={<ProfileSkeleton />}>
       <ProfileContent />
     </Suspense>
   );

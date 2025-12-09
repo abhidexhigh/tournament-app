@@ -101,12 +101,22 @@ export default function TournamentHeader({
           </div>
         </div>
 
+        {/* Countdown Timer - Mobile: Full width prominent card above stats */}
+        {(tournament.status === "upcoming" ||
+          tournament.status === "ongoing") && (
+          <div className="w-full md:hidden">
+            <div className="border-gold-dark/30 bg-dark-card/60 rounded-xl border px-4 py-3 backdrop-blur-sm">
+              <CountdownSection tournament={tournament} />
+            </div>
+          </div>
+        )}
+
         {/* Stats Cards - Mobile: 2-col, Tablet: flex wrap, Desktop: flex row */}
         <div className="grid w-full grid-cols-2 gap-2 md:flex md:w-auto md:flex-wrap md:justify-end md:gap-3 lg:flex-shrink-0 lg:flex-nowrap">
-          {/* Countdown Timer Section */}
+          {/* Countdown Timer Section - Hidden on mobile, visible on md+ */}
           {(tournament.status === "upcoming" ||
             tournament.status === "ongoing") && (
-            <div className="border-gold-dark/20 bg-dark-card/50 md:bg-dark-card/50 lg:border-gold-dark/20 col-span-2 flex items-center gap-2 rounded-lg border p-2.5 md:w-auto md:min-w-[140px] md:rounded-lg md:border lg:w-[160px] lg:rounded-none lg:border-0 lg:border-r lg:bg-transparent lg:p-0 lg:pr-4">
+            <div className="border-gold-dark/20 bg-dark-card/50 lg:border-gold-dark/20 hidden items-center gap-2 rounded-lg border p-2.5 md:flex md:w-auto md:min-w-[140px] md:rounded-lg md:border lg:w-[160px] lg:rounded-none lg:border-0 lg:border-r lg:bg-transparent lg:p-0 lg:pr-4">
               <CountdownSection tournament={tournament} />
             </div>
           )}

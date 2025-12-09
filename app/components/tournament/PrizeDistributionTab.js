@@ -69,19 +69,19 @@ function RegularPrizeDistribution({ tournament, prizes }) {
           <h5 className="border-gold-dark/30 mb-3 flex items-center gap-2 border-l-2 pl-4 text-base font-medium text-white">
             🏆 Champion (50%)
           </h5>
-          <div className="border-gold/50 flex h-[calc(100%-2rem)] flex-col items-center justify-center rounded-xl border-2 bg-gradient-to-br from-yellow-900/30 to-amber-900/20 p-6">
+          <div className="border-gold/50 flex h-[calc(100%-2rem)] flex-col items-center justify-center rounded-xl border-2 bg-gradient-to-br from-yellow-900/30 to-amber-900/20 p-4 md:p-6">
             <Image
               src="https://res.cloudinary.com/dg0cmj6su/image/upload/v1763459457/First_xf1xz2.webp"
               alt="1st Place"
               width={80}
               height={80}
-              className="mb-4 w-20"
+              className="mb-2 w-12 md:mb-4 md:w-20"
             />
-            <p className="mb-1 text-lg font-bold text-white">1st Place</p>
-            <p className="mb-3 text-sm text-gray-400">
+            <p className="mb-1 text-base font-bold text-white md:text-lg">1st Place</p>
+            <p className="mb-2 text-xs text-gray-400 md:mb-3 md:text-sm">
               Winner takes 50% of prize pool
             </p>
-            <p className="text-gold text-3xl font-bold">
+            <p className="text-gold text-xl font-bold md:text-3xl">
               {formatCurrency(firstPlacePrize)}
             </p>
           </div>

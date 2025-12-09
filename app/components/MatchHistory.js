@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import Badge from "./Badge";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -8,6 +9,17 @@ import { PRIMARY_CURRENCY, getPrimaryCurrency } from "../lib/currencyConfig";
 export default function MatchHistory({ matches, playerId }) {
   const router = useRouter();
   const currencyInfo = getPrimaryCurrency();
+  const [mobileExpanded, setMobileExpanded] = useState(false);
+  const [expandedCards, setExpandedCards] = useState({});
+  const MOBILE_INITIAL_COUNT = 5;
+
+  // Toggle individual card expansion
+  const toggleCardExpansion = (matchId) => {
+    setExpandedCards((prev) => ({
+      ...prev,
+      [matchId]: !prev[matchId],
+    }));
+  };
 
   // Format currency based on config
   const formatCurrency = (amount) => {
@@ -112,6 +124,166 @@ export default function MatchHistory({ matches, playerId }) {
     return new Date(b.date) - new Date(a.date);
   });
 
+  // Filter matches with valid performance data
+  const matchesWithPerformance = sortedMatches.filter((match) => {
+    const performance = getPlayerPerformance(match);
+    return performance !== null;
+  });
+
+  // Mobile visible matches based on expanded state
+  const mobileVisibleMatches = mobileExpanded
+    ? matchesWithPerformance
+    : matchesWithPerformance.slice(0, MOBILE_INITIAL_COUNT);
+
+  const hasMoreMatches = matchesWithPerformance.length > MOBILE_INITIAL_COUNT;
+  const remainingCount = matchesWithPerformance.length - MOBILE_INITIAL_COUNT;
+
+  // Mobile Match Card Component - Collapsible
+  const MobileMatchCard = ({ match, isExpanded, onToggle }) => {
+    const performance = getPlayerPerformance(match);
+    if (!performance) return null;
+
+    return (
+      <div
+        className={`${getRowBgClass(performance.position)} overflow-hidden rounded-xl border border-white/10 transition-all duration-200`}
+      >
+        {/* Collapsed Header - Always visible, clickable */}
+        <button
+          onClick={onToggle}
+          className="flex w-full items-center justify-between gap-2 p-3 text-left"
+        >
+          <div className="flex min-w-0 flex-1 items-center gap-2.5">
+            {/* Position Badge - Compact */}
+            <div className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg border border-white/10 bg-black/30">
+              {match.status === "upcoming" ? (
+                <span className="text-sm text-gray-500">—</span>
+              ) : (
+                <div className={`scale-75 ${getPositionColorClass(performance.position)}`}>
+                  {getPositionBadge(performance.position)}
+                </div>
+              )}
+            </div>
+            {/* Match Info - Compact */}
+            <div className="min-w-0 flex-1">
+              <h3 className="text-gold-light-text truncate text-xs font-semibold">
+                {match.title}
+              </h3>
+              <div className="text-gold-light-text/70 mt-0.5 text-[10px]">
+                {formatDate(match.date)}
+              </div>
+            </div>
+          </div>
+          {/* Right side: Prize + Status + Chevron */}
+          <div className="flex flex-shrink-0 items-center gap-2">
+            {/* Prize (compact) */}
+            {match.status === "completed" && performance.prizeAmount > 0 ? (
+              <span className="text-gold text-xs font-bold">
+                {formatCurrency(performance.prizeAmount)}
+              </span>
+            ) : match.status !== "completed" ? (
+              <span className="text-[10px] text-gray-500">TBD</span>
+            ) : null}
+            {/* Status indicator */}
+            {match.status === "ongoing" && (
+              <span className="h-2 w-2 animate-pulse rounded-full bg-red-500"></span>
+            )}
+            {/* Chevron */}
+            <svg
+              className={`h-4 w-4 text-gray-500 transition-transform duration-200 ${isExpanded ? "rotate-180" : ""}`}
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M19 9l-7 7-7-7"
+              />
+            </svg>
+          </div>
+        </button>
+
+        {/* Expandable Content */}
+        <div
+          className={`grid transition-all duration-200 ease-in-out ${
+            isExpanded ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"
+          }`}
+        >
+          <div className="overflow-hidden">
+            <div className="border-t border-white/5 px-3 pb-3">
+              {/* Status Badge */}
+              <div className="flex items-center justify-between py-2">
+                <span className="text-[10px] text-gray-500">Status</span>
+                {match.status === "ongoing" ? (
+                  <Badge variant={match.status} className="text-[10px]">
+                    🔴 Live
+                  </Badge>
+                ) : match.status === "upcoming" ? (
+                  <Badge variant={match.status} className="text-[10px]">
+                    Upcoming
+                  </Badge>
+                ) : (
+                  <Badge variant={match.status} className="text-[10px] capitalize">
+                    {match.status}
+                  </Badge>
+                )}
+              </div>
+
+              {/* Stats Grid - Compact */}
+              <div className="grid grid-cols-4 gap-1.5 rounded-lg border border-white/5 bg-black/20 p-2">
+                <div className="text-center">
+                  <div className="text-[8px] font-medium tracking-wider text-gray-500 uppercase">
+                    Score
+                  </div>
+                  <div className="text-gold-light-text text-xs font-bold">
+                    {match.status === "upcoming"
+                      ? "—"
+                      : performance.score?.toLocaleString() || "N/A"}
+                  </div>
+                </div>
+                <div className="text-center">
+                  <div className="text-[8px] font-medium tracking-wider text-gray-500 uppercase">
+                    Kills
+                  </div>
+                  <div className="text-gold-light-text text-xs font-bold">
+                    {match.status === "upcoming" ? "—" : performance.kills || 0}
+                  </div>
+                </div>
+                <div className="text-center">
+                  <div className="text-[8px] font-medium tracking-wider text-gray-500 uppercase">
+                    Deaths
+                  </div>
+                  <div className="text-gold-light-text text-xs font-bold">
+                    {match.status === "upcoming" ? "—" : performance.deaths || 0}
+                  </div>
+                </div>
+                <div className="text-center">
+                  <div className="text-[8px] font-medium tracking-wider text-gray-500 uppercase">
+                    K/D
+                  </div>
+                  <div className="text-gold-light-text text-xs font-bold">
+                    {match.status === "upcoming" ? "—" : performance.kdRatio || "0.0"}
+                  </div>
+                </div>
+              </div>
+
+              {/* Prize Footer */}
+              <div className="mt-2 flex items-center justify-between text-[10px]">
+                <span className="text-gray-500">
+                  Pool: {formatCurrency(match.prizePool || 0)}
+                </span>
+                <span className="text-gray-500">
+                  Time: {match.startTime}
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   return (
     <div className="relative overflow-hidden rounded-2xl border border-white/20 backdrop-blur-xl">
       <div className="from-dark-card/80 via-dark-card/60 to-dark-card/80 absolute inset-0 bg-gradient-to-br" />
@@ -143,8 +315,51 @@ export default function MatchHistory({ matches, playerId }) {
         </div>
       )}
 
-      {/* Table Container */}
-      <div className="relative overflow-x-auto">
+      {/* Mobile Card View - Hidden on md and above */}
+      <div className="relative block md:hidden">
+        <div className="space-y-2 p-3">
+          {mobileVisibleMatches.map((match) => (
+            <MobileMatchCard
+              key={match.id}
+              match={match}
+              isExpanded={expandedCards[match.id] || false}
+              onToggle={() => toggleCardExpansion(match.id)}
+            />
+          ))}
+        </div>
+
+        {/* Show More / Show Less Button */}
+        {hasMoreMatches && (
+          <div className="relative px-3 pb-3">
+            <button
+              onClick={() => setMobileExpanded(!mobileExpanded)}
+              className="border-gold-dark/30 bg-gold-dark/10 hover:bg-gold-dark/20 flex w-full items-center justify-center gap-1.5 rounded-lg border py-2.5 transition-all duration-200"
+            >
+              <span className="text-gold-light-text text-xs font-medium">
+                {mobileExpanded
+                  ? "Show Less"
+                  : `Show ${remainingCount} More`}
+              </span>
+              <svg
+                className={`text-gold-light-text h-3.5 w-3.5 transition-transform duration-200 ${mobileExpanded ? "rotate-180" : ""}`}
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M19 9l-7 7-7-7"
+                />
+              </svg>
+            </button>
+          </div>
+        )}
+      </div>
+
+      {/* Desktop Table View - Hidden on mobile */}
+      <div className="relative hidden overflow-x-auto md:block">
         <table className="w-full">
           {/* Table Header */}
           <thead className="border-b border-white/10 bg-white/5">
@@ -354,18 +569,18 @@ export default function MatchHistory({ matches, playerId }) {
       </div>
 
       {/* Summary Footer */}
-      <div className="relative border-t border-white/10 bg-white/5 px-6 py-5">
-        <div className="flex flex-wrap items-center justify-between gap-4 text-base">
-          <div className="flex items-center gap-8">
+      <div className="relative border-t border-white/10 bg-white/5 px-3 py-3 md:px-6 md:py-5">
+        <div className="flex items-center justify-between gap-2 text-xs md:gap-4 md:text-base">
+          <div className="flex items-center gap-3 md:gap-8">
             <div>
-              <span className="text-gold-light-text">Total Matches:</span>
-              <span className="text-gold ml-2 text-lg font-bold">
+              <span className="text-gray-500 md:text-gold-light-text">Matches:</span>
+              <span className="text-gold ml-1 font-bold md:ml-2 md:text-lg">
                 {sortedMatches.length}
               </span>
             </div>
             <div>
-              <span className="text-gold-light-text">Wins:</span>
-              <span className="text-gold ml-2 text-lg font-bold">
+              <span className="text-gray-500 md:text-gold-light-text">Wins:</span>
+              <span className="text-gold ml-1 font-bold md:ml-2 md:text-lg">
                 {
                   sortedMatches.filter((m) => {
                     const p = getPlayerPerformance(m);
@@ -374,9 +589,9 @@ export default function MatchHistory({ matches, playerId }) {
                 }
               </span>
             </div>
-            <div>
+            <div className="hidden md:block">
               <span className="text-gray-400">Top 3:</span>
-              <span className="text-gold ml-2 text-lg font-bold">
+              <span className="text-gold ml-2 font-bold md:text-lg">
                 {
                   sortedMatches.filter((m) => {
                     const p = getPlayerPerformance(m);
@@ -387,8 +602,8 @@ export default function MatchHistory({ matches, playerId }) {
             </div>
           </div>
           <div>
-            <span className="text-gold-light-text text-base">Total Prize:</span>
-            <span className="text-gold ml-2 text-xl font-black">
+            <span className="text-gray-500 md:text-gold-light-text md:text-base">Total:</span>
+            <span className="text-gold ml-1 text-sm font-bold md:ml-2 md:text-xl md:font-black">
               {formatCurrency(
                 sortedMatches.reduce((sum, m) => {
                   const p = getPlayerPerformance(m);
