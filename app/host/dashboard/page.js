@@ -2,9 +2,11 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import ProtectedRoute from "../../components/ProtectedRoute";
 import Button from "../../components/Button";
 import TournamentCard from "../../components/TournamentCard";
+import MobileTournamentCard from "../../components/MobileTournamentCard";
 import EmptyState from "../../components/EmptyState";
 import { useUser } from "../../contexts/UserContext";
 import { tournamentsApi } from "../../lib/api";
@@ -124,7 +126,7 @@ function HostDashboardContent() {
         <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/70 to-black" />
 
         {/* Content */}
-        <div className="relative z-10 px-4 py-16 sm:py-20 lg:py-24">
+        <div className="relative z-10 px-4 py-16 sm:py-10 lg:py-12">
           <h1 className="mb-4 text-5xl font-bold drop-shadow-2xl sm:text-6xl lg:text-7xl">
             <span className="text-gold-gradient">Host Dashboard</span>
           </h1>
@@ -142,57 +144,88 @@ function HostDashboardContent() {
       <div className="px-4 pb-8 sm:px-6 lg:px-8">
         <div className="max-w-main mx-auto">
           {/* Stats Grid */}
-          <div className="mb-8 grid grid-cols-2 gap-4 md:grid-cols-4">
-            <div className="from-gold/20 via-dark-card to-dark-card/80 border-gold-dark/30 hover:shadow-gold/20 rounded-2xl border bg-gradient-to-br p-6 shadow-2xl shadow-black/30 backdrop-blur-xl transition-all duration-300 hover:scale-105">
-              <div className="mb-2 flex items-center gap-3">
-                <div className="from-gold/30 to-gold/10 border-gold/20 flex h-12 w-12 items-center justify-center rounded-xl border bg-gradient-to-br">
-                  <span className="text-2xl">🏆</span>
+          <div className="mb-8 grid grid-cols-2 gap-3 md:grid-cols-4 md:gap-4">
+            {/* Total Tournaments Card */}
+            <div className="group hover:border-gold-dark/40 bg-dark-gray-card/80 hover:bg-dark-gray-card/90 relative overflow-hidden rounded-xl border border-white/10 p-4 shadow-lg shadow-gray-800/30 backdrop-blur-sm transition-all duration-300 md:p-5">
+              <div className="via-gold-dark/50 absolute top-0 right-0 left-0 h-[2px] bg-gradient-to-r from-transparent to-transparent"></div>
+              <div className="flex flex-col items-center text-center">
+                <div className="mb-3 flex h-11 w-11 items-center justify-center rounded-lg border border-white/15 bg-white/10 transition-transform duration-300 group-hover:scale-105 md:h-12 md:w-12">
+                  <Image
+                    src="/icons/002.webp"
+                    alt="Total Tournaments"
+                    width={26}
+                    height={26}
+                  />
                 </div>
-              </div>
-              <div className="mb-1 text-sm font-medium text-gray-400">
-                Total Tournaments
-              </div>
-              <div className="text-3xl font-black text-white">
-                {stats.total}
+                <div className="text-gold-text text-2xl font-bold md:text-3xl">
+                  {stats.total}
+                </div>
+                <div className="mt-1 text-[10px] font-medium tracking-wider text-gray-400 uppercase md:text-xs">
+                  Total Tournaments
+                </div>
               </div>
             </div>
-            <div className="via-dark-card to-dark-card/80 rounded-2xl border border-blue-500/30 bg-gradient-to-br from-blue-500/20 p-6 shadow-2xl shadow-black/30 backdrop-blur-xl transition-all duration-300 hover:scale-105 hover:shadow-blue-500/20">
-              <div className="mb-2 flex items-center gap-3">
-                <div className="flex h-12 w-12 items-center justify-center rounded-xl border border-blue-500/20 bg-gradient-to-br from-blue-500/30 to-blue-500/10">
-                  <span className="text-2xl">📅</span>
+
+            {/* Upcoming Card */}
+            <div className="group hover:border-gold-dark/40 bg-dark-gray-card/80 hover:bg-dark-gray-card/90 relative overflow-hidden rounded-xl border border-white/10 p-4 shadow-lg shadow-gray-800/30 backdrop-blur-sm transition-all duration-300 md:p-5">
+              <div className="via-gold-dark/50 absolute top-0 right-0 left-0 h-[2px] bg-gradient-to-r from-transparent to-transparent"></div>
+              <div className="flex flex-col items-center text-center">
+                <div className="mb-3 flex h-11 w-11 items-center justify-center rounded-lg border border-white/15 bg-white/10 transition-transform duration-300 group-hover:scale-105 md:h-12 md:w-12">
+                  <Image
+                    src="/icons/004.webp"
+                    alt="Upcoming"
+                    width={26}
+                    height={26}
+                  />
                 </div>
-              </div>
-              <div className="mb-1 text-sm font-medium text-gray-400">
-                Upcoming
-              </div>
-              <div className="text-3xl font-black text-white">
-                {stats.upcoming}
+                <div className="text-gold-text text-2xl font-bold md:text-3xl">
+                  {stats.upcoming}
+                </div>
+                <div className="mt-1 text-[10px] font-medium tracking-wider text-gray-400 uppercase md:text-xs">
+                  Upcoming
+                </div>
               </div>
             </div>
-            <div className="via-dark-card to-dark-card/80 rounded-2xl border border-green-500/30 bg-gradient-to-br from-green-500/20 p-6 shadow-2xl shadow-black/30 backdrop-blur-xl transition-all duration-300 hover:scale-105 hover:shadow-green-500/20">
-              <div className="mb-2 flex items-center gap-3">
-                <div className="flex h-12 w-12 items-center justify-center rounded-xl border border-green-500/20 bg-gradient-to-br from-green-500/30 to-green-500/10">
-                  <span className="text-2xl">🎮</span>
+
+            {/* Ongoing Card */}
+            <div className="group hover:border-gold-dark/40 bg-dark-gray-card/80 hover:bg-dark-gray-card/90 relative overflow-hidden rounded-xl border border-white/10 p-4 shadow-lg shadow-gray-800/30 backdrop-blur-sm transition-all duration-300 md:p-5">
+              <div className="via-gold-dark/50 absolute top-0 right-0 left-0 h-[2px] bg-gradient-to-r from-transparent to-transparent"></div>
+              <div className="flex flex-col items-center text-center">
+                <div className="mb-3 flex h-11 w-11 items-center justify-center rounded-lg border border-white/15 bg-white/10 transition-transform duration-300 group-hover:scale-105 md:h-12 md:w-12">
+                  <Image
+                    src="/icons/003.webp"
+                    alt="Ongoing"
+                    width={26}
+                    height={26}
+                  />
                 </div>
-              </div>
-              <div className="mb-1 text-sm font-medium text-gray-400">
-                Ongoing
-              </div>
-              <div className="text-3xl font-black text-white">
-                {stats.ongoing}
+                <div className="text-gold-text text-2xl font-bold md:text-3xl">
+                  {stats.ongoing}
+                </div>
+                <div className="mt-1 text-[10px] font-medium tracking-wider text-gray-400 uppercase md:text-xs">
+                  Ongoing
+                </div>
               </div>
             </div>
-            <div className="via-dark-card to-dark-card/80 rounded-2xl border border-purple-500/30 bg-gradient-to-br from-purple-500/20 p-6 shadow-2xl shadow-black/30 backdrop-blur-xl transition-all duration-300 hover:scale-105 hover:shadow-purple-500/20">
-              <div className="mb-2 flex items-center gap-3">
-                <div className="flex h-12 w-12 items-center justify-center rounded-xl border border-purple-500/20 bg-gradient-to-br from-purple-500/30 to-purple-500/10">
-                  <span className="text-2xl">✅</span>
+
+            {/* Completed Card */}
+            <div className="group hover:border-gold-dark/40 bg-dark-gray-card/80 hover:bg-dark-gray-card/90 relative overflow-hidden rounded-xl border border-white/10 p-4 shadow-lg shadow-gray-800/30 backdrop-blur-sm transition-all duration-300 md:p-5">
+              <div className="via-gold-dark/50 absolute top-0 right-0 left-0 h-[2px] bg-gradient-to-r from-transparent to-transparent"></div>
+              <div className="flex flex-col items-center text-center">
+                <div className="mb-3 flex h-11 w-11 items-center justify-center rounded-lg border border-white/15 bg-white/10 transition-transform duration-300 group-hover:scale-105 md:h-12 md:w-12">
+                  <Image
+                    src="/icons/001.webp"
+                    alt="Completed"
+                    width={26}
+                    height={26}
+                  />
                 </div>
-              </div>
-              <div className="mb-1 text-sm font-medium text-gray-400">
-                Completed
-              </div>
-              <div className="text-3xl font-black text-white">
-                {stats.completed}
+                <div className="text-gold-text text-2xl font-bold md:text-3xl">
+                  {stats.completed}
+                </div>
+                <div className="mt-1 text-[10px] font-medium tracking-wider text-gray-400 uppercase md:text-xs">
+                  Completed
+                </div>
               </div>
             </div>
           </div>
@@ -310,10 +343,20 @@ function HostDashboardContent() {
                 </div>
               </div>
 
-              {/* Tournament List */}
-              <div className="space-y-8">
+              {/* Tournament List - Desktop */}
+              <div className="hidden space-y-8 sm:block">
                 {filteredTournaments.map((tournament) => (
                   <TournamentCard key={tournament.id} tournament={tournament} />
+                ))}
+              </div>
+
+              {/* Tournament List - Mobile */}
+              <div className="space-y-3 sm:hidden">
+                {filteredTournaments.map((tournament) => (
+                  <MobileTournamentCard
+                    key={tournament.id}
+                    tournament={tournament}
+                  />
                 ))}
               </div>
 

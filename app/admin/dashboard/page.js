@@ -3,10 +3,9 @@
 import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import Card from "../../components/Card";
+import Image from "next/image";
 import Button from "../../components/Button";
 import Badge from "../../components/Badge";
-import StatCard from "../../components/StatCard";
 
 export default function AdminDashboard() {
   const { data: session, status } = useSession();
@@ -163,12 +162,12 @@ export default function AdminDashboard() {
         <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/70 to-black" />
 
         {/* Content */}
-        <div className="relative z-10 px-4 py-16 sm:py-20 lg:py-24">
+        <div className="relative z-10 px-4 py-16 sm:py-10 lg:py-12">
           <h1 className="mb-4 text-5xl font-bold drop-shadow-2xl sm:text-6xl lg:text-7xl">
             <span className="text-gold-gradient">Admin Dashboard</span>
           </h1>
-          <p className="mx-auto max-w-2xl text-xl font-medium text-gray-200 drop-shadow-lg sm:text-2xl">
-            👨‍💼 Manage automated tournaments and view statistics
+          <p className="mx-auto mb-8 max-w-2xl text-xl font-medium text-gray-200 drop-shadow-lg sm:text-2xl">
+            Manage automated tournaments and view statistics 👨‍💼
           </p>
         </div>
       </div>
@@ -178,40 +177,38 @@ export default function AdminDashboard() {
           {/* Message Alert */}
           {message && (
             <div
-              className={`relative mb-8 overflow-hidden rounded-2xl ${
+              className={`bg-dark-gray-card/80 mb-8 overflow-hidden rounded-xl border shadow-lg shadow-gray-800/30 backdrop-blur-sm ${
                 message.type === "success"
-                  ? "border-2 border-green-500/40"
-                  : "border-2 border-red-500/40"
+                  ? "border-green-500/30"
+                  : "border-red-500/30"
               }`}
             >
               <div
-                className={`absolute inset-0 ${
-                  message.type === "success"
-                    ? "bg-gradient-to-br from-green-500/20 to-emerald-500/10"
-                    : "bg-gradient-to-br from-red-500/20 to-rose-500/10"
+                className={`h-[2px] bg-gradient-to-r from-transparent via-current to-transparent ${
+                  message.type === "success" ? "text-green-500" : "text-red-500"
                 }`}
               />
-              <div className="relative p-6 backdrop-blur-xl">
+              <div className="p-5">
                 <div className="flex gap-4">
                   <div
-                    className={`flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-xl border-2 ${
+                    className={`flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-lg border bg-white/10 ${
                       message.type === "success"
-                        ? "border-green-500/40 bg-green-500/20"
-                        : "border-red-500/40 bg-red-500/20"
+                        ? "border-green-500/30"
+                        : "border-red-500/30"
                     }`}
                   >
-                    <span className="text-3xl">
+                    <span className="text-2xl">
                       {message.type === "success" ? "✅" : "❌"}
                     </span>
                   </div>
                   <div
                     className={`flex-1 ${
                       message.type === "success"
-                        ? "text-green-300"
-                        : "text-red-300"
+                        ? "text-green-400"
+                        : "text-red-400"
                     }`}
                   >
-                    <pre className="font-sans text-base leading-relaxed whitespace-pre-wrap">
+                    <pre className="font-sans text-sm leading-relaxed whitespace-pre-wrap">
                       {message.text}
                     </pre>
                   </div>
@@ -221,385 +218,283 @@ export default function AdminDashboard() {
           )}
 
           {/* Quick Actions */}
-          <div className="relative mb-8 overflow-hidden rounded-3xl">
-            <div className="from-gold/20 via-dark-card to-dark-card/80 absolute inset-0 bg-gradient-to-br backdrop-blur-xl" />
-            <div className="border-gold-dark/30 relative border p-8">
-              <div className="mb-6 flex items-center gap-3">
-                <div className="from-gold/30 to-gold/10 border-gold/20 flex h-14 w-14 items-center justify-center rounded-xl border bg-gradient-to-br">
-                  <span className="text-3xl">⚡</span>
-                </div>
-                <h2 className="text-gold-gradient text-3xl font-bold">
-                  Quick Actions
-                </h2>
+          <div className="mb-8">
+            <div className="mb-6 flex items-center gap-3">
+              <div className="from-gold/30 to-gold/10 border-gold/20 flex h-12 w-12 items-center justify-center rounded-xl border bg-gradient-to-br">
+                <span className="text-2xl">⚡</span>
               </div>
-              <div className="space-y-4">
-                <div className="bg-dark-card/50 border-gold-dark/20 rounded-2xl border p-6">
-                  <Button
-                    variant="primary"
-                    onClick={runScheduler}
-                    disabled={actionLoading}
-                    className="mb-3 w-full sm:w-auto"
-                    size="lg"
-                  >
-                    {actionLoading
-                      ? "⏳ Processing..."
-                      : "🚀 Create Next Tournaments"}
-                  </Button>
-                  <p className="text-sm leading-relaxed text-gray-400">
-                    Creates tournaments for the nearest upcoming scheduled time
-                    for all levels
-                  </p>
-                </div>
+              <h2 className="text-gold-gradient text-3xl font-bold">
+                Quick Actions
+              </h2>
+            </div>
+            <div className="border-gold-dark/20 bg-dark-gray-card/80 rounded-2xl border p-6 shadow-lg shadow-gray-800/30 backdrop-blur-sm">
+              <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
                 <Button
-                  variant="secondary"
-                  onClick={fetchStats}
+                  variant="primary"
+                  onClick={runScheduler}
+                  disabled={actionLoading}
                   size="lg"
-                  fullWidth
                 >
+                  {actionLoading
+                    ? "⏳ Processing..."
+                    : "🚀 Create Next Tournaments"}
+                </Button>
+                <Button variant="secondary" onClick={fetchStats} size="lg">
                   📊 Refresh Stats
                 </Button>
               </div>
+              <p className="mt-4 text-sm leading-relaxed text-gray-400">
+                Creates tournaments for the nearest upcoming scheduled time for
+                all levels
+              </p>
             </div>
           </div>
 
           {/* Overall Statistics */}
           {stats && (
             <>
-              <div className="mb-8 grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
-                <div className="from-gold/20 via-dark-card to-dark-card/80 border-gold-dark/30 hover:shadow-gold/20 rounded-2xl border bg-gradient-to-br p-6 shadow-2xl shadow-black/30 backdrop-blur-xl transition-all duration-300 hover:scale-105">
-                  <div className="mb-2 flex items-center gap-3">
-                    <div className="from-gold/30 to-gold/10 border-gold/20 flex h-12 w-12 items-center justify-center rounded-xl border bg-gradient-to-br">
-                      <span className="text-2xl">🎮</span>
+              <div className="mb-8 grid grid-cols-2 gap-3 md:grid-cols-4 md:gap-4">
+                {/* Total Tournaments Card */}
+                <div className="group hover:border-gold-dark/40 bg-dark-gray-card/80 hover:bg-dark-gray-card/90 relative overflow-hidden rounded-xl border border-white/10 p-4 shadow-lg shadow-gray-800/30 backdrop-blur-sm transition-all duration-300 md:p-5">
+                  <div className="via-gold-dark/50 absolute top-0 right-0 left-0 h-[2px] bg-gradient-to-r from-transparent to-transparent"></div>
+                  <div className="flex flex-col items-center text-center">
+                    <div className="mb-3 flex h-11 w-11 items-center justify-center rounded-lg border border-white/15 bg-white/10 transition-transform duration-300 group-hover:scale-105 md:h-12 md:w-12">
+                      <Image
+                        src="/icons/002.webp"
+                        alt="Total Tournaments"
+                        width={26}
+                        height={26}
+                      />
                     </div>
-                  </div>
-                  <div className="mb-1 text-sm font-medium text-gray-400">
-                    Total Tournaments
-                  </div>
-                  <div className="text-3xl font-black text-white">
-                    {parseInt(stats.overall.total_tournaments) || 0}
+                    <div className="text-gold-text text-2xl font-bold md:text-3xl">
+                      {parseInt(stats.overall.total_tournaments) || 0}
+                    </div>
+                    <div className="mt-1 text-[10px] font-medium tracking-wider text-gray-400 uppercase md:text-xs">
+                      Total Tournaments
+                    </div>
                   </div>
                 </div>
-                <div className="via-dark-card to-dark-card/80 rounded-2xl border border-blue-500/30 bg-gradient-to-br from-blue-500/20 p-6 shadow-2xl shadow-black/30 backdrop-blur-xl transition-all duration-300 hover:scale-105 hover:shadow-blue-500/20">
-                  <div className="mb-2 flex items-center gap-3">
-                    <div className="flex h-12 w-12 items-center justify-center rounded-xl border border-blue-500/20 bg-gradient-to-br from-blue-500/30 to-blue-500/10">
-                      <span className="text-2xl">🏆</span>
+
+                {/* Active Levels Card */}
+                <div className="group hover:border-gold-dark/40 bg-dark-gray-card/80 hover:bg-dark-gray-card/90 relative overflow-hidden rounded-xl border border-white/10 p-4 shadow-lg shadow-gray-800/30 backdrop-blur-sm transition-all duration-300 md:p-5">
+                  <div className="via-gold-dark/50 absolute top-0 right-0 left-0 h-[2px] bg-gradient-to-r from-transparent to-transparent"></div>
+                  <div className="flex flex-col items-center text-center">
+                    <div className="mb-3 flex h-11 w-11 items-center justify-center rounded-lg border border-white/15 bg-white/10 transition-transform duration-300 group-hover:scale-105 md:h-12 md:w-12">
+                      <Image
+                        src="/icons/004.webp"
+                        alt="Active Levels"
+                        width={26}
+                        height={26}
+                      />
                     </div>
-                  </div>
-                  <div className="mb-1 text-sm font-medium text-gray-400">
-                    Active Levels
-                  </div>
-                  <div className="text-3xl font-black text-white">
-                    {parseInt(stats.overall.active_levels) || 0}
+                    <div className="text-gold-text text-2xl font-bold md:text-3xl">
+                      {parseInt(stats.overall.active_levels) || 0}
+                    </div>
+                    <div className="mt-1 text-[10px] font-medium tracking-wider text-gray-400 uppercase md:text-xs">
+                      Active Levels
+                    </div>
                   </div>
                 </div>
-                <div className="via-dark-card to-dark-card/80 rounded-2xl border border-purple-500/30 bg-gradient-to-br from-purple-500/20 p-6 shadow-2xl shadow-black/30 backdrop-blur-xl transition-all duration-300 hover:scale-105 hover:shadow-purple-500/20">
-                  <div className="mb-2 flex items-center gap-3">
-                    <div className="flex h-12 w-12 items-center justify-center rounded-xl border border-purple-500/20 bg-gradient-to-br from-purple-500/30 to-purple-500/10">
-                      <span className="text-2xl">👥</span>
+
+                {/* Total Participants Card */}
+                <div className="group hover:border-gold-dark/40 bg-dark-gray-card/80 hover:bg-dark-gray-card/90 relative overflow-hidden rounded-xl border border-white/10 p-4 shadow-lg shadow-gray-800/30 backdrop-blur-sm transition-all duration-300 md:p-5">
+                  <div className="via-gold-dark/50 absolute top-0 right-0 left-0 h-[2px] bg-gradient-to-r from-transparent to-transparent"></div>
+                  <div className="flex flex-col items-center text-center">
+                    <div className="mb-3 flex h-11 w-11 items-center justify-center rounded-lg border border-white/15 bg-white/10 transition-transform duration-300 group-hover:scale-105 md:h-12 md:w-12">
+                      <Image
+                        src="/icons/003.webp"
+                        alt="Participants"
+                        width={26}
+                        height={26}
+                      />
                     </div>
-                  </div>
-                  <div className="mb-1 text-sm font-medium text-gray-400">
-                    Total Participants
-                  </div>
-                  <div className="text-3xl font-black text-white">
-                    {parseInt(stats.overall.total_participants) || 0}
+                    <div className="text-gold-text text-2xl font-bold md:text-3xl">
+                      {parseInt(stats.overall.total_participants) || 0}
+                    </div>
+                    <div className="mt-1 text-[10px] font-medium tracking-wider text-gray-400 uppercase md:text-xs">
+                      Total Participants
+                    </div>
                   </div>
                 </div>
-                <div className="via-dark-card to-dark-card/80 rounded-2xl border border-green-500/30 bg-gradient-to-br from-green-500/20 p-6 shadow-2xl shadow-black/30 backdrop-blur-xl transition-all duration-300 hover:scale-105 hover:shadow-green-500/20">
-                  <div className="mb-2 flex items-center gap-3">
-                    <div className="flex h-12 w-12 items-center justify-center rounded-xl border border-green-500/20 bg-gradient-to-br from-green-500/30 to-green-500/10">
-                      <span className="text-2xl">💰</span>
+
+                {/* Total Prize Pool Card */}
+                <div className="group hover:border-gold-dark/40 bg-dark-gray-card/80 hover:bg-dark-gray-card/90 relative overflow-hidden rounded-xl border border-white/10 p-4 shadow-lg shadow-gray-800/30 backdrop-blur-sm transition-all duration-300 md:p-5">
+                  <div className="via-gold-dark/50 absolute top-0 right-0 left-0 h-[2px] bg-gradient-to-r from-transparent to-transparent"></div>
+                  <div className="flex flex-col items-center text-center">
+                    <div className="mb-3 flex h-11 w-11 items-center justify-center rounded-lg border border-white/15 bg-white/10 transition-transform duration-300 group-hover:scale-105 md:h-12 md:w-12">
+                      <Image
+                        src="/icons/001.webp"
+                        alt="Prize Pool"
+                        width={26}
+                        height={26}
+                      />
                     </div>
-                  </div>
-                  <div className="mb-1 text-sm font-medium text-gray-400">
-                    Total Prize Pool
-                  </div>
-                  <div className="text-3xl font-black text-emerald-400">
-                    $
-                    {parseFloat(stats.overall.total_prize_pool || 0).toFixed(2)}
+                    <div className="text-gold-text text-2xl font-bold md:text-3xl">
+                      $
+                      {parseFloat(stats.overall.total_prize_pool || 0).toFixed(
+                        2,
+                      )}
+                    </div>
+                    <div className="mt-1 text-[10px] font-medium tracking-wider text-gray-400 uppercase md:text-xs">
+                      Total Prize Pool
+                    </div>
                   </div>
                 </div>
               </div>
 
               {/* Level Controls */}
-              <div className="relative mb-8 overflow-hidden rounded-3xl">
-                <div className="via-dark-card to-dark-card/80 absolute inset-0 bg-gradient-to-br from-purple-500/20 backdrop-blur-xl" />
-                <div className="relative border border-purple-500/30 p-8">
-                  <div className="mb-6 flex items-center gap-3">
-                    <div className="flex h-14 w-14 items-center justify-center rounded-xl border border-purple-500/20 bg-gradient-to-br from-purple-500/30 to-purple-500/10">
-                      <span className="text-3xl">🎯</span>
-                    </div>
-                    <h2 className="text-gold-gradient text-3xl font-bold">
-                      Tournament Levels
-                    </h2>
+              <div className="mb-8">
+                <div className="mb-6 flex items-center gap-3">
+                  <div className="from-gold/30 to-gold/10 border-gold/20 flex h-12 w-12 items-center justify-center rounded-xl border bg-gradient-to-br">
+                    <span className="text-2xl">🎯</span>
                   </div>
-                  <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
-                    {["master", "diamond", "platinum", "gold"].map((level) => {
-                      const levelData = stats.byLevel.find(
-                        (l) => l.automated_level === level,
-                      );
-                      const hasActive = stats.activeTournaments.some(
-                        (t) => t.automated_level === level,
-                      );
+                  <h2 className="text-gold-gradient text-3xl font-bold">
+                    Tournament Levels
+                  </h2>
+                </div>
+                <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
+                  {["master", "diamond", "platinum", "gold"].map((level) => {
+                    const levelData = stats.byLevel.find(
+                      (l) => l.automated_level === level,
+                    );
+                    const hasActive = stats.activeTournaments.some(
+                      (t) => t.automated_level === level,
+                    );
 
-                      const levelColors = {
-                        master:
-                          "from-red-500/30 to-red-500/10 border-red-500/30",
-                        diamond:
-                          "from-blue-500/30 to-blue-500/10 border-blue-500/30",
-                        platinum:
-                          "from-gray-400/30 to-gray-400/10 border-gray-400/30",
-                        gold: "from-yellow-500/30 to-yellow-500/10 border-yellow-500/30",
-                      };
+                    return (
+                      <div
+                        key={level}
+                        className={`group hover:border-gold-dark/40 bg-dark-gray-card/80 hover:bg-dark-gray-card/90 relative overflow-hidden rounded-xl border border-white/10 p-5 shadow-lg shadow-gray-800/30 backdrop-blur-sm transition-all duration-300 ${
+                          hasActive ? "border-gold-dark/30" : ""
+                        }`}
+                      >
+                        <div className="via-gold-dark/50 absolute top-0 right-0 left-0 h-[2px] bg-gradient-to-r from-transparent to-transparent"></div>
+                        <div className="mb-4 text-center">
+                          <div className="mx-auto mb-3 flex h-14 w-14 items-center justify-center rounded-lg border border-white/15 bg-white/10 transition-transform duration-300 group-hover:scale-105">
+                            <span className="text-3xl">
+                              {level === "gold"
+                                ? "🥇"
+                                : level === "platinum"
+                                  ? "🥈"
+                                  : level === "diamond"
+                                    ? "💎"
+                                    : "👑"}
+                            </span>
+                          </div>
+                          <h3 className="text-gold-text mb-2 text-xl font-bold capitalize">
+                            {level}
+                          </h3>
+                          <Badge
+                            variant={hasActive ? "success" : "secondary"}
+                            className="mt-1"
+                          >
+                            {hasActive ? "● Active" : "○ Inactive"}
+                          </Badge>
+                        </div>
 
-                      return (
-                        <div
-                          key={level}
-                          className={`relative overflow-hidden rounded-2xl backdrop-blur-xl transition-all duration-300 hover:scale-105 ${
-                            hasActive ? "shadow-gold/20 shadow-lg" : ""
-                          }`}
-                        >
-                          <div
-                            className={`absolute inset-0 bg-gradient-to-br ${levelColors[level]}`}
-                          />
-                          <div className="relative border border-white/10 p-6">
-                            <div className="mb-4 text-center">
-                              <div className="mx-auto mb-3 flex h-16 w-16 items-center justify-center rounded-xl border border-white/20 bg-white/10 backdrop-blur-md">
-                                <span className="text-4xl">
-                                  {level === "gold"
-                                    ? "🥇"
-                                    : level === "platinum"
-                                      ? "🥈"
-                                      : level === "diamond"
-                                        ? "💎"
-                                        : "👑"}
-                                </span>
-                              </div>
-                              <h3 className="mb-2 text-2xl font-black text-white capitalize">
-                                {level}
-                              </h3>
-                              <Badge
-                                variant={hasActive ? "success" : "secondary"}
-                                className="mt-2"
-                              >
-                                {hasActive ? "● Active" : "○ Inactive"}
-                              </Badge>
-                            </div>
-
-                            <div className="mb-4 space-y-3">
-                              <div className="flex items-center justify-between rounded-lg bg-black/20 p-3">
-                                <span className="text-sm font-medium text-gray-300">
-                                  Tournaments
-                                </span>
-                                <span className="text-lg font-bold text-white">
-                                  {parseInt(levelData?.tournament_count) || 0}
-                                </span>
-                              </div>
-                              <div className="flex items-center justify-between rounded-lg bg-black/20 p-3">
-                                <span className="text-sm font-medium text-gray-300">
-                                  Participants
-                                </span>
-                                <span className="text-lg font-bold text-white">
-                                  {parseInt(levelData?.total_participants) || 0}
-                                </span>
-                              </div>
-                              <div className="flex items-center justify-between rounded-lg bg-black/20 p-3">
-                                <span className="text-sm font-medium text-gray-300">
-                                  Prize Pool
-                                </span>
-                                <span className="text-gold text-lg font-bold">
-                                  $
-                                  {parseFloat(
-                                    levelData?.total_prize_pool || 0,
-                                  ).toFixed(2)}
-                                </span>
-                              </div>
-                            </div>
-
-                            <div className="space-y-2">
-                              <Button
-                                variant="primary"
-                                size="sm"
-                                className="w-full"
-                                onClick={() => toggleLevel(level, "start")}
-                                disabled={actionLoading || hasActive}
-                              >
-                                ▶️ Start
-                              </Button>
-                              <Button
-                                variant="danger"
-                                size="sm"
-                                className="w-full"
-                                onClick={() => toggleLevel(level, "stop")}
-                                disabled={actionLoading || !hasActive}
-                              >
-                                ⏹️ Stop
-                              </Button>
-                            </div>
+                        <div className="mb-4 space-y-2">
+                          <div className="flex items-center justify-between rounded-lg bg-black/30 px-3 py-2">
+                            <span className="text-xs font-medium text-gray-400">
+                              Tournaments
+                            </span>
+                            <span className="text-sm font-bold text-white">
+                              {parseInt(levelData?.tournament_count) || 0}
+                            </span>
+                          </div>
+                          <div className="flex items-center justify-between rounded-lg bg-black/30 px-3 py-2">
+                            <span className="text-xs font-medium text-gray-400">
+                              Participants
+                            </span>
+                            <span className="text-sm font-bold text-white">
+                              {parseInt(levelData?.total_participants) || 0}
+                            </span>
+                          </div>
+                          <div className="flex items-center justify-between rounded-lg bg-black/30 px-3 py-2">
+                            <span className="text-xs font-medium text-gray-400">
+                              Prize Pool
+                            </span>
+                            <span className="text-gold-text text-sm font-bold">
+                              $
+                              {parseFloat(
+                                levelData?.total_prize_pool || 0,
+                              ).toFixed(2)}
+                            </span>
                           </div>
                         </div>
-                      );
-                    })}
-                  </div>
+
+                        <div className="space-y-2">
+                          <Button
+                            variant="primary"
+                            size="sm"
+                            className="w-full"
+                            onClick={() => toggleLevel(level, "start")}
+                            disabled={actionLoading || hasActive}
+                          >
+                            ▶️ Start
+                          </Button>
+                          <Button
+                            variant="danger"
+                            size="sm"
+                            className="w-full"
+                            onClick={() => toggleLevel(level, "stop")}
+                            disabled={actionLoading || !hasActive}
+                          >
+                            ⏹️ Stop
+                          </Button>
+                        </div>
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
 
               {/* Active Tournaments */}
-              <div className="relative mb-8 overflow-hidden rounded-3xl">
-                <div className="via-dark-card to-dark-card/80 absolute inset-0 bg-gradient-to-br from-orange-500/20 backdrop-blur-xl" />
-                <div className="relative border border-orange-500/30 p-8">
-                  <div className="mb-6 flex items-center gap-3">
-                    <div className="flex h-14 w-14 items-center justify-center rounded-xl border border-orange-500/20 bg-gradient-to-br from-orange-500/30 to-orange-500/10">
-                      <span className="text-3xl">🔥</span>
-                    </div>
-                    <h2 className="text-gold-gradient text-3xl font-bold">
-                      Active Tournaments
-                    </h2>
+              <div className="mb-8">
+                <div className="mb-6 flex items-center gap-3">
+                  <div className="from-gold/30 to-gold/10 border-gold/20 flex h-12 w-12 items-center justify-center rounded-xl border bg-gradient-to-br">
+                    <span className="text-2xl">🔥</span>
                   </div>
-                  {stats.activeTournaments.length === 0 ? (
-                    <div className="py-12 text-center">
-                      <div className="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-full border-2 border-gray-500/20 bg-gradient-to-br from-gray-500/20 to-gray-500/5">
-                        <span className="text-5xl">💤</span>
-                      </div>
-                      <p className="text-lg text-gray-400">
-                        No active tournaments
-                      </p>
-                    </div>
-                  ) : (
-                    <div className="space-y-3">
-                      {stats.activeTournaments
-                        .sort((a, b) => {
-                          const levelOrder = {
-                            master: 1,
-                            diamond: 2,
-                            platinum: 3,
-                            gold: 4,
-                          };
-                          const levelA = (
-                            a.automated_level || ""
-                          ).toLowerCase();
-                          const levelB = (
-                            b.automated_level || ""
-                          ).toLowerCase();
-                          const orderA = levelOrder[levelA] || 999;
-                          const orderB = levelOrder[levelB] || 999;
-                          return orderA - orderB;
-                        })
-                        .map((tournament) => (
-                          <div
-                            key={tournament.id}
-                            className="relative overflow-hidden rounded-2xl backdrop-blur-xl transition-all duration-300 hover:scale-[1.02]"
-                          >
-                            <div className="from-dark-card/80 via-dark-card/60 to-dark-card/80 absolute inset-0 bg-gradient-to-br" />
-                            <div className="border-gold-dark/20 relative border p-6">
-                              <div className="flex flex-wrap items-center justify-between gap-4">
-                                <div className="flex items-center gap-4">
-                                  <div className="flex h-14 w-14 items-center justify-center rounded-xl border border-white/10 bg-gradient-to-br from-white/10 to-white/5">
-                                    <span className="text-3xl">
-                                      {tournament.automated_level === "gold"
-                                        ? "🥇"
-                                        : tournament.automated_level ===
-                                            "platinum"
-                                          ? "🥈"
-                                          : tournament.automated_level ===
-                                              "diamond"
-                                            ? "💎"
-                                            : "👑"}
-                                    </span>
-                                  </div>
-                                  <div>
-                                    <h3 className="text-lg font-bold text-white">
-                                      {tournament.title}
-                                    </h3>
-                                    <p className="text-sm text-gray-400">
-                                      {tournament.date} at {tournament.time}
-                                    </p>
-                                  </div>
-                                </div>
-
-                                <div className="flex flex-wrap items-center gap-4">
-                                  <Badge variant={tournament.status}>
-                                    {tournament.status}
-                                  </Badge>
-                                  <div className="rounded-lg border border-white/10 bg-white/5 px-4 py-2 text-center">
-                                    <div className="mb-1 text-xs text-gray-400">
-                                      Participants
-                                    </div>
-                                    <div className="text-lg font-bold text-white">
-                                      {parseInt(tournament.participant_count) ||
-                                        0}
-                                      /{tournament.max_players}
-                                    </div>
-                                  </div>
-                                  <div className="from-gold/20 border-gold/30 rounded-lg border bg-gradient-to-r to-yellow-600/20 px-4 py-2 text-center">
-                                    <div className="text-gold-dark mb-1 text-xs">
-                                      Prize Pool
-                                    </div>
-                                    <div className="text-gold text-lg font-bold">
-                                      $
-                                      {parseFloat(
-                                        tournament.prize_pool_usd || 0,
-                                      ).toFixed(2)}
-                                    </div>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        ))}
-                    </div>
-                  )}
+                  <h2 className="text-gold-gradient text-3xl font-bold">
+                    Active Tournaments
+                  </h2>
                 </div>
-              </div>
-
-              {/* Recent Tournaments */}
-              <div className="relative overflow-hidden rounded-3xl">
-                <div className="via-dark-card to-dark-card/80 absolute inset-0 bg-gradient-to-br from-blue-500/20 backdrop-blur-xl" />
-                <div className="relative border border-blue-500/30 p-8">
-                  <div className="mb-6 flex items-center gap-3">
-                    <div className="flex h-14 w-14 items-center justify-center rounded-xl border border-blue-500/20 bg-gradient-to-br from-blue-500/30 to-blue-500/10">
-                      <span className="text-3xl">📜</span>
+                {stats.activeTournaments.length === 0 ? (
+                  <div className="border-gold-dark/20 bg-dark-gray-card/80 rounded-2xl border px-6 py-16 text-center shadow-lg shadow-gray-800/30 backdrop-blur-sm">
+                    <div className="from-gold/20 to-gold/5 border-gold/20 mx-auto mb-6 flex h-24 w-24 items-center justify-center rounded-full border-2 bg-gradient-to-br">
+                      <span className="text-6xl">💤</span>
                     </div>
-                    <h2 className="text-gold-gradient text-3xl font-bold">
-                      Recent Tournaments
-                    </h2>
+                    <h3 className="mb-3 text-2xl font-bold text-white">
+                      No Active Tournaments
+                    </h3>
+                    <p className="text-gray-400">
+                      Start a tournament level to see active tournaments here
+                    </p>
                   </div>
-                  {stats.recentTournaments.length === 0 ? (
-                    <div className="py-12 text-center">
-                      <div className="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-full border-2 border-gray-500/20 bg-gradient-to-br from-gray-500/20 to-gray-500/5">
-                        <span className="text-5xl">📋</span>
-                      </div>
-                      <p className="text-lg text-gray-400">
-                        No tournaments yet
-                      </p>
-                    </div>
-                  ) : (
-                    <div className="space-y-2">
-                      {stats.recentTournaments
-                        .sort((a, b) => {
-                          const levelOrder = {
-                            master: 1,
-                            diamond: 2,
-                            platinum: 3,
-                            gold: 4,
-                          };
-                          const levelA = (
-                            a.automated_level || ""
-                          ).toLowerCase();
-                          const levelB = (
-                            b.automated_level || ""
-                          ).toLowerCase();
-                          const orderA = levelOrder[levelA] || 999;
-                          const orderB = levelOrder[levelB] || 999;
-                          return orderA - orderB;
-                        })
-                        .map((tournament) => (
-                          <div
-                            key={tournament.id}
-                            className="bg-dark-card/30 hover:bg-dark-card/50 flex items-center justify-between rounded-xl border border-white/10 p-4 transition-all duration-300"
-                          >
+                ) : (
+                  <div className="space-y-3">
+                    {stats.activeTournaments
+                      .sort((a, b) => {
+                        const levelOrder = {
+                          master: 1,
+                          diamond: 2,
+                          platinum: 3,
+                          gold: 4,
+                        };
+                        const levelA = (a.automated_level || "").toLowerCase();
+                        const levelB = (b.automated_level || "").toLowerCase();
+                        const orderA = levelOrder[levelA] || 999;
+                        const orderB = levelOrder[levelB] || 999;
+                        return orderA - orderB;
+                      })
+                      .map((tournament) => (
+                        <div
+                          key={tournament.id}
+                          className="group hover:border-gold-dark/40 bg-dark-gray-card/80 hover:bg-dark-gray-card/90 relative overflow-hidden rounded-xl border border-white/10 p-4 shadow-lg shadow-gray-800/30 backdrop-blur-sm transition-all duration-300 md:p-5"
+                        >
+                          <div className="via-gold-dark/50 absolute top-0 right-0 left-0 h-[2px] bg-gradient-to-r from-transparent to-transparent"></div>
+                          <div className="flex flex-wrap items-center justify-between gap-4">
                             <div className="flex items-center gap-4">
-                              <div className="flex h-10 w-10 items-center justify-center rounded-lg border border-white/10 bg-gradient-to-br from-white/10 to-white/5">
+                              <div className="flex h-12 w-12 items-center justify-center rounded-lg border border-white/15 bg-white/10 transition-transform duration-300 group-hover:scale-105">
                                 <span className="text-2xl">
                                   {tournament.automated_level === "gold"
                                     ? "🥇"
@@ -611,22 +506,118 @@ export default function AdminDashboard() {
                                 </span>
                               </div>
                               <div>
-                                <p className="text-sm font-semibold text-white">
+                                <h3 className="text-base font-bold text-white md:text-lg">
                                   {tournament.title}
-                                </p>
-                                <p className="text-xs text-gray-400">
-                                  {tournament.date}
+                                </h3>
+                                <p className="text-xs text-gray-400 md:text-sm">
+                                  {tournament.date} at {tournament.time}
                                 </p>
                               </div>
                             </div>
-                            <Badge variant={tournament.status} size="sm">
-                              {tournament.status}
-                            </Badge>
+
+                            <div className="flex flex-wrap items-center gap-3">
+                              <Badge variant={tournament.status}>
+                                {tournament.status}
+                              </Badge>
+                              <div className="rounded-lg bg-black/30 px-3 py-2 text-center">
+                                <div className="text-[10px] text-gray-400 uppercase md:text-xs">
+                                  Players
+                                </div>
+                                <div className="text-sm font-bold text-white md:text-base">
+                                  {parseInt(tournament.participant_count) || 0}/
+                                  {tournament.max_players}
+                                </div>
+                              </div>
+                              <div className="rounded-lg bg-black/30 px-3 py-2 text-center">
+                                <div className="text-[10px] text-gray-400 uppercase md:text-xs">
+                                  Prize
+                                </div>
+                                <div className="text-gold-text text-sm font-bold md:text-base">
+                                  $
+                                  {parseFloat(
+                                    tournament.prize_pool_usd || 0,
+                                  ).toFixed(2)}
+                                </div>
+                              </div>
+                            </div>
                           </div>
-                        ))}
-                    </div>
-                  )}
+                        </div>
+                      ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Recent Tournaments */}
+              <div className="mb-8">
+                <div className="mb-6 flex items-center gap-3">
+                  <div className="from-gold/30 to-gold/10 border-gold/20 flex h-12 w-12 items-center justify-center rounded-xl border bg-gradient-to-br">
+                    <span className="text-2xl">📜</span>
+                  </div>
+                  <h2 className="text-gold-gradient text-3xl font-bold">
+                    Recent Tournaments
+                  </h2>
                 </div>
+                {stats.recentTournaments.length === 0 ? (
+                  <div className="border-gold-dark/20 bg-dark-gray-card/80 rounded-2xl border px-6 py-16 text-center shadow-lg shadow-gray-800/30 backdrop-blur-sm">
+                    <div className="from-gold/20 to-gold/5 border-gold/20 mx-auto mb-6 flex h-24 w-24 items-center justify-center rounded-full border-2 bg-gradient-to-br">
+                      <span className="text-6xl">📋</span>
+                    </div>
+                    <h3 className="mb-3 text-2xl font-bold text-white">
+                      No Tournaments Yet
+                    </h3>
+                    <p className="text-gray-400">
+                      Created tournaments will appear here
+                    </p>
+                  </div>
+                ) : (
+                  <div className="space-y-2">
+                    {stats.recentTournaments
+                      .sort((a, b) => {
+                        const levelOrder = {
+                          master: 1,
+                          diamond: 2,
+                          platinum: 3,
+                          gold: 4,
+                        };
+                        const levelA = (a.automated_level || "").toLowerCase();
+                        const levelB = (b.automated_level || "").toLowerCase();
+                        const orderA = levelOrder[levelA] || 999;
+                        const orderB = levelOrder[levelB] || 999;
+                        return orderA - orderB;
+                      })
+                      .map((tournament) => (
+                        <div
+                          key={tournament.id}
+                          className="group hover:border-gold-dark/40 bg-dark-gray-card/80 hover:bg-dark-gray-card/90 flex items-center justify-between rounded-xl border border-white/10 p-4 shadow-lg shadow-gray-800/30 backdrop-blur-sm transition-all duration-300"
+                        >
+                          <div className="flex items-center gap-3">
+                            <div className="flex h-10 w-10 items-center justify-center rounded-lg border border-white/15 bg-white/10 transition-transform duration-300 group-hover:scale-105">
+                              <span className="text-xl">
+                                {tournament.automated_level === "gold"
+                                  ? "🥇"
+                                  : tournament.automated_level === "platinum"
+                                    ? "🥈"
+                                    : tournament.automated_level === "diamond"
+                                      ? "💎"
+                                      : "👑"}
+                              </span>
+                            </div>
+                            <div>
+                              <p className="text-sm font-semibold text-white">
+                                {tournament.title}
+                              </p>
+                              <p className="text-xs text-gray-400">
+                                {tournament.date}
+                              </p>
+                            </div>
+                          </div>
+                          <Badge variant={tournament.status} size="sm">
+                            {tournament.status}
+                          </Badge>
+                        </div>
+                      ))}
+                  </div>
+                )}
               </div>
             </>
           )}

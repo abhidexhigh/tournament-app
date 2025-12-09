@@ -149,31 +149,31 @@ export default function MatchHistory({ matches, playerId }) {
           {/* Table Header */}
           <thead className="border-b border-white/10 bg-white/5">
             <tr>
-              <th className="px-4 py-4 text-left text-xs font-bold tracking-wider text-gray-400 uppercase">
+              <th className="px-4 py-4 text-left text-sm font-bold tracking-wider text-gray-400 uppercase">
                 Position
               </th>
-              <th className="px-4 py-4 text-left text-xs font-bold tracking-wider text-gray-400 uppercase">
+              <th className="px-4 py-4 text-left text-sm font-bold tracking-wider text-gray-400 uppercase">
                 Match
               </th>
-              <th className="px-4 py-4 text-left text-xs font-bold tracking-wider text-gray-400 uppercase">
+              <th className="px-4 py-4 text-left text-sm font-bold tracking-wider text-gray-400 uppercase">
                 Date
               </th>
-              <th className="px-4 py-4 text-center text-xs font-bold tracking-wider text-gray-400 uppercase">
+              <th className="px-4 py-4 text-center text-sm font-bold tracking-wider text-gray-400 uppercase">
                 Status
               </th>
-              <th className="px-4 py-4 text-right text-xs font-bold tracking-wider text-gray-400 uppercase">
+              <th className="px-4 py-4 text-right text-sm font-bold tracking-wider text-gray-400 uppercase">
                 Score
               </th>
-              <th className="px-4 py-4 text-center text-xs font-bold tracking-wider text-gray-400 uppercase">
+              <th className="px-4 py-4 text-center text-sm font-bold tracking-wider text-gray-400 uppercase">
                 Kills
               </th>
-              <th className="px-4 py-4 text-center text-xs font-bold tracking-wider text-gray-400 uppercase">
+              <th className="px-4 py-4 text-center text-sm font-bold tracking-wider text-gray-400 uppercase">
                 Deaths
               </th>
-              <th className="px-4 py-4 text-center text-xs font-bold tracking-wider text-gray-400 uppercase">
+              <th className="px-4 py-4 text-center text-sm font-bold tracking-wider text-gray-400 uppercase">
                 K/D
               </th>
-              <th className="px-4 py-4 text-right text-xs font-bold tracking-wider text-gray-400 uppercase">
+              <th className="px-4 py-4 text-right text-sm font-bold tracking-wider text-gray-400 uppercase">
                 Prize
               </th>
             </tr>
@@ -194,15 +194,15 @@ export default function MatchHistory({ matches, playerId }) {
                   )} transition-colors duration-200 hover:bg-white/10`}
                 >
                   {/* Position */}
-                  <td className="px-4 py-4 whitespace-nowrap">
+                  <td className="px-4 py-5 whitespace-nowrap">
                     {match.status === "upcoming" ? (
                       <div className="flex items-center gap-2">
-                        <span className="text-xl text-gray-500">—</span>
+                        <span className="text-2xl text-gray-500">—</span>
                         <div className="flex flex-col items-start">
-                          <span className="text-[10px] font-bold tracking-wider text-gray-500 uppercase">
+                          <span className="text-xs font-bold tracking-wider text-gray-500 uppercase">
                             Upcoming
                           </span>
-                          <span className="text-[9px] text-gray-600">
+                          <span className="text-[10px] text-gray-600">
                             Not Started
                           </span>
                         </div>
@@ -210,7 +210,7 @@ export default function MatchHistory({ matches, playerId }) {
                     ) : (
                       <div className="flex items-center gap-2">
                         <div
-                          className={`text-2xl ${getPositionColorClass(
+                          className={`text-3xl ${getPositionColorClass(
                             performance.position,
                           )}`}
                         >
@@ -218,10 +218,10 @@ export default function MatchHistory({ matches, playerId }) {
                         </div>
                         {match.status === "ongoing" && (
                           <div className="flex flex-col items-start">
-                            <span className="animate-pulse text-[10px] font-bold tracking-wider text-gray-400 uppercase">
+                            <span className="animate-pulse text-xs font-bold tracking-wider text-gray-400 uppercase">
                               Live
                             </span>
-                            <span className="text-[9px] text-gray-600">
+                            <span className="text-[10px] text-gray-600">
                               Current
                             </span>
                           </div>
@@ -231,13 +231,13 @@ export default function MatchHistory({ matches, playerId }) {
                   </td>
 
                   {/* Match Title */}
-                  <td className="px-4 py-4">
+                  <td className="px-4 py-5">
                     <div className="group flex items-center gap-2">
                       <div>
-                        <div className="text-gold-light-text group-hover:text-gold line-clamp-2 max-w-xs text-sm font-semibold transition-colors">
+                        <div className="text-gold-light-text group-hover:text-gold line-clamp-2 max-w-xs text-base font-normal transition-colors">
                           {match.title}
                         </div>
-                        <div className="text-gold-light-text mt-1 text-xs">
+                        <div className="text-gold-light-text mt-1 text-sm">
                           {formatCurrency(match.prizePool || 0)} Pool
                         </div>
                       </div>
@@ -248,26 +248,26 @@ export default function MatchHistory({ matches, playerId }) {
                   </td>
 
                   {/* Date */}
-                  <td className="px-4 py-4 whitespace-nowrap">
-                    <div className="text-gold-light-text text-sm">
+                  <td className="px-4 py-5 whitespace-nowrap">
+                    <div className="text-gold-light-text text-base">
                       {formatDate(match.date)}
                     </div>
-                    <div className="text-gold-light-text text-xs">
+                    <div className="text-gold-light-text text-sm">
                       {match.startTime}
                     </div>
                   </td>
 
                   {/* Status */}
-                  <td className="px-4 py-4 text-center whitespace-nowrap">
+                  <td className="px-4 py-5 text-center whitespace-nowrap">
                     {match.status === "ongoing" ? (
                       <div className="flex flex-col items-center gap-1">
                         <Badge
                           variant={match.status}
-                          className="text-xs capitalize"
+                          className="text-sm capitalize"
                         >
                           🔴 Live
                         </Badge>
-                        <span className="text-gold-light-text text-[10px]">
+                        <span className="text-gold-light-text text-xs">
                           In Progress
                         </span>
                       </div>
@@ -275,18 +275,18 @@ export default function MatchHistory({ matches, playerId }) {
                       <div className="flex flex-col items-center gap-1">
                         <Badge
                           variant={match.status}
-                          className="text-xs capitalize"
+                          className="text-sm capitalize"
                         >
                           Upcoming
                         </Badge>
-                        <span className="text-gold-light-text text-[10px]">
+                        <span className="text-gold-light-text text-xs">
                           Scheduled
                         </span>
                       </div>
                     ) : (
                       <Badge
                         variant={match.status}
-                        className="text-xs capitalize"
+                        className="text-sm capitalize"
                       >
                         {match.status}
                       </Badge>
@@ -294,8 +294,8 @@ export default function MatchHistory({ matches, playerId }) {
                   </td>
 
                   {/* Score */}
-                  <td className="px-4 py-4 text-right whitespace-nowrap">
-                    <div className="text-gold-light-text text-sm font-bold">
+                  <td className="px-4 py-5 text-right whitespace-nowrap">
+                    <div className="text-gold-light-text text-base font-bold">
                       {match.status === "upcoming"
                         ? "—"
                         : performance.score?.toLocaleString() || "N/A"}
@@ -303,8 +303,8 @@ export default function MatchHistory({ matches, playerId }) {
                   </td>
 
                   {/* Kills */}
-                  <td className="px-4 py-4 text-center whitespace-nowrap">
-                    <div className="text-gold-light-text text-sm font-bold">
+                  <td className="px-4 py-5 text-center whitespace-nowrap">
+                    <div className="text-gold-light-text text-base font-bold">
                       {match.status === "upcoming"
                         ? "—"
                         : performance.kills || 0}
@@ -312,8 +312,8 @@ export default function MatchHistory({ matches, playerId }) {
                   </td>
 
                   {/* Deaths */}
-                  <td className="px-4 py-4 text-center whitespace-nowrap">
-                    <div className="text-gold-light-text text-sm font-bold">
+                  <td className="px-4 py-5 text-center whitespace-nowrap">
+                    <div className="text-gold-light-text text-base font-bold">
                       {match.status === "upcoming"
                         ? "—"
                         : performance.deaths || 0}
@@ -321,8 +321,8 @@ export default function MatchHistory({ matches, playerId }) {
                   </td>
 
                   {/* K/D Ratio */}
-                  <td className="px-4 py-4 text-center whitespace-nowrap">
-                    <div className="text-gold-light-text text-sm font-bold">
+                  <td className="px-4 py-5 text-center whitespace-nowrap">
+                    <div className="text-gold-light-text text-base font-bold">
                       {match.status === "upcoming"
                         ? "—"
                         : performance.kdRatio || "0.0"}
@@ -330,20 +330,20 @@ export default function MatchHistory({ matches, playerId }) {
                   </td>
 
                   {/* Prize */}
-                  <td className="px-4 py-4 text-right whitespace-nowrap">
+                  <td className="px-4 py-5 text-right whitespace-nowrap">
                     {match.status === "upcoming" ||
                     match.status === "ongoing" ? (
-                      <div className="text-gold-light-text text-xs font-medium">
+                      <div className="text-gold-light-text text-sm font-medium">
                         TBD
                       </div>
                     ) : performance.prizeAmount > 0 ? (
-                      <div className="bg-gold/20 border-gold/30 inline-flex items-center gap-1 rounded-lg border px-3 py-1">
-                        <span className="text-gold text-sm font-black">
+                      <div className="bg-gold/20 border-gold/30 inline-flex items-center gap-1 rounded-lg border px-3 py-1.5">
+                        <span className="text-gold text-base font-black">
                           {formatCurrency(performance.prizeAmount)}
                         </span>
                       </div>
                     ) : (
-                      <span className="text-gold-light-text text-sm">—</span>
+                      <span className="text-gold-light-text text-base">—</span>
                     )}
                   </td>
                 </tr>
@@ -354,18 +354,18 @@ export default function MatchHistory({ matches, playerId }) {
       </div>
 
       {/* Summary Footer */}
-      <div className="relative border-t border-white/10 bg-white/5 px-6 py-4">
-        <div className="flex flex-wrap items-center justify-between gap-4 text-sm">
-          <div className="flex items-center gap-6">
+      <div className="relative border-t border-white/10 bg-white/5 px-6 py-5">
+        <div className="flex flex-wrap items-center justify-between gap-4 text-base">
+          <div className="flex items-center gap-8">
             <div>
               <span className="text-gold-light-text">Total Matches:</span>
-              <span className="ml-2 font-bold text-white">
+              <span className="text-gold ml-2 text-lg font-bold">
                 {sortedMatches.length}
               </span>
             </div>
             <div>
               <span className="text-gold-light-text">Wins:</span>
-              <span className="text-gold ml-2 font-bold">
+              <span className="text-gold ml-2 text-lg font-bold">
                 {
                   sortedMatches.filter((m) => {
                     const p = getPlayerPerformance(m);
@@ -376,7 +376,7 @@ export default function MatchHistory({ matches, playerId }) {
             </div>
             <div>
               <span className="text-gray-400">Top 3:</span>
-              <span className="text-gold ml-2 font-bold">
+              <span className="text-gold ml-2 text-lg font-bold">
                 {
                   sortedMatches.filter((m) => {
                     const p = getPlayerPerformance(m);
@@ -387,8 +387,8 @@ export default function MatchHistory({ matches, playerId }) {
             </div>
           </div>
           <div>
-            <span className="text-gold-light-text">Total Prize:</span>
-            <span className="text-gold ml-2 text-lg font-black">
+            <span className="text-gold-light-text text-base">Total Prize:</span>
+            <span className="text-gold ml-2 text-xl font-black">
               {formatCurrency(
                 sortedMatches.reduce((sum, m) => {
                   const p = getPlayerPerformance(m);
