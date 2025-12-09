@@ -21,35 +21,19 @@ export default function MobileTournamentCard({ tournament }) {
   const icon = getTournamentIcon(tournament);
   const isImageUrl = typeof icon === "string" && icon.startsWith("http");
 
-  // Get accent gradient color based on status
-  const getAccentGradient = () => {
+  // Get accent color based on status
+  const getAccentColor = () => {
     if (tournament.status === "ongoing") {
-      return "via-red-500/70";
+      return "border-l-red-500";
     }
-    return "via-gold-dark/70";
+    return "border-l-gold";
   };
 
   return (
     <Link href={`/tournament/${tournament.id}`} className="block">
-      <div className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-[#16161d] to-[#0e0e12] transition-all duration-300 active:scale-[0.98]">
-        {/* Gradient borders - all sides */}
-        {/* Top */}
-        <div
-          className={`absolute top-0 right-0 left-0 h-[2px] bg-gradient-to-r from-transparent ${getAccentGradient()} to-transparent`}
-        />
-        {/* Bottom */}
-        <div
-          className={`absolute right-0 bottom-0 left-0 h-[2px] bg-gradient-to-r from-transparent ${getAccentGradient()} to-transparent`}
-        />
-        {/* Left */}
-        <div
-          className={`absolute top-0 bottom-0 left-0 w-[2px] bg-gradient-to-b from-transparent ${getAccentGradient()} to-transparent`}
-        />
-        {/* Right */}
-        <div
-          className={`absolute top-0 right-0 bottom-0 w-[2px] bg-gradient-to-b from-transparent ${getAccentGradient()} to-transparent`}
-        />
-
+      <div
+        className={`group relative overflow-hidden rounded-2xl border border-l-4 border-white/10 bg-gradient-to-br from-[#16161d] to-[#0e0e12] transition-all duration-300 active:scale-[0.98] ${getAccentColor()}`}
+      >
         {/* Subtle gradient overlay */}
         <div className="from-gold/[0.03] pointer-events-none absolute inset-0 bg-gradient-to-r to-transparent" />
 
@@ -229,14 +213,14 @@ export default function MobileTournamentCard({ tournament }) {
         </div>
 
         {/* Fill Progress Indicator */}
-        {/* <div className="h-1 w-full bg-black/40">
+        <div className="h-1 w-full bg-black/40">
           <div
             className="from-gold/70 to-gold h-full bg-gradient-to-r transition-all duration-500"
             style={{
               width: `${Math.min(100, (tournament.participants.length / (tournament.max_players ?? tournament.maxPlayers)) * 100)}%`,
             }}
           />
-        </div> */}
+        </div>
       </div>
     </Link>
   );

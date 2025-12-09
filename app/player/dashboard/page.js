@@ -127,85 +127,109 @@ function PlayerDashboardContent() {
           {/* Stats Grid */}
           <div className="mb-8 grid grid-cols-2 gap-3 md:grid-cols-4 md:gap-4">
             {/* Tournaments Joined Card */}
-            <div className="group hover:border-gold-dark/40 bg-dark-gray-card/80 hover:bg-dark-gray-card/90 relative overflow-hidden rounded-xl border border-white/10 p-4 shadow-lg shadow-gray-800/30 backdrop-blur-sm transition-all duration-300 md:p-5">
-              <div className="via-gold-dark/50 absolute top-0 right-0 left-0 h-[2px] bg-gradient-to-r from-transparent to-transparent"></div>
-              <div className="flex flex-col items-center text-center">
-                <div className="mb-3 flex h-11 w-11 items-center justify-center rounded-lg border border-white/15 bg-white/10 transition-transform duration-300 group-hover:scale-105 md:h-12 md:w-12">
-                  <Image
-                    src="/icons/002.webp"
-                    alt="Tournaments"
-                    width={26}
-                    height={26}
-                  />
-                </div>
-                <div className="text-gold-text text-2xl font-bold md:text-3xl">
-                  {stats.totalJoined}
-                </div>
-                <div className="mt-1 text-[10px] font-medium tracking-wider text-gray-400 uppercase md:text-xs">
-                  Tournaments
+            <div className="bg-gold-light/80 chamfered-div p-[1px] backdrop-blur-xl">
+              <div className="group bg-gold-card-bg chamfered-div relative overflow-hidden backdrop-blur-sm transition-all duration-300 hover:scale-[1.02]">
+                <div className="absolute inset-0 bg-gradient-to-tl from-white/10 via-transparent to-transparent opacity-0 transition-opacity group-hover:opacity-100"></div>
+                <div className="relative p-5">
+                  <div className="flex items-center gap-4">
+                    <div className="flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-full border border-white/20 bg-gradient-to-br from-white/20 via-white/10 to-transparent shadow-xl transition-all duration-300 group-hover:scale-110 group-hover:shadow-white/20">
+                      <Image
+                        src="/icons/002.webp"
+                        alt="Tournaments"
+                        width={32}
+                        height={32}
+                      />
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <div className="mb-1 text-4xl font-black text-white">
+                        {stats.totalJoined}
+                      </div>
+                      <div className="text-xs font-bold tracking-wider text-gray-500 uppercase">
+                        Tournaments
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
 
             {/* Total Winnings Card */}
-            <div className="group hover:border-gold-dark/40 bg-dark-gray-card/80 hover:bg-dark-gray-card/90 relative overflow-hidden rounded-xl border border-white/10 p-4 shadow-lg shadow-gray-800/30 backdrop-blur-sm transition-all duration-300 md:p-5">
-              <div className="via-gold-dark/50 absolute top-0 right-0 left-0 h-[2px] bg-gradient-to-r from-transparent to-transparent"></div>
-              <div className="flex flex-col items-center text-center">
-                <div className="border-gold-dark/30 bg-gold-dark/15 mb-3 flex h-11 w-11 items-center justify-center rounded-lg border transition-transform duration-300 group-hover:scale-105 md:h-12 md:w-12">
-                  <Image
-                    src="/icons/004.webp"
-                    alt="Gold"
-                    width={26}
-                    height={26}
-                  />
-                </div>
-                <div className="text-gold text-2xl font-bold md:text-3xl">
-                  {stats.totalWinnings.toLocaleString()}
-                </div>
-                <div className="mt-1 text-[10px] font-medium tracking-wider text-gray-400 uppercase md:text-xs">
-                  Total Winnings
+            <div className="bg-gold-light/80 chamfered-div p-[1px] backdrop-blur-xl">
+              <div className="group bg-gold-card-bg chamfered-div relative overflow-hidden backdrop-blur-sm transition-all duration-300 hover:scale-[1.02]">
+                <div className="from-gold/20 absolute inset-0 bg-gradient-to-tl via-transparent to-transparent opacity-0 transition-opacity group-hover:opacity-100"></div>
+                <div className="relative p-5">
+                  <div className="flex items-center gap-4">
+                    <div className="from-gold/40 via-gold/20 border-gold/40 shadow-gold/30 group-hover:shadow-gold/50 flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-full border bg-gradient-to-br to-transparent shadow-xl transition-all duration-300 group-hover:scale-110">
+                      <Image
+                        src="/icons/004.webp"
+                        alt="Gold"
+                        width={32}
+                        height={32}
+                      />
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <div className="text-gold mb-1 text-4xl font-black">
+                        {stats.totalWinnings.toLocaleString()}
+                      </div>
+                      <div className="text-xs font-bold tracking-wider text-gray-500 uppercase">
+                        Total Winnings
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
 
             {/* Wins Card */}
-            <div className="group hover:border-gold-dark/40 bg-dark-gray-card/80 hover:bg-dark-gray-card/90 relative overflow-hidden rounded-xl border border-white/10 p-4 shadow-lg shadow-gray-800/30 backdrop-blur-sm transition-all duration-300 md:p-5">
-              <div className="via-gold-dark/50 absolute top-0 right-0 left-0 h-[2px] bg-gradient-to-r from-transparent to-transparent"></div>
-              <div className="flex flex-col items-center text-center">
-                <div className="mb-3 flex h-11 w-11 items-center justify-center rounded-lg border border-white/15 bg-white/10 transition-transform duration-300 group-hover:scale-105 md:h-12 md:w-12">
-                  <Image
-                    src="/icons/003.webp"
-                    alt="Wins"
-                    width={26}
-                    height={26}
-                  />
-                </div>
-                <div className="text-gold-text text-2xl font-bold md:text-3xl">
-                  {stats.wins}
-                </div>
-                <div className="mt-1 text-[10px] font-medium tracking-wider text-gray-400 uppercase md:text-xs">
-                  Total Wins
+            <div className="bg-gold-light/80 chamfered-div p-[1px] backdrop-blur-xl">
+              <div className="group bg-gold-card-bg chamfered-div relative overflow-hidden backdrop-blur-sm transition-all duration-300 hover:scale-[1.02]">
+                <div className="from-gold/20 absolute inset-0 bg-gradient-to-tl via-transparent to-transparent opacity-0 transition-opacity group-hover:opacity-100"></div>
+                <div className="relative p-5">
+                  <div className="flex items-center gap-4">
+                    <div className="from-gold/40 via-gold/20 border-gold/40 shadow-gold/30 group-hover:shadow-gold/50 flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-full border bg-gradient-to-br to-transparent shadow-xl transition-all duration-300 group-hover:scale-110">
+                      <Image
+                        src="/icons/003.webp"
+                        alt="Wins"
+                        width={32}
+                        height={32}
+                      />
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <div className="text-gold mb-1 text-4xl font-black">
+                        {stats.wins}
+                      </div>
+                      <div className="text-xs font-bold tracking-wider text-gray-500 uppercase">
+                        Total Wins
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
 
             {/* Top 3 Finishes Card */}
-            <div className="group hover:border-gold-dark/40 bg-dark-gray-card/80 hover:bg-dark-gray-card/90 relative overflow-hidden rounded-xl border border-white/10 p-4 shadow-lg shadow-gray-800/30 backdrop-blur-sm transition-all duration-300 md:p-5">
-              <div className="via-gold-dark/50 absolute top-0 right-0 left-0 h-[2px] bg-gradient-to-r from-transparent to-transparent"></div>
-              <div className="flex flex-col items-center text-center">
-                <div className="mb-3 flex h-11 w-11 items-center justify-center rounded-lg border border-white/15 bg-white/10 transition-transform duration-300 group-hover:scale-105 md:h-12 md:w-12">
-                  <Image
-                    src="/icons/001.webp"
-                    alt="Top 3 Finishes"
-                    width={26}
-                    height={26}
-                  />
-                </div>
-                <div className="text-gold-text text-2xl font-bold md:text-3xl">
-                  {stats.top3Finishes}
-                </div>
-                <div className="mt-1 text-[10px] font-medium tracking-wider text-gray-400 uppercase md:text-xs">
-                  Top 3 Finishes
+            <div className="bg-gold-light/80 chamfered-div p-[1px] backdrop-blur-xl">
+              <div className="group bg-gold-card-bg chamfered-div relative overflow-hidden backdrop-blur-sm transition-all duration-300 hover:scale-[1.02]">
+                <div className="from-gold/20 absolute inset-0 bg-gradient-to-tl via-transparent to-transparent opacity-0 transition-opacity group-hover:opacity-100"></div>
+                <div className="relative p-5">
+                  <div className="flex items-center gap-4">
+                    <div className="from-gold/40 via-gold/20 border-gold/40 shadow-gold/30 group-hover:shadow-gold/50 flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-full border bg-gradient-to-br to-transparent shadow-xl transition-all duration-300 group-hover:scale-110">
+                      <Image
+                        src="/icons/001.webp"
+                        alt="Top 3 Finishes"
+                        width={32}
+                        height={32}
+                      />
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <div className="text-gold mb-1 text-4xl font-black">
+                        {stats.top3Finishes}
+                      </div>
+                      <div className="text-xs font-bold tracking-wider text-gray-500 uppercase">
+                        Top 3 Finishes
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
