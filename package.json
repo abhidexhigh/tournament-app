@@ -3,19 +3,20 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
     "migrate": "node migrate-to-postgres.js",
     "init-auto-tournaments": "node scripts/init-automated-tournaments.js",
-    "cron": "node scripts/local-cron.js"
+    "cron": "node scripts/local-cron.js",
+    "format": "prettier --write ."
   },
   "dependencies": {
     "@stripe/stripe-js": "^8.1.0",
     "@vercel/postgres": "^0.10.0",
     "dotenv": "^17.2.3",
-    "next": "15.5.4",
+    "next": "^15.5.7",
     "next-auth": "^4.24.11",
     "react": "19.1.0",
     "react-dom": "19.1.0",
@@ -27,6 +28,8 @@
     "@tailwindcss/postcss": "^4",
     "eslint": "^9",
     "eslint-config-next": "15.5.4",
+    "prettier": "^3.6.2",
+    "prettier-plugin-tailwindcss": "^0.7.1",
     "tailwindcss": "^4"
   }
 }

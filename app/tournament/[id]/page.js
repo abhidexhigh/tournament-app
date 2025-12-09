@@ -30,13 +30,16 @@ import PrizeDistributionTab from "../../components/tournament/PrizeDistributionT
 import MatchesTab from "../../components/tournament/MatchesTab";
 import ParticipantsTab from "../../components/tournament/ParticipantsTab";
 import RulesTab from "../../components/tournament/RulesTab";
+import TournamentDetailsSkeleton from "../../components/skeletons/TournamentDetailsSkeleton";
 import TopupModal from "../../components/TopupModal";
+import { useToast } from "../../components/Toast";
 
 export default function TournamentDetailsPage() {
   const params = useParams();
   const router = useRouter();
   const { data: session, status } = useSession();
   const { user, refreshUser } = useUser();
+  const toast = useToast();
 
   // State
   const [tournament, setTournament] = useState(null);
@@ -205,7 +208,7 @@ export default function TournamentDetailsPage() {
     }
 
     if (user.type !== "player") {
-      alert("Only players can join tournaments!");
+      toast.warning("Only players can join tournaments!");
       return;
     }
 
@@ -226,7 +229,7 @@ export default function TournamentDetailsPage() {
     }
 
     if (user.type !== "player") {
-      alert("Only players can join tournaments!");
+      toast.warning("Only players can join tournaments!");
       return;
     }
 
@@ -234,7 +237,7 @@ export default function TournamentDetailsPage() {
     if (SINGLE_CURRENCY_MODE) {
       const validation = validateTournamentPayment(user, tournament);
       if (!validation.valid) {
-        alert(validation.error);
+        toast.error(validation.error);
         return;
       }
       // Set payment method to primary currency
@@ -257,7 +260,9 @@ export default function TournamentDetailsPage() {
         } else if (entryFeeUsd === 0 || !tournament.entry_fee) {
           ticketType = null;
         } else {
-          alert("No matching ticket type found for this tournament entry fee!");
+          toast.error(
+            "No matching ticket type found for this tournament entry fee!",
+          );
           return;
         }
       }
@@ -266,7 +271,7 @@ export default function TournamentDetailsPage() {
       if (ticketType) {
         const ticketCount = user?.tickets?.[ticketType] || 0;
         if (ticketCount === 0) {
-          alert(
+          toast.error(
             `You don't have any ${
               ticketType === "ticket_010"
                 ? "$0.10"
@@ -286,7 +291,9 @@ export default function TournamentDetailsPage() {
         try {
           const userClans = await getUserClans(user.id);
           if (userClans.length === 0) {
-            alert("You must be a member of a clan to join this tournament!");
+            toast.warning(
+              "You must be a member of a clan to join this tournament!",
+            );
             return;
           }
 
@@ -298,14 +305,14 @@ export default function TournamentDetailsPage() {
           if (!isEligibleClan) {
             const clan1Name = clan1 ? clan1.name : "Unknown";
             const clan2Name = clan2 ? clan2.name : "Unknown";
-            alert(
+            toast.warning(
               `You can only join this tournament if you're a member of ${clan1Name} or ${clan2Name}!`,
             );
             return;
           }
         } catch (error) {
           console.error("Error checking clan membership:", error);
-          alert("Error checking clan membership. Please try again.");
+          toast.error("Error checking clan membership. Please try again.");
           return;
         }
       }
@@ -367,10 +374,10 @@ export default function TournamentDetailsPage() {
       // Close payment modal
       setShowPaymentModal(false);
 
-      alert("Successfully joined the tournament! 🎉");
+      toast.success("Successfully joined the tournament! 🎉");
     } catch (error) {
       console.error("Failed to join tournament:", error);
-      alert(
+      toast.error(
         error.message ||
           "Failed to join tournament. It may be full or you're already registered.",
       );
@@ -413,10 +420,12 @@ export default function TournamentDetailsPage() {
       );
       setTournament(updatedTournament);
       setShowWinnerModal(false);
-      alert("Winners declared! Prizes have been distributed. 🏆");
+      toast.success("Winners declared! Prizes have been distributed. 🏆");
     } catch (error) {
       console.error("Failed to declare winners:", error);
-      alert(error.message || "Failed to declare winners. Please try again.");
+      toast.error(
+        error.message || "Failed to declare winners. Please try again.",
+      );
     } finally {
       setLoading(false);
     }
@@ -429,23 +438,16 @@ export default function TournamentDetailsPage() {
         "ongoing",
       );
       setTournament(updatedTournament);
-      alert("Tournament started! 🚀");
+      toast.success("Tournament started! 🚀");
     } catch (error) {
       console.error("Failed to start tournament:", error);
-      alert(error.message || "Failed to start tournament");
+      toast.error(error.message || "Failed to start tournament");
     }
   };
 
   // Show loading state
   if (initialLoading) {
-    return (
-      <div className="flex min-h-screen items-center justify-center">
-        <div className="text-center">
-          <div className="mb-4 animate-pulse text-6xl">🎮</div>
-          <p className="text-gray-400">Loading tournament...</p>
-        </div>
-      </div>
-    );
+    return <TournamentDetailsSkeleton />;
   }
 
   // Show not found state

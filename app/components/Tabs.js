@@ -83,7 +83,7 @@ export default function Tabs({
               onClick={() => handleTabChange(tab.id)}
               className={`${getTabStyles(
                 activeTab === tab.id,
-              )} flex items-center space-x-2 whitespace-nowrap`}
+              )} flex cursor-pointer items-center space-x-2 whitespace-nowrap`}
               role="tab"
               aria-selected={activeTab === tab.id}
               aria-controls={`panel-${tab.id}`}
