@@ -36,7 +36,7 @@ export default function TournamentStatCard({
         {icon}
       </div>
       <div className="min-w-0 flex-1">
-        <p className="text-[11px] font-medium tracking-wide text-gray-100 uppercase sm:text-xs sm:capitalize">
+        <p className="text-[11px] font-medium tracking-wide text-gray-100 uppercase sm:text-xs sm:text-gray-400 sm:capitalize">
           {label}
         </p>
         {children || (
