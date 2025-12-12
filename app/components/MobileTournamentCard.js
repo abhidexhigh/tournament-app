@@ -132,7 +132,7 @@ export default function MobileTournamentCard({ tournament }) {
             <div className="from-gold/10 border-gold/20 rounded-xl border bg-gradient-to-br to-amber-500/5 p-2.5">
               <div className="mb-1 flex items-center gap-1.5">
                 <LuTrophy className="text-sm text-gray-400" />
-                <span className="text-[11px] font-medium tracking-wide text-gray-400 uppercase">
+                <span className="text-[11px] font-medium tracking-wide text-gray-100 uppercase">
                   {t("prize")}
                 </span>
               </div>
@@ -147,7 +147,7 @@ export default function MobileTournamentCard({ tournament }) {
             <div className="rounded-xl border border-white/10 bg-white/5 p-2.5">
               <div className="mb-1 flex items-center gap-1.5">
                 <LuUsers className="text-sm text-gray-400" />
-                <span className="text-[11px] font-medium tracking-wide text-gray-400 uppercase">
+                <span className="text-[11px] font-medium tracking-wide text-gray-100 uppercase">
                   {t("players")}
                 </span>
               </div>
@@ -164,7 +164,7 @@ export default function MobileTournamentCard({ tournament }) {
             <div className="rounded-xl border border-white/10 bg-white/5 p-2.5">
               <div className="mb-1 flex items-center gap-1.5">
                 <LuTicket className="text-sm text-gray-400" />
-                <span className="text-[11px] font-medium tracking-wide text-gray-400 uppercase">
+                <span className="text-[11px] font-medium tracking-wide text-gray-100 uppercase">
                   {t("entry")}
                 </span>
               </div>

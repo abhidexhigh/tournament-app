@@ -165,10 +165,10 @@ export default function MatchHistory({ matches, playerId }) {
             </div>
             {/* Match Info - Compact */}
             <div className="min-w-0 flex-1">
-              <h3 className="text-gold-light-text truncate text-xs font-semibold">
+              <h3 className="text-gold-light-text truncate text-base font-semibold">
                 {match.title}
               </h3>
-              <div className="text-gold-light-text/70 mt-0.5 text-[10px]">
+              <div className="text-gold-light-text/70 mt-0.5 text-sm">
                 {formatDate(match.date)}
               </div>
             </div>
@@ -177,11 +177,11 @@ export default function MatchHistory({ matches, playerId }) {
           <div className="flex flex-shrink-0 items-center gap-2">
             {/* Prize (compact) */}
             {match.status === "completed" && performance.prizeAmount > 0 ? (
-              <span className="text-gold text-xs font-bold">
+              <span className="text-gold text-base font-bold">
                 {formatCurrency(performance.prizeAmount)}
               </span>
             ) : match.status !== "completed" ? (
-              <span className="text-[10px] text-gray-500">TBD</span>
+              <span className="text-sm text-gray-500">TBD</span>
             ) : null}
             {/* Status indicator */}
             {match.status === "ongoing" && (
@@ -214,62 +214,62 @@ export default function MatchHistory({ matches, playerId }) {
             <div className="border-t border-white/5 px-3 pb-3">
               {/* Status Badge */}
               <div className="flex items-center justify-between py-2">
-                <span className="text-[10px] text-gray-500">Status</span>
+                <span className="text-sm text-gray-500">Status</span>
                 {match.status === "ongoing" ? (
-                  <Badge variant={match.status} className="text-[10px]">
+                  <Badge variant={match.status} className="text-xs">
                     🔴 Live
                   </Badge>
                 ) : match.status === "upcoming" ? (
-                  <Badge variant={match.status} className="text-[10px]">
+                  <Badge variant={match.status} className="text-xs">
                     Upcoming
                   </Badge>
                 ) : (
-                  <Badge variant={match.status} className="text-[10px] capitalize">
+                  <Badge variant={match.status} className="text-xs capitalize">
                     {match.status}
                   </Badge>
                 )}
               </div>
 
               {/* Stats Grid - Compact */}
-              <div className="grid grid-cols-4 gap-1.5 rounded-lg border border-white/5 bg-black/20 p-2">
+              <div className="grid grid-cols-4 gap-1.5 rounded-lg border border-white/5 bg-black/20 p-2.5">
                 <div className="text-center">
-                  <div className="text-[8px] font-medium tracking-wider text-gray-500 uppercase">
+                  <div className="text-xs font-medium tracking-wider text-gray-500 uppercase">
                     Score
                   </div>
-                  <div className="text-gold-light-text text-xs font-bold">
+                  <div className="text-gold-light-text text-base font-bold">
                     {match.status === "upcoming"
                       ? "—"
                       : performance.score?.toLocaleString() || "N/A"}
                   </div>
                 </div>
                 <div className="text-center">
-                  <div className="text-[8px] font-medium tracking-wider text-gray-500 uppercase">
+                  <div className="text-xs font-medium tracking-wider text-gray-500 uppercase">
                     Kills
                   </div>
-                  <div className="text-gold-light-text text-xs font-bold">
+                  <div className="text-gold-light-text text-base font-bold">
                     {match.status === "upcoming" ? "—" : performance.kills || 0}
                   </div>
                 </div>
                 <div className="text-center">
-                  <div className="text-[8px] font-medium tracking-wider text-gray-500 uppercase">
+                  <div className="text-xs font-medium tracking-wider text-gray-500 uppercase">
                     Deaths
                   </div>
-                  <div className="text-gold-light-text text-xs font-bold">
+                  <div className="text-gold-light-text text-base font-bold">
                     {match.status === "upcoming" ? "—" : performance.deaths || 0}
                   </div>
                 </div>
                 <div className="text-center">
-                  <div className="text-[8px] font-medium tracking-wider text-gray-500 uppercase">
+                  <div className="text-xs font-medium tracking-wider text-gray-500 uppercase">
                     K/D
                   </div>
-                  <div className="text-gold-light-text text-xs font-bold">
+                  <div className="text-gold-light-text text-base font-bold">
                     {match.status === "upcoming" ? "—" : performance.kdRatio || "0.0"}
                   </div>
                 </div>
               </div>
 
               {/* Prize Footer */}
-              <div className="mt-2 flex items-center justify-between text-[10px]">
+              <div className="mt-2 flex items-center justify-between text-sm">
                 <span className="text-gray-500">
                   Pool: {formatCurrency(match.prizePool || 0)}
                 </span>

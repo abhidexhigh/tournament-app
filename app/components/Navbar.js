@@ -327,34 +327,37 @@ export default function Navbar() {
             )}
           </div>
 
-          {/* Mobile menu button */}
-          <button
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
-            className="text-gold focus:outline-none md:hidden"
-          >
-            <svg
-              className="h-6 w-6"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
+          {/* Mobile: Language Switcher + Menu Button */}
+          <div className="flex items-center gap-2 md:hidden">
+            <LanguageSwitcher variant="icon" />
+            <button
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+              className="text-gold focus:outline-none"
             >
-              {isMenuOpen ? (
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M6 18L18 6M6 6l12 12"
-                />
-              ) : (
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M4 6h16M4 12h16M4 18h16"
-                />
-              )}
-            </svg>
-          </button>
+              <svg
+                className="h-6 w-6"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                {isMenuOpen ? (
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M6 18L18 6M6 6l12 12"
+                  />
+                ) : (
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M4 6h16M4 12h16M4 18h16"
+                  />
+                )}
+              </svg>
+            </button>
+          </div>
         </div>
       </div>
       <div className="-mt-3 hidden h-3 w-full items-center justify-between md:flex">
@@ -448,7 +451,6 @@ export default function Navbar() {
                           {user.type}
                         </p>
                       </div>
-                      <LanguageSwitcher variant="icon" />
                     </div>
 
                     {/* Wallet Balance - Inline compact */}
@@ -605,45 +607,35 @@ export default function Navbar() {
                       {t("signOut")}
                     </button>
                   ) : status === "authenticated" && session?.user ? (
-                    <div className="space-y-3">
-                      <div className="flex justify-center">
-                        <LanguageSwitcher variant="compact" />
-                      </div>
-                      <Link
-                        href="/select-role"
-                        onClick={() => setIsMenuOpen(false)}
-                        className="block w-full rounded-xl bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-500 py-3.5 text-center font-bold text-black transition-all active:scale-[0.98]"
-                      >
-                        {t("selectRole")}
-                      </Link>
-                    </div>
+                    <Link
+                      href="/select-role"
+                      onClick={() => setIsMenuOpen(false)}
+                      className="block w-full rounded-xl bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-500 py-3.5 text-center font-bold text-black transition-all active:scale-[0.98]"
+                    >
+                      {t("selectRole")}
+                    </Link>
                   ) : (
-                    <div className="space-y-3">
-                      <div className="flex justify-center pb-1">
-                        <LanguageSwitcher variant="compact" />
-                      </div>
-                      <div className="grid grid-cols-2 gap-2">
-                        <button
-                          onClick={() => {
-                            setAuthModalMode("login");
-                            setIsAuthModalOpen(true);
-                            setIsMenuOpen(false);
-                          }}
-                          className="border-gold/30 bg-gold/5 text-gold hover:bg-gold/10 rounded-xl border py-3 text-center text-sm font-semibold transition-all active:scale-[0.98]"
-                        >
-                          {t("login")}
-                        </button>
-                        <button
-                          onClick={() => {
-                            setAuthModalMode("register");
-                            setIsAuthModalOpen(true);
-                            setIsMenuOpen(false);
-                          }}
-                          className="rounded-xl bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-500 py-3 text-center text-sm font-bold text-black transition-all active:scale-[0.98]"
-                        >
-                          {t("createAccount")}
-                        </button>
-                      </div>
+                    <div className="grid grid-cols-2 gap-2">
+                      <button
+                        onClick={() => {
+                          setAuthModalMode("login");
+                          setIsAuthModalOpen(true);
+                          setIsMenuOpen(false);
+                        }}
+                        className="border-gold/30 bg-gold/5 text-gold hover:bg-gold/10 rounded-xl border py-3 text-center text-sm font-semibold transition-all active:scale-[0.98]"
+                      >
+                        {t("login")}
+                      </button>
+                      <button
+                        onClick={() => {
+                          setAuthModalMode("register");
+                          setIsAuthModalOpen(true);
+                          setIsMenuOpen(false);
+                        }}
+                        className="rounded-xl bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-500 py-3 text-center text-sm font-bold text-black transition-all active:scale-[0.98]"
+                      >
+                        {t("createAccount")}
+                      </button>
                     </div>
                   )}
                 </div>
