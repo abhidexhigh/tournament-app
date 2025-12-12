@@ -10,7 +10,7 @@ export default function TournamentStatCard({
     return (
       <div className="border-gold-dark/40 from-gold-dark/15 to-gold-dark/5 flex w-full items-center justify-center rounded-lg border bg-gradient-to-br p-3 md:w-auto md:min-w-[130px] lg:w-[140px]">
         <div className="text-center">
-          <p className="text-gold-dark mb-0.5 text-[10px] font-semibold tracking-wider uppercase">
+          <p className="text-gold-dark mb-0.5 text-[11px] font-semibold tracking-wider uppercase">
             {label}
           </p>
           {children || (
@@ -31,21 +31,19 @@ export default function TournamentStatCard({
   }
 
   return (
-    <div className="border-gold-dark/20 bg-dark-card/50 md:bg-dark-card/50 lg:border-gold-dark/20 flex w-full items-start gap-2.5 rounded-lg border p-2.5 md:w-auto md:min-w-[130px] md:rounded-lg md:border lg:w-[140px] lg:rounded-none lg:border-0 lg:border-r lg:bg-transparent">
+    <div className="border-gold-dark/20 bg-dark-card/50 md:bg-dark-card/50 lg:border-gold-dark/20 flex w-full items-start gap-2.5 rounded-lg border p-2.5 md:w-auto md:min-w-[130px] md:rounded-lg md:border lg:w-[150px] lg:rounded-none lg:border-0 lg:border-r lg:bg-transparent">
       <div className="bg-gold-dark/20 text-gold-dark flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg text-base sm:h-9 sm:w-9 sm:text-lg">
         {icon}
       </div>
       <div className="min-w-0 flex-1">
-        <p className="text-[10px] font-medium tracking-wider text-gray-400 sm:text-xs">
+        <p className="text-[11px] font-medium tracking-wide text-gray-100 uppercase sm:text-xs sm:capitalize">
           {label}
         </p>
         {children || (
           <>
-            <p className="text-sm font-semibold text-white sm:text-base">
-              {value}
-            </p>
+            <p className="text-base font-bold text-white">{value}</p>
             {subtitle && (
-              <p className="text-[10px] text-gray-400 sm:text-xs">{subtitle}</p>
+              <p className="text-[11px] text-gray-100">{subtitle}</p>
             )}
           </>
         )}

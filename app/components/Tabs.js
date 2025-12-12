@@ -28,7 +28,7 @@ export default function Tabs({
 
   const getTabStyles = (isActive) => {
     const baseStyles =
-      "px-4 py-2.5 md:px-6 md:py-3 text-sm md:text-base font-medium transition-all duration-300 focus:outline-none";
+      "px-4 py-2.5 md:px-6 md:py-3 text-base font-medium transition-all duration-300 focus:outline-none";
 
     switch (variant) {
       case "underline":

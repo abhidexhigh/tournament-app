@@ -84,7 +84,9 @@ export default function TournamentHeader({
             <div className="mt-1.5 flex items-center gap-1.5 text-xs text-gray-400 sm:text-sm">
               <span>{t("hostedBy")}</span>
               {tournament.is_automated ? (
-                <span className="text-gold-dark font-medium">{t("system")}</span>
+                <span className="text-gold-dark font-medium">
+                  {t("system")}
+                </span>
               ) : host ? (
                 <div className="flex items-center gap-1.5">
                   <Image
@@ -160,11 +162,11 @@ export default function TournamentHeader({
           {/* Entry Fee Card */}
           <TournamentStatCard icon={<TbMoneybag />} label={t("entryFee")}>
             {tournament.entry_fee ? (
-              <p className="text-sm font-semibold text-white sm:text-base 2xl:text-lg">
+              <p className="text-base font-bold text-white">
                 {formatEntryFee(tournament.entry_fee)}
               </p>
             ) : (
-              <p className="text-sm font-semibold text-green-400 sm:text-base 2xl:text-lg">
+              <p className="text-base font-bold text-green-400">
                 {tCommon("free")}
               </p>
             )}
@@ -172,14 +174,12 @@ export default function TournamentHeader({
 
           {/* Prize Pool Card - Highlighted */}
           <TournamentStatCard label={t("prizePool")} highlighted>
-            <p className="text-gold text-base font-bold sm:text-lg 2xl:text-xl">
+            <p className="text-gold text-lg font-bold">
               {formatPrizePool(tournament.prize_pool)}
             </p>
             {(tournament.prize_pool_type ?? tournament.prizePoolType) ===
               "entry-based" && (
-              <p className="text-gold/70 text-xs italic 2xl:text-sm">
-                {t("entryBased")}
-              </p>
+              <p className="text-gold/70 text-xs italic">{t("entryBased")}</p>
             )}
           </TournamentStatCard>
         </div>
@@ -231,7 +231,9 @@ export default function TournamentHeader({
           {isParticipant && (
             <div className="flex items-center justify-center gap-2 rounded-lg border border-green-500/30 bg-green-500/10 px-4 py-2.5">
               <span className="text-green-400">✓</span>
-              <span className="font-semibold text-green-400">{t("registered")}</span>
+              <span className="font-semibold text-green-400">
+                {t("registered")}
+              </span>
             </div>
           )}
         </div>
