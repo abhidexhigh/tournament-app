@@ -13,9 +13,11 @@ import { useUser } from "../../contexts/UserContext";
 import { tournamentsApi, transactionsApi, matchesApi } from "../../lib/api";
 import MatchHistory from "../../components/MatchHistory";
 import Image from "next/image";
+import { useTranslations } from "../../contexts/LocaleContext";
 
 function PlayerDashboardContent() {
   const { user } = useUser();
+  const t = useTranslations("dashboard");
   const [joinedTournaments, setJoinedTournaments] = useState([]);
   const [transactions, setTransactions] = useState([]);
   const [matches, setMatches] = useState([]);
@@ -142,7 +144,7 @@ function PlayerDashboardContent() {
                   {stats.totalJoined}
                 </div>
                 <div className="mt-1 text-[10px] font-medium tracking-wider text-gray-400 uppercase md:text-xs">
-                  Tournaments
+                  {t("tournaments")}
                 </div>
               </div>
             </div>
@@ -163,7 +165,7 @@ function PlayerDashboardContent() {
                   {stats.totalWinnings.toLocaleString()}
                 </div>
                 <div className="mt-1 text-[10px] font-medium tracking-wider text-gray-400 uppercase md:text-xs">
-                  Total Winnings
+                  {t("totalWinnings")}
                 </div>
               </div>
             </div>
@@ -184,7 +186,7 @@ function PlayerDashboardContent() {
                   {stats.wins}
                 </div>
                 <div className="mt-1 text-[10px] font-medium tracking-wider text-gray-400 uppercase md:text-xs">
-                  Total Wins
+                  {t("totalWins")}
                 </div>
               </div>
             </div>
@@ -205,7 +207,7 @@ function PlayerDashboardContent() {
                   {stats.top3Finishes}
                 </div>
                 <div className="mt-1 text-[10px] font-medium tracking-wider text-gray-400 uppercase md:text-xs">
-                  Top 3 Finishes
+                  {t("top3Finishes")}
                 </div>
               </div>
             </div>
@@ -215,7 +217,7 @@ function PlayerDashboardContent() {
           <div className="mb-8">
             <div className="mb-6 flex items-center gap-3">
               <h2 className="text-gold-text text-3xl font-bold">
-                Match Results
+                {t("matchResults")}
               </h2>
             </div>
             <MatchHistory matches={matches} playerId={user?.id} />

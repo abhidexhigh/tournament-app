@@ -1,27 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-
-// Constants defined outside component to prevent recreation on each render
-const displayTypeTabs = [
-  {
-    key: "tournaments",
-    label: "Tournaments",
-    gradient: "from-yellow-500/20 to-orange-500/20",
-  },
-  {
-    key: "events",
-    label: "Events",
-    gradient: "from-purple-500/20 to-pink-500/20",
-  },
-];
-
-const statusOptions = [
-  { value: "all", label: "All" },
-  { value: "upcoming", label: "Upcoming" },
-  { value: "ongoing", label: "Ongoing" },
-  { value: "completed", label: "Completed" },
-];
+import { useTranslations } from "../contexts/LocaleContext";
 
 // Move StatusDropdown outside to prevent recreation
 const StatusDropdown = ({
@@ -29,6 +9,7 @@ const StatusDropdown = ({
   setActiveTab,
   isDropdownOpen,
   setIsDropdownOpen,
+  statusOptions,
 }) => (
   <div className="status-dropdown relative z-[100] w-full lg:inline-block lg:w-auto">
     <button
@@ -102,10 +83,11 @@ const DisplayTypeTabs = ({
   displayTypeTab,
   setDisplayTypeTab,
   isMobile = false,
+  tabs,
 }) => (
   <div className="from-dark-card/80 via-dark-card to-dark-card/80 border-gold-dark/30 rounded-2xl border bg-gradient-to-r p-1.5 backdrop-blur-sm">
     <div className="flex gap-2">
-      {displayTypeTabs.map((tab) => (
+      {tabs.map((tab) => (
         <button
           key={tab.key}
           onClick={() => setDisplayTypeTab(tab.key)}
@@ -123,7 +105,7 @@ const DisplayTypeTabs = ({
 );
 
 // Move SearchBar outside to prevent recreation
-const SearchBar = ({ searchQuery, setSearchQuery }) => (
+const SearchBar = ({ searchQuery, setSearchQuery, placeholder }) => (
   <div className="w-full lg:w-72">
     <div className="group relative">
       <div className="pointer-events-none absolute inset-y-0 left-0 z-10 flex items-center pl-4">
@@ -145,7 +127,7 @@ const SearchBar = ({ searchQuery, setSearchQuery }) => (
         type="text"
         value={searchQuery}
         onChange={(e) => setSearchQuery(e.target.value)}
-        placeholder="Search by name, game..."
+        placeholder={placeholder}
         className="border-gold-dark/30 focus:border-gold focus:ring-gold/30 hover:border-gold/40 w-full rounded-xl border bg-gradient-to-r from-black/40 to-black/20 py-3 pr-11 pl-12 text-sm font-medium text-white placeholder-gray-400 transition-all duration-300 focus:ring-2 focus:outline-none"
       />
       {searchQuery && (
@@ -188,6 +170,29 @@ export default function FilterBar({
 }) {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isMobileSearchOpen, setIsMobileSearchOpen] = useState(false);
+  const t = useTranslations("filter");
+  const tTournament = useTranslations("tournament");
+
+  // Translated constants
+  const displayTypeTabs = [
+    {
+      key: "tournaments",
+      label: tTournament("tournaments"),
+      gradient: "from-yellow-500/20 to-orange-500/20",
+    },
+    {
+      key: "events",
+      label: tTournament("events"),
+      gradient: "from-purple-500/20 to-pink-500/20",
+    },
+  ];
+
+  const statusOptions = [
+    { value: "all", label: t("all") },
+    { value: "upcoming", label: t("upcoming") },
+    { value: "ongoing", label: t("ongoing") },
+    { value: "completed", label: t("completed") },
+  ];
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -217,6 +222,7 @@ export default function FilterBar({
           displayTypeTab={displayTypeTab}
           setDisplayTypeTab={setDisplayTypeTab}
           isMobile={true}
+          tabs={displayTypeTabs}
         />
       </div>
 
@@ -231,6 +237,7 @@ export default function FilterBar({
                 setActiveTab={setActiveTab}
                 isDropdownOpen={isDropdownOpen}
                 setIsDropdownOpen={setIsDropdownOpen}
+                statusOptions={statusOptions}
               />
             </div>
 
@@ -239,6 +246,7 @@ export default function FilterBar({
               <DisplayTypeTabs
                 displayTypeTab={displayTypeTab}
                 setDisplayTypeTab={setDisplayTypeTab}
+                tabs={displayTypeTabs}
               />
             </div>
 
@@ -277,6 +285,7 @@ export default function FilterBar({
                 <SearchBar
                   searchQuery={searchQuery}
                   setSearchQuery={setSearchQuery}
+                  placeholder={t("searchByName")}
                 />
               </div>
             </div>
@@ -310,7 +319,7 @@ export default function FilterBar({
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Search tournaments..."
+            placeholder={t("searchTournaments")}
             autoFocus={isMobileSearchOpen}
             className="border-gold/30 focus:border-gold bg-dark-card/80 w-full rounded-xl border py-3 pr-11 pl-12 text-sm font-medium text-white placeholder-gray-400 transition-all duration-300 focus:outline-none"
           />

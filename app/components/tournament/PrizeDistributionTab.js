@@ -3,8 +3,13 @@
 import Card from "../Card";
 import { formatPrizeAmount } from "../../lib/clanPrizeDistribution";
 import Image from "next/image";
-import { formatPrizePool, getPrimaryCurrencyInfo } from "../../lib/currencyFormatter";
+import {
+  formatPrizePool,
+  getPrimaryCurrencyInfo,
+} from "../../lib/currencyFormatter";
 import { PRIMARY_CURRENCY, getPrimaryCurrency } from "../../lib/currencyConfig";
+import { useTranslations } from "../../contexts/LocaleContext";
+
 export default function PrizeDistributionTab({
   tournament,
   prizeDistribution,
@@ -23,6 +28,7 @@ export default function PrizeDistributionTab({
 }
 
 function RegularPrizeDistribution({ tournament, prizes }) {
+  const t = useTranslations("prizes");
   const totalPrizePool = prizes.first + prizes.second + prizes.third;
   const currencyInfo = getPrimaryCurrency();
 
@@ -39,7 +45,7 @@ function RegularPrizeDistribution({ tournament, prizes }) {
     prize: perPositionPrize,
     percent: perPositionPercent,
   }));
-  
+
   // Format currency based on config
   const formatCurrency = (amount) => {
     if (PRIMARY_CURRENCY === "USD") {
@@ -53,13 +59,13 @@ function RegularPrizeDistribution({ tournament, prizes }) {
       <div className="mb-4 flex items-center justify-start gap-2">
         <Image
           src="https://res.cloudinary.com/dg0cmj6su/image/upload/v1763459457/dollar_bag_jehifs.webp"
-          alt="Prize Distribution"
+          alt={t("prizeDistribution")}
           width={32}
           height={32}
           className="w-5"
         />
         <h3 className="text-gold flex items-center gap-2 text-xl leading-6 font-bold">
-          Prize Distribution
+          {t("prizeDistribution")}
         </h3>
       </div>
 
@@ -67,19 +73,21 @@ function RegularPrizeDistribution({ tournament, prizes }) {
         {/* Left Side - 1st Place Winner */}
         <div>
           <h5 className="border-gold-dark/30 mb-3 flex items-center gap-2 border-l-2 pl-4 text-base font-medium text-white">
-            🏆 Champion (50%)
+            🏆 {t("champion")} (50%)
           </h5>
           <div className="border-gold/50 flex h-[calc(100%-2rem)] flex-col items-center justify-center rounded-xl border-2 bg-gradient-to-br from-yellow-900/30 to-amber-900/20 p-4 md:p-6">
             <Image
               src="https://res.cloudinary.com/dg0cmj6su/image/upload/v1763459457/First_xf1xz2.webp"
-              alt="1st Place"
+              alt={t("firstPlace")}
               width={80}
               height={80}
               className="mb-2 w-12 md:mb-4 md:w-20"
             />
-            <p className="mb-1 text-base font-bold text-white md:text-lg">1st Place</p>
+            <p className="mb-1 text-base font-bold text-white md:text-lg">
+              {t("firstPlace")}
+            </p>
             <p className="mb-2 text-xs text-gray-400 md:mb-3 md:text-sm">
-              Winner takes 50% of prize pool
+              {t("winnerTakes50")}
             </p>
             <p className="text-gold text-xl font-bold md:text-3xl">
               {formatCurrency(firstPlacePrize)}
@@ -90,23 +98,27 @@ function RegularPrizeDistribution({ tournament, prizes }) {
         {/* Right Side - 2nd to 10th Place */}
         <div>
           <h5 className="border-gold-dark/30 mb-3 flex items-center gap-2 border-l-2 pl-4 text-base font-medium text-white">
-            🥈 Runner-ups (50%)
+            🥈 {t("runnerUps")} (50%)
           </h5>
           <div className="bg-dark-primary/50 border-gold-dark/50 rounded-xl border p-4">
             <div className="mb-3 flex items-center justify-between">
-              <span className="font-medium text-white">2nd - 10th Place</span>
-              <span className="text-sm text-gray-400">9 positions</span>
+              <span className="font-medium text-white">
+                {t("secondToTenth")}
+              </span>
+              <span className="text-sm text-gray-400">
+                {t("ninePositions")}
+              </span>
             </div>
 
             <div className="bg-dark-secondary/50 mb-3 rounded-lg p-4">
               <p className="mb-2 text-sm text-gray-400">
-                Each position receives:
+                {t("eachPositionReceives")}
               </p>
               <p className="text-gold text-2xl font-bold">
                 {formatCurrency(perPositionPrize)}
               </p>
               <p className="mt-2 text-xs text-gray-500">
-                {perPositionPercent}% of total prize pool each
+                {perPositionPercent}% {t("ofTotalEach")}
               </p>
             </div>
 
@@ -130,7 +142,7 @@ function RegularPrizeDistribution({ tournament, prizes }) {
 
             <div className="mt-3 border-t border-gray-600/50 pt-3">
               <div className="flex items-end justify-between text-sm">
-                <span className="text-gray-400">Total for runner-ups:</span>
+                <span className="text-gray-400">{t("totalForRunnerUps")}</span>
                 <div className="text-right">
                   <span className="text-gold font-semibold">
                     {formatCurrency(remainingPrize)}
@@ -145,7 +157,7 @@ function RegularPrizeDistribution({ tournament, prizes }) {
       {/* Summary */}
       <div className="border-gold-dark/30 mt-4 border-t pt-4">
         <div className="flex items-end justify-between">
-          <span className="text-gold font-semibold">Total Prize Pool:</span>
+          <span className="text-gold font-semibold">{t("totalPrizePool")}</span>
           <div className="text-right">
             <span className="text-gold text-xl font-bold">
               {formatCurrency(totalPrizePool)}
@@ -158,8 +170,9 @@ function RegularPrizeDistribution({ tournament, prizes }) {
 }
 
 function ClanBattlePrizeDistribution({ prizeDistribution }) {
+  const t = useTranslations("prizes");
   const currencyInfo = getPrimaryCurrency();
-  
+
   // Format currency based on config
   const formatCurrency = (amount) => {
     if (PRIMARY_CURRENCY === "USD") {
@@ -167,19 +180,14 @@ function ClanBattlePrizeDistribution({ prizeDistribution }) {
     }
     return `${Number(amount).toLocaleString()} 💎`;
   };
-  
+
   if (!prizeDistribution) {
     return (
       <Card className="px-10">
         <div className="py-8 text-center">
           <div className="mb-4 text-4xl">🏆</div>
-          <p className="mb-2 text-lg text-gray-300">
-            Prize Distribution Loading
-          </p>
-          <p className="text-gray-400">
-            Prize distribution details will be available once tournament data is
-            loaded.
-          </p>
+          <p className="mb-2 text-lg text-gray-300">{t("loading")}</p>
+          <p className="text-gray-400">{t("loadingDescription")}</p>
         </div>
       </Card>
     );
@@ -190,13 +198,13 @@ function ClanBattlePrizeDistribution({ prizeDistribution }) {
       <div className="mb-4 flex items-center justify-start gap-2">
         <Image
           src="https://res.cloudinary.com/dg0cmj6su/image/upload/v1763459457/dollar_bag_jehifs.webp"
-          alt="Prize Distribution"
+          alt={t("prizeDistribution")}
           width={32}
           height={32}
           className="w-5"
         />
         <h3 className="text-gold flex items-center gap-2 text-xl leading-6 font-bold">
-          Prize Distribution
+          {t("prizeDistribution")}
         </h3>
       </div>
 
@@ -213,22 +221,22 @@ function ClanBattlePrizeDistribution({ prizeDistribution }) {
       {/* Summary */}
       <div className="border-gold-dark/30 mt-4 border-t pt-4">
         <div className="flex items-end justify-between">
-          <span className="text-gold font-semibold">Total Prize Pool:</span>
+          <span className="text-gold font-semibold">{t("totalPrizePool")}</span>
           <div className="text-right">
             <span className="text-gold text-xl font-bold">
               {formatCurrency(prizeDistribution.totalPrize)}
             </span>
           </div>
         </div>
-        <p className="mt-1 text-sm text-gray-400">
-          Winning team receives 100% of the prize pool
-        </p>
+        <p className="mt-1 text-sm text-gray-400">{t("winningTeamReceives")}</p>
       </div>
     </Card>
   );
 }
 
 function TopPerformersSection({ performers }) {
+  const t = useTranslations("prizes");
+
   // Format currency based on config
   const formatCurrency = (amount) => {
     if (PRIMARY_CURRENCY === "USD") {
@@ -236,19 +244,19 @@ function TopPerformersSection({ performers }) {
     }
     return `${Number(amount).toLocaleString()} 💎`;
   };
-  
+
   const icons = [
     "https://res.cloudinary.com/dg0cmj6su/image/upload/v1763459457/First_xf1xz2.webp",
     "https://res.cloudinary.com/dg0cmj6su/image/upload/v1763459457/second_nak1rc.webp",
     "https://res.cloudinary.com/dg0cmj6su/image/upload/v1763459457/3rd_dxdd3t.webp",
   ];
 
-  const suffix = ["st", "nd", "rd"];
+  const placeLabels = [t("firstPlace"), t("secondPlace"), t("thirdPlace")];
 
   return (
     <div>
       <h5 className="border-gold-dark/30 mb-2 flex items-center gap-2 border-l-2 pl-4 text-base font-medium text-white">
-        Top Performers (20%)
+        {t("topPerformers")} (20%)
       </h5>
       <div className="space-y-2">
         {performers.map((performer, index) => (
@@ -260,19 +268,16 @@ function TopPerformersSection({ performers }) {
               <span className="text-2xl">
                 <Image
                   src={icons[index]}
-                  alt={`${performer.position} Place`}
+                  alt={placeLabels[index]}
                   width={24}
                   height={24}
                   className="w-8"
                 />
               </span>
               <div>
-                <p className="font-medium text-white">
-                  {performer.position}
-                  {suffix[performer.position - 1]} Place
-                </p>
+                <p className="font-medium text-white">{placeLabels[index]}</p>
                 <p className="text-sm text-gray-400">
-                  {performer.percentage}% of total
+                  {performer.percentage}% {t("ofTotal")}
                 </p>
               </div>
             </div>
@@ -289,6 +294,8 @@ function TopPerformersSection({ performers }) {
 }
 
 function TeamMembersSection({ remainingMembers }) {
+  const t = useTranslations("prizes");
+
   // Format currency based on config
   const formatCurrency = (amount) => {
     if (PRIMARY_CURRENCY === "USD") {
@@ -296,35 +303,33 @@ function TeamMembersSection({ remainingMembers }) {
     }
     return `${Number(amount).toLocaleString()} 💎`;
   };
-  
+
   return (
     <div>
       <h5 className="border-gold-dark/30 mb-2 flex items-center gap-2 border-l-2 pl-4 text-base font-medium text-white">
-        Team Members (80%)
+        {t("teamMembers")} (80%)
       </h5>
       <div className="bg-dark-primary/50 border-gold-dark/50 h-[88%] rounded-lg border p-4">
         <div className="mb-2 flex items-center justify-between">
           <span className="font-medium text-white">
-            {remainingMembers.count} Members
+            {remainingMembers.count} {t("members")}
           </span>
           <div className="text-right">
             <span className="text-gold text-lg font-bold">
-              {formatCurrency(remainingMembers.individualPrize)} each
+              {formatCurrency(remainingMembers.individualPrize)} {t("each")}
             </span>
           </div>
         </div>
-        <p className="text-sm text-gray-400">
-          Equal distribution of 80% total prize pool
-        </p>
+        <p className="text-sm text-gray-400">{t("equalDistribution80")}</p>
         <div className="mt-3 border-t border-gray-600 pt-3">
-            <div className="flex items-end justify-between text-sm">
-              <span className="text-gray-400">Total for team members:</span>
-              <div className="text-right">
-                <span className="text-gold font-semibold">
-                  {formatCurrency(remainingMembers.totalPrize)}
-                </span>
-              </div>
+          <div className="flex items-end justify-between text-sm">
+            <span className="text-gray-400">{t("totalForTeamMembers")}</span>
+            <div className="text-right">
+              <span className="text-gold font-semibold">
+                {formatCurrency(remainingMembers.totalPrize)}
+              </span>
             </div>
+          </div>
         </div>
       </div>
     </div>

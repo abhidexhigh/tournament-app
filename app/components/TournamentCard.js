@@ -12,11 +12,24 @@ import {
   getEntryFeeDisplayDual,
 } from "../lib/prizeCalculator";
 import { formatEntryFee, formatPrizePool } from "../lib/currencyFormatter";
+import { useTranslations } from "../contexts/LocaleContext";
 
 export default function TournamentCard({ tournament }) {
+  const t = useTranslations("tournament");
+  const { locale } = require("../contexts/LocaleContext").useLocale();
+
   const formatDate = (dateStr) => {
     const date = new Date(dateStr);
-    return date.toLocaleDateString("en-US", {
+    const localeMap = {
+      en: "en-US",
+      ko: "ko-KR",
+      ja: "ja-JP",
+      zh: "zh-CN",
+      vi: "vi-VN",
+      ru: "ru-RU",
+      es: "es-ES",
+    };
+    return date.toLocaleDateString(localeMap[locale] || "en-US", {
       month: "short",
       day: "numeric",
       year: "numeric",
@@ -33,8 +46,8 @@ export default function TournamentCard({ tournament }) {
     // Check if the timer has expired
     if (timeLeft.isExpired) {
       const message = timerProps.expiresAt
-        ? "Joining Closed"
-        : "Tournament Started";
+        ? t("joiningClosed")
+        : t("tournamentStarted");
       return (
         <div className="hidden w-full items-center justify-start gap-2 border-x border-white/20 px-4 sm:mx-auto sm:flex sm:w-40 lg:w-44">
           <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg border border-white/10 bg-gradient-to-br from-white/10 to-white/5 sm:h-8 sm:w-8 2xl:h-10 2xl:w-10">
@@ -290,7 +303,7 @@ export default function TournamentCard({ tournament }) {
                     size="sm"
                     className="!capitalize"
                   >
-                    {tournament.status}
+                    {t(tournament.status)}
                   </Badge>
                   {tournament.display_type === "tournament" && (
                     <Badge
@@ -298,7 +311,7 @@ export default function TournamentCard({ tournament }) {
                       size="sm"
                       className="font-semibold"
                     >
-                      Tournament
+                      {t("tournament")}
                     </Badge>
                   )}
                   {tournament.display_type === "event" && (
@@ -313,7 +326,7 @@ export default function TournamentCard({ tournament }) {
                   {(tournament.tournament_type ?? tournament.tournamentType) ===
                     "clan_battle" && (
                     <Badge variant="warning" size="sm">
-                      Clan Battle
+                      {t("clanBattle")}
                     </Badge>
                   )}
                 </div>
@@ -325,7 +338,7 @@ export default function TournamentCard({ tournament }) {
                   <div className="rounded-lg border border-amber-500/30 bg-gradient-to-br from-amber-900/30 to-yellow-900/20 px-4 py-2">
                     <div className="text-center">
                       <div className="text-gold mb-0.5 text-[10px] font-medium">
-                        Prize Pool
+                        {t("prizePool")}
                       </div>
                       <div className="text-gold text-xl leading-none font-bold">
                         {formatPrizePool(tournament.prize_pool)}
@@ -342,7 +355,9 @@ export default function TournamentCard({ tournament }) {
               <div className="flex items-center gap-2">
                 <LuUsers className="text-gold-dark text-base" />
                 <div>
-                  <div className="text-[10px] text-gray-400">Players</div>
+                  <div className="text-[10px] text-gray-400">
+                    {t("players")}
+                  </div>
                   <div className="text-gold-light-text text-sm font-bold">
                     {tournament.participants.length}/
                     {tournament.max_players ?? tournament.maxPlayers}
@@ -356,7 +371,9 @@ export default function TournamentCard({ tournament }) {
               <div className="flex items-center gap-2">
                 <TbMoneybag className="text-gold-dark text-base" />
                 <div>
-                  <div className="text-[10px] text-gray-400">Entry Fee</div>
+                  <div className="text-[10px] text-gray-400">
+                    {t("entryFee")}
+                  </div>
                   <div className="text-gold-light-text text-sm font-bold">
                     {tournament.entry_fee ? (
                       formatEntryFee(tournament.entry_fee)
@@ -373,7 +390,9 @@ export default function TournamentCard({ tournament }) {
               <div className="flex items-center gap-2">
                 <LuCalendarDays className="text-gold-dark text-base" />
                 <div>
-                  <div className="text-[10px] text-gray-400">Schedule</div>
+                  <div className="text-[10px] text-gray-400">
+                    {t("schedule")}
+                  </div>
                   <div className="text-gold-light-text text-sm font-bold">
                     {formatDate(tournament.date)}
                   </div>
@@ -390,7 +409,9 @@ export default function TournamentCard({ tournament }) {
                     isAutomated &&
                     tournament.expires_at && (
                       <>
-                        <div className="text-[10px] text-gray-400">Join by</div>
+                        <div className="text-[10px] text-gray-400">
+                          {t("joinBy")}
+                        </div>
                         <div className="text-gold-light-text text-sm font-bold">
                           <CountdownTimer
                             expiresAt={tournament.expires_at}
@@ -402,7 +423,9 @@ export default function TournamentCard({ tournament }) {
 
                   {tournament.status === "upcoming" && !isAutomated && (
                     <>
-                      <div className="text-[10px] text-gray-400">Starts in</div>
+                      <div className="text-[10px] text-gray-400">
+                        {t("startsIn")}
+                      </div>
                       <div className="text-gold-light-text text-sm font-bold">
                         <CountdownTimer
                           date={tournament.date}
@@ -417,7 +440,9 @@ export default function TournamentCard({ tournament }) {
                     isAutomated &&
                     tournament.expires_at && (
                       <>
-                        <div className="text-[10px] text-gray-400">Join by</div>
+                        <div className="text-[10px] text-gray-400">
+                          {t("joinBy")}
+                        </div>
                         <div className="text-gold-light-text text-sm font-bold">
                           <CountdownTimer
                             expiresAt={tournament.expires_at}
@@ -429,7 +454,9 @@ export default function TournamentCard({ tournament }) {
 
                   {tournament.status === "ongoing" && !isAutomated && (
                     <>
-                      <div className="text-[10px] text-gray-400">Status</div>
+                      <div className="text-[10px] text-gray-400">
+                        {t("status")}
+                      </div>
                       <div className="text-sm font-bold text-red-400">
                         Live Now
                       </div>
@@ -480,7 +507,7 @@ export default function TournamentCard({ tournament }) {
                       size="sm"
                       className="!capitalize"
                     >
-                      {tournament.status}
+                      {t(tournament.status)}
                     </Badge>
                     {tournament.display_type === "tournament" && (
                       <Badge
@@ -488,7 +515,7 @@ export default function TournamentCard({ tournament }) {
                         size="sm"
                         className="font-semibold"
                       >
-                        Tournament
+                        {t("tournament")}
                       </Badge>
                     )}
                     {tournament.display_type === "event" && (
@@ -497,13 +524,13 @@ export default function TournamentCard({ tournament }) {
                         size="sm"
                         className="font-semibold"
                       >
-                        Event
+                        {t("event")}
                       </Badge>
                     )}
                     {(tournament.tournament_type ??
                       tournament.tournamentType) === "clan_battle" && (
                       <Badge variant="warning" size="sm">
-                        Clan Battle
+                        {t("clanBattle")}
                       </Badge>
                     )}
                   </span>
@@ -520,7 +547,7 @@ export default function TournamentCard({ tournament }) {
                 </div>
                 <div className="min-w-0 flex-1">
                   <div className="text-xs font-medium whitespace-nowrap text-gray-400 2xl:text-sm">
-                    Players
+                    {t("players")}
                   </div>
                   <div className="text-gold-light-text truncate text-base font-bold 2xl:text-lg">
                     {tournament.participants.length}/
@@ -536,7 +563,7 @@ export default function TournamentCard({ tournament }) {
                 </div>
                 <div className="min-w-0 flex-1">
                   <div className="text-xs font-medium whitespace-nowrap text-gray-400 2xl:text-sm">
-                    Entry Fee
+                    {t("entryFee")}
                   </div>
                   <div className="text-gold-light-text truncate text-base font-bold 2xl:text-lg">
                     {tournament.entry_fee ? (
@@ -555,7 +582,7 @@ export default function TournamentCard({ tournament }) {
                 </div>
                 <div className="min-w-0 flex-1">
                   <div className="text-xs font-medium whitespace-nowrap text-gray-400 2xl:text-sm">
-                    Schedule
+                    {t("schedule")}
                   </div>
                   <div className="text-gold-light-text truncate text-sm font-bold 2xl:text-base">
                     {formatDate(tournament.date)}
@@ -571,14 +598,14 @@ export default function TournamentCard({ tournament }) {
                 isAutomated &&
                 tournament.expires_at && (
                   <CountdownDisplay
-                    label="Join Before"
+                    label={t("joinBefore")}
                     timerProps={{ expiresAt: tournament.expires_at }}
                   />
                 )}
 
               {tournament.status === "upcoming" && !isAutomated && (
                 <CountdownDisplay
-                  label="Starts In"
+                  label={t("startsIn")}
                   timerProps={{ date: tournament.date, time: tournament.time }}
                 />
               )}
@@ -587,7 +614,7 @@ export default function TournamentCard({ tournament }) {
                 isAutomated &&
                 tournament.expires_at && (
                   <CountdownDisplay
-                    label="Join Before"
+                    label={t("joinBefore")}
                     timerProps={{ expiresAt: tournament.expires_at }}
                   />
                 )}
@@ -599,10 +626,10 @@ export default function TournamentCard({ tournament }) {
                   </div>
                   <div className="min-w-0">
                     <div className="text-xs font-medium whitespace-nowrap text-gray-400 2xl:text-sm">
-                      Status
+                      {t("status")}
                     </div>
                     <div className="truncate text-sm font-bold text-red-400 2xl:text-base">
-                      Started
+                      {t("started")}
                     </div>
                   </div>
                 </div>
@@ -614,7 +641,7 @@ export default function TournamentCard({ tournament }) {
                   <div className="prize-display ml-auto">
                     <div className="text-left">
                       <div className="text-gold mb-1 text-xs font-medium whitespace-nowrap 2xl:text-sm">
-                        Prize Pool
+                        {t("prizePool")}
                       </div>
                       <div className="text-gold mb-1 text-lg leading-none font-medium 2xl:text-lg">
                         {formatPrizePool(tournament.prize_pool)}

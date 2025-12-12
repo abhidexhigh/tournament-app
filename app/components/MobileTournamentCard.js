@@ -13,8 +13,12 @@ import {
   LuTicket,
 } from "react-icons/lu";
 import { formatEntryFee, formatPrizePool } from "../lib/currencyFormatter";
+import { useTranslations } from "../contexts/LocaleContext";
 
 export default function MobileTournamentCard({ tournament }) {
+  const t = useTranslations("tournament");
+  const tCommon = useTranslations("common");
+
   const isAutomated =
     tournament.is_automated === true || tournament.is_automated === "true";
 
@@ -97,8 +101,8 @@ export default function MobileTournamentCard({ tournament }) {
                   className="!px-2.5 !py-1 !text-xs !font-medium !capitalize"
                 >
                   {tournament.status === "ongoing"
-                    ? "🔴 Live"
-                    : tournament.status}
+                    ? `🔴 ${t("liveNow")}`
+                    : t(tournament.status)}
                 </Badge>
                 {tournament.display_type === "tournament" && (
                   <Badge
@@ -106,7 +110,7 @@ export default function MobileTournamentCard({ tournament }) {
                     size="sm"
                     className="!px-2.5 !py-1 !text-xs !font-medium"
                   >
-                    Tournament
+                    {t("tournament")}
                   </Badge>
                 )}
                 {tournament.display_type === "event" && (
@@ -115,7 +119,7 @@ export default function MobileTournamentCard({ tournament }) {
                     size="sm"
                     className="!px-2.5 !py-1 !text-xs !font-medium"
                   >
-                    Event
+                    {t("event")}
                   </Badge>
                 )}
               </div>
@@ -129,7 +133,7 @@ export default function MobileTournamentCard({ tournament }) {
               <div className="mb-1 flex items-center gap-1.5">
                 <LuTrophy className="text-sm text-gray-400" />
                 <span className="text-[11px] font-medium tracking-wide text-gray-400 uppercase">
-                  Prize
+                  {t("prize")}
                 </span>
               </div>
               <div className="text-gold text-base font-bold">
@@ -144,7 +148,7 @@ export default function MobileTournamentCard({ tournament }) {
               <div className="mb-1 flex items-center gap-1.5">
                 <LuUsers className="text-sm text-gray-400" />
                 <span className="text-[11px] font-medium tracking-wide text-gray-400 uppercase">
-                  Players
+                  {t("players")}
                 </span>
               </div>
               <div className="text-base font-bold text-white">
@@ -161,7 +165,7 @@ export default function MobileTournamentCard({ tournament }) {
               <div className="mb-1 flex items-center gap-1.5">
                 <LuTicket className="text-sm text-gray-400" />
                 <span className="text-[11px] font-medium tracking-wide text-gray-400 uppercase">
-                  Entry
+                  {t("entry")}
                 </span>
               </div>
               <div
@@ -169,7 +173,7 @@ export default function MobileTournamentCard({ tournament }) {
               >
                 {tournament.entry_fee
                   ? formatEntryFee(tournament.entry_fee)
-                  : "Free"}
+                  : tCommon("free")}
               </div>
             </div>
           </div>
@@ -182,7 +186,7 @@ export default function MobileTournamentCard({ tournament }) {
                 isAutomated &&
                 tournament.expires_at && (
                   <>
-                    <span className="text-gray-400">Closes in</span>
+                    <span className="text-gray-400">{t("joinBy")}</span>
                     <span className="text-gold font-bold">
                       <CountdownTimer
                         expiresAt={tournament.expires_at}
@@ -194,7 +198,7 @@ export default function MobileTournamentCard({ tournament }) {
 
               {tournament.status === "upcoming" && !isAutomated && (
                 <>
-                  <span className="text-gray-400">Starts in</span>
+                  <span className="text-gray-400">{t("startsIn")}</span>
                   <span className="text-gold font-bold">
                     <CountdownTimer
                       date={tournament.date}
@@ -209,7 +213,7 @@ export default function MobileTournamentCard({ tournament }) {
                 isAutomated &&
                 tournament.expires_at && (
                   <>
-                    <span className="text-gray-400">Join before</span>
+                    <span className="text-gray-400">{t("joinBefore")}</span>
                     <span className="text-gold font-bold">
                       <CountdownTimer
                         expiresAt={tournament.expires_at}
@@ -220,9 +224,7 @@ export default function MobileTournamentCard({ tournament }) {
                 )}
 
               {tournament.status === "ongoing" && !isAutomated && (
-                <span className="font-bold text-red-400">
-                  Match in Progress
-                </span>
+                <span className="font-bold text-red-400">{t("liveNow")}</span>
               )}
             </div>
           </div>

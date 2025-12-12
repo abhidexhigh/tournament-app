@@ -16,6 +16,7 @@ import { formatEntryFee, formatPrizePool } from "../../lib/currencyFormatter";
 import TournamentStatCard from "./TournamentStatCard";
 import CountdownSection from "./CountdownSection";
 import Image from "next/image";
+import { useTranslations } from "../../contexts/LocaleContext";
 
 export default function TournamentHeader({
   tournament,
@@ -31,6 +32,9 @@ export default function TournamentHeader({
   onStart,
   onDeclareWinners,
 }) {
+  const t = useTranslations("tournament");
+  const tCommon = useTranslations("common");
+
   const formatDate = (dateStr) => {
     const date = new Date(dateStr);
     return date.toLocaleDateString("en-US", {
@@ -62,11 +66,11 @@ export default function TournamentHeader({
                 size="sm"
                 className="capitalize"
               >
-                {tournament.status}
+                {t(tournament.status)}
               </Badge>
               {!tournament.is_automated && isClanBattle && (
                 <Badge variant="warning" size="sm">
-                  ⚔️ Clan Battle
+                  ⚔️ {t("clanBattle")}
                 </Badge>
               )}
             </div>
@@ -78,9 +82,9 @@ export default function TournamentHeader({
 
             {/* Host Info */}
             <div className="mt-1.5 flex items-center gap-1.5 text-xs text-gray-400 sm:text-sm">
-              <span>Hosted by</span>
+              <span>{t("hostedBy")}</span>
               {tournament.is_automated ? (
-                <span className="text-gold-dark font-medium">System</span>
+                <span className="text-gold-dark font-medium">{t("system")}</span>
               ) : host ? (
                 <div className="flex items-center gap-1.5">
                   <Image
@@ -95,7 +99,7 @@ export default function TournamentHeader({
                   </span>
                 </div>
               ) : (
-                <span className="text-gray-500">Loading...</span>
+                <span className="text-gray-500">{tCommon("loading")}</span>
               )}
             </div>
           </div>
@@ -124,7 +128,7 @@ export default function TournamentHeader({
           {/* Schedule Card */}
           <TournamentStatCard
             icon={<LuCalendarDays />}
-            label="Schedule"
+            label={t("schedule")}
             value={formatDate(tournament.date)}
             subtitle={tournament.time}
           />
@@ -132,7 +136,7 @@ export default function TournamentHeader({
           {/* Players Card */}
           <TournamentStatCard
             icon={<LuUsers />}
-            label="Players"
+            label={t("players")}
             value={
               <>
                 {tournament.participants.length}
@@ -148,33 +152,33 @@ export default function TournamentHeader({
                 ? `${
                     (tournament.max_players ?? tournament.maxPlayers) -
                     tournament.participants.length
-                  } left`
-                : "Full"
+                  } ${t("slotsLeft")}`
+                : t("full")
             }
           />
 
           {/* Entry Fee Card */}
-          <TournamentStatCard icon={<TbMoneybag />} label="Entry Fee">
+          <TournamentStatCard icon={<TbMoneybag />} label={t("entryFee")}>
             {tournament.entry_fee ? (
               <p className="text-sm font-semibold text-white sm:text-base 2xl:text-lg">
                 {formatEntryFee(tournament.entry_fee)}
               </p>
             ) : (
               <p className="text-sm font-semibold text-green-400 sm:text-base 2xl:text-lg">
-                Free
+                {tCommon("free")}
               </p>
             )}
           </TournamentStatCard>
 
           {/* Prize Pool Card - Highlighted */}
-          <TournamentStatCard label="Prize Pool" highlighted>
+          <TournamentStatCard label={t("prizePool")} highlighted>
             <p className="text-gold text-base font-bold sm:text-lg 2xl:text-xl">
               {formatPrizePool(tournament.prize_pool)}
             </p>
             {(tournament.prize_pool_type ?? tournament.prizePoolType) ===
               "entry-based" && (
               <p className="text-gold/70 text-xs italic 2xl:text-sm">
-                Entry-based
+                {t("entryBased")}
               </p>
             )}
           </TournamentStatCard>
@@ -202,32 +206,32 @@ export default function TournamentHeader({
               {loading ? (
                 <span className="flex items-center gap-2">
                   <span className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
-                  Joining...
+                  {t("joining")}
                 </span>
               ) : tournament.entry_fee ? (
-                "Join Tournament"
+                t("join")
               ) : (
-                "Join Free"
+                t("joinFree")
               )}
             </Button>
           )}
 
           {isHost && tournament.status === "upcoming" && (
             <Button variant="primary" onClick={onStart}>
-              🚀 Start Tournament
+              🚀 {t("startTournament")}
             </Button>
           )}
 
           {isHost && tournament.status === "ongoing" && (
             <Button variant="primary" onClick={onDeclareWinners}>
-              🏆 Declare Winners
+              🏆 {t("declareWinners")}
             </Button>
           )}
 
           {isParticipant && (
             <div className="flex items-center justify-center gap-2 rounded-lg border border-green-500/30 bg-green-500/10 px-4 py-2.5">
               <span className="text-green-400">✓</span>
-              <span className="font-semibold text-green-400">Registered</span>
+              <span className="font-semibold text-green-400">{t("registered")}</span>
             </div>
           )}
         </div>

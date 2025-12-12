@@ -17,12 +17,15 @@ import {
   getPrimaryCurrency,
   getUserBalance,
 } from "../lib/currencyConfig";
+import { useTranslations } from "../contexts/LocaleContext";
 
 function ProfileContent() {
   const { user, updateUser, refreshUser } = useUser();
   const { data: session, status } = useSession();
   const router = useRouter();
   const searchParams = useSearchParams();
+  const t = useTranslations("profile");
+  const tCommon = useTranslations("common");
   const [gameId, setGameId] = useState("");
   const [rank, setRank] = useState("");
   const [isEditing, setIsEditing] = useState(false);
@@ -273,12 +276,12 @@ function ProfileContent() {
                 d="M10 19l-7-7m0 0l7-7m-7 7h18"
               />
             </svg>
-            <span className="hidden sm:inline">Back to Dashboard</span>
-            <span className="sm:hidden">Back</span>
+            <span className="hidden sm:inline">{t("backToDashboard")}</span>
+            <span className="sm:hidden">{tCommon("back")}</span>
           </button>
           <div className="flex items-center gap-2">
             <span className="hidden text-xs tracking-widest text-white/30 uppercase sm:inline">
-              Profile Settings
+              {t("profileSettings")}
             </span>
             <div className="bg-gold h-1.5 w-1.5 animate-pulse rounded-full"></div>
           </div>
@@ -354,10 +357,12 @@ function ProfileContent() {
                 <p className="mb-2 text-sm text-white/40">{user.email}</p>
                 <div className="flex flex-wrap items-center justify-center gap-2 sm:justify-start">
                   <span className="bg-gold-dark/20 text-gold-light rounded-full px-3 py-1 text-xs font-medium">
-                    {user.type === "host" ? "🎮 Host" : "⚔️ Player"}
+                    {user.type === "host"
+                      ? `🎮 ${t("host")}`
+                      : `⚔️ ${t("player")}`}
                   </span>
                   <span className="text-xs text-white/30">
-                    Since{" "}
+                    {t("memberSince")}{" "}
                     {new Date(user.created_at).toLocaleDateString("en-US", {
                       month: "short",
                       year: "numeric",
@@ -372,7 +377,7 @@ function ProfileContent() {
               {/* Balance */}
               <div className="text-center">
                 <p className="mb-1 text-[10px] tracking-widest text-white/50 uppercase sm:text-xs">
-                  Balance
+                  {t("balance")}
                 </p>
                 <div className="flex items-center justify-center gap-2">
                   <span className="text-2xl">{getPrimaryCurrency().emoji}</span>
@@ -407,7 +412,9 @@ function ProfileContent() {
                       d="M12 6v6m0 0v6m0-6h6m-6 0H6"
                     />
                   </svg>
-                  <span>Buy {getPrimaryCurrency().displayName}</span>
+                  <span>
+                    {t("buyCurrency")} {getPrimaryCurrency().displayName}
+                  </span>
                 </span>
               </button>
             </div>
@@ -429,7 +436,7 @@ function ProfileContent() {
               />
             </svg>
             <span className="text-[10px] text-white/40 sm:text-xs">
-              Secure payments via Stripe
+              {t("securePayments")}
             </span>
           </div>
         </div>
@@ -458,7 +465,7 @@ function ProfileContent() {
                     </svg>
                   </div>
                   <h3 className="text-base font-semibold text-white sm:text-lg">
-                    Game ID
+                    {t("gameId")}
                   </h3>
                 </div>
                 {!isEditing && (
@@ -466,7 +473,7 @@ function ProfileContent() {
                     onClick={() => setIsEditing(true)}
                     className="border-gold-dark/30 bg-gold-dark/10 text-gold-light hover:border-gold-dark/50 hover:bg-gold-dark/20 rounded-lg border px-3 py-1.5 text-xs transition-all"
                   >
-                    Edit
+                    {tCommon("edit")}
                   </button>
                 )}
               </div>
@@ -486,25 +493,25 @@ function ProfileContent() {
                       disabled={isLoading}
                       className="bg-gold-gradient text-dark-primary hover:shadow-gold/30 flex-1 rounded-xl py-2.5 text-xs font-semibold hover:shadow-lg"
                     >
-                      {isLoading ? "Saving..." : "Save"}
+                      {isLoading ? tCommon("saving") : tCommon("save")}
                     </Button>
                     <Button
                       onClick={() => handleCancel("gameId")}
                       variant="outline"
                       className="border-gold-dark/30 hover:bg-gold-dark/10 flex-1 rounded-xl py-2.5 text-xs text-white/70"
                     >
-                      Cancel
+                      {tCommon("cancel")}
                     </Button>
                   </div>
                 </div>
               ) : (
                 <div className="bg-dark-primary/50 rounded-xl p-4">
                   <p className="font-mono text-sm text-white sm:text-base">
-                    {user.gameId || "Not set"}
+                    {user.gameId || t("notSet")}
                   </p>
                   {!user.gameId && (
                     <p className="mt-1 text-xs text-white/30">
-                      Click edit to add your game ID
+                      {t("clickToAddGameId")}
                     </p>
                   )}
                 </div>
@@ -534,7 +541,7 @@ function ProfileContent() {
                     </svg>
                   </div>
                   <h3 className="text-base font-semibold text-white sm:text-lg">
-                    Rank
+                    {t("rank")}
                   </h3>
                 </div>
                 {!isEditingRank && (
@@ -542,7 +549,7 @@ function ProfileContent() {
                     onClick={() => setIsEditingRank(true)}
                     className="border-gold-dark/30 bg-gold-dark/10 text-gold-light hover:border-gold-dark/50 hover:bg-gold-dark/20 rounded-lg border px-3 py-1.5 text-xs transition-all"
                   >
-                    Edit
+                    {tCommon("edit")}
                   </button>
                 )}
               </div>
@@ -555,7 +562,7 @@ function ProfileContent() {
                     className="border-gold-dark/30 bg-dark-primary focus:border-gold focus:ring-gold/20 w-full rounded-xl border px-4 py-3 text-sm text-white focus:outline-none"
                   >
                     <option value="" className="bg-dark-primary">
-                      Select rank
+                      {t("selectRank")}
                     </option>
                     <option value="Silver" className="bg-dark-primary">
                       Silver
@@ -579,14 +586,14 @@ function ProfileContent() {
                       disabled={isLoading}
                       className="bg-gold-gradient text-dark-primary hover:shadow-gold/30 flex-1 rounded-xl py-2.5 text-xs font-semibold hover:shadow-lg"
                     >
-                      {isLoading ? "Saving..." : "Save"}
+                      {isLoading ? tCommon("saving") : tCommon("save")}
                     </Button>
                     <Button
                       onClick={() => handleCancel("rank")}
                       variant="outline"
                       className="border-gold-dark/30 hover:bg-gold-dark/10 flex-1 rounded-xl py-2.5 text-xs text-white/70"
                     >
-                      Cancel
+                      {tCommon("cancel")}
                     </Button>
                   </div>
                 </div>
@@ -611,7 +618,7 @@ function ProfileContent() {
                       )}
                       <div>
                         <p className="text-xs tracking-wider text-white/40 uppercase">
-                          Current
+                          {t("current")}
                         </p>
                         <p
                           className={`text-xl font-bold sm:text-2xl ${getRankColor(user.rank)}`}
@@ -622,9 +629,9 @@ function ProfileContent() {
                     </>
                   ) : (
                     <div className="w-full py-2 text-center">
-                      <p className="text-sm text-white/50">No rank set</p>
+                      <p className="text-sm text-white/50">{t("noRankSet")}</p>
                       <p className="text-xs text-white/30">
-                        Click edit to select
+                        {t("clickToSelect")}
                       </p>
                     </div>
                   )}
@@ -656,7 +663,7 @@ function ProfileContent() {
                       </svg>
                     </div>
                     <h3 className="text-base font-semibold text-white sm:text-lg">
-                      Clan
+                      {t("clan")}
                     </h3>
                   </div>
                   <button
@@ -670,14 +677,14 @@ function ProfileContent() {
                     }}
                     className="hover:text-gold text-xs text-white/40 transition-colors"
                   >
-                    ↻ Refresh
+                    ↻ {tCommon("refresh")}
                   </button>
                 </div>
 
                 {userClans.length === 0 ? (
                   <div className="bg-dark-primary/50 rounded-xl p-6 text-center">
                     <div className="mb-2 text-3xl">🏰</div>
-                    <p className="text-sm text-white/50">No clan joined</p>
+                    <p className="text-sm text-white/50">{t("noClanJoined")}</p>
                   </div>
                 ) : (
                   <div className="bg-dark-primary/50 rounded-xl p-4">
@@ -692,7 +699,9 @@ function ProfileContent() {
                           <div className="mt-2 flex gap-4 text-xs text-white/40">
                             <span>Lv. {clan.level}</span>
                             <span>
-                              {clan.role === "leader" ? "👑 Leader" : "Member"}
+                              {clan.role === "leader"
+                                ? `👑 ${t("leader")}`
+                                : t("member")}
                             </span>
                           </div>
                         </div>

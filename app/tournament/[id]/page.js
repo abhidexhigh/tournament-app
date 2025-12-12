@@ -33,6 +33,7 @@ import RulesTab from "../../components/tournament/RulesTab";
 import TournamentDetailsSkeleton from "../../components/skeletons/TournamentDetailsSkeleton";
 import TopupModal from "../../components/TopupModal";
 import { useToast } from "../../components/Toast";
+import { useTranslations } from "../../contexts/LocaleContext";
 
 export default function TournamentDetailsPage() {
   const params = useParams();
@@ -40,6 +41,8 @@ export default function TournamentDetailsPage() {
   const { data: session, status } = useSession();
   const { user, refreshUser } = useUser();
   const toast = useToast();
+  const t = useTranslations("tournament");
+  const tCommon = useTranslations("common");
 
   // State
   const [tournament, setTournament] = useState(null);
@@ -456,9 +459,9 @@ export default function TournamentDetailsPage() {
       <div className="flex min-h-screen items-center justify-center">
         <div className="text-center">
           <div className="mb-4 text-6xl">🎮</div>
-          <p className="text-gray-400">Tournament not found</p>
+          <p className="text-gray-400">{t("notFound")}</p>
           <Link href="/" className="mt-4 inline-block">
-            <Button variant="secondary">Back to Tournaments</Button>
+            <Button variant="secondary">{t("backToTournaments")}</Button>
           </Link>
         </div>
       </div>
@@ -494,7 +497,7 @@ export default function TournamentDetailsPage() {
   const tabs = [
     {
       id: "prize-distribution",
-      label: "Prize Distribution",
+      label: t("prizeDistribution"),
       content: (
         <PrizeDistributionTab
           tournament={tournament}
@@ -523,13 +526,13 @@ export default function TournamentDetailsPage() {
     // },
     {
       id: "rules",
-      label: "Rules",
+      label: t("rules"),
       content: <RulesTab rules={tournament.rules} />,
     },
     {
       id: "stream",
-      label: "Stream",
-      content: <div>Stream</div>,
+      label: t("stream"),
+      content: <div>{t("stream")}</div>,
     },
   ];
 
@@ -539,7 +542,7 @@ export default function TournamentDetailsPage() {
         {/* Back Button */}
         <Link href="/" className="mb-4 inline-block sm:mb-6">
           <Button variant="ghost" size="sm">
-            ← Back to Tournaments
+            ← {t("backToTournaments")}
           </Button>
         </Link>
 

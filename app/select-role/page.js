@@ -12,12 +12,15 @@ import {
 } from "../lib/authHelpers";
 import { getCurrentUser } from "../lib/auth";
 import { PRIMARY_CURRENCY, getPrimaryCurrency } from "../lib/currencyConfig";
+import { useTranslations } from "../contexts/LocaleContext";
 
 export default function SelectRolePage() {
   const [selectedRole, setSelectedRole] = useState(null);
   const [loading, setLoading] = useState(false);
   const router = useRouter();
   const { data: session, status } = useSession();
+  const t = useTranslations("selectRole");
+  const tCommon = useTranslations("common");
 
   useEffect(() => {
     if (status === "unauthenticated") {
@@ -62,7 +65,7 @@ export default function SelectRolePage() {
       <div className="flex min-h-screen items-center justify-center">
         <div className="text-center">
           <div className="mb-4 text-6xl">⏳</div>
-          <p className="text-gray-400">Loading...</p>
+          <p className="text-gray-400">{tCommon("loading")}</p>
         </div>
       </div>
     );
@@ -73,10 +76,10 @@ export default function SelectRolePage() {
       <div className="w-full max-w-4xl">
         <div className="mb-8 text-center">
           <h1 className="mb-2 text-4xl font-bold">
-            <span className="text-gold-gradient">Choose Your Role</span>
+            <span className="text-gold-gradient">{t("chooseYourRole")}</span>
           </h1>
           <p className="text-gray-400">
-            Select how you want to use the eSports Arena platform
+            {t("selectPlatformUsage")}
           </p>
         </div>
 
@@ -97,9 +100,9 @@ export default function SelectRolePage() {
             >
               <div className="mb-6 text-center">
                 <div className="mb-4 text-7xl">🎮</div>
-                <h2 className="text-gold mb-2 text-2xl font-bold">Player</h2>
+                <h2 className="text-gold mb-2 text-2xl font-bold">{t("player")}</h2>
                 <p className="text-gray-400">
-                  Compete in tournaments and win prizes
+                  {t("playerDescription")}
                 </p>
               </div>
 
@@ -107,27 +110,27 @@ export default function SelectRolePage() {
                 <li className="flex items-start space-x-3">
                   <span className="text-gold text-xl">✓</span>
                   <div>
-                    <p className="font-medium text-white">Join Tournaments</p>
+                    <p className="font-medium text-white">{t("joinTournaments")}</p>
                     <p className="text-sm text-gray-400">
-                      Participate in various gaming events
+                      {t("joinTournamentsDesc")}
                     </p>
                   </div>
                 </li>
                 <li className="flex items-start space-x-3">
                   <span className="text-gold text-xl">✓</span>
                   <div>
-                    <p className="font-medium text-white">Win Prizes</p>
+                    <p className="font-medium text-white">{t("winPrizes")}</p>
                     <p className="text-sm text-gray-400">
-                      Earn diamonds and rewards
+                      {t("winPrizesDesc")}
                     </p>
                   </div>
                 </li>
                 <li className="flex items-start space-x-3">
                   <span className="text-gold text-xl">✓</span>
                   <div>
-                    <p className="font-medium text-white">Track Progress</p>
+                    <p className="font-medium text-white">{t("trackProgress")}</p>
                     <p className="text-sm text-gray-400">
-                      View your tournament history
+                      {t("trackProgressDesc")}
                     </p>
                   </div>
                 </li>
@@ -136,7 +139,7 @@ export default function SelectRolePage() {
               <div className="border-gold-dark/30 mt-6 border-t pt-6">
                 <div className="flex items-center justify-between">
                   <span className="text-sm text-gray-400">
-                    Starting Balance
+                    {t("startingBalance")}
                   </span>
                   <div className="flex items-center space-x-2">
                     <span className="text-gold text-xl">{getPrimaryCurrency().emoji}</span>
@@ -160,35 +163,35 @@ export default function SelectRolePage() {
             >
               <div className="mb-6 text-center">
                 <div className="mb-4 text-7xl">👑</div>
-                <h2 className="text-gold mb-2 text-2xl font-bold">Host</h2>
-                <p className="text-gray-400">Create and manage tournaments</p>
+                <h2 className="text-gold mb-2 text-2xl font-bold">{t("host")}</h2>
+                <p className="text-gray-400">{t("hostDescription")}</p>
               </div>
 
               <ul className="space-y-3">
                 <li className="flex items-start space-x-3">
                   <span className="text-gold text-xl">✓</span>
                   <div>
-                    <p className="font-medium text-white">Create Tournaments</p>
+                    <p className="font-medium text-white">{t("createTournaments")}</p>
                     <p className="text-sm text-gray-400">
-                      Host your own gaming events
+                      {t("createTournamentsDesc")}
                     </p>
                   </div>
                 </li>
                 <li className="flex items-start space-x-3">
                   <span className="text-gold text-xl">✓</span>
                   <div>
-                    <p className="font-medium text-white">Manage Players</p>
+                    <p className="font-medium text-white">{t("managePlayers")}</p>
                     <p className="text-sm text-gray-400">
-                      View participants and track progress
+                      {t("managePlayersDesc")}
                     </p>
                   </div>
                 </li>
                 <li className="flex items-start space-x-3">
                   <span className="text-gold text-xl">✓</span>
                   <div>
-                    <p className="font-medium text-white">Distribute Prizes</p>
+                    <p className="font-medium text-white">{t("distributePrizes")}</p>
                     <p className="text-sm text-gray-400">
-                      Automatic prize distribution to winners
+                      {t("distributePrizesDesc")}
                     </p>
                   </div>
                 </li>
@@ -197,7 +200,7 @@ export default function SelectRolePage() {
               <div className="border-gold-dark/30 mt-6 border-t pt-6">
                 <div className="flex items-center justify-between">
                   <span className="text-sm text-gray-400">
-                    Starting Balance
+                    {t("startingBalance")}
                   </span>
                   <div className="flex items-center space-x-2">
                     <span className="text-gold text-xl">{getPrimaryCurrency().emoji}</span>
@@ -217,10 +220,10 @@ export default function SelectRolePage() {
             onClick={handleRoleSelection}
             className="min-w-[200px]"
           >
-            {loading ? "Setting up..." : "Continue"}
+            {loading ? tCommon("settingUp") : tCommon("continue")}
           </Button>
           <p className="mt-4 text-sm text-gray-500">
-            You can change your role later in settings
+            {t("canChangeRoleLater")}
           </p>
         </div>
       </div>

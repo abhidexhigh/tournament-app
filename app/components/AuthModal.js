@@ -13,6 +13,7 @@ import {
   syncUserWithStorage,
   hasUserRole,
 } from "../lib/authHelpers";
+import { useTranslations } from "../contexts/LocaleContext";
 
 export default function AuthModal({ isOpen, onClose, initialMode = "login" }) {
   const [isLogin, setIsLogin] = useState(initialMode === "login");
@@ -27,6 +28,9 @@ export default function AuthModal({ isOpen, onClose, initialMode = "login" }) {
   const [mounted, setMounted] = useState(false);
   const router = useRouter();
   const { data: session, status } = useSession();
+  const t = useTranslations("auth");
+  const tCommon = useTranslations("common");
+  const tNav = useTranslations("nav");
 
   // Handle mounting for portal
   useEffect(() => {
@@ -278,12 +282,10 @@ export default function AuthModal({ isOpen, onClose, initialMode = "login" }) {
                 }}
                 title="Triple-click for quick access"
               >
-                {isLogin ? "Welcome Back!" : "Join the Arena"}
+                {isLogin ? t("welcomeBack") : t("joinTheArena")}
               </h2>
               <p className="mt-2 text-sm text-gray-400">
-                {isLogin
-                  ? "Login to continue your journey"
-                  : "Create an account and start competing"}
+                {isLogin ? t("loginToContinue") : t("createAccountStart")}
               </p>
             </div>
 
@@ -293,13 +295,13 @@ export default function AuthModal({ isOpen, onClose, initialMode = "login" }) {
                 <div className="mb-3 flex items-center justify-between">
                   <h3 className="text-gold flex items-center gap-2 text-sm font-bold">
                     <span>🚀</span>
-                    <span>Quick Login (Demo)</span>
+                    <span>{t("quickLoginDemo")}</span>
                   </h3>
                   <button
                     onClick={() => setShowQuickLogin(false)}
                     className="hover:bg-dark-gray-card/50 rounded px-2 py-1 text-xs text-gray-400 transition-colors hover:text-white"
                   >
-                    Hide
+                    {t("hide")}
                   </button>
                 </div>
 
@@ -370,7 +372,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = "login" }) {
             >
               <span className="flex items-center justify-center space-x-2">
                 <span className="text-xl">🔐</span>
-                <span>Continue with Google</span>
+                <span>{t("continueWithGoogle")}</span>
               </span>
             </Button>
 
@@ -381,7 +383,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = "login" }) {
               </div>
               <div className="relative flex justify-center text-sm">
                 <span className="bg-dark-gray-card px-3 text-gray-400">
-                  Or continue with email
+                  {t("orContinueWithEmail")}
                 </span>
               </div>
             </div>
@@ -390,12 +392,12 @@ export default function AuthModal({ isOpen, onClose, initialMode = "login" }) {
             <form onSubmit={handleCredentialsSubmit} className="space-y-4">
               {!isLogin && (
                 <Input
-                  label="Username"
+                  label={t("username")}
                   name="username"
                   type="text"
                   value={formData.username}
                   onChange={handleInputChange}
-                  placeholder="Enter your username"
+                  placeholder={t("enterUsername")}
                   icon="👤"
                   error={errors.username}
                   required
@@ -403,24 +405,24 @@ export default function AuthModal({ isOpen, onClose, initialMode = "login" }) {
               )}
 
               <Input
-                label="Email Address"
+                label={t("email")}
                 name="email"
                 type="email"
                 value={formData.email}
                 onChange={handleInputChange}
-                placeholder="Enter your email"
+                placeholder={t("enterEmail")}
                 icon="📧"
                 error={errors.email}
                 required
               />
 
               <Input
-                label="Password"
+                label={t("password")}
                 name="password"
                 type="password"
                 value={formData.password}
                 onChange={handleInputChange}
-                placeholder="Enter your password"
+                placeholder={t("enterPassword")}
                 icon="🔒"
                 error={errors.password}
                 required
@@ -434,10 +436,10 @@ export default function AuthModal({ isOpen, onClose, initialMode = "login" }) {
                 className="mt-6"
               >
                 {loading
-                  ? "Processing..."
+                  ? tCommon("processing")
                   : isLogin
-                    ? "Login"
-                    : "Create Account"}
+                    ? tNav("login")
+                    : tNav("createAccount")}
               </Button>
             </form>
 
@@ -455,16 +457,16 @@ export default function AuthModal({ isOpen, onClose, initialMode = "login" }) {
               >
                 {isLogin ? (
                   <>
-                    Don&apos;t have an account?{" "}
+                    {t("dontHaveAccount")}{" "}
                     <span className="text-gold font-bold group-hover:underline">
-                      Sign up
+                      {t("signUp")}
                     </span>
                   </>
                 ) : (
                   <>
-                    Already have an account?{" "}
+                    {t("alreadyHaveAccount")}{" "}
                     <span className="text-gold font-bold group-hover:underline">
-                      Login
+                      {tNav("login")}
                     </span>
                   </>
                 )}

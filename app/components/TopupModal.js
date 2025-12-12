@@ -10,12 +10,15 @@ import {
   getPrimaryCurrency,
   CONVERSION_RATE,
 } from "../lib/currencyConfig";
+import { useTranslations } from "../contexts/LocaleContext";
 
 export default function TopupModal({ isOpen, onClose, user }) {
   const [amount, setAmount] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [mounted, setMounted] = useState(false);
+  const t = useTranslations("wallet");
+  const tCommon = useTranslations("common");
   
   const currencyInfo = getPrimaryCurrency();
   const currencyType = PRIMARY_CURRENCY === "USD" ? "usd" : "diamonds";
@@ -113,10 +116,10 @@ export default function TopupModal({ isOpen, onClose, user }) {
           <div className="mb-6 flex items-center justify-between">
             <div>
               <h2 className="text-gold mb-2 text-2xl font-bold">
-                {currencyInfo.emoji} Buy {currencyInfo.displayName}
+                {currencyInfo.emoji} {t("buyFor")} {currencyInfo.displayName}
               </h2>
               <p className="text-sm text-gray-400">
-                Enter the amount you want to purchase
+                {t("enterAmount")}
               </p>
             </div>
             <button
@@ -131,7 +134,7 @@ export default function TopupModal({ isOpen, onClose, user }) {
           {/* Current Balance */}
           <div className="from-gold/10 to-gold/5 border-gold/30 mb-6 rounded-lg border bg-gradient-to-br p-4">
             <div className="text-center">
-              <p className="mb-1 text-xs text-gray-400">Current Balance</p>
+              <p className="mb-1 text-xs text-gray-400">{t("currentBalance")}</p>
               <p className="text-gold text-3xl font-bold">
                 {getCurrentBalance()}
               </p>
@@ -164,7 +167,7 @@ export default function TopupModal({ isOpen, onClose, user }) {
           {amount && parseFloat(amount) > 0 && (
             <div className="bg-dark-primary/50 border-gold-dark/30 mb-6 rounded-lg border p-4">
               <div className="mb-3 flex items-center justify-between">
-                <span className="text-sm text-gray-400">You will receive:</span>
+                <span className="text-sm text-gray-400">{t("youWillReceive")}</span>
                 <span className="text-gold text-xl font-bold">
                   {isUSD 
                     ? `$${parseFloat(amount).toFixed(2)}`
@@ -174,7 +177,7 @@ export default function TopupModal({ isOpen, onClose, user }) {
               </div>
               <div className="via-gold-dark/30 mb-3 h-px bg-gradient-to-r from-transparent to-transparent" />
               <div className="flex items-center justify-between">
-                <span className="text-sm text-gray-400">Total Price:</span>
+                <span className="text-sm text-gray-400">{t("totalPrice")}</span>
                 <span className="text-2xl font-bold text-green-400">
                   ${calculatePrice().toFixed(2)}
                 </span>
@@ -191,7 +194,7 @@ export default function TopupModal({ isOpen, onClose, user }) {
 
           {/* Quick Amount Buttons */}
           <div className="mb-6">
-            <p className="mb-3 text-xs text-gray-400">Quick Select:</p>
+            <p className="mb-3 text-xs text-gray-400">{t("quickSelect")}</p>
             <div className="grid grid-cols-4 gap-2">
               {[10, 50, 100, 500].map((quickAmount) => (
                 <button
@@ -214,7 +217,7 @@ export default function TopupModal({ isOpen, onClose, user }) {
               onClick={onClose}
               disabled={loading}
             >
-              Cancel
+              {tCommon("cancel")}
             </Button>
             <Button
               variant="primary"
@@ -227,10 +230,10 @@ export default function TopupModal({ isOpen, onClose, user }) {
               {loading ? (
                 <span className="flex items-center justify-center gap-2">
                   <span className="animate-spin">⏳</span>
-                  Processing...
+                  {tCommon("processing")}
                 </span>
               ) : (
-                `Buy for $${calculatePrice().toFixed(2)}`
+                `${t("buyFor")} $${calculatePrice().toFixed(2)}`
               )}
             </Button>
           </div>
@@ -238,7 +241,7 @@ export default function TopupModal({ isOpen, onClose, user }) {
           {/* Info Note */}
           <div className="mt-4 rounded-lg border border-blue-500/30 bg-blue-500/10 p-3">
             <p className="text-center text-xs text-blue-300">
-              🔒 Secure payment powered by Stripe
+              🔒 {t("securePayment")}
             </p>
           </div>
         </div>

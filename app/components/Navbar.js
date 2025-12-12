@@ -6,9 +6,11 @@ import { useState, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 import { useSession, signOut } from "next-auth/react";
 import { useUser } from "../contexts/UserContext";
+import { useTranslations } from "../contexts/LocaleContext";
 import Image from "next/image";
 import AuthModal from "./AuthModal";
 import TopupModal from "./TopupModal";
+import LanguageSwitcher from "./LanguageSwitcher";
 import { getTicketCount } from "../lib/utils";
 import {
   SINGLE_CURRENCY_MODE,
@@ -29,6 +31,9 @@ export default function Navbar() {
   const pathname = usePathname();
   const { data: session, status } = useSession();
   const { user, loading } = useUser();
+  const t = useTranslations("nav");
+  const tWallet = useTranslations("wallet");
+  const tMenu = useTranslations("userMenu");
 
   const handleLogout = async () => {
     await signOut({ callbackUrl: "/" });
@@ -74,7 +79,7 @@ export default function Navbar() {
                 pathname === "/" ? "text-gold" : "hover:text-gold text-gray-300"
               }`}
             >
-              Tournaments
+              {t("tournaments")}
             </Link>
 
             {user && user.type ? (
@@ -93,7 +98,9 @@ export default function Navbar() {
                       : "hover:text-gold text-gray-300"
                   }`}
                 >
-                  {user.type === "game_owner" ? "Admin Dashboard" : "Dashboard"}
+                  {user.type === "game_owner"
+                    ? t("adminDashboard")
+                    : t("dashboard")}
                 </Link>
 
                 {/* Currency Balance - Clickable */}
@@ -110,10 +117,7 @@ export default function Navbar() {
                 </button>
 
                 {/* Profile Dropdown */}
-                <div
-                  className="border-gold-dark/30 relative border-l pl-4"
-                  ref={dropdownRef}
-                >
+                <div className="relative" ref={dropdownRef}>
                   <button
                     onClick={() =>
                       setIsProfileDropdownOpen(!isProfileDropdownOpen)
@@ -173,7 +177,7 @@ export default function Navbar() {
                       {/* Wallet Balance Section */}
                       <div className="bg-dark-secondary/50 border-gold-dark/20 border-b p-4">
                         <p className="mb-2 text-xs font-semibold tracking-wider text-gray-400 uppercase">
-                          💰 Wallet Balance
+                          💰 {tWallet("walletBalance")}
                         </p>
                         <div className="space-y-2">
                           {SINGLE_CURRENCY_MODE ? (
@@ -198,7 +202,7 @@ export default function Navbar() {
                                   <div className="flex items-center space-x-2">
                                     <span className="text-xl">🎫</span>
                                     <span className="text-sm font-bold text-gray-300">
-                                      Total Tickets
+                                      {tWallet("totalTickets")}
                                     </span>
                                   </div>
                                   <span className="font-bold text-purple-400">
@@ -227,7 +231,7 @@ export default function Navbar() {
                                 <div className="flex items-center space-x-2">
                                   <span className="text-xl">🎫</span>
                                   <span className="text-sm font-bold text-gray-300">
-                                    Total Tickets
+                                    {tWallet("totalTickets")}
                                   </span>
                                 </div>
                                 <span className="font-bold text-purple-400">
@@ -251,10 +255,10 @@ export default function Navbar() {
                           </span>
                           <div>
                             <p className="text-gold text-sm font-medium">
-                              My Profile
+                              {tMenu("myProfile")}
                             </p>
                             <p className="text-xs text-gray-400">
-                              View and edit your profile
+                              {tMenu("viewEditProfile")}
                             </p>
                           </div>
                         </Link>
@@ -271,10 +275,10 @@ export default function Navbar() {
                           </span>
                           <div className="text-left">
                             <p className="text-sm font-medium text-red-400">
-                              Logout
+                              {t("logout")}
                             </p>
                             <p className="text-xs text-gray-400">
-                              Sign out of your account
+                              {tMenu("signOutAccount")}
                             </p>
                           </div>
                         </button>
@@ -282,16 +286,22 @@ export default function Navbar() {
                     </div>
                   )}
                 </div>
+
+                {/* Language Switcher - Last item */}
+                <div className="border-gold-dark/30 border-l pl-4">
+                  <LanguageSwitcher variant="icon" />
+                </div>
               </>
             ) : status === "authenticated" && session?.user ? (
-              <>
+              <div className="flex items-center space-x-4">
                 <Link
                   href="/select-role"
                   className="bg-gold-gradient text-dark-primary hover:shadow-gold/50 rounded-lg px-6 py-2 font-bold transition-all duration-300 hover:shadow-lg"
                 >
-                  Select Role
+                  {t("selectRole")}
                 </Link>
-              </>
+                <LanguageSwitcher variant="icon" />
+              </div>
             ) : (
               <div className="flex items-center space-x-3">
                 <button
@@ -301,7 +311,7 @@ export default function Navbar() {
                   }}
                   className="text-gold border-gold-dark/50 hover:bg-gold/10 hover:border-gold rounded-lg border px-5 py-2 font-semibold transition-all duration-300"
                 >
-                  Login
+                  {t("login")}
                 </button>
                 <button
                   onClick={() => {
@@ -310,8 +320,9 @@ export default function Navbar() {
                   }}
                   className="bg-gold-gradient text-dark-primary hover:shadow-gold/50 rounded-lg px-5 py-2 font-bold transition-all duration-300 hover:shadow-lg"
                 >
-                  Register
+                  {t("register")}
                 </button>
+                <LanguageSwitcher variant="icon" />
               </div>
             )}
           </div>
@@ -363,46 +374,44 @@ export default function Navbar() {
         />
       </div>
 
-      {/* Mobile Navigation - Slide-in Drawer (Portal) */}
+      {/* Mobile Navigation - Modern Bottom Sheet Style (Portal) */}
       {mounted &&
         createPortal(
           <div className="md:hidden">
-            {/* Backdrop Overlay */}
+            {/* Backdrop Overlay with blur */}
             <div
-              className={`fixed inset-0 z-[9998] bg-black/70 backdrop-blur-sm transition-opacity duration-300 ${
+              className={`fixed inset-0 z-[9998] bg-black/80 backdrop-blur-md transition-all duration-300 ${
                 isMenuOpen ? "opacity-100" : "pointer-events-none opacity-0"
               }`}
               onClick={() => setIsMenuOpen(false)}
             />
 
-            {/* Drawer Panel */}
+            {/* Drawer Panel - Full height with glassmorphism */}
             <div
-              className={`fixed top-0 right-0 z-[9999] h-full w-[85%] max-w-sm transform shadow-2xl transition-transform duration-300 ease-out ${
+              className={`fixed top-0 right-0 z-[9999] h-full w-[88%] max-w-[340px] transform transition-all duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] ${
                 isMenuOpen ? "translate-x-0" : "translate-x-full"
               }`}
-              style={{ backgroundColor: "#0a0a0f" }}
             >
-              <div
-                className="border-gold/20 flex h-full flex-col border-l"
-                style={{
-                  background:
-                    "linear-gradient(to bottom, #1a1a24 0%, #101015 50%, #0a0a0f 100%)",
-                }}
-              >
-                {/* Drawer Header */}
-                <div className="flex items-center justify-between px-5 py-4">
-                  <div className="flex items-center gap-2">
+              <div className="relative flex h-full flex-col overflow-hidden border-l border-white/10 bg-[#0d0d12]/95 backdrop-blur-xl">
+                {/* Decorative gradient orbs */}
+                <div className="bg-gold/10 pointer-events-none absolute -top-20 -right-20 h-40 w-40 rounded-full blur-3xl" />
+                <div className="pointer-events-none absolute top-1/3 -left-10 h-32 w-32 rounded-full bg-amber-600/8 blur-2xl" />
+                <div className="bg-gold/5 pointer-events-none absolute right-10 bottom-20 h-24 w-24 rounded-full blur-2xl" />
+
+                {/* Header */}
+                <div className="relative flex items-center justify-between px-5 py-4">
+                  <div className="flex items-center gap-2.5">
                     <span className="text-2xl">⚔️</span>
-                    <span className="text-gold-gradient text-lg font-bold">
+                    <span className="bg-gradient-to-r from-amber-200 via-yellow-300 to-amber-400 bg-clip-text text-lg font-bold tracking-tight text-transparent">
                       Force of Rune
                     </span>
                   </div>
                   <button
                     onClick={() => setIsMenuOpen(false)}
-                    className="text-gray-400 transition-colors hover:text-white"
+                    className="flex h-9 w-9 items-center justify-center rounded-full bg-white/5 text-gray-400 transition-all hover:bg-white/10 hover:text-white active:scale-95"
                   >
                     <svg
-                      className="h-6 w-6"
+                      className="h-5 w-5"
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"
@@ -417,19 +426,92 @@ export default function Navbar() {
                   </button>
                 </div>
 
+                {/* User Profile Card - Only when logged in */}
+                {user && user.type && (
+                  <div className="mx-4 mb-2 rounded-2xl border border-white/[0.06] bg-gradient-to-br from-white/[0.04] to-transparent p-4">
+                    <div className="flex items-center gap-3">
+                      <div className="relative">
+                        <Image
+                          src={user.avatar}
+                          alt="Avatar"
+                          width={48}
+                          height={48}
+                          className="ring-gold/30 h-12 w-12 rounded-full ring-2"
+                        />
+                        <div className="absolute -right-0.5 -bottom-0.5 h-3.5 w-3.5 rounded-full border-2 border-[#0d0d12] bg-emerald-500" />
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <p className="truncate text-[15px] font-semibold text-white">
+                          {user.username}
+                        </p>
+                        <p className="text-xs font-medium text-gray-500 capitalize">
+                          {user.type}
+                        </p>
+                      </div>
+                      <LanguageSwitcher variant="icon" />
+                    </div>
+
+                    {/* Wallet Balance - Inline compact */}
+                    <button
+                      onClick={() => {
+                        setIsTopupModalOpen(true);
+                        setIsMenuOpen(false);
+                      }}
+                      className="border-gold/20 from-gold/10 mt-3 flex w-full items-center justify-between rounded-xl border bg-gradient-to-r via-amber-900/10 to-transparent px-3.5 py-2.5 transition-all active:scale-[0.98]"
+                    >
+                      <div className="flex items-center gap-2">
+                        <span className="text-xl">
+                          {getPrimaryCurrency().emoji}
+                        </span>
+                        <span className="text-gold text-lg font-bold">
+                          {getUserBalanceDisplay(user).formatted}
+                        </span>
+                      </div>
+                      <div className="bg-gold/20 text-gold flex h-7 w-7 items-center justify-center rounded-full">
+                        <svg
+                          className="h-4 w-4"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2.5}
+                            d="M12 4v16m8-8H4"
+                          />
+                        </svg>
+                      </div>
+                    </button>
+                  </div>
+                )}
+
                 {/* Navigation Links */}
-                <div className="flex-1 px-5 py-2">
+                <div className="flex-1 overflow-y-auto px-4 py-3">
                   <nav className="space-y-1">
                     <Link
                       href="/"
                       onClick={() => setIsMenuOpen(false)}
-                      className={`block rounded-lg px-4 py-3.5 text-base font-medium transition-all active:scale-[0.98] ${
+                      className={`flex items-center gap-3 rounded-xl px-4 py-3 text-[15px] font-medium transition-all active:scale-[0.98] ${
                         pathname === "/"
-                          ? "bg-gold/10 text-gold"
-                          : "text-gray-300 hover:bg-white/5 hover:text-white"
+                          ? "bg-gold/15 text-gold"
+                          : "text-gray-300 hover:bg-white/5"
                       }`}
                     >
-                      Tournaments
+                      <svg
+                        className="h-5 w-5"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={1.5}
+                          d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m5.231 13.481L15 17.25m-4.5-15H5.625c-.621 0-1.125.504-1.125 1.125v16.5c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9zm3.75 11.625a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z"
+                        />
+                      </svg>
+                      {t("tournaments")}
                     </Link>
 
                     {user && user.type && (
@@ -443,113 +525,125 @@ export default function Navbar() {
                                 : "/player/dashboard"
                           }
                           onClick={() => setIsMenuOpen(false)}
-                          className={`block rounded-lg px-4 py-3.5 text-base font-medium transition-all active:scale-[0.98] ${
+                          className={`flex items-center gap-3 rounded-xl px-4 py-3 text-[15px] font-medium transition-all active:scale-[0.98] ${
                             pathname.includes("dashboard")
-                              ? "bg-gold/10 text-gold"
-                              : "text-gray-300 hover:bg-white/5 hover:text-white"
+                              ? "bg-gold/15 text-gold"
+                              : "text-gray-300 hover:bg-white/5"
                           }`}
                         >
+                          <svg
+                            className="h-5 w-5"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={1.5}
+                              d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z"
+                            />
+                          </svg>
                           {user.type === "game_owner"
-                            ? "Admin Dashboard"
-                            : "Dashboard"}
+                            ? t("adminDashboard")
+                            : t("dashboard")}
                         </Link>
 
                         <Link
                           href="/profile"
                           onClick={() => setIsMenuOpen(false)}
-                          className={`block rounded-lg px-4 py-3.5 text-base font-medium transition-all active:scale-[0.98] ${
+                          className={`flex items-center gap-3 rounded-xl px-4 py-3 text-[15px] font-medium transition-all active:scale-[0.98] ${
                             pathname === "/profile"
-                              ? "bg-gold/10 text-gold"
-                              : "text-gray-300 hover:bg-white/5 hover:text-white"
+                              ? "bg-gold/15 text-gold"
+                              : "text-gray-300 hover:bg-white/5"
                           }`}
                         >
-                          Profile
+                          <svg
+                            className="h-5 w-5"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={1.5}
+                              d="M17.982 18.725A7.488 7.488 0 0012 15.75a7.488 7.488 0 00-5.982 2.975m11.963 0a9 9 0 10-11.963 0m11.963 0A8.966 8.966 0 0112 21a8.966 8.966 0 01-5.982-2.275M15 9.75a3 3 0 11-6 0 3 3 0 016 0z"
+                            />
+                          </svg>
+                          {t("profile")}
                         </Link>
                       </>
                     )}
                   </nav>
                 </div>
 
-                {/* Bottom Section - Profile & Actions */}
-                <div className="mt-auto border-t border-white/10 px-5 py-5">
+                {/* Bottom Section */}
+                <div className="relative border-t border-white/[0.06] px-4 py-4">
                   {user && user.type ? (
-                    <div className="space-y-4">
-                      {/* User Info + Balance */}
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-3">
-                          <Image
-                            src={user.avatar}
-                            alt="Avatar"
-                            width={40}
-                            height={40}
-                            className="h-10 w-10 rounded-full"
-                          />
-                          <div>
-                            <p className="text-sm font-semibold text-white">
-                              {user.username}
-                            </p>
-                            <p className="text-xs text-gray-500 capitalize">
-                              {user.type}
-                            </p>
-                          </div>
-                        </div>
-                        <button
-                          onClick={() => {
-                            setIsTopupModalOpen(true);
-                            setIsMenuOpen(false);
-                          }}
-                          className="border-gold/30 hover:border-gold/50 flex items-center gap-2 rounded-lg border bg-black/20 px-3 py-2 transition-all active:scale-[0.97]"
-                        >
-                          <span className="text-sm">
-                            {getPrimaryCurrency().emoji}
-                          </span>
-                          <span className="text-gold text-sm font-bold">
-                            {getUserBalanceDisplay(user).formatted}
-                          </span>
-                        </button>
-                      </div>
-
-                      {/* Logout */}
-                      <button
-                        onClick={() => {
-                          handleLogout();
-                          setIsMenuOpen(false);
-                        }}
-                        className="w-full rounded-lg py-3 text-center text-sm font-medium text-red-400 transition-all hover:bg-red-500/10 active:scale-[0.98]"
-                      >
-                        Sign Out
-                      </button>
-                    </div>
-                  ) : status === "authenticated" && session?.user ? (
-                    <Link
-                      href="/select-role"
-                      onClick={() => setIsMenuOpen(false)}
-                      className="bg-gold-gradient text-dark-primary block w-full rounded-lg py-3.5 text-center font-bold transition-all active:scale-[0.98]"
+                    /* Logout Button */
+                    <button
+                      onClick={() => {
+                        handleLogout();
+                        setIsMenuOpen(false);
+                      }}
+                      className="flex w-full items-center justify-center gap-2 rounded-xl border border-red-500/20 bg-red-500/10 py-3 text-sm font-medium text-red-400 transition-all hover:bg-red-500/15 active:scale-[0.98]"
                     >
-                      Select Role
-                    </Link>
+                      <svg
+                        className="h-4 w-4"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15m3 0l3-3m0 0l-3-3m3 3H9"
+                        />
+                      </svg>
+                      {t("signOut")}
+                    </button>
+                  ) : status === "authenticated" && session?.user ? (
+                    <div className="space-y-3">
+                      <div className="flex justify-center">
+                        <LanguageSwitcher variant="compact" />
+                      </div>
+                      <Link
+                        href="/select-role"
+                        onClick={() => setIsMenuOpen(false)}
+                        className="block w-full rounded-xl bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-500 py-3.5 text-center font-bold text-black transition-all active:scale-[0.98]"
+                      >
+                        {t("selectRole")}
+                      </Link>
+                    </div>
                   ) : (
                     <div className="space-y-3">
-                      <button
-                        onClick={() => {
-                          setAuthModalMode("login");
-                          setIsAuthModalOpen(true);
-                          setIsMenuOpen(false);
-                        }}
-                        className="text-gold border-gold/30 hover:bg-gold/10 w-full rounded-lg border py-3 text-center font-semibold transition-all active:scale-[0.98]"
-                      >
-                        Login
-                      </button>
-                      <button
-                        onClick={() => {
-                          setAuthModalMode("register");
-                          setIsAuthModalOpen(true);
-                          setIsMenuOpen(false);
-                        }}
-                        className="bg-gold-gradient text-dark-primary w-full rounded-lg py-3 text-center font-bold transition-all active:scale-[0.98]"
-                      >
-                        Create Account
-                      </button>
+                      <div className="flex justify-center pb-1">
+                        <LanguageSwitcher variant="compact" />
+                      </div>
+                      <div className="grid grid-cols-2 gap-2">
+                        <button
+                          onClick={() => {
+                            setAuthModalMode("login");
+                            setIsAuthModalOpen(true);
+                            setIsMenuOpen(false);
+                          }}
+                          className="border-gold/30 bg-gold/5 text-gold hover:bg-gold/10 rounded-xl border py-3 text-center text-sm font-semibold transition-all active:scale-[0.98]"
+                        >
+                          {t("login")}
+                        </button>
+                        <button
+                          onClick={() => {
+                            setAuthModalMode("register");
+                            setIsAuthModalOpen(true);
+                            setIsMenuOpen(false);
+                          }}
+                          className="rounded-xl bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-500 py-3 text-center text-sm font-bold text-black transition-all active:scale-[0.98]"
+                        >
+                          {t("createAccount")}
+                        </button>
+                      </div>
                     </div>
                   )}
                 </div>

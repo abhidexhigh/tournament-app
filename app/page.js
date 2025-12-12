@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { tournamentsApi } from "./lib/api";
 import { useUser } from "./contexts/UserContext";
+import { useTranslations } from "./contexts/LocaleContext";
 import { getClanById } from "./lib/dataLoader";
 import TournamentCard from "./components/TournamentCard";
 import MobileTournamentCard from "./components/MobileTournamentCard";
@@ -21,6 +22,7 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const { user, loading: userLoading } = useUser();
+  const t = useTranslations("common");
 
   const loadData = async () => {
     try {
@@ -143,14 +145,14 @@ export default function Home() {
                 <LuTriangleAlert className="text-2xl text-red-500" />
               </div>
               <h3 className="mb-2 text-lg font-semibold text-white">
-                Something went wrong
+                {t("somethingWentWrong")}
               </h3>
               <p className="mb-6 text-gray-400">{error}</p>
               <button
                 onClick={loadData}
                 className="rounded-lg bg-red-500 px-6 py-2 text-sm font-medium text-white transition-colors hover:bg-red-600"
               >
-                Try Again
+                {t("tryAgain")}
               </button>
             </div>
           )}
@@ -177,27 +179,27 @@ export default function Home() {
           {!loading && !error && (
             <>
               {/* Tournament List - Desktop */}
-          <div
-            className="hidden space-y-8 animate-fadeIn sm:block"
-            key={`desktop-${activeTab}-${displayTypeTab}-${searchQuery}`}
-          >
-            {filteredTournaments.map((tournament) => (
-              <TournamentCard key={tournament.id} tournament={tournament} />
-            ))}
-          </div>
+              <div
+                className="animate-fadeIn hidden space-y-8 sm:block"
+                key={`desktop-${activeTab}-${displayTypeTab}-${searchQuery}`}
+              >
+                {filteredTournaments.map((tournament) => (
+                  <TournamentCard key={tournament.id} tournament={tournament} />
+                ))}
+              </div>
 
-          {/* Tournament List - Mobile */}
-          <div
-            className="space-y-3 animate-fadeIn sm:hidden"
-            key={`mobile-${activeTab}-${displayTypeTab}-${searchQuery}`}
-          >
-            {filteredTournaments.map((tournament) => (
-              <MobileTournamentCard
-                key={tournament.id}
-                tournament={tournament}
-              />
-            ))}
-          </div>
+              {/* Tournament List - Mobile */}
+              <div
+                className="animate-fadeIn space-y-3 sm:hidden"
+                key={`mobile-${activeTab}-${displayTypeTab}-${searchQuery}`}
+              >
+                {filteredTournaments.map((tournament) => (
+                  <MobileTournamentCard
+                    key={tournament.id}
+                    tournament={tournament}
+                  />
+                ))}
+              </div>
 
               {/* Empty State */}
               {filteredTournaments.length === 0 && (
