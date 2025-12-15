@@ -34,18 +34,6 @@ export default function Home() {
       const automatedTournaments = tournamentsData.filter(
         (t) => t.is_automated,
       );
-      if (automatedTournaments.length > 0) {
-        console.log(
-          "Automated tournaments found:",
-          automatedTournaments.map((t) => ({
-            id: t.id,
-            title: t.title,
-            status: t.status,
-            is_automated: t.is_automated,
-            expires_at: t.expires_at,
-          })),
-        );
-      }
 
       setTournaments(tournamentsData);
 

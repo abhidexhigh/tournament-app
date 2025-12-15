@@ -14,6 +14,7 @@ import { tournamentsApi, transactionsApi, matchesApi } from "../../lib/api";
 import MatchHistory from "../../components/MatchHistory";
 import Image from "next/image";
 import { useTranslations } from "../../contexts/LocaleContext";
+import PlayerDashboardSkeleton from "../../components/skeletons/PlayerDashboardSkeleton";
 
 function PlayerDashboardContent() {
   const { user } = useUser();
@@ -21,6 +22,7 @@ function PlayerDashboardContent() {
   const [joinedTournaments, setJoinedTournaments] = useState([]);
   const [transactions, setTransactions] = useState([]);
   const [matches, setMatches] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [stats, setStats] = useState({
     totalJoined: 0,
     upcoming: 0,
@@ -44,6 +46,7 @@ function PlayerDashboardContent() {
   useEffect(() => {
     const loadData = async () => {
       if (user) {
+        setIsLoading(true);
         try {
           // Get tournaments the user has joined
           const allTournaments = await tournamentsApi.getAll();
@@ -98,6 +101,8 @@ function PlayerDashboardContent() {
           });
         } catch (error) {
           console.error("Failed to load dashboard data:", error);
+        } finally {
+          setIsLoading(false);
         }
       }
     };
@@ -121,6 +126,10 @@ function PlayerDashboardContent() {
     if (tournament.winners.third === userId) return "🥉 3rd Place";
     return null;
   };
+
+  if (isLoading) {
+    return <PlayerDashboardSkeleton />;
+  }
 
   return (
     <div className="min-h-screen">
@@ -230,7 +239,10 @@ function PlayerDashboardContent() {
 
 export default function PlayerDashboard() {
   return (
-    <ProtectedRoute requiredRole="player">
+    <ProtectedRoute
+      requiredRole="player"
+      loadingComponent={<PlayerDashboardSkeleton />}
+    >
       <PlayerDashboardContent />
     </ProtectedRoute>
   );

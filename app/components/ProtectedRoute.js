@@ -6,7 +6,11 @@ import { useSession } from "next-auth/react";
 import { syncUserWithStorage, hasUserRole } from "../lib/authHelpers";
 import { getCurrentUser } from "../lib/auth";
 
-export default function ProtectedRoute({ children, requiredRole = null }) {
+export default function ProtectedRoute({
+  children,
+  requiredRole = null,
+  loadingComponent = null,
+}) {
   const router = useRouter();
   const { data: session, status } = useSession();
   const [isAuthorized, setIsAuthorized] = useState(false);
@@ -42,6 +46,10 @@ export default function ProtectedRoute({ children, requiredRole = null }) {
   }, [session, status, router, requiredRole]);
 
   if (isLoading || status === "loading") {
+    // Use custom loading component if provided
+    if (loadingComponent) {
+      return loadingComponent;
+    }
     return (
       <div className="flex min-h-screen items-center justify-center">
         <div className="text-center">

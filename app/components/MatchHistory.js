@@ -5,6 +5,7 @@ import Badge from "./Badge";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { PRIMARY_CURRENCY, getPrimaryCurrency } from "../lib/currencyConfig";
+import { useTranslations } from "../contexts/LocaleContext";
 
 export default function MatchHistory({ matches, playerId }) {
   const router = useRouter();
@@ -12,6 +13,7 @@ export default function MatchHistory({ matches, playerId }) {
   const [mobileExpanded, setMobileExpanded] = useState(false);
   const [expandedCards, setExpandedCards] = useState({});
   const MOBILE_INITIAL_COUNT = 5;
+  const t = useTranslations("matchHistory");
 
   // Toggle individual card expansion
   const toggleCardExpansion = (matchId) => {
@@ -38,10 +40,10 @@ export default function MatchHistory({ matches, playerId }) {
             <span className="text-6xl">🎯</span>
           </div>
           <h3 className="mb-3 text-3xl font-bold text-white">
-            No Matches Played Yet
+            {t("noMatches")}
           </h3>
           <p className="mx-auto mb-8 max-w-md text-lg text-gray-400">
-            Start competing in tournaments to see your match results here!
+            {t("startCompeting")}
           </p>
         </div>
       </div>
@@ -158,7 +160,9 @@ export default function MatchHistory({ matches, playerId }) {
               {match.status === "upcoming" ? (
                 <span className="text-sm text-gray-500">—</span>
               ) : (
-                <div className={`scale-75 ${getPositionColorClass(performance.position)}`}>
+                <div
+                  className={`scale-75 ${getPositionColorClass(performance.position)}`}
+                >
                   {getPositionBadge(performance.position)}
                 </div>
               )}
@@ -181,7 +185,7 @@ export default function MatchHistory({ matches, playerId }) {
                 {formatCurrency(performance.prizeAmount)}
               </span>
             ) : match.status !== "completed" ? (
-              <span className="text-sm text-gray-500">TBD</span>
+              <span className="text-sm text-gray-500">{t("tbd")}</span>
             ) : null}
             {/* Status indicator */}
             {match.status === "ongoing" && (
@@ -207,21 +211,23 @@ export default function MatchHistory({ matches, playerId }) {
         {/* Expandable Content */}
         <div
           className={`grid transition-all duration-200 ease-in-out ${
-            isExpanded ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"
+            isExpanded
+              ? "grid-rows-[1fr] opacity-100"
+              : "grid-rows-[0fr] opacity-0"
           }`}
         >
           <div className="overflow-hidden">
             <div className="border-t border-white/5 px-3 pb-3">
               {/* Status Badge */}
               <div className="flex items-center justify-between py-2">
-                <span className="text-sm text-gray-500">Status</span>
+                <span className="text-sm text-gray-500">{t("status")}</span>
                 {match.status === "ongoing" ? (
                   <Badge variant={match.status} className="text-xs">
-                    🔴 Live
+                    🔴 {t("live")}
                   </Badge>
                 ) : match.status === "upcoming" ? (
                   <Badge variant={match.status} className="text-xs">
-                    Upcoming
+                    {t("upcoming")}
                   </Badge>
                 ) : (
                   <Badge variant={match.status} className="text-xs capitalize">
@@ -234,7 +240,7 @@ export default function MatchHistory({ matches, playerId }) {
               <div className="grid grid-cols-4 gap-1.5 rounded-lg border border-white/5 bg-black/20 p-2.5">
                 <div className="text-center">
                   <div className="text-xs font-medium tracking-wider text-gray-500 uppercase">
-                    Score
+                    {t("score")}
                   </div>
                   <div className="text-gold-light-text text-base font-bold">
                     {match.status === "upcoming"
@@ -244,7 +250,7 @@ export default function MatchHistory({ matches, playerId }) {
                 </div>
                 <div className="text-center">
                   <div className="text-xs font-medium tracking-wider text-gray-500 uppercase">
-                    Kills
+                    {t("kills")}
                   </div>
                   <div className="text-gold-light-text text-base font-bold">
                     {match.status === "upcoming" ? "—" : performance.kills || 0}
@@ -252,18 +258,22 @@ export default function MatchHistory({ matches, playerId }) {
                 </div>
                 <div className="text-center">
                   <div className="text-xs font-medium tracking-wider text-gray-500 uppercase">
-                    Deaths
+                    {t("deaths")}
                   </div>
                   <div className="text-gold-light-text text-base font-bold">
-                    {match.status === "upcoming" ? "—" : performance.deaths || 0}
+                    {match.status === "upcoming"
+                      ? "—"
+                      : performance.deaths || 0}
                   </div>
                 </div>
                 <div className="text-center">
                   <div className="text-xs font-medium tracking-wider text-gray-500 uppercase">
-                    K/D
+                    {t("kd")}
                   </div>
                   <div className="text-gold-light-text text-base font-bold">
-                    {match.status === "upcoming" ? "—" : performance.kdRatio || "0.0"}
+                    {match.status === "upcoming"
+                      ? "—"
+                      : performance.kdRatio || "0.0"}
                   </div>
                 </div>
               </div>
@@ -271,11 +281,9 @@ export default function MatchHistory({ matches, playerId }) {
               {/* Prize Footer */}
               <div className="mt-2 flex items-center justify-between text-sm">
                 <span className="text-gray-500">
-                  Pool: {formatCurrency(match.prizePool || 0)}
+                  {t("pool")}: {formatCurrency(match.prizePool || 0)}
                 </span>
-                <span className="text-gray-500">
-                  Time: {match.startTime}
-                </span>
+                <span className="text-gray-500">{match.startTime}</span>
               </div>
             </div>
           </div>
@@ -337,8 +345,8 @@ export default function MatchHistory({ matches, playerId }) {
             >
               <span className="text-gold-light-text text-xs font-medium">
                 {mobileExpanded
-                  ? "Show Less"
-                  : `Show ${remainingCount} More`}
+                  ? t("showLess")
+                  : t("showMore", { count: remainingCount })}
               </span>
               <svg
                 className={`text-gold-light-text h-3.5 w-3.5 transition-transform duration-200 ${mobileExpanded ? "rotate-180" : ""}`}
@@ -365,31 +373,31 @@ export default function MatchHistory({ matches, playerId }) {
           <thead className="border-b border-white/10 bg-white/5">
             <tr>
               <th className="px-4 py-4 text-left text-sm font-bold tracking-wider text-gray-400 uppercase">
-                Position
+                {t("position")}
               </th>
               <th className="px-4 py-4 text-left text-sm font-bold tracking-wider text-gray-400 uppercase">
-                Match
+                {t("match")}
               </th>
               <th className="px-4 py-4 text-left text-sm font-bold tracking-wider text-gray-400 uppercase">
-                Date
+                {t("date")}
               </th>
               <th className="px-4 py-4 text-center text-sm font-bold tracking-wider text-gray-400 uppercase">
-                Status
+                {t("status")}
               </th>
               <th className="px-4 py-4 text-right text-sm font-bold tracking-wider text-gray-400 uppercase">
-                Score
+                {t("score")}
               </th>
               <th className="px-4 py-4 text-center text-sm font-bold tracking-wider text-gray-400 uppercase">
-                Kills
+                {t("kills")}
               </th>
               <th className="px-4 py-4 text-center text-sm font-bold tracking-wider text-gray-400 uppercase">
-                Deaths
+                {t("deaths")}
               </th>
               <th className="px-4 py-4 text-center text-sm font-bold tracking-wider text-gray-400 uppercase">
-                K/D
+                {t("kd")}
               </th>
               <th className="px-4 py-4 text-right text-sm font-bold tracking-wider text-gray-400 uppercase">
-                Prize
+                {t("prize")}
               </th>
             </tr>
           </thead>
@@ -415,10 +423,10 @@ export default function MatchHistory({ matches, playerId }) {
                         <span className="text-2xl text-gray-500">—</span>
                         <div className="flex flex-col items-start">
                           <span className="text-xs font-bold tracking-wider text-gray-500 uppercase">
-                            Upcoming
+                            {t("upcoming")}
                           </span>
                           <span className="text-[10px] text-gray-600">
-                            Not Started
+                            {t("notStarted")}
                           </span>
                         </div>
                       </div>
@@ -434,10 +442,10 @@ export default function MatchHistory({ matches, playerId }) {
                         {match.status === "ongoing" && (
                           <div className="flex flex-col items-start">
                             <span className="animate-pulse text-xs font-bold tracking-wider text-gray-400 uppercase">
-                              Live
+                              {t("live")}
                             </span>
                             <span className="text-[10px] text-gray-600">
-                              Current
+                              {t("current")}
                             </span>
                           </div>
                         )}
@@ -453,7 +461,7 @@ export default function MatchHistory({ matches, playerId }) {
                           {match.title}
                         </div>
                         <div className="text-gold-light-text mt-1 text-sm">
-                          {formatCurrency(match.prizePool || 0)} Pool
+                          {formatCurrency(match.prizePool || 0)} {t("pool")}
                         </div>
                       </div>
                       <span className="text-gray-500 opacity-0 transition-opacity group-hover:opacity-100">
@@ -480,10 +488,10 @@ export default function MatchHistory({ matches, playerId }) {
                           variant={match.status}
                           className="text-sm capitalize"
                         >
-                          🔴 Live
+                          🔴 {t("live")}
                         </Badge>
                         <span className="text-gold-light-text text-xs">
-                          In Progress
+                          {t("inProgress")}
                         </span>
                       </div>
                     ) : match.status === "upcoming" ? (
@@ -492,10 +500,10 @@ export default function MatchHistory({ matches, playerId }) {
                           variant={match.status}
                           className="text-sm capitalize"
                         >
-                          Upcoming
+                          {t("upcoming")}
                         </Badge>
                         <span className="text-gold-light-text text-xs">
-                          Scheduled
+                          {t("scheduled")}
                         </span>
                       </div>
                     ) : (
@@ -549,7 +557,7 @@ export default function MatchHistory({ matches, playerId }) {
                     {match.status === "upcoming" ||
                     match.status === "ongoing" ? (
                       <div className="text-gold-light-text text-sm font-medium">
-                        TBD
+                        {t("tbd")}
                       </div>
                     ) : performance.prizeAmount > 0 ? (
                       <div className="bg-gold/20 border-gold/30 inline-flex items-center gap-1 rounded-lg border px-3 py-1.5">
@@ -573,13 +581,17 @@ export default function MatchHistory({ matches, playerId }) {
         <div className="flex items-center justify-between gap-2 text-xs md:gap-4 md:text-base">
           <div className="flex items-center gap-3 md:gap-8">
             <div>
-              <span className="text-gray-500 md:text-gold-light-text">Matches:</span>
+              <span className="md:text-gold-light-text text-gray-500">
+                {t("matches")}:
+              </span>
               <span className="text-gold ml-1 font-bold md:ml-2 md:text-lg">
                 {sortedMatches.length}
               </span>
             </div>
             <div>
-              <span className="text-gray-500 md:text-gold-light-text">Wins:</span>
+              <span className="md:text-gold-light-text text-gray-500">
+                {t("wins")}:
+              </span>
               <span className="text-gold ml-1 font-bold md:ml-2 md:text-lg">
                 {
                   sortedMatches.filter((m) => {
@@ -590,7 +602,7 @@ export default function MatchHistory({ matches, playerId }) {
               </span>
             </div>
             <div className="hidden md:block">
-              <span className="text-gray-400">Top 3:</span>
+              <span className="text-gray-400">{t("top3")}:</span>
               <span className="text-gold ml-2 font-bold md:text-lg">
                 {
                   sortedMatches.filter((m) => {
@@ -602,7 +614,9 @@ export default function MatchHistory({ matches, playerId }) {
             </div>
           </div>
           <div>
-            <span className="text-gray-500 md:text-gold-light-text md:text-base">Total:</span>
+            <span className="md:text-gold-light-text text-gray-500 md:text-base">
+              {t("total")}:
+            </span>
             <span className="text-gold ml-1 text-sm font-bold md:ml-2 md:text-xl md:font-black">
               {formatCurrency(
                 sortedMatches.reduce((sum, m) => {
