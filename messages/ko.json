@@ -246,7 +246,11 @@
     "completed": "완료",
     "searchByName": "이름, 게임으로 검색...",
     "searchTournaments": "토너먼트 검색...",
-    "clearSearch": "검색 지우기"
+    "clearSearch": "검색 지우기",
+    "filterByDate": "날짜로 필터링",
+    "selectDate": "날짜 선택",
+    "today": "오늘",
+    "clear": "지우기"
   },
   "empty": {
     "noResults": "\"{query}\"에 대한 결과 없음",

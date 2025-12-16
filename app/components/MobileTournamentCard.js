@@ -139,7 +139,7 @@ export default function MobileTournamentCard({ tournament }) {
               <div className="text-gold text-base font-bold">
                 {tournament?.prize_pool !== 0
                   ? formatPrizePool(tournament.prize_pool)
-                  : "—"}
+                  : "Drops"}
               </div>
             </div>
 
@@ -225,6 +225,12 @@ export default function MobileTournamentCard({ tournament }) {
 
               {tournament.status === "ongoing" && !isAutomated && (
                 <span className="font-bold text-red-400">{t("liveNow")}</span>
+              )}
+
+              {tournament.status === "completed" && (
+                <span className="font-bold text-gray-400">
+                  {t("completed")}
+                </span>
               )}
             </div>
           </div>

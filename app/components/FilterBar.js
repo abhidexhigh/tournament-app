@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useTranslations } from "../contexts/LocaleContext";
+import DatePicker from "./DatePicker";
 
 // Move StatusDropdown outside to prevent recreation
 const StatusDropdown = ({
@@ -167,11 +168,14 @@ export default function FilterBar({
   setDisplayTypeTab,
   searchQuery,
   setSearchQuery,
+  selectedDate,
+  setSelectedDate,
 }) {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isMobileSearchOpen, setIsMobileSearchOpen] = useState(false);
   const t = useTranslations("filter");
   const tTournament = useTranslations("tournament");
+  console.log("ttttttt", t("filterByDate"));
 
   // Translated constants
   const displayTypeTabs = [
@@ -250,12 +254,25 @@ export default function FilterBar({
               />
             </div>
 
-            {/* Right: Search Icon (Mobile) / Search Bar (Desktop) */}
-            <div className="flex items-center justify-end lg:justify-end">
+            {/* Right: Date & Search Icons (Mobile) / Date Picker & Search Bar (Desktop) */}
+            <div className="flex items-center justify-end gap-2 lg:justify-end lg:gap-3">
+              {/* Mobile/Tablet Date Picker (Floating) */}
+              <div className="mobile-date-container lg:hidden">
+                <DatePicker
+                  selectedDate={selectedDate}
+                  onDateChange={setSelectedDate}
+                  placeholder={t("filterByDate")}
+                  compact={true}
+                />
+              </div>
+
               {/* Mobile Search Icon */}
               <button
-                onClick={() => setIsMobileSearchOpen(!isMobileSearchOpen)}
-                className={`mobile-search-container flex h-12 w-12 items-center justify-center rounded-xl border transition-all duration-200 active:scale-95 lg:hidden ${
+                onClick={() => {
+                  setIsMobileSearchOpen(!isMobileSearchOpen);
+                  setIsMobileDateOpen(false);
+                }}
+                className={`mobile-search-container relative flex h-12 w-12 items-center justify-center rounded-xl border transition-all duration-200 active:scale-95 lg:hidden ${
                   isMobileSearchOpen || searchQuery
                     ? "border-gold bg-gold/20 text-gold"
                     : "border-gold-dark/30 hover:border-gold/50 bg-black/20 text-gray-400 hover:text-white"
@@ -279,6 +296,15 @@ export default function FilterBar({
                   <span className="bg-gold absolute -top-1 -right-1 h-3 w-3 rounded-full" />
                 )}
               </button>
+
+              {/* Desktop Date Picker */}
+              <div className="hidden lg:block">
+                <DatePicker
+                  selectedDate={selectedDate}
+                  onDateChange={setSelectedDate}
+                  placeholder={t("filterByDate")}
+                />
+              </div>
 
               {/* Desktop Search Bar */}
               <div className="hidden lg:block">

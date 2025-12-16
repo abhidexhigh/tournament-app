@@ -246,7 +246,11 @@
     "completed": "完了",
     "searchByName": "名前、ゲームで検索...",
     "searchTournaments": "トーナメントを検索...",
-    "clearSearch": "検索をクリア"
+    "clearSearch": "検索をクリア",
+    "filterByDate": "日付でフィルター",
+    "selectDate": "日付を選択",
+    "today": "今日",
+    "clear": "クリア"
   },
   "empty": {
     "noResults": "「{query}」の結果なし",

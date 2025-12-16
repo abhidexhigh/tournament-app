@@ -259,6 +259,15 @@ export default function TournamentCard({ tournament }) {
                       </div>
                     </>
                   )}
+
+                  {tournament.status === "completed" && (
+                    <>
+                      <div className="text-[9px] text-gray-400">Status</div>
+                      <div className="truncate text-xs font-semibold text-gray-400">
+                        {t("completed")}
+                      </div>
+                    </>
+                  )}
                 </div>
               </div>
             </div>
@@ -333,7 +342,7 @@ export default function TournamentCard({ tournament }) {
               </div>
 
               {/* Prize Pool - Tablet */}
-              {tournament?.prize_pool !== 0 && (
+              {tournament?.prize_pool !== 0 ? (
                 <div className="flex-shrink-0">
                   <div className="rounded-lg border border-amber-500/30 bg-gradient-to-br from-amber-900/30 to-yellow-900/20 px-4 py-2">
                     <div className="text-center">
@@ -343,6 +352,19 @@ export default function TournamentCard({ tournament }) {
                       <div className="text-gold text-xl leading-none font-bold">
                         {formatPrizePool(tournament.prize_pool)}
                       </div>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <div className="flex-shrink-0">
+                  <div className="rounded-lg border border-amber-500/30 bg-gradient-to-br from-amber-900/30 to-yellow-900/20 px-4 py-2">
+                    <div className="text-center">
+                      <div className="text-gold mb-0.5 text-[10px] font-medium">
+                        {t("prizePool")}
+                      </div>
+                    </div>
+                    <div className="text-gold text-xl leading-none font-bold">
+                      Drops
                     </div>
                   </div>
                 </div>
@@ -459,6 +481,17 @@ export default function TournamentCard({ tournament }) {
                       </div>
                       <div className="text-sm font-bold text-red-400">
                         Live Now
+                      </div>
+                    </>
+                  )}
+
+                  {tournament.status === "completed" && (
+                    <>
+                      <div className="text-[10px] text-gray-400">
+                        {t("status")}
+                      </div>
+                      <div className="text-sm font-bold text-gray-400">
+                        {t("completed")}
                       </div>
                     </>
                   )}
@@ -635,9 +668,25 @@ export default function TournamentCard({ tournament }) {
                 </div>
               )}
 
+              {tournament.status === "completed" && (
+                <div className="mx-auto flex w-44 items-center justify-start gap-2 border-x border-white/20 px-4">
+                  <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg border border-white/10 bg-gradient-to-br from-white/10 to-white/5 2xl:h-10 2xl:w-10">
+                    <LuClock className="text-lg text-gray-400 2xl:text-xl" />
+                  </div>
+                  <div className="min-w-0">
+                    <div className="text-xs font-medium whitespace-nowrap text-gray-400 2xl:text-sm">
+                      {t("status")}
+                    </div>
+                    <div className="truncate text-sm font-bold text-gray-400 2xl:text-base">
+                      {t("completed")}
+                    </div>
+                  </div>
+                </div>
+              )}
+
               {/* Prize Pool - Desktop */}
               <div className="w-40 flex-shrink-0">
-                {tournament?.prize_pool !== 0 && (
+                {tournament?.prize_pool !== 0 ? (
                   <div className="prize-display ml-auto">
                     <div className="text-left">
                       <div className="text-gold mb-1 text-xs font-medium whitespace-nowrap 2xl:text-sm">
@@ -645,6 +694,17 @@ export default function TournamentCard({ tournament }) {
                       </div>
                       <div className="text-gold mb-1 text-lg leading-none font-medium 2xl:text-lg">
                         {formatPrizePool(tournament.prize_pool)}
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="prize-display ml-auto">
+                    <div className="text-left">
+                      <div className="text-gold mb-1 text-xs font-medium whitespace-nowrap 2xl:text-sm">
+                        {t("prizePool")}
+                      </div>
+                      <div className="text-gold mb-1 text-lg leading-none font-medium 2xl:text-lg">
+                        Drops
                       </div>
                     </div>
                   </div>

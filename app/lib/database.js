@@ -213,8 +213,11 @@ export const usersDb = {
 export const tournamentsDb = {
   getAll: async () => {
     try {
-      const { rows } =
-        await sql`SELECT * FROM tournaments ORDER BY created_at DESC`;
+      const { rows } = await sql`SELECT *, CASE
+    WHEN expires_at > NOW() THEN 'upcoming'
+    WHEN expires_at + INTERVAL '1 hour' > NOW() THEN 'ongoing'
+    ELSE 'completed'
+  END AS status FROM tournaments ORDER BY created_at DESC`;
       return rows;
     } catch (error) {
       console.error("Error getting all tournaments:", error);

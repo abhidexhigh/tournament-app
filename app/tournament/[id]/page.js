@@ -532,7 +532,27 @@ export default function TournamentDetailsPage() {
     {
       id: "stream",
       label: t("stream"),
-      content: <div>{t("stream")}</div>,
+      content: (
+        <div className="py-4">
+          <div className="mx-auto max-w-4xl space-y-4">
+            <div className="aspect-video w-full overflow-hidden rounded-xl bg-gray-900">
+              <iframe
+                className="h-full w-full"
+                src="https://www.youtube.com/embed/csqTQ4TOs_g?si=ua5nRV52572zm9bG"
+                title="TFT Tournament Stream"
+                frameBorder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                referrerPolicy="strict-origin-when-cross-origin"
+                allowFullScreen
+              />
+            </div>
+            <p className="text-center text-sm text-gray-400">
+              {t("watchLiveStream") ||
+                "Watch TFT gameplay and tournament highlights"}
+            </p>
+          </div>
+        </div>
+      ),
     },
   ];
 

@@ -15,9 +15,10 @@ import { LuTriangleAlert } from "react-icons/lu";
 
 export default function Home() {
   const [tournaments, setTournaments] = useState([]);
-  const [activeTab, setActiveTab] = useState("all");
+  const [activeTab, setActiveTab] = useState("upcoming");
   const [displayTypeTab, setDisplayTypeTab] = useState("tournaments");
   const [searchQuery, setSearchQuery] = useState("");
+  const [selectedDate, setSelectedDate] = useState(null);
   const [clanData, setClanData] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -76,7 +77,10 @@ export default function Home() {
   const filteredTournaments = tournaments
     .filter((t) => {
       // Only show active tournaments (upcoming or ongoing)
-      const isActive = t.status === "upcoming" || t.status === "ongoing";
+      const isActive =
+        t.status === "upcoming" ||
+        t.status === "ongoing" ||
+        t.status === "completed";
 
       // Apply filters
       const statusMatch = activeTab === "all" || t.status === activeTab;
@@ -92,7 +96,17 @@ export default function Home() {
         (t.tournament_type &&
           t.tournament_type.toLowerCase().includes(searchQuery.toLowerCase()));
 
-      return isActive && statusMatch && displayTypeMatch && searchMatch;
+      // Date filter - check if tournament's date matches selected date
+      let dateMatch = true;
+      if (selectedDate && t.date) {
+        // Tournament date is stored as "YYYY-MM-DD" string
+        const selectedDateStr = selectedDate.toISOString().split("T")[0];
+        dateMatch = t.date === selectedDateStr;
+      }
+
+      return (
+        isActive && statusMatch && displayTypeMatch && searchMatch && dateMatch
+      );
     })
     .sort((a, b) => {
       // Define the order: Master, Diamond, Platinum, Gold
@@ -124,6 +138,8 @@ export default function Home() {
             setDisplayTypeTab={setDisplayTypeTab}
             searchQuery={searchQuery}
             setSearchQuery={setSearchQuery}
+            selectedDate={selectedDate}
+            setSelectedDate={setSelectedDate}
           />
 
           {/* Error State */}
@@ -169,7 +185,7 @@ export default function Home() {
               {/* Tournament List - Desktop */}
               <div
                 className="animate-fadeIn hidden space-y-8 sm:block"
-                key={`desktop-${activeTab}-${displayTypeTab}-${searchQuery}`}
+                key={`desktop-${activeTab}-${displayTypeTab}-${searchQuery}-${selectedDate?.toISOString()}`}
               >
                 {filteredTournaments.map((tournament) => (
                   <TournamentCard key={tournament.id} tournament={tournament} />
@@ -179,7 +195,7 @@ export default function Home() {
               {/* Tournament List - Mobile */}
               <div
                 className="animate-fadeIn space-y-3 sm:hidden"
-                key={`mobile-${activeTab}-${displayTypeTab}-${searchQuery}`}
+                key={`mobile-${activeTab}-${displayTypeTab}-${searchQuery}-${selectedDate?.toISOString()}`}
               >
                 {filteredTournaments.map((tournament) => (
                   <MobileTournamentCard

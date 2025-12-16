@@ -246,7 +246,11 @@
     "completed": "Completed",
     "searchByName": "Search by name, game...",
     "searchTournaments": "Search tournaments...",
-    "clearSearch": "Clear Search"
+    "clearSearch": "Clear Search",
+    "filterByDate": "Filter by date",
+    "selectDate": "Select date",
+    "today": "Today",
+    "clear": "Clear"
   },
   "empty": {
     "noResults": "No results for \"{query}\"",

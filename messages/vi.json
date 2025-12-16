@@ -246,7 +246,11 @@
     "completed": "Đã hoàn thành",
     "searchByName": "Tìm theo tên, game...",
     "searchTournaments": "Tìm giải đấu...",
-    "clearSearch": "Xóa tìm kiếm"
+    "clearSearch": "Xóa tìm kiếm",
+    "filterByDate": "Lọc theo ngày",
+    "selectDate": "Chọn ngày",
+    "today": "Hôm nay",
+    "clear": "Xóa"
   },
   "empty": {
     "noResults": "Không có kết quả cho \"{query}\"",

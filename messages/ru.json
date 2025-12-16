@@ -246,7 +246,11 @@
     "completed": "Завершенные",
     "searchByName": "Поиск по названию, игре...",
     "searchTournaments": "Поиск турниров...",
-    "clearSearch": "Очистить поиск"
+    "clearSearch": "Очистить поиск",
+    "filterByDate": "Фильтровать по дате",
+    "selectDate": "Выбрать дату",
+    "today": "Сегодня",
+    "clear": "Очистить"
   },
   "empty": {
     "noResults": "Нет результатов для \"{query}\"",
