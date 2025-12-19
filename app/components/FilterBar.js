@@ -175,7 +175,6 @@ export default function FilterBar({
   const [isMobileSearchOpen, setIsMobileSearchOpen] = useState(false);
   const t = useTranslations("filter");
   const tTournament = useTranslations("tournament");
-  console.log("ttttttt", t("filterByDate"));
 
   // Translated constants
   const displayTypeTabs = [
