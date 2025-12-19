@@ -331,6 +331,82 @@ const VideoCard = memo(function VideoCard({
   );
 });
 
+// Control Panel Section Component (moved outside to prevent re-creation)
+const ControlSection = memo(function ControlSection({ title, children }) {
+  return (
+    <div className="space-y-2 rounded-lg bg-gray-800/50 p-3 sm:space-y-3 sm:p-4">
+      <h3 className="text-xs font-semibold tracking-wide text-purple-400 uppercase sm:text-sm">
+        {title}
+      </h3>
+      {children}
+    </div>
+  );
+});
+
+// Range Slider Component (moved outside to prevent re-creation)
+const RangeControl = memo(function RangeControl({
+  label,
+  value,
+  onChange,
+  min,
+  max,
+  step = 1,
+  unit = "",
+}) {
+  return (
+    <div className="space-y-1">
+      <div className="flex justify-between text-sm">
+        <span className="text-gray-300">{label}</span>
+        <span className="font-mono text-purple-400">
+          {value}
+          {unit}
+        </span>
+      </div>
+      <input
+        type="range"
+        min={min}
+        max={max}
+        step={step}
+        value={value}
+        onChange={(e) => onChange(Number(e.target.value))}
+        className="h-2 w-full cursor-pointer appearance-none rounded-lg bg-gray-700 accent-purple-500"
+      />
+    </div>
+  );
+});
+
+// Toggle Switch Component (moved outside to prevent re-creation)
+const ToggleControl = memo(function ToggleControl({
+  label,
+  checked,
+  onChange,
+}) {
+  return (
+    <label className="flex cursor-pointer items-center justify-between">
+      <span className="text-sm text-gray-300">{label}</span>
+      <div className="relative">
+        <input
+          type="checkbox"
+          className="sr-only"
+          checked={checked}
+          onChange={(e) => onChange(e.target.checked)}
+        />
+        <div
+          className={`h-5 w-10 rounded-full transition-colors ${
+            checked ? "bg-purple-500" : "bg-gray-600"
+          }`}
+        >
+          <div
+            className={`absolute top-0.5 left-0.5 h-4 w-4 rounded-full bg-white transition-transform ${
+              checked ? "translate-x-5" : ""
+            }`}
+          />
+        </div>
+      </div>
+    </label>
+  );
+});
+
 export default function TestVideoCards() {
   // Control states - use consistent initial value for SSR, update on mount
   const [cardsPerRow, setCardsPerRow] = useState(2); // Start with mobile default for SSR consistency
@@ -452,72 +528,6 @@ export default function TestVideoCards() {
       }
     }
   }, [aspectRatio, cardWidth, autoFitWidth, computedCardWidth]);
-
-  // Control Panel Section Component
-  const ControlSection = ({ title, children }) => (
-    <div className="space-y-2 rounded-lg bg-gray-800/50 p-3 sm:space-y-3 sm:p-4">
-      <h3 className="text-xs font-semibold tracking-wide text-purple-400 uppercase sm:text-sm">
-        {title}
-      </h3>
-      {children}
-    </div>
-  );
-
-  // Range Slider Component
-  const RangeControl = ({
-    label,
-    value,
-    onChange,
-    min,
-    max,
-    step = 1,
-    unit = "",
-  }) => (
-    <div className="space-y-1">
-      <div className="flex justify-between text-sm">
-        <span className="text-gray-300">{label}</span>
-        <span className="font-mono text-purple-400">
-          {value}
-          {unit}
-        </span>
-      </div>
-      <input
-        type="range"
-        min={min}
-        max={max}
-        step={step}
-        value={value}
-        onChange={(e) => onChange(Number(e.target.value))}
-        className="h-2 w-full cursor-pointer appearance-none rounded-lg bg-gray-700 accent-purple-500"
-      />
-    </div>
-  );
-
-  // Toggle Switch Component
-  const ToggleControl = ({ label, checked, onChange }) => (
-    <label className="flex cursor-pointer items-center justify-between">
-      <span className="text-sm text-gray-300">{label}</span>
-      <div className="relative">
-        <input
-          type="checkbox"
-          className="sr-only"
-          checked={checked}
-          onChange={(e) => onChange(e.target.checked)}
-        />
-        <div
-          className={`h-5 w-10 rounded-full transition-colors ${
-            checked ? "bg-purple-500" : "bg-gray-600"
-          }`}
-        >
-          <div
-            className={`absolute top-0.5 left-0.5 h-4 w-4 rounded-full bg-white transition-transform ${
-              checked ? "translate-x-5" : ""
-            }`}
-          />
-        </div>
-      </div>
-    </label>
-  );
 
   return (
     <div
