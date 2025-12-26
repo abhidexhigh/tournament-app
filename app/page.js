@@ -76,11 +76,14 @@ export default function Home() {
 
   const filteredTournaments = tournaments
     .filter((t) => {
-      // Only show active tournaments (upcoming or ongoing)
+      // Show tournaments based on status filter
+      // Include cancelled when "all" filter is applied or when specifically filtered
       const isActive =
         t.status === "upcoming" ||
         t.status === "ongoing" ||
-        t.status === "completed";
+        t.status === "completed" ||
+        (activeTab === "all" && t.status === "cancelled") ||
+        (activeTab === "cancelled" && t.status === "cancelled");
 
       // Apply filters
       const statusMatch = activeTab === "all" || t.status === activeTab;

@@ -195,6 +195,7 @@ export default function FilterBar({
     { value: "upcoming", label: t("upcoming") },
     { value: "ongoing", label: t("ongoing") },
     { value: "completed", label: t("completed") },
+    { value: "cancelled", label: t("cancelled") },
   ];
 
   useEffect(() => {

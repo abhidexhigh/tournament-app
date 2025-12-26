@@ -488,6 +488,7 @@ export default function TournamentDetailsPage() {
     user.type === "player" &&
     !isParticipant &&
     isTournamentJoinable() &&
+    tournament.status !== "cancelled" &&
     tournament.participants.length <
       (tournament.max_players ?? tournament.maxPlayers);
 

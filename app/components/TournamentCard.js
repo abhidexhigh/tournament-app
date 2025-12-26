@@ -268,6 +268,15 @@ export default function TournamentCard({ tournament }) {
                       </div>
                     </>
                   )}
+
+                  {tournament.status === "cancelled" && (
+                    <>
+                      <div className="text-[9px] text-gray-400">Status</div>
+                      <div className="truncate text-xs font-semibold text-red-400">
+                        {t("cancelled")}
+                      </div>
+                    </>
+                  )}
                 </div>
               </div>
             </div>
@@ -495,6 +504,17 @@ export default function TournamentCard({ tournament }) {
                       </div>
                     </>
                   )}
+
+                  {tournament.status === "cancelled" && (
+                    <>
+                      <div className="text-[10px] text-gray-400">
+                        {t("status")}
+                      </div>
+                      <div className="text-sm font-bold text-red-400">
+                        {t("cancelled")}
+                      </div>
+                    </>
+                  )}
                 </div>
               </div>
             </div>
@@ -679,6 +699,22 @@ export default function TournamentCard({ tournament }) {
                     </div>
                     <div className="truncate text-sm font-bold text-gray-400 2xl:text-base">
                       {t("completed")}
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {tournament.status === "cancelled" && (
+                <div className="mx-auto flex w-44 items-center justify-start gap-2 border-x border-white/20 px-4">
+                  <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg border border-white/10 bg-gradient-to-br from-white/10 to-white/5 2xl:h-10 2xl:w-10">
+                    <LuClock className="text-lg text-red-400 2xl:text-xl" />
+                  </div>
+                  <div className="min-w-0">
+                    <div className="text-xs font-medium whitespace-nowrap text-gray-400 2xl:text-sm">
+                      {t("status")}
+                    </div>
+                    <div className="truncate text-sm font-bold text-red-400 2xl:text-base">
+                      {t("cancelled")}
                     </div>
                   </div>
                 </div>

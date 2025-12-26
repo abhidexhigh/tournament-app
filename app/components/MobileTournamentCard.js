@@ -232,6 +232,12 @@ export default function MobileTournamentCard({ tournament }) {
                   {t("completed")}
                 </span>
               )}
+
+              {tournament.status === "cancelled" && (
+                <span className="font-bold text-red-400">
+                  {t("cancelled")}
+                </span>
+              )}
             </div>
           </div>
         </div>

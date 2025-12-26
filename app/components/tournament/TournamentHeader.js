@@ -117,6 +117,18 @@ export default function TournamentHeader({
           </div>
         )}
 
+        {/* Cancelled Status - Mobile */}
+        {tournament.status === "cancelled" && (
+          <div className="w-full md:hidden">
+            <div className="rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-3">
+              <div className="flex items-center justify-center gap-2">
+                <span className="text-lg">❌</span>
+                <span className="font-bold text-red-400">{t("cancelled")}</span>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Stats Cards - Mobile: 2-col, Tablet: flex wrap, Desktop: flex row */}
         <div className="grid w-full grid-cols-2 gap-2 md:flex md:w-auto md:flex-wrap md:justify-end md:gap-3 lg:flex-shrink-0 lg:flex-nowrap">
           {/* Countdown Timer Section - Hidden on mobile, visible on md+ */}
@@ -124,6 +136,14 @@ export default function TournamentHeader({
             tournament.status === "ongoing") && (
             <div className="border-gold-dark/20 bg-dark-card/50 lg:border-gold-dark/20 hidden items-center gap-2 rounded-lg border p-2.5 md:flex md:w-auto md:min-w-[140px] md:rounded-lg md:border lg:w-[160px] lg:rounded-none lg:border-0 lg:border-r lg:bg-transparent lg:p-0 lg:pr-4">
               <CountdownSection tournament={tournament} />
+            </div>
+          )}
+
+          {/* Cancelled Status - Desktop */}
+          {tournament.status === "cancelled" && (
+            <div className="hidden items-center gap-2 rounded-lg border border-red-500/30 bg-red-500/10 p-2.5 md:flex md:w-auto md:min-w-[140px] lg:w-[160px]">
+              <span className="text-lg">❌</span>
+              <span className="font-bold text-red-400">{t("cancelled")}</span>
             </div>
           )}
 

@@ -214,6 +214,7 @@ export const tournamentsDb = {
   getAll: async () => {
     try {
       const { rows } = await sql`SELECT *, CASE
+    WHEN status = 'cancelled' THEN 'cancelled'
     WHEN expires_at > NOW() THEN 'upcoming'
     WHEN expires_at + INTERVAL '1 hour' > NOW() THEN 'ongoing'
     ELSE 'completed'

@@ -103,18 +103,20 @@ export default function Navbar() {
                     : t("dashboard")}
                 </Link>
 
-                {/* Currency Balance - Clickable */}
-                <button
-                  onClick={() => setIsTopupModalOpen(true)}
-                  className="from-gold/20 to-gold/5 border-gold/40 hover:border-gold hover:bg-gold/30 hover:shadow-gold/30 group flex items-center space-x-2 rounded-lg border bg-gradient-to-br px-3 py-1.5 transition-all duration-300 hover:shadow-lg"
-                >
-                  <span className="text-lg transition-transform duration-200 group-hover:scale-110">
-                    {getPrimaryCurrency().emoji}
-                  </span>
-                  <span className="text-gold text-sm font-bold">
-                    {getUserBalanceDisplay(user).formatted}
-                  </span>
-                </button>
+                {/* Currency Balance - Clickable (hide for admin) */}
+                {user.type !== "game_owner" && (
+                  <button
+                    onClick={() => setIsTopupModalOpen(true)}
+                    className="from-gold/20 to-gold/5 border-gold/40 hover:border-gold hover:bg-gold/30 hover:shadow-gold/30 group flex items-center space-x-2 rounded-lg border bg-gradient-to-br px-3 py-1.5 transition-all duration-300 hover:shadow-lg"
+                  >
+                    <span className="text-lg transition-transform duration-200 group-hover:scale-110">
+                      {getPrimaryCurrency().emoji}
+                    </span>
+                    <span className="text-gold text-sm font-bold">
+                      {getUserBalanceDisplay(user).formatted}
+                    </span>
+                  </button>
+                )}
 
                 {/* Profile Dropdown */}
                 <div className="relative" ref={dropdownRef}>
@@ -174,30 +176,60 @@ export default function Navbar() {
                         </div>
                       </div>
 
-                      {/* Wallet Balance Section */}
-                      <div className="bg-dark-secondary/50 border-gold-dark/20 border-b p-4">
-                        <p className="mb-2 text-xs font-semibold tracking-wider text-gray-400 uppercase">
-                          💰 {tWallet("walletBalance")}
-                        </p>
-                        <div className="space-y-2">
-                          {SINGLE_CURRENCY_MODE ? (
-                            /* Single Currency Mode - Show only primary currency */
-                            <>
-                              <div className="flex items-center justify-between px-2">
-                                <div className="flex items-center space-x-2">
-                                  <span className="text-xl">
-                                    {getPrimaryCurrency().emoji}
-                                  </span>
-                                  <span className="text-gold text-sm font-bold">
-                                    {getPrimaryCurrency().displayName}
+                      {/* Wallet Balance Section (hide for admin) */}
+                      {user.type !== "game_owner" && (
+                        <div className="bg-dark-secondary/50 border-gold-dark/20 border-b p-4">
+                          <p className="mb-2 text-xs font-semibold tracking-wider text-gray-400 uppercase">
+                            💰 {tWallet("walletBalance")}
+                          </p>
+                          <div className="space-y-2">
+                            {SINGLE_CURRENCY_MODE ? (
+                              /* Single Currency Mode - Show only primary currency */
+                              <>
+                                <div className="flex items-center justify-between px-2">
+                                  <div className="flex items-center space-x-2">
+                                    <span className="text-xl">
+                                      {getPrimaryCurrency().emoji}
+                                    </span>
+                                    <span className="text-gold text-sm font-bold">
+                                      {getPrimaryCurrency().displayName}
+                                    </span>
+                                  </div>
+                                  <span className="text-gold font-bold">
+                                    {getUserBalanceDisplay(user).formatted}
                                   </span>
                                 </div>
-                                <span className="text-gold font-bold">
-                                  {getUserBalanceDisplay(user).formatted}
-                                </span>
-                              </div>
-                              {/* Still show tickets if not in single currency mode for tickets */}
-                              {!SINGLE_CURRENCY_MODE && (
+                                {/* Still show tickets if not in single currency mode for tickets */}
+                                {!SINGLE_CURRENCY_MODE && (
+                                  <div className="flex items-center justify-between px-2">
+                                    <div className="flex items-center space-x-2">
+                                      <span className="text-xl">🎫</span>
+                                      <span className="text-sm font-bold text-gray-300">
+                                        {tWallet("totalTickets")}
+                                      </span>
+                                    </div>
+                                    <span className="font-bold text-purple-400">
+                                      {getTicketCount(user.tickets)}
+                                    </span>
+                                  </div>
+                                )}
+                              </>
+                            ) : (
+                              /* Dual Currency Mode - Show all balances */
+                              <>
+                                <div className="flex items-center justify-between px-2">
+                                  <div className="flex items-center space-x-2">
+                                    <span className="text-xl">
+                                      {getPrimaryCurrency().emoji}
+                                    </span>
+                                    <span className="text-gold text-sm font-bold">
+                                      {getPrimaryCurrency().displayName}
+                                    </span>
+                                  </div>
+                                  <span className="text-gold font-bold">
+                                    {getUserBalanceDisplay(user).formatted}
+                                  </span>
+                                </div>
                                 <div className="flex items-center justify-between px-2">
                                   <div className="flex items-center space-x-2">
                                     <span className="text-xl">🎫</span>
@@ -209,39 +241,11 @@ export default function Navbar() {
                                     {getTicketCount(user.tickets)}
                                   </span>
                                 </div>
-                              )}
-                            </>
-                          ) : (
-                            /* Dual Currency Mode - Show all balances */
-                            <>
-                              <div className="flex items-center justify-between px-2">
-                                <div className="flex items-center space-x-2">
-                                  <span className="text-xl">
-                                    {getPrimaryCurrency().emoji}
-                                  </span>
-                                  <span className="text-gold text-sm font-bold">
-                                    {getPrimaryCurrency().displayName}
-                                  </span>
-                                </div>
-                                <span className="text-gold font-bold">
-                                  {getUserBalanceDisplay(user).formatted}
-                                </span>
-                              </div>
-                              <div className="flex items-center justify-between px-2">
-                                <div className="flex items-center space-x-2">
-                                  <span className="text-xl">🎫</span>
-                                  <span className="text-sm font-bold text-gray-300">
-                                    {tWallet("totalTickets")}
-                                  </span>
-                                </div>
-                                <span className="font-bold text-purple-400">
-                                  {getTicketCount(user.tickets)}
-                                </span>
-                              </div>
-                            </>
-                          )}
+                              </>
+                            )}
+                          </div>
                         </div>
-                      </div>
+                      )}
 
                       {/* Menu Items */}
                       <div className="py-2">
@@ -453,38 +457,40 @@ export default function Navbar() {
                       </div>
                     </div>
 
-                    {/* Wallet Balance - Inline compact */}
-                    <button
-                      onClick={() => {
-                        setIsTopupModalOpen(true);
-                        setIsMenuOpen(false);
-                      }}
-                      className="border-gold/20 from-gold/10 mt-3 flex w-full items-center justify-between rounded-xl border bg-gradient-to-r via-amber-900/10 to-transparent px-3.5 py-2.5 transition-all active:scale-[0.98]"
-                    >
-                      <div className="flex items-center gap-2">
-                        <span className="text-xl">
-                          {getPrimaryCurrency().emoji}
-                        </span>
-                        <span className="text-gold text-lg font-bold">
-                          {getUserBalanceDisplay(user).formatted}
-                        </span>
-                      </div>
-                      <div className="bg-gold/20 text-gold flex h-7 w-7 items-center justify-center rounded-full">
-                        <svg
-                          className="h-4 w-4"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2.5}
-                            d="M12 4v16m8-8H4"
-                          />
-                        </svg>
-                      </div>
-                    </button>
+                    {/* Wallet Balance - Inline compact (hide for admin) */}
+                    {user.type !== "game_owner" && (
+                      <button
+                        onClick={() => {
+                          setIsTopupModalOpen(true);
+                          setIsMenuOpen(false);
+                        }}
+                        className="border-gold/20 from-gold/10 mt-3 flex w-full items-center justify-between rounded-xl border bg-gradient-to-r via-amber-900/10 to-transparent px-3.5 py-2.5 transition-all active:scale-[0.98]"
+                      >
+                        <div className="flex items-center gap-2">
+                          <span className="text-xl">
+                            {getPrimaryCurrency().emoji}
+                          </span>
+                          <span className="text-gold text-lg font-bold">
+                            {getUserBalanceDisplay(user).formatted}
+                          </span>
+                        </div>
+                        <div className="bg-gold/20 text-gold flex h-7 w-7 items-center justify-center rounded-full">
+                          <svg
+                            className="h-4 w-4"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2.5}
+                              d="M12 4v16m8-8H4"
+                            />
+                          </svg>
+                        </div>
+                      </button>
+                    )}
                   </div>
                 )}
 

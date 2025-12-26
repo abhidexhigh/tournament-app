@@ -2,6 +2,7 @@
 // Auto-creates tournaments at specified intervals
 
 import { CONVERSION_RATE } from "./currencyConfig";
+import { usersDb, transactionsDb } from "./database";
 
 const AUTOMATED_LEVELS = {
   gold: {
@@ -488,12 +489,162 @@ export const createNextScheduledTournament = async (level, pool) => {
 };
 
 /**
- * Expire old automated tournaments
+ * Cancel unfilled tournaments and refund participants
+ * This is called when joining time ends but tournament is not full (participants < max_players)
+ */
+export const cancelUnfilledTournaments = async (pool) => {
+  const now = new Date();
+
+  try {
+    // Find tournaments that:
+    // 1. Have expired (joining time ended)
+    // 2. Are not full (participants count < max_players)
+    // 3. Are still in 'upcoming' or 'ongoing' status
+    const unfilledResult = await pool.query(
+      `SELECT id, title, participants, max_players, entry_fee, entry_fee_usd, automated_level
+       FROM tournaments 
+       WHERE status IN ('upcoming', 'ongoing')
+       AND expires_at IS NOT NULL 
+       AND expires_at <= $1
+       AND array_length(participants, 1) IS DISTINCT FROM max_players`,
+      [now],
+    );
+
+    const cancelledTournaments = [];
+    const refundedParticipants = [];
+
+    for (const tournament of unfilledResult.rows) {
+      const participantCount = tournament.participants?.length || 0;
+      const maxPlayers = tournament.max_players;
+
+      // Only cancel if not full (participants < max_players)
+      if (participantCount < maxPlayers && participantCount > 0) {
+        console.log(
+          `[Scheduler] Cancelling unfilled tournament: ${tournament.title} (${participantCount}/${maxPlayers} players)`,
+        );
+
+        // Refund each participant
+        for (const participantId of tournament.participants) {
+          try {
+            // Find the original entry transaction for this participant
+            const transactionResult = await pool.query(
+              `SELECT * FROM transactions 
+               WHERE tournament_id = $1 
+               AND user_id = $2 
+               AND type = 'tournament_entry'
+               ORDER BY created_at DESC 
+               LIMIT 1`,
+              [tournament.id, participantId],
+            );
+
+            const originalTransaction = transactionResult.rows[0];
+
+            if (originalTransaction) {
+              const refundAmount = Math.abs(originalTransaction.amount);
+              const currency = originalTransaction.currency || "diamonds";
+
+              // Refund based on currency type
+              if (currency === "usd") {
+                // Refund USD
+                const user = await usersDb.getById(participantId);
+                if (user) {
+                  const currentBalance = Number(
+                    user.balance || user.usd_balance || 0,
+                  );
+                  await usersDb.update(participantId, {
+                    usd_balance: currentBalance + refundAmount,
+                  });
+                }
+              } else {
+                // Refund diamonds (default)
+                await usersDb.updateDiamonds(participantId, refundAmount);
+              }
+
+              // Create refund transaction record
+              await transactionsDb.create({
+                user_id: participantId,
+                type: "tournament_refund",
+                amount: refundAmount,
+                description: `Refund for cancelled tournament: ${tournament.title} (not enough players joined)`,
+                tournament_id: tournament.id,
+                currency: currency,
+              });
+
+              refundedParticipants.push({
+                participantId,
+                tournamentId: tournament.id,
+                refundAmount,
+                currency,
+              });
+
+              console.log(
+                `[Scheduler] Refunded ${refundAmount} ${currency} to user ${participantId}`,
+              );
+            }
+          } catch (refundError) {
+            console.error(
+              `[Scheduler] Error refunding participant ${participantId}:`,
+              refundError,
+            );
+          }
+        }
+
+        // Mark tournament as cancelled
+        await pool.query(
+          `UPDATE tournaments SET status = 'cancelled', updated_at = NOW() WHERE id = $1`,
+          [tournament.id],
+        );
+
+        cancelledTournaments.push({
+          id: tournament.id,
+          title: tournament.title,
+          participantCount,
+          maxPlayers,
+          level: tournament.automated_level,
+        });
+      } else if (participantCount === 0) {
+        // No participants - just mark as cancelled, no refunds needed
+        console.log(
+          `[Scheduler] Cancelling empty tournament: ${tournament.title} (0/${maxPlayers} players)`,
+        );
+
+        await pool.query(
+          `UPDATE tournaments SET status = 'cancelled', updated_at = NOW() WHERE id = $1`,
+          [tournament.id],
+        );
+
+        cancelledTournaments.push({
+          id: tournament.id,
+          title: tournament.title,
+          participantCount: 0,
+          maxPlayers,
+          level: tournament.automated_level,
+        });
+      }
+    }
+
+    return {
+      success: true,
+      cancelledCount: cancelledTournaments.length,
+      cancelled: cancelledTournaments,
+      refundedCount: refundedParticipants.length,
+      refunded: refundedParticipants,
+    };
+  } catch (error) {
+    console.error("Error cancelling unfilled tournaments:", error);
+    return { success: false, message: error.message };
+  }
+};
+
+/**
+ * Expire old automated tournaments (only full tournaments that completed successfully)
  */
 export const expireOldTournaments = async (pool) => {
   const now = new Date();
 
   try {
+    // Only expire tournaments that are FULL (participants = max_players)
+    // Unfilled tournaments are handled by cancelUnfilledTournaments
     const result = await pool.query(
       `UPDATE tournaments 
        SET status = 'completed'
@@ -501,6 +652,7 @@ export const expireOldTournaments = async (pool) => {
        AND status IN ('upcoming', 'ongoing')
        AND expires_at IS NOT NULL 
        AND expires_at <= $1
+       AND array_length(participants, 1) = max_players
        RETURNING id, automated_level`,
       [now],
     );
@@ -551,7 +703,18 @@ export const runScheduler = async (pool) => {
 
   console.log(`[Scheduler] Running at ${now.toISOString()}`);
 
-  // First, expire old tournaments
+  // First, cancel unfilled tournaments and refund participants
+  // This must run BEFORE expiring tournaments
+  const cancelResult = await cancelUnfilledTournaments(pool);
+  results.push({ action: "cancel_unfilled", ...cancelResult });
+
+  if (cancelResult.cancelledCount > 0) {
+    console.log(
+      `[Scheduler] Cancelled ${cancelResult.cancelledCount} unfilled tournament(s), refunded ${cancelResult.refundedCount} participant(s)`,
+    );
+  }
+
+  // Expire full tournaments that completed successfully
   const expireResult = await expireOldTournaments(pool);
   results.push({ action: "expire", ...expireResult });
 
@@ -600,7 +763,17 @@ export const runManualScheduler = async (pool) => {
     `[Manual Scheduler] Creating tournaments for next scheduled times...`,
   );
 
-  // First, expire old tournaments
+  // First, cancel unfilled tournaments and refund participants
+  const cancelResult = await cancelUnfilledTournaments(pool);
+  results.push({ action: "cancel_unfilled", ...cancelResult });
+
+  if (cancelResult.cancelledCount > 0) {
+    console.log(
+      `[Manual Scheduler] Cancelled ${cancelResult.cancelledCount} unfilled tournament(s), refunded ${cancelResult.refundedCount} participant(s)`,
+    );
+  }
+
+  // Expire full tournaments that completed successfully
   const expireResult = await expireOldTournaments(pool);
   results.push({ action: "expire", ...expireResult });
 
