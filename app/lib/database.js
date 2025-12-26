@@ -209,6 +209,31 @@ export const usersDb = {
   },
 };
 
+// Helper to normalize tournament dates from database
+// PostgreSQL DATE type can return Date objects that need proper handling
+const normalizeTournamentDate = (tournament) => {
+  if (!tournament) return tournament;
+
+  if (tournament.date) {
+    if (tournament.date instanceof Date) {
+      // For Date objects, use UTC methods to extract the date
+      // PostgreSQL DATE is timezone-agnostic, stored at midnight UTC
+      const year = tournament.date.getUTCFullYear();
+      const month = String(tournament.date.getUTCMonth() + 1).padStart(2, "0");
+      const day = String(tournament.date.getUTCDate()).padStart(2, "0");
+      tournament.date = `${year}-${month}-${day}`;
+    } else if (
+      typeof tournament.date === "string" &&
+      tournament.date.includes("T")
+    ) {
+      // If it's an ISO string, extract just the date part
+      tournament.date = tournament.date.split("T")[0];
+    }
+  }
+
+  return tournament;
+};
+
 // Tournaments operations
 export const tournamentsDb = {
   getAll: async () => {
@@ -219,7 +244,7 @@ export const tournamentsDb = {
     WHEN expires_at + INTERVAL '1 hour' > NOW() THEN 'ongoing'
     ELSE 'completed'
   END AS status FROM tournaments ORDER BY created_at DESC`;
-      return rows;
+      return rows.map(normalizeTournamentDate);
     } catch (error) {
       console.error("Error getting all tournaments:", error);
       throw error;
@@ -229,7 +254,7 @@ export const tournamentsDb = {
   getById: async (id) => {
     try {
       const { rows } = await sql`SELECT * FROM tournaments WHERE id = ${id}`;
-      return rows[0] || null;
+      return normalizeTournamentDate(rows[0]) || null;
     } catch (error) {
       console.error("Error getting tournament by ID:", error);
       throw error;
@@ -240,7 +265,7 @@ export const tournamentsDb = {
     try {
       const { rows } =
         await sql`SELECT * FROM tournaments WHERE host_id = ${hostId} ORDER BY created_at DESC`;
-      return rows;
+      return rows.map(normalizeTournamentDate);
     } catch (error) {
       console.error("Error getting tournaments by host ID:", error);
       throw error;
@@ -269,11 +294,13 @@ export const tournamentsDb = {
         game: tournamentData.game,
         tournament_type: tournamentData.tournament_type || "regular",
         clan_battle_mode: tournamentData.clan_battle_mode || null,
+        clan_prize_mode: tournamentData.clan_prize_mode || null,
         clan1_id: tournamentData.clan1_id || null,
         clan2_id: tournamentData.clan2_id || null,
         date: tournamentData.date,
         time: tournamentData.time,
         max_players: tournamentData.max_players,
+        max_players_per_clan: tournamentData.max_players_per_clan || null,
         min_rank: tournamentData.min_rank || null,
         prize_pool_type: tournamentData.prize_pool_type,
         prize_pool: tournamentData.prize_pool,
@@ -281,6 +308,8 @@ export const tournamentsDb = {
         prize_split_first: tournamentData.prize_split_first,
         prize_split_second: tournamentData.prize_split_second,
         prize_split_third: tournamentData.prize_split_third,
+        additional_prize_positions:
+          tournamentData.additional_prize_positions || 0,
         entry_fee: tournamentData.entry_fee,
         entry_fee_usd: tournamentData.entry_fee_usd || 0,
         rules: tournamentData.rules || "",
@@ -293,29 +322,29 @@ export const tournamentsDb = {
 
       const { rows } = await sql`
         INSERT INTO tournaments (
-          id, title, game, tournament_type, clan_battle_mode,
-          clan1_id, clan2_id, date, time, max_players, min_rank,
+          id, title, game, tournament_type, clan_battle_mode, clan_prize_mode,
+          clan1_id, clan2_id, date, time, max_players, max_players_per_clan, min_rank,
           prize_pool_type, prize_pool, prize_pool_usd,
-          prize_split_first, prize_split_second, prize_split_third,
+          prize_split_first, prize_split_second, prize_split_third, additional_prize_positions,
           entry_fee, entry_fee_usd, rules, image, host_id, accepts_tickets, display_type, expires_at
         )
         VALUES (
           ${newTournament.id}, ${newTournament.title}, ${newTournament.game},
-          ${newTournament.tournament_type}, ${newTournament.clan_battle_mode},
+          ${newTournament.tournament_type}, ${newTournament.clan_battle_mode}, ${newTournament.clan_prize_mode},
           ${newTournament.clan1_id}, ${newTournament.clan2_id},
           ${newTournament.date}, ${newTournament.time}, ${newTournament.max_players},
-          ${newTournament.min_rank}, ${newTournament.prize_pool_type},
+          ${newTournament.max_players_per_clan}, ${newTournament.min_rank}, ${newTournament.prize_pool_type},
           ${newTournament.prize_pool}, ${newTournament.prize_pool_usd},
           ${newTournament.prize_split_first}, ${newTournament.prize_split_second},
-          ${newTournament.prize_split_third}, ${newTournament.entry_fee},
-          ${newTournament.entry_fee_usd}, ${newTournament.rules},
+          ${newTournament.prize_split_third}, ${newTournament.additional_prize_positions},
+          ${newTournament.entry_fee}, ${newTournament.entry_fee_usd}, ${newTournament.rules},
           ${newTournament.image}, ${newTournament.host_id}, ${newTournament.accepts_tickets},
           ${newTournament.display_type}, ${newTournament.expires_at}
         )
         RETURNING *
       `;
 
-      return rows[0];
+      return normalizeTournamentDate(rows[0]);
     } catch (error) {
       console.error("Error creating tournament:", error);
       throw error;
@@ -333,6 +362,7 @@ export const tournamentsDb = {
         game: "game",
         tournament_type: "tournament_type",
         clan_battle_mode: "clan_battle_mode",
+        clan_prize_mode: "clan_prize_mode",
         clan1_id: "clan1_id",
         clan2_id: "clan2_id",
         date: "date",
@@ -378,7 +408,7 @@ export const tournamentsDb = {
       `;
 
       const { rows } = await sql.query(query, [...values, id]);
-      return rows[0] || null;
+      return normalizeTournamentDate(rows[0]) || null;
     } catch (error) {
       console.error("Error updating tournament:", error);
       throw error;
@@ -398,6 +428,61 @@ export const tournamentsDb = {
         throw new Error("Tournament is full");
       }
 
+      // For clan selection mode, validate per-clan limits
+      if (
+        tournament.tournament_type === "clan_battle" &&
+        tournament.clan_battle_mode === "clan_selection" &&
+        tournament.max_players_per_clan
+      ) {
+        // Get the user's clan
+        const user = await usersDb.getById(userId);
+        if (!user) {
+          throw new Error("User not found");
+        }
+
+        const userClans = user.clans || [];
+        if (userClans.length === 0) {
+          throw new Error(
+            "You must be a member of a clan to join this clan battle",
+          );
+        }
+
+        const userClanId = userClans[0];
+
+        // Check if user's clan is one of the participating clans
+        if (
+          userClanId !== tournament.clan1_id &&
+          userClanId !== tournament.clan2_id
+        ) {
+          throw new Error(
+            "Your clan is not participating in this tournament. Only members of the selected clans can join.",
+          );
+        }
+
+        // Count participants from user's clan
+        const existingParticipants = tournament.participants || [];
+        let clanParticipantCount = 0;
+
+        for (const participantId of existingParticipants) {
+          const participant = await usersDb.getById(participantId);
+          if (
+            participant &&
+            participant.clans &&
+            participant.clans.length > 0
+          ) {
+            if (participant.clans[0] === userClanId) {
+              clanParticipantCount++;
+            }
+          }
+        }
+
+        if (clanParticipantCount >= tournament.max_players_per_clan) {
+          throw new Error(
+            `Your clan has reached the maximum participant limit (${tournament.max_players_per_clan} players per clan)`,
+          );
+        }
+      }
+
       const { rows } = await sql`
         UPDATE tournaments 
         SET participants = array_append(participants, ${userId}),
@@ -406,7 +491,7 @@ export const tournamentsDb = {
         RETURNING *
       `;
 
-      return rows[0];
+      return normalizeTournamentDate(rows[0]);
     } catch (error) {
       console.error("Error adding participant:", error);
       throw error;

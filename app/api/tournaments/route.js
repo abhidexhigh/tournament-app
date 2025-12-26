@@ -25,6 +25,7 @@ export async function POST(request) {
       date,
       time,
       max_players,
+      max_players_per_clan,
       prize_pool_type,
       prize_pool,
       prize_pool_usd,
@@ -38,6 +39,7 @@ export async function POST(request) {
       host_id,
       tournament_type,
       clan_battle_mode,
+      clan_prize_mode,
       clan1_id,
       clan2_id,
       min_rank,
@@ -71,12 +73,16 @@ export async function POST(request) {
       );
     }
 
-    // Validate prize split adds up to 100%
-    const totalSplit =
+    // Validate prize split - top 3 must be less than 100%
+    const topThreeSplit =
       prize_split_first + prize_split_second + prize_split_third;
-    if (totalSplit !== 100) {
+    if (topThreeSplit >= 100) {
       return NextResponse.json(
-        { success: false, error: "Prize split must add up to 100%" },
+        {
+          success: false,
+          error:
+            "Top 3 prize split must be less than 100% to allow for additional positions",
+        },
         { status: 400 },
       );
     }
@@ -99,6 +105,9 @@ export async function POST(request) {
       date,
       time,
       max_players: parseInt(max_players),
+      max_players_per_clan: max_players_per_clan
+        ? parseInt(max_players_per_clan)
+        : null,
       min_rank: min_rank || null,
       prize_pool_type,
       prize_pool: parseInt(prize_pool),
@@ -106,6 +115,8 @@ export async function POST(request) {
       prize_split_first: parseInt(prize_split_first),
       prize_split_second: parseInt(prize_split_second),
       prize_split_third: parseInt(prize_split_third),
+      additional_prize_positions:
+        parseInt(body.additional_prize_positions) || 0,
       entry_fee: parseInt(entry_fee),
       entry_fee_usd: parseFloat(entry_fee_usd) || 0,
       rules,
@@ -113,6 +124,7 @@ export async function POST(request) {
       host_id,
       tournament_type: tournament_type || "regular",
       clan_battle_mode: clan_battle_mode || null,
+      clan_prize_mode: clan_prize_mode || null,
       clan1_id: clan1_id || null,
       clan2_id: clan2_id || null,
       accepts_tickets: accepts_tickets || false,

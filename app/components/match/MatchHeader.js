@@ -6,17 +6,10 @@ import { LuCalendarDays, LuUsers, LuClock } from "react-icons/lu";
 import { TbTrophy } from "react-icons/tb";
 import Image from "next/image";
 import { PRIMARY_CURRENCY, getPrimaryCurrency } from "../../lib/currencyConfig";
+import { formatDateWithWeekday } from "../../lib/dateUtils";
 
 export default function MatchHeader({ match, user, playerPerformance }) {
-  const formatDate = (dateStr) => {
-    const date = new Date(dateStr);
-    return date.toLocaleDateString("en-US", {
-      weekday: "short",
-      month: "short",
-      day: "numeric",
-      year: "numeric",
-    });
-  };
+  const formatDate = (dateStr) => formatDateWithWeekday(dateStr);
 
   // Get position badge/medal
   const getPositionBadge = (position) => {

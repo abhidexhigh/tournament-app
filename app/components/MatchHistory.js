@@ -6,6 +6,7 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { PRIMARY_CURRENCY, getPrimaryCurrency } from "../lib/currencyConfig";
 import { useTranslations } from "../contexts/LocaleContext";
+import { formatDate as formatDateUtil } from "../lib/dateUtils";
 
 export default function MatchHistory({ matches, playerId }) {
   const router = useRouter();
@@ -112,14 +113,7 @@ export default function MatchHistory({ matches, playerId }) {
   };
 
   // Format date
-  const formatDate = (dateStr) => {
-    const date = new Date(dateStr);
-    return date.toLocaleDateString("en-US", {
-      month: "short",
-      day: "numeric",
-      year: "numeric",
-    });
-  };
+  const formatDate = (dateStr) => formatDateUtil(dateStr);
 
   // Sort matches by date (most recent first)
   const sortedMatches = [...matches].sort((a, b) => {

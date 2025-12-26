@@ -12,29 +12,15 @@ import {
   getEntryFeeDisplayDual,
 } from "../lib/prizeCalculator";
 import { formatEntryFee, formatPrizePool } from "../lib/currencyFormatter";
+import { formatDate as formatDateUtil, getFullLocale } from "../lib/dateUtils";
 import { useTranslations } from "../contexts/LocaleContext";
 
 export default function TournamentCard({ tournament }) {
   const t = useTranslations("tournament");
   const { locale } = require("../contexts/LocaleContext").useLocale();
 
-  const formatDate = (dateStr) => {
-    const date = new Date(dateStr);
-    const localeMap = {
-      en: "en-US",
-      ko: "ko-KR",
-      ja: "ja-JP",
-      zh: "zh-CN",
-      vi: "vi-VN",
-      ru: "ru-RU",
-      es: "es-ES",
-    };
-    return date.toLocaleDateString(localeMap[locale] || "en-US", {
-      month: "short",
-      day: "numeric",
-      year: "numeric",
-    });
-  };
+  const formatDate = (dateStr) =>
+    formatDateUtil(dateStr, {}, getFullLocale(locale));
 
   const isAutomated =
     tournament.is_automated === true || tournament.is_automated === "true";
@@ -49,7 +35,7 @@ export default function TournamentCard({ tournament }) {
         ? t("joiningClosed")
         : t("tournamentStarted");
       return (
-        <div className="hidden w-full items-center justify-start gap-2 border-x border-white/20 px-4 sm:mx-auto sm:flex sm:w-40 lg:w-44">
+        <div className="hidden w-full items-center justify-start gap-2 border-x border-white/20 px-4 sm:mx-auto sm:flex sm:w-40 lg:w-48">
           <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg border border-white/10 bg-gradient-to-br from-white/10 to-white/5 sm:h-8 sm:w-8 2xl:h-10 2xl:w-10">
             <LuClock className="text-base text-red-400 sm:text-lg 2xl:text-xl" />
           </div>
@@ -63,7 +49,7 @@ export default function TournamentCard({ tournament }) {
     }
 
     return (
-      <div className="hidden w-full items-center justify-start gap-2 border-x border-white/20 px-4 sm:mx-auto sm:flex sm:w-40 lg:w-44">
+      <div className="hidden w-full items-center justify-start gap-2 border-x border-white/20 px-4 sm:mx-auto sm:flex sm:w-40 lg:w-48">
         <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg border border-white/10 bg-gradient-to-br from-white/10 to-white/5 sm:h-8 sm:w-8 2xl:h-10 2xl:w-10">
           <LuClock className="text-base sm:text-lg 2xl:text-xl" />
         </div>
@@ -210,11 +196,13 @@ export default function TournamentCard({ tournament }) {
               <div className="flex items-center gap-2 rounded-lg bg-white/5 px-3 py-2">
                 <LuClock className="text-gold-dark flex-shrink-0 text-sm" />
                 <div className="min-w-0">
-                  {tournament.status === "upcoming" &&
-                    isAutomated &&
+                  {(tournament.status === "upcoming" ||
+                    tournament.status === "ongoing") &&
                     tournament.expires_at && (
                       <>
-                        <div className="text-[9px] text-gray-400">Join by</div>
+                        <div className="text-[9px] text-gray-400">
+                          {isAutomated ? "Join by" : "Starts in"}
+                        </div>
                         <div className="text-gold-light-text truncate text-xs font-semibold">
                           <CountdownTimer
                             expiresAt={tournament.expires_at}
@@ -223,42 +211,6 @@ export default function TournamentCard({ tournament }) {
                         </div>
                       </>
                     )}
-
-                  {tournament.status === "upcoming" && !isAutomated && (
-                    <>
-                      <div className="text-[9px] text-gray-400">Starts in</div>
-                      <div className="text-gold-light-text truncate text-xs font-semibold">
-                        <CountdownTimer
-                          date={tournament.date}
-                          time={tournament.time}
-                          style="minimal"
-                        />
-                      </div>
-                    </>
-                  )}
-
-                  {tournament.status === "ongoing" &&
-                    isAutomated &&
-                    tournament.expires_at && (
-                      <>
-                        <div className="text-[9px] text-gray-400">Join by</div>
-                        <div className="text-gold-light-text truncate text-xs font-semibold">
-                          <CountdownTimer
-                            expiresAt={tournament.expires_at}
-                            style="minimal"
-                          />
-                        </div>
-                      </>
-                    )}
-
-                  {tournament.status === "ongoing" && !isAutomated && (
-                    <>
-                      <div className="text-[9px] text-gray-400">Status</div>
-                      <div className="truncate text-xs font-semibold text-red-400">
-                        Live Now
-                      </div>
-                    </>
-                  )}
 
                   {tournament.status === "completed" && (
                     <>
@@ -347,6 +299,13 @@ export default function TournamentCard({ tournament }) {
                       {t("clanBattle")}
                     </Badge>
                   )}
+                  {(tournament.tournament_type ?? tournament.tournamentType) ===
+                    "regular" &&
+                    tournament.display_type === "event" && (
+                      <Badge variant="primary" size="sm">
+                        {t("autoBattle")}
+                      </Badge>
+                    )}
                 </div>
               </div>
 
@@ -436,12 +395,12 @@ export default function TournamentCard({ tournament }) {
               <div className="flex items-center gap-2">
                 <LuClock className="text-gold-dark text-base" />
                 <div>
-                  {tournament.status === "upcoming" &&
-                    isAutomated &&
+                  {(tournament.status === "upcoming" ||
+                    tournament.status === "ongoing") &&
                     tournament.expires_at && (
                       <>
                         <div className="text-[10px] text-gray-400">
-                          {t("joinBy")}
+                          {isAutomated ? t("joinBy") : t("startsIn")}
                         </div>
                         <div className="text-gold-light-text text-sm font-bold">
                           <CountdownTimer
@@ -451,48 +410,6 @@ export default function TournamentCard({ tournament }) {
                         </div>
                       </>
                     )}
-
-                  {tournament.status === "upcoming" && !isAutomated && (
-                    <>
-                      <div className="text-[10px] text-gray-400">
-                        {t("startsIn")}
-                      </div>
-                      <div className="text-gold-light-text text-sm font-bold">
-                        <CountdownTimer
-                          date={tournament.date}
-                          time={tournament.time}
-                          style="minimal"
-                        />
-                      </div>
-                    </>
-                  )}
-
-                  {tournament.status === "ongoing" &&
-                    isAutomated &&
-                    tournament.expires_at && (
-                      <>
-                        <div className="text-[10px] text-gray-400">
-                          {t("joinBy")}
-                        </div>
-                        <div className="text-gold-light-text text-sm font-bold">
-                          <CountdownTimer
-                            expiresAt={tournament.expires_at}
-                            style="minimal"
-                          />
-                        </div>
-                      </>
-                    )}
-
-                  {tournament.status === "ongoing" && !isAutomated && (
-                    <>
-                      <div className="text-[10px] text-gray-400">
-                        {t("status")}
-                      </div>
-                      <div className="text-sm font-bold text-red-400">
-                        Live Now
-                      </div>
-                    </>
-                  )}
 
                   {tournament.status === "completed" && (
                     <>
@@ -586,6 +503,13 @@ export default function TournamentCard({ tournament }) {
                         {t("clanBattle")}
                       </Badge>
                     )}
+                    {(tournament.tournament_type ??
+                      tournament.tournamentType) === "regular" &&
+                      tournament.display_type === "event" && (
+                        <Badge variant="primary" size="sm">
+                          {t("autoBattle")}
+                        </Badge>
+                      )}
                   </span>
                 </div>
               </div>
@@ -646,47 +570,15 @@ export default function TournamentCard({ tournament }) {
 
             {/* Right Section: Countdown + Prize Pool - Desktop */}
             <div className="flex items-center gap-4">
-              {/* Countdown Logic */}
-              {tournament.status === "upcoming" &&
-                isAutomated &&
+              {/* Countdown Logic - Simplified to always use expires_at */}
+              {(tournament.status === "upcoming" ||
+                tournament.status === "ongoing") &&
                 tournament.expires_at && (
                   <CountdownDisplay
-                    label={t("joinBefore")}
+                    label={t("startsIn")} // TODO: Add "Join before" for automated tournaments
                     timerProps={{ expiresAt: tournament.expires_at }}
                   />
                 )}
-
-              {tournament.status === "upcoming" && !isAutomated && (
-                <CountdownDisplay
-                  label={t("startsIn")}
-                  timerProps={{ date: tournament.date, time: tournament.time }}
-                />
-              )}
-
-              {tournament.status === "ongoing" &&
-                isAutomated &&
-                tournament.expires_at && (
-                  <CountdownDisplay
-                    label={t("joinBefore")}
-                    timerProps={{ expiresAt: tournament.expires_at }}
-                  />
-                )}
-
-              {tournament.status === "ongoing" && !isAutomated && (
-                <div className="mx-auto flex w-44 items-center justify-start gap-2 border-x border-white/20 px-4">
-                  <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg border border-white/10 bg-gradient-to-br from-white/10 to-white/5 2xl:h-10 2xl:w-10">
-                    <LuClock className="text-lg text-red-400 2xl:text-xl" />
-                  </div>
-                  <div className="min-w-0">
-                    <div className="text-xs font-medium whitespace-nowrap text-gray-400 2xl:text-sm">
-                      {t("status")}
-                    </div>
-                    <div className="truncate text-sm font-bold text-red-400 2xl:text-base">
-                      {t("started")}
-                    </div>
-                  </div>
-                </div>
-              )}
 
               {tournament.status === "completed" && (
                 <div className="mx-auto flex w-44 items-center justify-start gap-2 border-x border-white/20 px-4">

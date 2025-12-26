@@ -4,17 +4,10 @@ import Card from "../Card";
 import { LuCalendarDays, LuClock, LuUsers, LuGamepad2 } from "react-icons/lu";
 import { TbTrophy, TbTarget } from "react-icons/tb";
 import { PRIMARY_CURRENCY, getPrimaryCurrency } from "../../lib/currencyConfig";
+import { formatDateLong } from "../../lib/dateUtils";
 
 export default function MatchDetailsTab({ match }) {
-  const formatDate = (dateStr) => {
-    const date = new Date(dateStr);
-    return date.toLocaleDateString("en-US", {
-      weekday: "long",
-      month: "long",
-      day: "numeric",
-      year: "numeric",
-    });
-  };
+  const formatDate = (dateStr) => formatDateLong(dateStr);
 
   // Calculate match statistics
   const totalKills =

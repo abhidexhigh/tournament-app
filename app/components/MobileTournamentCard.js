@@ -122,6 +122,27 @@ export default function MobileTournamentCard({ tournament }) {
                     {t("event")}
                   </Badge>
                 )}
+                {(tournament.tournament_type ?? tournament.tournamentType) ===
+                  "clan_battle" && (
+                  <Badge
+                    variant="warning"
+                    size="sm"
+                    className="!px-2.5 !py-1 !text-xs !font-medium"
+                  >
+                    {t("clanBattle")}
+                  </Badge>
+                )}
+                {(tournament.tournament_type ?? tournament.tournamentType) ===
+                  "regular" &&
+                  tournament.display_type === "event" && (
+                    <Badge
+                      variant="primary"
+                      size="sm"
+                      className="!px-2.5 !py-1 !text-xs !font-medium"
+                    >
+                      {t("autoBattle")}
+                    </Badge>
+                  )}
               </div>
             </div>
           </div>
@@ -178,15 +199,15 @@ export default function MobileTournamentCard({ tournament }) {
             </div>
           </div>
 
-          {/* Countdown Bar */}
+          {/* Countdown Bar - Simplified to always use expires_at */}
           <div className="flex items-center gap-2 rounded-xl border border-white/5 bg-white/5 px-3 py-2.5">
             <LuClock className="text-gold flex-shrink-0 text-base" />
             <div className="flex items-center gap-2 text-sm">
-              {tournament.status === "upcoming" &&
-                isAutomated &&
+              {(tournament.status === "upcoming" ||
+                tournament.status === "ongoing") &&
                 tournament.expires_at && (
                   <>
-                    <span className="text-gray-400">{t("joinBy")}</span>
+                    <span className="text-gray-400">{t("startsIn")}</span>
                     <span className="text-gold font-bold">
                       <CountdownTimer
                         expiresAt={tournament.expires_at}
@@ -195,37 +216,6 @@ export default function MobileTournamentCard({ tournament }) {
                     </span>
                   </>
                 )}
-
-              {tournament.status === "upcoming" && !isAutomated && (
-                <>
-                  <span className="text-gray-400">{t("startsIn")}</span>
-                  <span className="text-gold font-bold">
-                    <CountdownTimer
-                      date={tournament.date}
-                      time={tournament.time}
-                      style="compact"
-                    />
-                  </span>
-                </>
-              )}
-
-              {tournament.status === "ongoing" &&
-                isAutomated &&
-                tournament.expires_at && (
-                  <>
-                    <span className="text-gray-400">{t("joinBefore")}</span>
-                    <span className="text-gold font-bold">
-                      <CountdownTimer
-                        expiresAt={tournament.expires_at}
-                        style="compact"
-                      />
-                    </span>
-                  </>
-                )}
-
-              {tournament.status === "ongoing" && !isAutomated && (
-                <span className="font-bold text-red-400">{t("liveNow")}</span>
-              )}
 
               {tournament.status === "completed" && (
                 <span className="font-bold text-gray-400">
@@ -234,9 +224,7 @@ export default function MobileTournamentCard({ tournament }) {
               )}
 
               {tournament.status === "cancelled" && (
-                <span className="font-bold text-red-400">
-                  {t("cancelled")}
-                </span>
+                <span className="font-bold text-red-400">{t("cancelled")}</span>
               )}
             </div>
           </div>

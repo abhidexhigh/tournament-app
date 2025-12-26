@@ -17,6 +17,7 @@ import TournamentStatCard from "./TournamentStatCard";
 import CountdownSection from "./CountdownSection";
 import Image from "next/image";
 import { useTranslations } from "../../contexts/LocaleContext";
+import { formatDateWithWeekday } from "../../lib/dateUtils";
 
 export default function TournamentHeader({
   tournament,
@@ -35,15 +36,7 @@ export default function TournamentHeader({
   const t = useTranslations("tournament");
   const tCommon = useTranslations("common");
 
-  const formatDate = (dateStr) => {
-    const date = new Date(dateStr);
-    return date.toLocaleDateString("en-US", {
-      weekday: "short",
-      month: "short",
-      day: "numeric",
-      year: "numeric",
-    });
-  };
+  const formatDate = (dateStr) => formatDateWithWeekday(dateStr);
 
   const isClanBattle =
     (tournament.tournament_type ?? tournament.tournamentType) === "clan_battle";
@@ -73,6 +66,13 @@ export default function TournamentHeader({
                   ⚔️ {t("clanBattle")}
                 </Badge>
               )}
+              {(tournament.tournament_type ?? tournament.tournamentType) ===
+                "regular" &&
+                tournament.display_type === "event" && (
+                  <Badge variant="primary" size="sm">
+                    {t("autoBattle")}
+                  </Badge>
+                )}
             </div>
 
             {/* Title */}

@@ -13,6 +13,13 @@ export default function Input({
   icon,
   className = "",
 }) {
+  // Prevent scroll from changing number input values
+  const handleWheel = (e) => {
+    if (type === "number") {
+      e.target.blur();
+    }
+  };
+
   return (
     <div className={`w-full ${className}`}>
       {label && (
@@ -36,6 +43,7 @@ export default function Input({
           name={name}
           value={value}
           onChange={onChange}
+          onWheel={handleWheel}
           placeholder={placeholder}
           required={required}
           disabled={disabled}

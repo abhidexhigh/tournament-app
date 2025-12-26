@@ -798,3 +798,15 @@ body.modal-open {
     padding: 8px 16px;
   }
 }
+
+/* Hide number input spinners (increment/decrement buttons) */
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type="number"] {
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
