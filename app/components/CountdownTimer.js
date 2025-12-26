@@ -41,7 +41,11 @@ export function useCountdown({ date, time, expiresAt }) {
 
         let dateStr = date;
         if (date instanceof Date) {
-          dateStr = date.toISOString().split("T")[0];
+          // Use local date components to avoid timezone shifts
+          const year = date.getFullYear();
+          const month = String(date.getMonth() + 1).padStart(2, "0");
+          const day = String(date.getDate()).padStart(2, "0");
+          dateStr = `${year}-${month}-${day}`;
         } else if (typeof date === "string" && date.includes("T")) {
           dateStr = date.split("T")[0];
         }
@@ -148,8 +152,11 @@ export default function CountdownTimer({
         // Handle both Date objects and string dates from PostgreSQL
         let dateStr = date;
         if (date instanceof Date) {
-          // Convert Date object to YYYY-MM-DD format
-          dateStr = date.toISOString().split("T")[0];
+          // Use local date components to avoid timezone shifts
+          const year = date.getFullYear();
+          const month = String(date.getMonth() + 1).padStart(2, "0");
+          const day = String(date.getDate()).padStart(2, "0");
+          dateStr = `${year}-${month}-${day}`;
         } else if (typeof date === "string" && date.includes("T")) {
           // Handle full ISO string - extract just the date part
           dateStr = date.split("T")[0];

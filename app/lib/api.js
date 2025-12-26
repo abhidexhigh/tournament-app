@@ -1,8 +1,6 @@
 // API service functions to replace localStorage operations
 // These functions make HTTP requests to our API endpoints
 
-import { toDateStringUTC } from "./dateUtils";
-
 const API_BASE_URL =
   process.env.NODE_ENV === "production"
     ? process.env.NEXT_PUBLIC_API_URL || "/api"
@@ -85,16 +83,18 @@ const formatTournamentDates = (tournament) => {
   if (!tournament) return tournament;
 
   // Ensure date is in YYYY-MM-DD format
+  // PostgreSQL returns DATE columns as JavaScript Date objects at UTC midnight
+  // We use getUTC* methods to extract the correct date without timezone shifts
   if (tournament.date) {
     if (tournament.date instanceof Date) {
-      // For Date objects from database, use UTC methods since Postgres DATE
-      // is timezone-agnostic and typically returned as midnight UTC
-      tournament.date = toDateStringUTC(tournament.date);
+      const year = tournament.date.getUTCFullYear();
+      const month = String(tournament.date.getUTCMonth() + 1).padStart(2, "0");
+      const day = String(tournament.date.getUTCDate()).padStart(2, "0");
+      tournament.date = `${year}-${month}-${day}`;
     } else if (
       typeof tournament.date === "string" &&
       tournament.date.includes("T")
     ) {
-      // If it's an ISO string like "2025-12-30T00:00:00.000Z", extract date directly
       tournament.date = tournament.date.split("T")[0];
     }
   }

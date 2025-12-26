@@ -4,10 +4,19 @@ import Card from "../Card";
 import { LuCalendarDays, LuClock, LuUsers, LuGamepad2 } from "react-icons/lu";
 import { TbTrophy, TbTarget } from "react-icons/tb";
 import { PRIMARY_CURRENCY, getPrimaryCurrency } from "../../lib/currencyConfig";
-import { formatDateLong } from "../../lib/dateUtils";
 
 export default function MatchDetailsTab({ match }) {
-  const formatDate = (dateStr) => formatDateLong(dateStr);
+  // Format date - parse as local time to avoid timezone shifts
+  const formatDate = (dateStr) => {
+    const [year, month, day] = dateStr.split("-").map(Number);
+    const date = new Date(year, month - 1, day);
+    return date.toLocaleDateString("en-US", {
+      weekday: "long",
+      month: "long",
+      day: "numeric",
+      year: "numeric",
+    });
+  };
 
   // Calculate match statistics
   const totalKills =
@@ -20,13 +29,14 @@ export default function MatchDetailsTab({ match }) {
       ? Math.round(
           match.leaderboard.reduce(
             (sum, entry) => sum + (entry.score || 0),
-            0
-          ) / match.leaderboard.length
+            0,
+          ) / match.leaderboard.length,
         )
       : 0;
-  const highestScore = match.leaderboard?.length > 0
-    ? Math.max(...match.leaderboard.map((entry) => entry.score || 0))
-    : 0;
+  const highestScore =
+    match.leaderboard?.length > 0
+      ? Math.max(...match.leaderboard.map((entry) => entry.score || 0))
+      : 0;
 
   return (
     <div className="space-y-6">
@@ -41,7 +51,9 @@ export default function MatchDetailsTab({ match }) {
             </div>
             <div>
               <p className="text-xs text-gray-400">Date</p>
-              <p className="font-semibold text-white">{formatDate(match.date)}</p>
+              <p className="font-semibold text-white">
+                {formatDate(match.date)}
+              </p>
             </div>
           </div>
 
@@ -80,7 +92,9 @@ export default function MatchDetailsTab({ match }) {
             <div>
               <p className="text-xs text-gray-400">Prize Pool</p>
               <p className="text-gold font-semibold">
-                {PRIMARY_CURRENCY === "USD" ? "$" : ""}{match.prizePool?.toLocaleString()}{PRIMARY_CURRENCY === "DIAMOND" ? " 💎" : ""}
+                {PRIMARY_CURRENCY === "USD" ? "$" : ""}
+                {match.prizePool?.toLocaleString()}
+                {PRIMARY_CURRENCY === "DIAMOND" ? " 💎" : ""}
               </p>
             </div>
           </div>
@@ -151,8 +165,12 @@ export default function MatchDetailsTab({ match }) {
           <h3 className="text-gold mb-4 text-lg font-bold">Tournament</h3>
           <div className="flex items-center justify-between rounded-lg border border-white/10 bg-white/5 p-4">
             <div>
-              <p className="text-sm text-gray-400">This match is part of a tournament</p>
-              <p className="font-mono text-sm text-white">{match.tournamentId}</p>
+              <p className="text-sm text-gray-400">
+                This match is part of a tournament
+              </p>
+              <p className="font-mono text-sm text-white">
+                {match.tournamentId}
+              </p>
             </div>
             <a
               href={`/tournament/${match.tournamentId}`}
@@ -166,4 +184,3 @@ export default function MatchDetailsTab({ match }) {
     </div>
   );
 }
-

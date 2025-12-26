@@ -12,7 +12,6 @@ import EmptyState from "./components/EmptyState";
 import TournamentCardSkeleton from "./components/skeletons/TournamentCardSkeleton";
 import MobileTournamentCardSkeleton from "./components/skeletons/MobileTournamentCardSkeleton";
 import { LuTriangleAlert } from "react-icons/lu";
-import { toDateString } from "./lib/dateUtils";
 
 export default function Home() {
   const [tournaments, setTournaments] = useState([]);
@@ -103,8 +102,12 @@ export default function Home() {
       // Date filter - check if tournament's date matches selected date
       let dateMatch = true;
       if (selectedDate && t.date) {
-        // Use helper to convert Date to YYYY-MM-DD string in local timezone
-        const selectedDateStr = toDateString(selectedDate);
+        // Tournament date is stored as "YYYY-MM-DD" string
+        // Use local date components to avoid timezone conversion issues
+        const year = selectedDate.getFullYear();
+        const month = String(selectedDate.getMonth() + 1).padStart(2, "0");
+        const day = String(selectedDate.getDate()).padStart(2, "0");
+        const selectedDateStr = `${year}-${month}-${day}`;
         dateMatch = t.date === selectedDateStr;
       }
 

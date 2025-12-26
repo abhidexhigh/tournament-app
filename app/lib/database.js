@@ -209,31 +209,6 @@ export const usersDb = {
   },
 };
 
-// Helper to normalize tournament dates from database
-// PostgreSQL DATE type can return Date objects that need proper handling
-const normalizeTournamentDate = (tournament) => {
-  if (!tournament) return tournament;
-
-  if (tournament.date) {
-    if (tournament.date instanceof Date) {
-      // For Date objects, use UTC methods to extract the date
-      // PostgreSQL DATE is timezone-agnostic, stored at midnight UTC
-      const year = tournament.date.getUTCFullYear();
-      const month = String(tournament.date.getUTCMonth() + 1).padStart(2, "0");
-      const day = String(tournament.date.getUTCDate()).padStart(2, "0");
-      tournament.date = `${year}-${month}-${day}`;
-    } else if (
-      typeof tournament.date === "string" &&
-      tournament.date.includes("T")
-    ) {
-      // If it's an ISO string, extract just the date part
-      tournament.date = tournament.date.split("T")[0];
-    }
-  }
-
-  return tournament;
-};
-
 // Tournaments operations
 export const tournamentsDb = {
   getAll: async () => {
@@ -244,7 +219,7 @@ export const tournamentsDb = {
     WHEN expires_at + INTERVAL '1 hour' > NOW() THEN 'ongoing'
     ELSE 'completed'
   END AS status FROM tournaments ORDER BY created_at DESC`;
-      return rows.map(normalizeTournamentDate);
+      return rows;
     } catch (error) {
       console.error("Error getting all tournaments:", error);
       throw error;
@@ -254,7 +229,7 @@ export const tournamentsDb = {
   getById: async (id) => {
     try {
       const { rows } = await sql`SELECT * FROM tournaments WHERE id = ${id}`;
-      return normalizeTournamentDate(rows[0]) || null;
+      return rows[0] || null;
     } catch (error) {
       console.error("Error getting tournament by ID:", error);
       throw error;
@@ -265,7 +240,7 @@ export const tournamentsDb = {
     try {
       const { rows } =
         await sql`SELECT * FROM tournaments WHERE host_id = ${hostId} ORDER BY created_at DESC`;
-      return rows.map(normalizeTournamentDate);
+      return rows;
     } catch (error) {
       console.error("Error getting tournaments by host ID:", error);
       throw error;
@@ -344,7 +319,7 @@ export const tournamentsDb = {
         RETURNING *
       `;
 
-      return normalizeTournamentDate(rows[0]);
+      return rows[0];
     } catch (error) {
       console.error("Error creating tournament:", error);
       throw error;
@@ -408,7 +383,7 @@ export const tournamentsDb = {
       `;
 
       const { rows } = await sql.query(query, [...values, id]);
-      return normalizeTournamentDate(rows[0]) || null;
+      return rows[0] || null;
     } catch (error) {
       console.error("Error updating tournament:", error);
       throw error;
@@ -491,7 +466,7 @@ export const tournamentsDb = {
         RETURNING *
       `;
 
-      return normalizeTournamentDate(rows[0]);
+      return rows[0];
     } catch (error) {
       console.error("Error adding participant:", error);
       throw error;

@@ -6,7 +6,6 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { PRIMARY_CURRENCY, getPrimaryCurrency } from "../lib/currencyConfig";
 import { useTranslations } from "../contexts/LocaleContext";
-import { formatDate as formatDateUtil } from "../lib/dateUtils";
 
 export default function MatchHistory({ matches, playerId }) {
   const router = useRouter();
@@ -112,8 +111,16 @@ export default function MatchHistory({ matches, playerId }) {
     return "bg-dark-secondary-accent/90";
   };
 
-  // Format date
-  const formatDate = (dateStr) => formatDateUtil(dateStr);
+  // Format date - parse as local time to avoid timezone shifts
+  const formatDate = (dateStr) => {
+    const [year, month, day] = dateStr.split("-").map(Number);
+    const date = new Date(year, month - 1, day);
+    return date.toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+    });
+  };
 
   // Sort matches by date (most recent first)
   const sortedMatches = [...matches].sort((a, b) => {

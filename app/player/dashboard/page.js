@@ -14,7 +14,6 @@ import { tournamentsApi, transactionsApi, matchesApi } from "../../lib/api";
 import MatchHistory from "../../components/MatchHistory";
 import Image from "next/image";
 import { useTranslations } from "../../contexts/LocaleContext";
-import { formatDate as formatDateUtil } from "../../lib/dateUtils";
 import PlayerDashboardSkeleton from "../../components/skeletons/PlayerDashboardSkeleton";
 
 function PlayerDashboardContent() {
@@ -111,7 +110,16 @@ function PlayerDashboardContent() {
     loadData();
   }, [user]);
 
-  const formatDate = (dateStr) => formatDateUtil(dateStr);
+  const formatDate = (dateStr) => {
+    // Parse date string as local time to avoid timezone shifts
+    const [year, month, day] = dateStr.split("-").map(Number);
+    const date = new Date(year, month - 1, day);
+    return date.toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+    });
+  };
 
   const hasWon = (tournament, userId) => {
     if (!tournament.winners) return null;

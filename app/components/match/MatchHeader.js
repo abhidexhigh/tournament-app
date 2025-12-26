@@ -6,10 +6,19 @@ import { LuCalendarDays, LuUsers, LuClock } from "react-icons/lu";
 import { TbTrophy } from "react-icons/tb";
 import Image from "next/image";
 import { PRIMARY_CURRENCY, getPrimaryCurrency } from "../../lib/currencyConfig";
-import { formatDateWithWeekday } from "../../lib/dateUtils";
 
 export default function MatchHeader({ match, user, playerPerformance }) {
-  const formatDate = (dateStr) => formatDateWithWeekday(dateStr);
+  // Format date - parse as local time to avoid timezone shifts
+  const formatDate = (dateStr) => {
+    const [year, month, day] = dateStr.split("-").map(Number);
+    const date = new Date(year, month - 1, day);
+    return date.toLocaleDateString("en-US", {
+      weekday: "short",
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+    });
+  };
 
   // Get position badge/medal
   const getPositionBadge = (position) => {
@@ -136,7 +145,9 @@ export default function MatchHeader({ match, user, playerPerformance }) {
             highlighted
           >
             <p className="text-gold text-base font-bold sm:text-lg">
-              {PRIMARY_CURRENCY === "USD" ? "$" : ""}{match.prizePool?.toLocaleString()}{PRIMARY_CURRENCY === "DIAMOND" ? " 💎" : ""}
+              {PRIMARY_CURRENCY === "USD" ? "$" : ""}
+              {match.prizePool?.toLocaleString()}
+              {PRIMARY_CURRENCY === "DIAMOND" ? " 💎" : ""}
             </p>
           </StatCard>
         </div>
@@ -196,7 +207,9 @@ export default function MatchHeader({ match, user, playerPerformance }) {
                 <div className="bg-gold/10 border-gold/30 rounded-lg border px-4 py-2">
                   <p className="text-gold text-xs">Prize Won</p>
                   <p className="text-gold text-lg font-bold">
-                    {PRIMARY_CURRENCY === "USD" ? "$" : ""}{playerPerformance.prizeAmount.toLocaleString()}{PRIMARY_CURRENCY === "DIAMOND" ? " 💎" : ""}
+                    {PRIMARY_CURRENCY === "USD" ? "$" : ""}
+                    {playerPerformance.prizeAmount.toLocaleString()}
+                    {PRIMARY_CURRENCY === "DIAMOND" ? " 💎" : ""}
                   </p>
                 </div>
               )}
@@ -213,16 +226,12 @@ function StatCard({ icon, label, value, subtitle, highlighted, children }) {
   return (
     <div
       className={`rounded-xl border p-3 ${
-        highlighted
-          ? "bg-gold/10 border-gold/30"
-          : "border-white/10 bg-white/5"
+        highlighted ? "bg-gold/10 border-gold/30" : "border-white/10 bg-white/5"
       }`}
     >
       <div className="flex items-center gap-2">
         {icon && (
-          <div
-            className={`${highlighted ? "text-gold" : "text-gray-400"}`}
-          >
+          <div className={`${highlighted ? "text-gold" : "text-gray-400"}`}>
             {icon}
           </div>
         )}
@@ -241,12 +250,9 @@ function StatCard({ icon, label, value, subtitle, highlighted, children }) {
           >
             {value}
           </p>
-          {subtitle && (
-            <p className="text-xs text-gray-500">{subtitle}</p>
-          )}
+          {subtitle && <p className="text-xs text-gray-500">{subtitle}</p>}
         </div>
       )}
     </div>
   );
 }
-

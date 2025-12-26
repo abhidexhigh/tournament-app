@@ -17,7 +17,6 @@ import TournamentStatCard from "./TournamentStatCard";
 import CountdownSection from "./CountdownSection";
 import Image from "next/image";
 import { useTranslations } from "../../contexts/LocaleContext";
-import { formatDateWithWeekday } from "../../lib/dateUtils";
 
 export default function TournamentHeader({
   tournament,
@@ -36,7 +35,19 @@ export default function TournamentHeader({
   const t = useTranslations("tournament");
   const tCommon = useTranslations("common");
 
-  const formatDate = (dateStr) => formatDateWithWeekday(dateStr);
+  const formatDate = (dateStr) => {
+    // Parse date string as local time to avoid timezone shifts
+    // Date strings like "2025-12-30" are parsed as UTC by default,
+    // which can cause day-shift issues in different timezones
+    const [year, month, day] = dateStr.split("-").map(Number);
+    const date = new Date(year, month - 1, day);
+    return date.toLocaleDateString("en-US", {
+      weekday: "short",
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+    });
+  };
 
   const isClanBattle =
     (tournament.tournament_type ?? tournament.tournamentType) === "clan_battle";

@@ -12,15 +12,33 @@ import {
   getEntryFeeDisplayDual,
 } from "../lib/prizeCalculator";
 import { formatEntryFee, formatPrizePool } from "../lib/currencyFormatter";
-import { formatDate as formatDateUtil, getFullLocale } from "../lib/dateUtils";
 import { useTranslations } from "../contexts/LocaleContext";
 
 export default function TournamentCard({ tournament }) {
   const t = useTranslations("tournament");
   const { locale } = require("../contexts/LocaleContext").useLocale();
 
-  const formatDate = (dateStr) =>
-    formatDateUtil(dateStr, {}, getFullLocale(locale));
+  const formatDate = (dateStr) => {
+    // Parse date string as local time to avoid timezone shifts
+    // Date strings like "2025-12-30" are parsed as UTC by default,
+    // which can cause day-shift issues in different timezones
+    const [year, month, day] = dateStr.split("-").map(Number);
+    const date = new Date(year, month - 1, day);
+    const localeMap = {
+      en: "en-US",
+      ko: "ko-KR",
+      ja: "ja-JP",
+      zh: "zh-CN",
+      vi: "vi-VN",
+      ru: "ru-RU",
+      es: "es-ES",
+    };
+    return date.toLocaleDateString(localeMap[locale] || "en-US", {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+    });
+  };
 
   const isAutomated =
     tournament.is_automated === true || tournament.is_automated === "true";
