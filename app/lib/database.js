@@ -3,6 +3,13 @@
 
 import { sql } from "@vercel/postgres";
 
+// Prevent MaxListenersExceededWarning in development due to HMR
+// This is a known Next.js development issue with database connections
+if (process.env.NODE_ENV === "development") {
+  const events = require("events");
+  events.EventEmitter.defaultMaxListeners = 15;
+}
+
 // Export pool for compatibility with direct SQL queries
 // The sql function acts as both a template tag and provides access to the connection pool
 export const pool = {

@@ -571,7 +571,7 @@ export default function TournamentCard({ tournament }) {
               </div>
 
               {/* Schedule */}
-              <div className="flex w-36 items-center gap-2">
+              <div className="flex w-36 items-center gap-2 2xl:w-42">
                 <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg border border-white/10 bg-gradient-to-br from-white/10 to-white/5 2xl:h-10 2xl:w-10">
                   <LuCalendarDays className="text-lg 2xl:text-xl" />
                 </div>
