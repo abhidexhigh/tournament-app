@@ -19,28 +19,43 @@ export async function POST(request) {
       );
     }
 
+    // Validate currency
+    if (currency !== "diamonds" && currency !== "usd") {
+      return NextResponse.json(
+        { success: false, error: "Invalid currency type. Must be 'diamonds' or 'usd'" },
+        { status: 400 },
+      );
+    }
+
     // Validate amount
-    const diamondAmount = parseInt(amount);
-    if (isNaN(diamondAmount) || diamondAmount < 1) {
+    const purchaseAmount = currency === "usd" ? parseFloat(amount) : parseInt(amount);
+    if (isNaN(purchaseAmount) || purchaseAmount < 1) {
       return NextResponse.json(
-        { success: false, error: "Invalid amount (minimum 1 diamond)" },
+        { success: false, error: `Invalid amount (minimum 1 ${currency === "usd" ? "USD" : "diamond"})` },
         { status: 400 },
       );
     }
 
-    if (diamondAmount > 100000) {
+    if (purchaseAmount > 100000) {
       return NextResponse.json(
-        { success: false, error: "Maximum purchase limit is 100,000 diamonds" },
+        { success: false, error: `Maximum purchase limit is 100,000 ${currency === "usd" ? "USD" : "diamonds"}` },
         { status: 400 },
       );
     }
 
-    // Calculate price: 1 Diamond = 1 USD
-    const priceInUSD = diamondAmount;
+    // Calculate price: 1 Diamond = 1 USD, USD is direct
+    const priceInUSD = currency === "usd" ? purchaseAmount : purchaseAmount;
 
-    const productName = `${diamondAmount.toLocaleString()} Diamonds`;
-    const productDescription = `Purchase ${diamondAmount.toLocaleString()} diamonds for your wallet`;
-    const productImage = "https://img.icons8.com/fluency/96/000000/diamond.png";
+    // Set product details based on currency
+    const productName = currency === "usd" 
+      ? `$${purchaseAmount.toFixed(2)} USD Wallet Top-Up`
+      : `${purchaseAmount.toLocaleString()} Diamonds`;
+    const productDescription = currency === "usd"
+      ? `Purchase $${purchaseAmount.toFixed(2)} USD for your wallet`
+      : `Purchase ${purchaseAmount.toLocaleString()} diamonds for your wallet`;
+    const productImage = currency === "usd"
+      ? "https://img.icons8.com/fluency/96/000000/dollar.png"
+      : "https://img.icons8.com/fluency/96/000000/diamond.png";
 
     // Create Stripe checkout session
     const session = await stripe.checkout.sessions.create({
@@ -65,8 +80,8 @@ export async function POST(request) {
       customer_email: userEmail,
       metadata: {
         userId: userId,
-        amount: diamondAmount.toString(),
-        currency: "diamonds",
+        amount: purchaseAmount.toString(),
+        currency: currency,
         customPurchase: "true",
       },
       billing_address_collection: "auto",

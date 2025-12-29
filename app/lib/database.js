@@ -195,7 +195,15 @@ export const usersDb = {
       `;
 
       const { rows } = await sql.query(query, [...values, id]);
-      return transformUser(rows[0]);
+      
+      if (!rows || rows.length === 0) {
+        console.error(`User update query returned no rows for user id: ${id}`);
+        throw new Error(`Failed to update user: user not found or update failed`);
+      }
+      
+      const updatedUser = transformUser(rows[0]);
+      console.log(`User update successful for id: ${id}, updated fields:`, Object.keys(updateData));
+      return updatedUser;
     } catch (error) {
       console.error("Error updating user:", error);
       throw error;

@@ -178,72 +178,56 @@ export default function Navbar() {
 
                       {/* Wallet Balance Section (hide for admin) */}
                       {user.type !== "game_owner" && (
-                        <div className="bg-dark-secondary/50 border-gold-dark/20 border-b p-4">
-                          <p className="mb-2 text-xs font-semibold tracking-wider text-gray-400 uppercase">
-                            💰 {tWallet("walletBalance")}
-                          </p>
-                          <div className="space-y-2">
-                            {SINGLE_CURRENCY_MODE ? (
-                              /* Single Currency Mode - Show only primary currency */
-                              <>
-                                <div className="flex items-center justify-between px-2">
-                                  <div className="flex items-center space-x-2">
-                                    <span className="text-xl">
-                                      {getPrimaryCurrency().emoji}
-                                    </span>
-                                    <span className="text-gold text-sm font-bold">
-                                      {getPrimaryCurrency().displayName}
-                                    </span>
-                                  </div>
-                                  <span className="text-gold font-bold">
-                                    {getUserBalanceDisplay(user).formatted}
-                                  </span>
-                                </div>
-                                {/* Still show tickets if not in single currency mode for tickets */}
-                                {!SINGLE_CURRENCY_MODE && (
-                                  <div className="flex items-center justify-between px-2">
-                                    <div className="flex items-center space-x-2">
-                                      <span className="text-xl">🎫</span>
-                                      <span className="text-sm font-bold text-gray-300">
-                                        {tWallet("totalTickets")}
-                                      </span>
-                                    </div>
-                                    <span className="font-bold text-purple-400">
-                                      {getTicketCount(user.tickets)}
-                                    </span>
-                                  </div>
-                                )}
-                              </>
-                            ) : (
-                              /* Dual Currency Mode - Show all balances */
-                              <>
-                                <div className="flex items-center justify-between px-2">
-                                  <div className="flex items-center space-x-2">
-                                    <span className="text-xl">
-                                      {getPrimaryCurrency().emoji}
-                                    </span>
-                                    <span className="text-gold text-sm font-bold">
-                                      {getPrimaryCurrency().displayName}
-                                    </span>
-                                  </div>
-                                  <span className="text-gold font-bold">
-                                    {getUserBalanceDisplay(user).formatted}
-                                  </span>
-                                </div>
-                                <div className="flex items-center justify-between px-2">
-                                  <div className="flex items-center space-x-2">
-                                    <span className="text-xl">🎫</span>
-                                    <span className="text-sm font-bold text-gray-300">
-                                      {tWallet("totalTickets")}
-                                    </span>
-                                  </div>
-                                  <span className="font-bold text-purple-400">
-                                    {getTicketCount(user.tickets)}
-                                  </span>
-                                </div>
-                              </>
-                            )}
-                          </div>
+                        <div className="border-gold-dark/20 border-b p-4">
+                          <button
+                            type="button"
+                            onClick={() => setIsTopupModalOpen(true)}
+                            className="group border-gold/30 from-gold/10 hover:border-gold/50 hover:from-gold/15 hover:shadow-gold/10 focus-visible:ring-gold/50 flex w-full cursor-pointer items-center justify-between rounded-lg border bg-gradient-to-r via-amber-900/10 to-transparent px-4 py-3 transition-all duration-200 hover:via-amber-900/15 hover:shadow-lg focus-visible:ring-2 focus-visible:outline-none active:scale-[0.98]"
+                          >
+                            <div className="flex items-center gap-3">
+                              <div className="bg-gold/20 text-gold flex h-10 w-10 items-center justify-center rounded-lg">
+                                <span className="text-xl">
+                                  {getPrimaryCurrency().emoji}
+                                </span>
+                              </div>
+                              <div className="text-left">
+                                <p className="text-xs font-semibold tracking-wider text-gray-400 uppercase">
+                                  {tWallet("walletBalance")}
+                                </p>
+                                <p className="text-gold text-lg font-bold">
+                                  {getUserBalanceDisplay(user).formatted}
+                                </p>
+                              </div>
+                            </div>
+                            <div className="bg-gold/20 text-gold group-hover:bg-gold/30 flex h-8 w-8 items-center justify-center rounded-lg transition-colors">
+                              <svg
+                                className="h-5 w-5"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                              >
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth={2.5}
+                                  d="M12 4v16m8-8H4"
+                                />
+                              </svg>
+                            </div>
+                          </button>
+                          {!SINGLE_CURRENCY_MODE && (
+                            <div className="bg-dark-secondary/30 mt-2 flex items-center justify-between rounded-lg px-3 py-2">
+                              <div className="flex items-center gap-2">
+                                <span className="text-lg">🎫</span>
+                                <span className="text-sm font-semibold text-gray-300">
+                                  {tWallet("totalTickets")}
+                                </span>
+                              </div>
+                              <span className="font-bold text-purple-400">
+                                {getTicketCount(user.tickets)}
+                              </span>
+                            </div>
+                          )}
                         </div>
                       )}
 
@@ -252,7 +236,7 @@ export default function Navbar() {
                         <Link
                           href="/profile"
                           onClick={() => setIsProfileDropdownOpen(false)}
-                          className="hover:bg-gold/10 group flex items-center space-x-3 px-4 py-3 transition-colors duration-200"
+                          className="hover:bg-gold/10 group flex hidden items-center space-x-3 px-4 py-3 transition-colors duration-200"
                         >
                           <span className="text-xl transition-transform duration-200 group-hover:scale-110">
                             👤

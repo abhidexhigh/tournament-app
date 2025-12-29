@@ -210,11 +210,6 @@ export default function TournamentDetailsPage() {
       return;
     }
 
-    if (user.type !== "player") {
-      toast.warning("Only players can join tournaments!");
-      return;
-    }
-
     // For free tournaments, join directly without showing payment modal
     if (!tournament.entry_fee || tournament.entry_fee === 0) {
       handleJoinTournament();
@@ -228,11 +223,6 @@ export default function TournamentDetailsPage() {
   const handleJoinTournament = async () => {
     if (!user) {
       router.push("/login");
-      return;
-    }
-
-    if (user.type !== "player") {
-      toast.warning("Only players can join tournaments!");
       return;
     }
 
@@ -485,7 +475,6 @@ export default function TournamentDetailsPage() {
 
   const canJoin =
     user &&
-    user.type === "player" &&
     !isParticipant &&
     isTournamentJoinable() &&
     tournament.status !== "cancelled" &&

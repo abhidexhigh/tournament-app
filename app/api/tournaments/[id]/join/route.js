@@ -44,13 +44,6 @@ export async function POST(request, { params }) {
       );
     }
 
-    if (user.type !== "player") {
-      return NextResponse.json(
-        { success: false, error: "Only players can join tournaments" },
-        { status: 400 },
-      );
-    }
-
     // Check if user meets minimum rank requirement
     if (tournament.min_rank) {
       const rankOrder = {
