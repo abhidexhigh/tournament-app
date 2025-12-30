@@ -32,13 +32,19 @@ export async function PUT(request, { params }) {
     const { id } = await params;
     const body = await request.json();
 
-    // If updating user type, require admin authentication
+    // If updating user type, allow if it's the user themselves or an admin
     if (body.type !== undefined) {
       const session = await getServerSession(authOptions);
-      
-      if (!session || session.user.type !== "game_owner") {
+
+      if (
+        !session ||
+        (session.user.id !== id && session.user.type !== "game_owner")
+      ) {
         return NextResponse.json(
-          { success: false, error: "Unauthorized. Only admins can change user types." },
+          {
+            success: false,
+            error: "Unauthorized. Only admins or the user themselves can change user types.",
+          },
           { status: 403 },
         );
       }

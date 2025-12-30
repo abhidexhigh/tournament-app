@@ -126,13 +126,21 @@ export default function Navbar() {
                     }
                     className="from-dark-card to-dark-secondary border-gold-dark/30 hover:border-gold/50 hover:shadow-gold/20 group flex items-center space-x-2 rounded-xl border bg-gradient-to-br px-2 py-1 transition-all duration-300 hover:shadow-lg"
                   >
-                    <Image
-                      src={user.avatar}
-                      alt="User Avatar"
-                      width={28}
-                      height={28}
-                      className="rounded-full"
-                    />
+                    {user.avatar &&
+                    (user.avatar.startsWith("http") ||
+                      user.avatar.startsWith("/")) ? (
+                      <Image
+                        src={user.avatar}
+                        alt="User Avatar"
+                        width={28}
+                        height={28}
+                        className="rounded-full"
+                      />
+                    ) : (
+                      <div className="bg-gold/10 flex h-7 w-7 items-center justify-center rounded-full text-lg">
+                        {user.avatar || "👤"}
+                      </div>
+                    )}
                     <p className="text-gold text-sm font-semibold">
                       {user.username}
                     </p>
@@ -159,12 +167,21 @@ export default function Navbar() {
                       {/* User Info Header */}
                       <div className="from-gold/20 via-gold/10 border-gold-dark/30 border-b bg-gradient-to-br to-transparent px-4 py-2">
                         <div className="flex items-center space-x-3">
-                          <Image
-                            src={user.avatar}
-                            alt="User Avatar"
-                            width={56}
-                            height={56}
-                          />
+                          {user.avatar &&
+                          (user.avatar.startsWith("http") ||
+                            user.avatar.startsWith("/")) ? (
+                            <Image
+                              src={user.avatar}
+                              alt="User Avatar"
+                              width={56}
+                              height={56}
+                              className="rounded-full"
+                            />
+                          ) : (
+                            <div className="bg-gold/10 flex h-14 w-14 items-center justify-center rounded-full text-3xl">
+                              {user.avatar || "👤"}
+                            </div>
+                          )}
                           <div>
                             <p className="text-lg font-bold text-white">
                               {user.username}
@@ -422,13 +439,21 @@ export default function Navbar() {
                   <div className="mx-4 mb-2 rounded-2xl border border-white/[0.06] bg-gradient-to-br from-white/[0.04] to-transparent p-4">
                     <div className="flex items-center gap-3">
                       <div className="relative">
-                        <Image
-                          src={user.avatar}
-                          alt="Avatar"
-                          width={48}
-                          height={48}
-                          className="ring-gold/30 h-12 w-12 rounded-full ring-2"
-                        />
+                        {user.avatar &&
+                        (user.avatar.startsWith("http") ||
+                          user.avatar.startsWith("/")) ? (
+                          <Image
+                            src={user.avatar}
+                            alt="Avatar"
+                            width={48}
+                            height={48}
+                            className="ring-gold/30 h-12 w-12 rounded-full ring-2"
+                          />
+                        ) : (
+                          <div className="bg-gold/10 ring-gold/30 flex h-12 w-12 items-center justify-center rounded-full text-2xl ring-2">
+                            {user.avatar || "👤"}
+                          </div>
+                        )}
                         <div className="absolute -right-0.5 -bottom-0.5 h-3.5 w-3.5 rounded-full border-2 border-[#0d0d12] bg-emerald-500" />
                       </div>
                       <div className="min-w-0 flex-1">

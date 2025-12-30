@@ -336,14 +336,22 @@ function ProfileContent() {
               <div className="relative flex-shrink-0">
                 <div className="bg-gold-gradient absolute -inset-1 rounded-full opacity-75 blur"></div>
                 <div className="border-gold-dark/50 relative h-20 w-20 overflow-hidden rounded-full border-2 sm:h-28 sm:w-28">
-                  <Image
-                    src={user.avatar}
-                    alt="Avatar"
-                    width={112}
-                    height={112}
-                    className="h-full w-full object-cover"
-                    unoptimized
-                  />
+                  {user.avatar &&
+                  (user.avatar.startsWith("http") ||
+                    user.avatar.startsWith("/")) ? (
+                    <Image
+                      src={user.avatar}
+                      alt="Avatar"
+                      width={112}
+                      height={112}
+                      className="h-full w-full object-cover"
+                      unoptimized
+                    />
+                  ) : (
+                    <div className="bg-gold/10 flex h-full w-full items-center justify-center text-4xl sm:text-5xl">
+                      {user.avatar || "👤"}
+                    </div>
+                  )}
                 </div>
                 <div className="border-dark-primary bg-gold text-dark-primary absolute -right-1 -bottom-1 flex h-7 w-7 items-center justify-center rounded-full border-2 text-[10px] font-bold sm:h-9 sm:w-9 sm:text-xs">
                   {user.type === "host" ? "H" : "P"}

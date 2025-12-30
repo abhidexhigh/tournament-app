@@ -43,7 +43,7 @@ export default function LanguageSwitcher({ variant = "default" }) {
         {isOpen && (
           <div className="bg-dark-card border-gold-dark/30 animate-fadeIn absolute right-0 z-50 mt-2 w-44 overflow-hidden rounded-xl border shadow-2xl">
             <div className="border-gold-dark/20 border-b px-3 py-2">
-              <p className="text-gold text-xs font-semibold uppercase tracking-wider">
+              <p className="text-gold text-xs font-semibold tracking-wider uppercase">
                 Language
               </p>
             </div>
@@ -58,7 +58,13 @@ export default function LanguageSwitcher({ variant = "default" }) {
                       : "text-gray-300 hover:bg-white/10 hover:text-white"
                   }`}
                 >
-                  <span className="text-base">{localeFlags[loc]}</span>
+                  <div className="flex h-5 w-7 shrink-0 items-center justify-center overflow-hidden rounded-sm bg-gray-800">
+                    <img
+                      src={localeFlags[loc]}
+                      alt={localeNames[loc]}
+                      className="h-full w-full object-cover"
+                    />
+                  </div>
                   <span>{localeNames[loc]}</span>
                   {locale === loc && (
                     <span className="text-gold ml-auto text-xs">✓</span>
@@ -81,7 +87,13 @@ export default function LanguageSwitcher({ variant = "default" }) {
           className="border-gold-dark/30 hover:border-gold/50 flex h-12 w-12 items-center justify-center rounded-xl border bg-black/20 text-lg transition-all active:scale-95"
           aria-label="Select language"
         >
-          {localeFlags[locale]}
+          <div className="flex h-5 w-7 shrink-0 items-center justify-center overflow-hidden rounded-sm bg-gray-800">
+            <img
+              src={localeFlags[locale]}
+              alt={localeNames[locale]}
+              className="h-full w-full object-cover"
+            />
+          </div>
         </button>
 
         {isOpen && (
@@ -97,7 +109,13 @@ export default function LanguageSwitcher({ variant = "default" }) {
                       : "text-gray-300 hover:bg-white/10 hover:text-white"
                   }`}
                 >
-                  <span className="text-base">{localeFlags[loc]}</span>
+                  <div className="flex h-5 w-7 shrink-0 items-center justify-center overflow-hidden rounded-sm bg-gray-800">
+                    <img
+                      src={localeFlags[loc]}
+                      alt={localeNames[loc]}
+                      className="h-full w-full object-cover"
+                    />
+                  </div>
                   <span>{localeNames[loc]}</span>
                   {locale === loc && (
                     <span className="text-gold ml-auto text-xs">✓</span>
@@ -119,7 +137,13 @@ export default function LanguageSwitcher({ variant = "default" }) {
         className="border-gold-dark/30 hover:border-gold/50 group flex items-center gap-2 rounded-lg border bg-black/20 px-3 py-2 transition-all"
         aria-label="Select language"
       >
-        <span className="text-base">{localeFlags[locale]}</span>
+        <div className="flex h-5 w-7 shrink-0 items-center justify-center overflow-hidden rounded-sm bg-gray-800">
+          <img
+            src={localeFlags[locale]}
+            alt={localeNames[locale]}
+            className="h-full w-full object-cover"
+          />
+        </div>
         <span className="text-sm font-medium text-gray-300 group-hover:text-white">
           {localeNames[locale]}
         </span>
@@ -151,7 +175,13 @@ export default function LanguageSwitcher({ variant = "default" }) {
                     : "text-gray-300 hover:bg-white/10 hover:text-white"
                 }`}
               >
-                <span className="text-base">{localeFlags[loc]}</span>
+                <div className="flex h-5 w-7 shrink-0 items-center justify-center overflow-hidden rounded-sm bg-gray-800">
+                  <img
+                    src={localeFlags[loc]}
+                    alt={localeNames[loc]}
+                    className="h-full w-full object-cover"
+                  />
+                </div>
                 <span>{localeNames[loc]}</span>
                 {locale === loc && (
                   <span className="text-gold ml-auto text-xs">✓</span>
@@ -164,4 +194,3 @@ export default function LanguageSwitcher({ variant = "default" }) {
     </div>
   );
 }
-

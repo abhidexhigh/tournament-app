@@ -191,13 +191,21 @@ function PlayerDashboardContent() {
                   <div className="relative flex-shrink-0">
                     <div className="bg-gold-gradient absolute -inset-1 rounded-full opacity-75 blur"></div>
                     <div className="border-gold-dark/50 relative h-16 w-16 overflow-hidden rounded-full border-2 sm:h-20 sm:w-20">
-                      <Image
-                        src={user.avatar}
-                        alt="Avatar"
-                        width={80}
-                        height={80}
-                        className="h-full w-full object-cover"
-                      />
+                      {user.avatar &&
+                      (user.avatar.startsWith("http") ||
+                        user.avatar.startsWith("/")) ? (
+                        <Image
+                          src={user.avatar}
+                          alt="Avatar"
+                          width={80}
+                          height={80}
+                          className="h-full w-full object-cover"
+                        />
+                      ) : (
+                        <div className="bg-gold/10 flex h-full w-full items-center justify-center text-3xl sm:text-4xl">
+                          {user.avatar || "👤"}
+                        </div>
+                      )}
                     </div>
                     {/* <div className="border-dark-primary bg-gold text-dark-primary absolute -right-1 -bottom-1 flex h-6 w-6 items-center justify-center rounded-full border-2 text-[10px] font-bold sm:h-7 sm:w-7">
                       P

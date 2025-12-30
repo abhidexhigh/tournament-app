@@ -31,9 +31,10 @@ export default function SelectRolePage() {
     if (status === "authenticated" && session?.user) {
       // Sync with localStorage
       const user = syncUserWithStorage(session.user);
+      const justRegistered = localStorage.getItem("just_registered") === "true";
 
-      // If user already has a role, redirect to dashboard
-      if (hasUserRole(user)) {
+      // If user already has a role and wasn't just registered, redirect to dashboard
+      if (hasUserRole(user) && !justRegistered) {
         router.push(
           user.type === "host" ? "/host/dashboard" : "/player/dashboard",
         );
@@ -46,17 +47,23 @@ export default function SelectRolePage() {
 
     setLoading(true);
 
-    // Update user role in localStorage
+    // Update user role in localStorage and database
     const user = getCurrentUser();
     if (user) {
-      updateUserRole(user.id, selectedRole);
+      const success = await updateUserRole(user.id, selectedRole);
 
-      // Redirect to appropriate dashboard
-      setTimeout(() => {
-        router.push(
-          selectedRole === "host" ? "/host/dashboard" : "/player/dashboard",
-        );
-      }, 500);
+      if (success) {
+        localStorage.removeItem("just_registered");
+        // Redirect to appropriate dashboard
+        setTimeout(() => {
+          router.push(
+            selectedRole === "host" ? "/host/dashboard" : "/player/dashboard",
+          );
+        }, 500);
+      } else {
+        setLoading(false);
+        alert("Failed to update role. Please try again.");
+      }
     }
   };
 

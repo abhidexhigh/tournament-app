@@ -63,15 +63,19 @@ export default function AuthModal({ isOpen, onClose, initialMode = "login" }) {
 
       // Sync with localStorage
       const user = syncUserWithStorage(session.user);
+      const justRegistered = localStorage.getItem("just_registered") === "true";
 
-      // If user has a role, redirect to dashboard
-      if (hasUserRole(user)) {
+      // If user has a role and wasn't just registered, redirect to dashboard
+      if (hasUserRole(user) && !justRegistered) {
         router.push(
           user.type === "host" ? "/host/dashboard" : "/player/dashboard",
         );
         onClose();
       } else {
-        // If no role, redirect to role selection
+        // If no role or just registered, redirect to role selection
+        if (justRegistered) {
+          localStorage.removeItem("just_registered");
+        }
         router.push("/select-role");
         onClose();
       }
@@ -139,7 +143,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = "login" }) {
     try {
       if (isLogin) {
         // Try to login with credentials
-        const user = loginWithCredentials(formData.email, formData.password);
+        const user = await loginWithCredentials(formData.email, formData.password);
         if (user) {
           // Use NextAuth signIn for session management
           const result = await signIn("credentials", {
@@ -158,12 +162,15 @@ export default function AuthModal({ isOpen, onClose, initialMode = "login" }) {
         }
       } else {
         // Register new user
-        const user = registerUser(
+        const user = await registerUser(
           formData.username,
           formData.email,
           formData.password,
         );
         if (user) {
+          // Mark as just registered to force role selection
+          localStorage.setItem("just_registered", "true");
+
           // Sign in after registration
           const result = await signIn("credentials", {
             username: formData.email,
@@ -175,7 +182,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = "login" }) {
             // Will redirect to role selection via useEffect
           }
         } else {
-          setErrors({ email: "Email already exists" });
+          setErrors({ email: "Email already exists or registration failed" });
         }
       }
     } catch (error) {
@@ -214,7 +221,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = "login" }) {
         }
       } else {
         // For regular users (uses email)
-        const user = loginWithCredentials(identifier, "password");
+        const user = await loginWithCredentials(identifier, "password");
         if (user) {
           const result = await signIn("credentials", {
             username: identifier,

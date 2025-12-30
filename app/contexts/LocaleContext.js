@@ -1,7 +1,12 @@
 "use client";
 
 import { createContext, useContext, useState, useEffect } from "react";
-import { locales, defaultLocale, localeNames, localeFlags } from "../../i18n";
+import {
+  locales,
+  defaultLocale,
+  localeNames,
+  localeFlags,
+} from "../lib/i18n-constants";
 
 const LocaleContext = createContext();
 
@@ -122,4 +127,3 @@ function getCookie(name) {
   }
   return null;
 }
-

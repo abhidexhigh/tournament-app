@@ -46,8 +46,13 @@ export const usersApi = {
 
   // Get user by email
   getByEmail: async (email) => {
-    const users = await usersApi.getAll();
-    return users.find((user) => user.email === email);
+    try {
+      const response = await apiRequest(`/users?email=${encodeURIComponent(email)}`);
+      return response.data;
+    } catch (error) {
+      console.error("Error getting user by email:", error);
+      return null;
+    }
   },
 
   // Create new user

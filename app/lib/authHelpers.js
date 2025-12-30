@@ -31,53 +31,82 @@ export const syncUserWithStorage = (sessionUser) => {
 };
 
 // Update user role
-export const updateUserRole = (userId, role) => {
+export const updateUserRole = async (userId, role) => {
   if (typeof window === "undefined") return false;
 
-  const users = JSON.parse(localStorage.getItem(STORAGE_KEYS.USERS_DB) || "[]");
-  const userIndex = users.findIndex((u) => u.id === userId);
+  try {
+    const updateData = {
+      type: role,
+    };
 
-  if (userIndex === -1) return false;
+    // Update diamonds based on role if they have default amount
+    if (role === "host") {
+      const currentUser = JSON.parse(
+        localStorage.getItem(STORAGE_KEYS.USER) || "{}",
+      );
+      if (!currentUser.diamonds || currentUser.diamonds < 5000) {
+        updateData.diamonds = 5000;
+      }
+      updateData.avatar = "👑";
+    } else {
+      updateData.avatar = "🎮";
+    }
 
-  users[userIndex].type = role;
+    const updatedUser = await usersApi.update(userId, updateData);
 
-  // Update diamonds based on role
-  if (role === "host" && users[userIndex].diamonds < 5000) {
-    users[userIndex].diamonds = 5000;
+    // Update localStorage
+    const users = JSON.parse(localStorage.getItem(STORAGE_KEYS.USERS_DB) || "[]");
+    const userIndex = users.findIndex((u) => u.id === userId);
+
+    if (userIndex !== -1) {
+      users[userIndex] = updatedUser;
+      localStorage.setItem(STORAGE_KEYS.USERS_DB, JSON.stringify(users));
+    }
+
+    localStorage.setItem(STORAGE_KEYS.USER, JSON.stringify(updatedUser));
+    return true;
+  } catch (error) {
+    console.error("Failed to update user role:", error);
+    return false;
   }
-
-  // Update avatar
-  users[userIndex].avatar = role === "host" ? "👑" : "🎮";
-
-  localStorage.setItem(STORAGE_KEYS.USERS_DB, JSON.stringify(users));
-
-  // Update current user
-  const currentUser = JSON.parse(
-    localStorage.getItem(STORAGE_KEYS.USER) || "{}",
-  );
-  if (currentUser.id === userId) {
-    localStorage.setItem(STORAGE_KEYS.USER, JSON.stringify(users[userIndex]));
-  }
-
-  return true;
 };
 
 // Check if user has selected a role
 export const hasUserRole = (user) => {
+  // A user has a role if type is set and is NOT 'player' (default for new users)
+  // OR if they explicitly chose 'player' in the select-role page.
+  // For now, let's stick to checking if it's not null/undefined.
   return user && user.type !== null && user.type !== undefined;
 };
 
 // Unified login for email/password
-export const loginWithCredentials = (email, password) => {
+export const loginWithCredentials = async (email, password) => {
   if (typeof window === "undefined") return null;
 
-  const users = JSON.parse(localStorage.getItem(STORAGE_KEYS.USERS_DB) || "[]");
-  const user = users.find((u) => u.email === email);
+  try {
+    // Check DB first
+    const user = await usersApi.getByEmail(email);
 
-  if (user) {
-    // In a real app, verify password hash here
-    localStorage.setItem(STORAGE_KEYS.USER, JSON.stringify(user));
-    return user;
+    if (user) {
+      // In a real app, verify password hash here
+      localStorage.setItem(STORAGE_KEYS.USER, JSON.stringify(user));
+
+      // Update users database in localStorage for compatibility
+      const users = JSON.parse(
+        localStorage.getItem(STORAGE_KEYS.USERS_DB) || "[]",
+      );
+      const userIndex = users.findIndex((u) => u.id === user.id);
+      if (userIndex !== -1) {
+        users[userIndex] = user;
+      } else {
+        users.push(user);
+      }
+      localStorage.setItem(STORAGE_KEYS.USERS_DB, JSON.stringify(users));
+
+      return user;
+    }
+  } catch (error) {
+    console.error("Login error in authHelpers:", error);
   }
 
   return null;
@@ -113,29 +142,41 @@ export const refreshUserFromAPI = async (userId) => {
 };
 
 // Unified registration
-export const registerUser = (username, email, password) => {
+export const registerUser = async (username, email, password) => {
   if (typeof window === "undefined") return null;
 
-  const users = JSON.parse(localStorage.getItem(STORAGE_KEYS.USERS_DB) || "[]");
+  try {
+    // Check if user already exists
+    const existingUser = await usersApi.getByEmail(email);
+    if (existingUser) {
+      console.log("User already exists:", email);
+      return null;
+    }
 
-  // Check if user already exists
-  if (users.find((u) => u.email === email)) {
-    return null;
+    const newUser = {
+      username,
+      email,
+      type: "player", // Default role to satisfy DB constraint
+      diamonds: 1000,
+      avatar: "🎮",
+      provider: "credentials",
+    };
+
+    const savedUser = await usersApi.create(newUser);
+
+    if (savedUser) {
+      // Update localStorage for compatibility
+      const users = JSON.parse(
+        localStorage.getItem(STORAGE_KEYS.USERS_DB) || "[]",
+      );
+      users.push(savedUser);
+      localStorage.setItem(STORAGE_KEYS.USERS_DB, JSON.stringify(users));
+      localStorage.setItem(STORAGE_KEYS.USER, JSON.stringify(savedUser));
+      return savedUser;
+    }
+  } catch (error) {
+    console.error("Registration error in authHelpers:", error);
   }
 
-  const newUser = {
-    id: `user_${Date.now()}`,
-    username,
-    email,
-    type: null, // Role to be set later
-    diamonds: 1000,
-    avatar: "🎮",
-    provider: "credentials",
-  };
-
-  users.push(newUser);
-  localStorage.setItem(STORAGE_KEYS.USERS_DB, JSON.stringify(users));
-  localStorage.setItem(STORAGE_KEYS.USER, JSON.stringify(newUser));
-
-  return newUser;
+  return null;
 };
