@@ -351,15 +351,16 @@ export default function DatePicker({
 
   return (
     <div className="date-picker-container relative" ref={containerRef}>
-      {/* Trigger Button */}
-      <button
-        type="button"
-        onClick={() => setIsOpen(!isOpen)}
-        className={`border-gold-dark/30 focus:border-gold focus:ring-gold/30 hover:border-gold/40 group flex w-full cursor-pointer items-center justify-between rounded-xl border bg-gradient-to-r from-black/40 to-black/20 px-4 py-3 text-left text-sm font-medium transition-all duration-300 focus:ring-2 focus:outline-none lg:min-w-[180px] ${
-          selectedDate ? "text-white" : "text-gray-400"
-        }`}
-      >
-        <div className="flex items-center gap-2">
+      {/* Trigger Container */}
+      <div className="border-gold-dark/30 focus-within:border-gold focus-within:ring-gold/30 hover:border-gold/40 group flex w-full items-center justify-between rounded-xl border bg-gradient-to-r from-black/40 to-black/20 px-4 py-3 text-left text-sm font-medium transition-all duration-300 focus-within:ring-2 focus-within:outline-none lg:min-w-[180px]">
+        {/* Main Trigger Button */}
+        <button
+          type="button"
+          onClick={() => setIsOpen(!isOpen)}
+          className={`flex flex-1 items-center gap-2 ${
+            selectedDate ? "text-white" : "text-gray-400"
+          }`}
+        >
           <span className="text-gold-dark group-focus-within:text-gold transition-colors duration-300">
             <CalendarIcon />
           </span>
@@ -368,9 +369,11 @@ export default function DatePicker({
               ? formatDisplayDate(selectedDate)
               : placeholder || t("selectDate")}
           </span>
-        </div>
+        </button>
+        {/* Clear Button or Dropdown Icon */}
         {selectedDate ? (
           <button
+            type="button"
             onClick={handleClear}
             className="hover:text-gold ml-2 text-gray-400 transition-colors duration-200 hover:scale-110"
             aria-label="Clear date"
@@ -406,7 +409,7 @@ export default function DatePicker({
             />
           </svg>
         )}
-      </button>
+      </div>
 
       {dropdownContent}
 

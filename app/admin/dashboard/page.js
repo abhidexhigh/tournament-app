@@ -14,6 +14,11 @@ export default function AdminDashboard() {
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState(false);
   const [message, setMessage] = useState(null);
+  const [users, setUsers] = useState([]);
+  const [usersLoading, setUsersLoading] = useState(false);
+  const [updatingUserTypeId, setUpdatingUserTypeId] = useState(null);
+  const [userSearchQuery, setUserSearchQuery] = useState("");
+  const [userFilter, setUserFilter] = useState("all");
 
   // Apply dashboard-specific background
   useEffect(() => {
@@ -33,6 +38,7 @@ export default function AdminDashboard() {
   useEffect(() => {
     if (status === "authenticated" && session?.user?.type === "game_owner") {
       fetchStats();
+      fetchUsers();
     }
   }, [session, status]);
 
@@ -127,6 +133,67 @@ export default function AdminDashboard() {
     } finally {
       setActionLoading(false);
     }
+  };
+
+  const fetchUsers = async () => {
+    try {
+      setUsersLoading(true);
+      const response = await fetch("/api/users");
+      const data = await response.json();
+
+      if (data.success) {
+        setUsers(data.data);
+      } else {
+        setMessage({ type: "error", text: data.error });
+      }
+    } catch (error) {
+      setMessage({ type: "error", text: "Failed to fetch users" });
+    } finally {
+      setUsersLoading(false);
+    }
+  };
+
+  const updateUserType = async (userId, newType) => {
+    try {
+      setUpdatingUserTypeId(userId);
+      const response = await fetch(`/api/users/${userId}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ type: newType }),
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        setMessage({
+          type: "success",
+          text: `Successfully updated user type to ${newType}!`,
+        });
+        fetchUsers(); // Refresh users list
+      } else {
+        setMessage({ type: "error", text: data.error });
+      }
+    } catch (error) {
+      setMessage({ type: "error", text: "Failed to update user type" });
+    } finally {
+      setUpdatingUserTypeId(null);
+    }
+  };
+
+  const filteredUsers = users
+    .filter((u) => u.type !== "game_owner")
+    .filter((u) => {
+      const matchesSearch =
+        u.username.toLowerCase().includes(userSearchQuery.toLowerCase()) ||
+        u.email.toLowerCase().includes(userSearchQuery.toLowerCase());
+      const matchesFilter = userFilter === "all" || u.type === userFilter;
+      return matchesSearch && matchesFilter;
+    });
+
+  const userStats = {
+    total: users.filter((u) => u.type !== "game_owner").length,
+    hosts: users.filter((u) => u.type === "host").length,
+    players: users.filter((u) => u.type === "player").length,
   };
 
   if (status === "loading" || loading) {
@@ -618,6 +685,268 @@ export default function AdminDashboard() {
                       ))}
                   </div>
                 )}
+              </div>
+
+              {/* User Management */}
+              <div className="mb-8">
+                <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="from-gold/30 to-gold/10 border-gold/20 flex h-12 w-12 items-center justify-center rounded-xl border bg-gradient-to-br">
+                      <span className="text-2xl">👥</span>
+                    </div>
+                    <h2 className="text-gold-gradient text-3xl font-bold">
+                      User Management
+                    </h2>
+                  </div>
+
+                  {/* User Mini Stats */}
+                  <div className="flex gap-4">
+                    <div className="flex items-center gap-2 rounded-lg border border-white/10 bg-white/5 px-3 py-1.5">
+                      <span className="text-xs text-gray-400">Total:</span>
+                      <span className="text-sm font-bold text-white">
+                        {userStats.total}
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-2 rounded-lg border border-white/10 bg-white/5 px-3 py-1.5">
+                      <span className="text-gold text-xs">Hosts:</span>
+                      <span className="text-gold text-sm font-bold">
+                        {userStats.hosts}
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-2 rounded-lg border border-white/10 bg-white/5 px-3 py-1.5">
+                      <span className="text-xs text-blue-400">Players:</span>
+                      <span className="text-sm font-bold text-blue-400">
+                        {userStats.players}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Filters and Search */}
+                <div className="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-12">
+                  <div className="relative sm:col-span-8">
+                    <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4">
+                      <svg
+                        className="h-5 w-5 text-gray-400"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                        />
+                      </svg>
+                    </div>
+                    <input
+                      type="text"
+                      placeholder="Search by username or email..."
+                      value={userSearchQuery}
+                      onChange={(e) => setUserSearchQuery(e.target.value)}
+                      className="focus:border-gold/50 focus:ring-gold/50 w-full rounded-xl border border-white/10 bg-black/40 py-3 pr-4 pl-12 text-sm text-white focus:ring-1 focus:outline-none"
+                    />
+                  </div>
+                  <div className="sm:col-span-4">
+                    <select
+                      value={userFilter}
+                      onChange={(e) => setUserFilter(e.target.value)}
+                      className="focus:border-gold/50 w-full cursor-pointer rounded-xl border border-white/10 bg-black/40 px-4 py-3 text-sm text-white focus:outline-none"
+                    >
+                      <option value="all">All Roles</option>
+                      <option value="player">Players</option>
+                      <option value="host">Hosts</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div className="border-gold-dark/20 bg-dark-gray-card/80 overflow-hidden rounded-2xl border shadow-lg shadow-gray-800/30 backdrop-blur-sm">
+                  {usersLoading ? (
+                    <div className="px-6 py-24 text-center">
+                      <div className="border-gold/20 border-t-gold mx-auto mb-4 h-12 w-12 animate-spin rounded-full border-4"></div>
+                      <p className="text-lg font-medium text-gray-400">
+                        Loading system users...
+                      </p>
+                    </div>
+                  ) : filteredUsers.length === 0 ? (
+                    <div className="px-6 py-20 text-center">
+                      <div className="from-gold/20 to-gold/5 border-gold/20 mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full border bg-gradient-to-br">
+                        <span className="text-4xl">🔍</span>
+                      </div>
+                      <h3 className="mb-2 text-xl font-bold text-white">
+                        No Users Found
+                      </h3>
+                      <p className="text-gray-400">
+                        Try adjusting your search or filters
+                      </p>
+                    </div>
+                  ) : (
+                    <div className="overflow-x-auto">
+                      <table className="w-full border-collapse">
+                        <thead>
+                          <tr className="border-b border-white/10 bg-white/5">
+                            <th className="px-6 py-4 text-left text-xs font-bold tracking-wider text-gray-400 uppercase">
+                              User Info
+                            </th>
+                            <th className="px-6 py-4 text-left text-xs font-bold tracking-wider text-gray-400 uppercase">
+                              Contact
+                            </th>
+                            <th className="px-6 py-4 text-left text-xs font-bold tracking-wider text-gray-400 uppercase">
+                              Status & Rank
+                            </th>
+                            <th className="px-6 py-4 text-right text-xs font-bold tracking-wider text-gray-400 uppercase">
+                              Actions
+                            </th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-white/5">
+                          {filteredUsers.map((user) => (
+                            <tr
+                              key={user.id}
+                              className="group transition-colors hover:bg-white/[0.03]"
+                            >
+                              <td className="px-6 py-4">
+                                <div className="flex items-center gap-4">
+                                  <div className="relative">
+                                    <div className="from-gold/20 flex h-12 w-12 items-center justify-center overflow-hidden rounded-full border border-white/10 bg-gradient-to-br to-purple-900/40 text-2xl shadow-inner">
+                                      {typeof user.avatar === "string" &&
+                                      (user.avatar.startsWith("http") ||
+                                        user.avatar.startsWith("/")) ? (
+                                        <Image
+                                          src={user.avatar}
+                                          alt={user.username}
+                                          width={48}
+                                          height={48}
+                                          className="h-full w-full object-cover"
+                                          unoptimized
+                                        />
+                                      ) : (
+                                        user.avatar
+                                      )}
+                                    </div>
+                                    <div
+                                      className={`border-dark-gray-card absolute -right-0.5 -bottom-0.5 h-3.5 w-3.5 rounded-full border-2 ${
+                                        user.type === "host"
+                                          ? "bg-gold"
+                                          : "bg-blue-400"
+                                      }`}
+                                    ></div>
+                                  </div>
+                                  <div>
+                                    <div className="text-base font-bold text-white">
+                                      {user.username}
+                                    </div>
+                                    <div className="text-[10px] font-bold tracking-tighter text-gray-500 uppercase">
+                                      ID: {user.id.slice(0, 8)}...
+                                    </div>
+                                  </div>
+                                </div>
+                              </td>
+                              <td className="px-6 py-4">
+                                <div className="flex items-center gap-1.5 text-sm text-gray-300">
+                                  <svg
+                                    className="h-3.5 w-3.5 text-gray-500"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    viewBox="0 0 24 24"
+                                  >
+                                    <path
+                                      strokeLinecap="round"
+                                      strokeLinejoin="round"
+                                      strokeWidth="2"
+                                      d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+                                    ></path>
+                                  </svg>
+                                  {user.email}
+                                </div>
+                                <div className="mt-1 text-[10px] text-gray-500">
+                                  Joined {new Date().toLocaleDateString()}
+                                </div>
+                              </td>
+                              <td className="px-6 py-4">
+                                <div className="flex flex-col gap-1.5">
+                                  <div className="flex">
+                                    <Badge
+                                      variant={
+                                        user.type === "host"
+                                          ? "primary"
+                                          : "secondary"
+                                      }
+                                      size="sm"
+                                      className="font-bold"
+                                    >
+                                      {user.type === "host"
+                                        ? "👑 Host"
+                                        : "⚔️ Player"}
+                                    </Badge>
+                                  </div>
+                                  {user.rank && (
+                                    <div className="flex items-center gap-1.5">
+                                      <span className="text-[10px] font-bold text-gray-500 uppercase">
+                                        Rank:
+                                      </span>
+                                      <span className="text-xs font-semibold text-gray-300">
+                                        {user.rank}
+                                      </span>
+                                    </div>
+                                  )}
+                                </div>
+                              </td>
+                              <td className="px-6 py-4 text-right">
+                                {user.type === "player" ? (
+                                  <button
+                                    onClick={() =>
+                                      updateUserType(user.id, "host")
+                                    }
+                                    disabled={updatingUserTypeId === user.id}
+                                    className="border-gold group relative inline-flex cursor-pointer items-center justify-center overflow-hidden rounded-xl border-2 px-4 py-2 font-bold text-white shadow-md transition duration-300 ease-out disabled:cursor-not-allowed disabled:opacity-50"
+                                  >
+                                    <span className="bg-gold ease absolute inset-0 flex h-full w-full -translate-x-full items-center justify-center text-black duration-300 group-hover:translate-x-0">
+                                      {updatingUserTypeId === user.id
+                                        ? "..."
+                                        : "Confirm 👑"}
+                                    </span>
+                                    <span className="text-gold ease absolute flex h-full w-full transform items-center justify-center text-sm transition-all duration-300 group-hover:translate-x-full">
+                                      {updatingUserTypeId === user.id
+                                        ? "Promoting..."
+                                        : "Promote to Host"}
+                                    </span>
+                                    <span className="invisible relative text-sm">
+                                      Promote to Host
+                                    </span>
+                                  </button>
+                                ) : (
+                                  <button
+                                    onClick={() =>
+                                      updateUserType(user.id, "player")
+                                    }
+                                    disabled={updatingUserTypeId === user.id}
+                                    className="group relative inline-flex cursor-pointer items-center justify-center overflow-hidden rounded-xl border-2 border-blue-400 px-4 py-2 font-bold text-white shadow-md transition duration-300 ease-out disabled:cursor-not-allowed disabled:opacity-50"
+                                  >
+                                    <span className="ease absolute inset-0 flex h-full w-full -translate-x-full items-center justify-center bg-blue-400 text-black duration-300 group-hover:translate-x-0">
+                                      {updatingUserTypeId === user.id
+                                        ? "..."
+                                        : "Confirm ⚔️"}
+                                    </span>
+                                    <span className="ease absolute flex h-full w-full transform items-center justify-center text-sm text-blue-400 transition-all duration-300 group-hover:translate-x-full">
+                                      {updatingUserTypeId === user.id
+                                        ? "Demoting..."
+                                        : "Demote to Player"}
+                                    </span>
+                                    <span className="invisible relative text-sm">
+                                      Demote to Player
+                                    </span>
+                                  </button>
+                                )}
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  )}
+                </div>
               </div>
             </>
           )}

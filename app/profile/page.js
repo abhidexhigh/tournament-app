@@ -342,6 +342,7 @@ function ProfileContent() {
                     width={112}
                     height={112}
                     className="h-full w-full object-cover"
+                    unoptimized
                   />
                 </div>
                 <div className="border-dark-primary bg-gold text-dark-primary absolute -right-1 -bottom-1 flex h-7 w-7 items-center justify-center rounded-full border-2 text-[10px] font-bold sm:h-9 sm:w-9 sm:text-xs">

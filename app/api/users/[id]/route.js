@@ -1,5 +1,7 @@
 // API route: /api/users/[id]
 import { NextResponse } from "next/server";
+import { getServerSession } from "next-auth";
+import { authOptions } from "../../../lib/authConfig";
 import { usersDb } from "../../../lib/database";
 
 // GET /api/users/[id] - Get user by ID
@@ -29,6 +31,18 @@ export async function PUT(request, { params }) {
   try {
     const { id } = await params;
     const body = await request.json();
+
+    // If updating user type, require admin authentication
+    if (body.type !== undefined) {
+      const session = await getServerSession(authOptions);
+      
+      if (!session || session.user.type !== "game_owner") {
+        return NextResponse.json(
+          { success: false, error: "Unauthorized. Only admins can change user types." },
+          { status: 403 },
+        );
+      }
+    }
 
     // Validate clan membership if clans are being updated
     if (body.clans !== undefined) {

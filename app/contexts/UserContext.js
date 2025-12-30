@@ -13,16 +13,24 @@ export function UserProvider({ children }) {
 
   useEffect(() => {
     const loadUser = async () => {
-      if (status === "authenticated" && session?.user) {
+      if (status === "authenticated" && session?.user?.email) {
         try {
-          // Find user by email in the API
-          const users = await usersApi.getAll();
-          const foundUser = users.find((u) => u.email === session.user.email);
+          // Try to get user by email directly
+          const response = await fetch(`/api/users?email=${session.user.email}`);
+          const data = await response.json();
 
-          if (foundUser) {
-            setUser(foundUser);
+          if (data.success && data.data) {
+            // The API might return an array or a single user depending on implementation
+            const foundUser = Array.isArray(data.data) 
+              ? data.data.find(u => u.email === session.user.email)
+              : data.data;
+            
+            if (foundUser) {
+              setUser(foundUser);
+            } else {
+              setUser(null);
+            }
           } else {
-            // User not found in API, might be a new OAuth user
             setUser(null);
           }
         } catch (error) {

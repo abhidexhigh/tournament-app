@@ -34,6 +34,7 @@ const localVideoCards = [
   "/cardVideos/Hydra Fire Loop.mp4",
   "/cardVideos/Hydra Storm Loop.mp4",
   "/cardVideos/Hydra Water loop.mp4",
+  "/cardVideos/Hydra Light Loop.mp4",
   "/cardVideos/Kiran Light Loop.mp4",
   "/cardVideos/Kirin Dark Loop.mp4",
   "/cardVideos/Kirin Storm Loop.mp4",

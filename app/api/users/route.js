@@ -2,9 +2,17 @@
 import { NextResponse } from "next/server";
 import { usersDb } from "../../lib/database";
 
-// GET /api/users - Get all users
-export async function GET() {
+// GET /api/users - Get all users or filter by email
+export async function GET(request) {
   try {
+    const { searchParams } = new URL(request.url);
+    const email = searchParams.get("email");
+
+    if (email) {
+      const user = await usersDb.getByEmail(email);
+      return NextResponse.json({ success: true, data: user });
+    }
+
     const users = await usersDb.getAll();
     return NextResponse.json({ success: true, data: users });
   } catch (error) {

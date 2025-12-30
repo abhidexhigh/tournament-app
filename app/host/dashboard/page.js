@@ -171,6 +171,7 @@ function HostDashboardContent() {
                         width={80}
                         height={80}
                         className="h-full w-full object-cover"
+                        unoptimized
                       />
                     </div>
                     {/* <div className="border-dark-primary bg-gold text-dark-primary absolute -right-1 -bottom-1 flex h-6 w-6 items-center justify-center rounded-full border-2 text-[10px] font-bold sm:h-7 sm:w-7">
@@ -185,8 +186,9 @@ function HostDashboardContent() {
                     </h1>
                     <p className="mb-2 text-sm text-white/40">{user.email}</p>
                     <div className="flex flex-wrap items-center justify-center gap-2 sm:justify-start">
-                      <span className="bg-gold-dark/20 text-gold-light rounded-full px-3 py-1 text-xs font-medium">
-                        🎮 {tProfile("host") || "Host"}
+                      <span className="bg-gold-dark/20 text-gold-light rounded-full px-3 py-1 text-xs font-medium capitalize">
+                        {user.type === "host" ? "🎮 " : "⚔️ "}
+                        {tProfile(user.type) || user.type}
                       </span>
                       {user.rank && (
                         <span

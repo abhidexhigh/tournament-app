@@ -211,8 +211,9 @@ function PlayerDashboardContent() {
                     </h1>
                     <p className="mb-2 text-sm text-white/40">{user.email}</p>
                     <div className="flex flex-wrap items-center justify-center gap-2 sm:justify-start">
-                      <span className="bg-gold-dark/20 text-gold-light rounded-full px-3 py-1 text-xs font-medium">
-                        ⚔️ {tProfile("player") || "Player"}
+                      <span className="bg-gold-dark/20 text-gold-light rounded-full px-3 py-1 text-xs font-medium capitalize">
+                        {user.type === "host" ? "🎮 " : "⚔️ "}
+                        {tProfile(user.type) || user.type}
                       </span>
                       {user.rank && (
                         <span
