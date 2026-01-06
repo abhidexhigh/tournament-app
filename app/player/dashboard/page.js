@@ -223,13 +223,13 @@ function PlayerDashboardContent() {
                         {user.type === "host" ? "🎮 " : "⚔️ "}
                         {tProfile(user.type) || user.type}
                       </span>
-                      {user.rank && (
+                      {/* {user.rank && (
                         <span
                           className={`bg-dark-primary/50 rounded-full px-3 py-1 text-xs font-medium ${getRankColor(user.rank)}`}
                         >
                           {user.rank}
                         </span>
-                      )}
+                      )} */}
                     </div>
                   </div>
                 </div>

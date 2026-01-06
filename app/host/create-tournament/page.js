@@ -16,6 +16,7 @@ import { getEntryPriceOptions } from "../../lib/ticketConfig";
 import { CONVERSION_RATE, PRIMARY_CURRENCY } from "../../lib/currencyConfig";
 import DatePicker from "../../components/DatePicker";
 import TimePicker from "../../components/TimePicker";
+import SuccessModal from "../../components/SuccessModal";
 
 function CreateTournamentContent() {
   const { user } = useUser();
@@ -47,6 +48,8 @@ function CreateTournamentContent() {
   const [clanOptions, setClanOptions] = useState([]);
   const entryPriceOptions = useMemo(() => getEntryPriceOptions(), []);
   const [showDevPanel, setShowDevPanel] = useState(false);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [createdTournamentTitle, setCreatedTournamentTitle] = useState("");
 
   const router = useRouter();
 
@@ -424,9 +427,9 @@ function CreateTournamentContent() {
       const tournament = await tournamentsApi.create(tournamentData);
 
       if (tournament) {
-        // Success! Redirect to dashboard
-        alert("Tournament created successfully! 🏆");
-        router.push("/host/dashboard");
+        // Success! Show beautiful modal
+        setCreatedTournamentTitle(formData.title);
+        setShowSuccessModal(true);
       } else {
         setErrors({ submit: "Failed to create tournament. Please try again." });
       }
@@ -1422,6 +1425,21 @@ function CreateTournamentContent() {
           </div>
         </form>
       </div>
+
+      {/* Success Modal */}
+      <SuccessModal
+        isOpen={showSuccessModal}
+        onClose={() => {
+          setShowSuccessModal(false);
+          router.push("/host/dashboard");
+        }}
+        title="Tournament Created!"
+        message={`Your tournament "${createdTournamentTitle}" has been created successfully. Players can now discover and join your tournament.`}
+        emoji="🏆"
+        buttonText="Go to Dashboard"
+        autoClose={true}
+        autoCloseDelay={4000}
+      />
     </div>
   );
 }

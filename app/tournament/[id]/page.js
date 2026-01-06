@@ -463,6 +463,11 @@ export default function TournamentDetailsPage() {
 
   // Check if tournament is still joinable
   const isTournamentJoinable = () => {
+    // Cannot join if tournament is not upcoming (started or completed)
+    if (tournament.status !== "upcoming") {
+      return false;
+    }
+    
     const now = new Date();
     if (tournament.expires_at) {
       const expiresAt = new Date(tournament.expires_at);
@@ -470,7 +475,7 @@ export default function TournamentDetailsPage() {
         return now < expiresAt;
       }
     }
-    return tournament.status === "upcoming";
+    return true;
   };
 
   const canJoin =

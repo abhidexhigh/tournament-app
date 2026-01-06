@@ -7,7 +7,9 @@ export default function CountdownSection({ tournament }) {
   const isAutomated =
     tournament.is_automated === true || tournament.is_automated === "true";
 
-  if (tournament.status !== "upcoming" && tournament.status !== "ongoing") {
+  // Only show countdown for upcoming tournaments
+  // Once tournament is started (ongoing), stop the timer
+  if (tournament.status !== "upcoming") {
     return null;
   }
 
@@ -111,7 +113,7 @@ export default function CountdownSection({ tournament }) {
       <CountdownDisplay
         label={label}
         timerProps={{ expiresAt: tournament.expires_at }}
-        highlighted={isHighlighted}
+        // highlighted={isHighlighted}
       />
     );
   }
