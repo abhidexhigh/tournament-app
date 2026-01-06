@@ -5,6 +5,7 @@ export default function Textarea({
   name,
   value,
   onChange,
+  onBlur,
   placeholder,
   required = false,
   disabled = false,
@@ -28,6 +29,7 @@ export default function Textarea({
         name={name}
         value={value}
         onChange={onChange}
+        onBlur={onBlur}
         placeholder={placeholder}
         required={required}
         disabled={disabled}

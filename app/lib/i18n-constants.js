@@ -21,3 +21,4 @@ export const localeFlags = {
   es: "https://flagcdn.com/w40/es.png",
 };
 
+
