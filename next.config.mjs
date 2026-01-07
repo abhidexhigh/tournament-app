@@ -7,13 +7,25 @@ const nextConfig = {
         hostname: "res.cloudinary.com",
         pathname: "/**",
       },
+      {
+        protocol: "https",
+        hostname: "flagcdn.com",
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
+        hostname: "lh3.googleusercontent.com",
+        pathname: "/**",
+      },
     ],
   },
+  // CSP headers are handled by middleware.js for dynamic nonce support
+  // Static headers for non-CSP security headers only
   async headers() {
     return [
       {
-        // Apply security headers to all routes
-        source: "/:path*",
+        // Apply security headers to API routes (middleware doesn't cover these)
+        source: "/api/:path*",
         headers: [
           {
             key: "X-DNS-Prefetch-Control",
@@ -24,16 +36,8 @@ const nextConfig = {
             value: "max-age=63072000; includeSubDomains; preload",
           },
           {
-            key: "X-Frame-Options",
-            value: "SAMEORIGIN",
-          },
-          {
             key: "X-Content-Type-Options",
             value: "nosniff",
-          },
-          {
-            key: "X-XSS-Protection",
-            value: "1; mode=block",
           },
           {
             key: "Referrer-Policy",
@@ -43,21 +47,12 @@ const nextConfig = {
             key: "Permissions-Policy",
             value: "camera=(), microphone=(), geolocation=(), interest-cohort=()",
           },
+          // API routes have a simpler CSP - no scripts needed
           {
             key: "Content-Security-Policy",
             value: [
-              "default-src 'self'",
-              "script-src 'self' 'unsafe-eval' 'unsafe-inline' https://js.stripe.com https://checkout.stripe.com",
-              "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
-              "img-src 'self' data: https: blob: https://flagcdn.com",
-              "font-src 'self' https://fonts.gstatic.com data:",
-              "connect-src 'self' https://api.stripe.com https://*.stripe.com https://res.cloudinary.com",
-              "frame-src 'self' https://js.stripe.com https://hooks.stripe.com https://checkout.stripe.com",
-              "object-src 'none'",
-              "base-uri 'self'",
-              "form-action 'self'",
-              "frame-ancestors 'self'",
-              "upgrade-insecure-requests",
+              "default-src 'none'",
+              "frame-ancestors 'none'",
             ].join("; "),
           },
         ],
