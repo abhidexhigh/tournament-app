@@ -4,6 +4,7 @@ import Navbar from "./components/Navbar";
 import ClientInitializer from "./components/ClientInitializer";
 import Providers from "./components/Providers";
 import Footer from "./components/Footer";
+import { getNonce } from "./lib/nonce";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -16,9 +17,17 @@ export const metadata = {
     "Join competitive Force of Rune tournaments and win amazing prizes",
 };
 
-export default function RootLayout({ children }) {
+export default async function RootLayout({ children }) {
+  // Get the CSP nonce for this request
+  // This nonce is used by Next.js to allow inline scripts
+  const nonce = await getNonce();
+
   return (
     <html lang="en" suppressHydrationWarning>
+      <head>
+        {/* Pass nonce to Next.js for script injection */}
+        <meta name="csp-nonce" content={nonce} />
+      </head>
       <body className={`${inter.variable} antialiased`}>
         <Providers>
           <ClientInitializer />
@@ -26,6 +35,8 @@ export default function RootLayout({ children }) {
           <main className="min-h-screen">{children}</main>
           <Footer />
         </Providers>
+        {/* Example of using nonce with Next.js Script component for external scripts */}
+        {/* <Script src="https://example.com/script.js" nonce={nonce} /> */}
       </body>
     </html>
   );

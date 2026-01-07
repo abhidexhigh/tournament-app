@@ -1,28 +1,49 @@
 import { NextResponse } from "next/server";
 
+// Generate a cryptographically secure nonce
+function generateNonce() {
+  const array = new Uint8Array(16);
+  crypto.getRandomValues(array);
+  return Buffer.from(array).toString("base64");
+}
+
 export function middleware(request) {
-  // Create response
-  const response = NextResponse.next();
+  // Generate a unique nonce for this request
+  const nonce = generateNonce();
+
+  // Create response with nonce header for server components to read
+  const requestHeaders = new Headers(request.headers);
+  requestHeaders.set("x-nonce", nonce);
+
+  const response = NextResponse.next({
+    request: {
+      headers: requestHeaders,
+    },
+  });
+
+  // Also set on response for client access if needed
+  response.headers.set("x-nonce", nonce);
 
   // Check if we're in development or production
   const isDev = process.env.NODE_ENV === "development";
 
-  // Build CSP directives
-  // Note: Next.js requires 'unsafe-inline' and 'unsafe-eval' for its hydration scripts
-  // Full nonce-based CSP requires Next.js experimental CSP support or custom _document
-  // This is a practical CSP that balances security with Next.js compatibility
+  // Build CSP directives with nonce-based security
+  // Using 'strict-dynamic' allows scripts loaded by nonced scripts to execute
+  // This is the recommended approach for modern CSP
   const cspDirectives = [
     // Default: only allow from same origin
     "default-src 'self'",
 
-    // Scripts: Allow self, specific trusted domains, and inline scripts
-    // 'unsafe-inline' is required for Next.js hydration scripts
+    // Scripts: Use nonce-based CSP with strict-dynamic
+    // 'strict-dynamic' allows dynamically loaded scripts from trusted (nonced) scripts
     // 'unsafe-eval' is only needed in development for hot reloading
     isDev
-      ? "script-src 'self' 'unsafe-eval' 'unsafe-inline' https://js.stripe.com https://checkout.stripe.com"
-      : "script-src 'self' 'unsafe-inline' https://js.stripe.com https://checkout.stripe.com",
+      ? `script-src 'nonce-${nonce}' 'strict-dynamic' 'unsafe-eval' https://js.stripe.com https://checkout.stripe.com`
+      : `script-src 'nonce-${nonce}' 'strict-dynamic' https://js.stripe.com https://checkout.stripe.com`,
 
-    // Styles: Allow self, inline styles (required for React/Tailwind), and Google Fonts
+    // Styles: Using 'unsafe-inline' because React/Tailwind generate many inline styles
+    // CSS injection is much harder to exploit for XSS than JS injection
+    // The real security benefit is in script-src where we use nonce-based CSP
     "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
 
     // Images: Restrict to specific trusted domains only (no broad https:)

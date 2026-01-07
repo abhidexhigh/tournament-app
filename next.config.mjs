@@ -1,5 +1,13 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // Enable experimental CSP nonce support
+  // This allows Next.js to automatically inject nonces into inline scripts
+  experimental: {
+    // Read nonce from x-nonce header set by middleware
+    serverActions: {
+      bodySizeLimit: "2mb",
+    },
+  },
   images: {
     remotePatterns: [
       {

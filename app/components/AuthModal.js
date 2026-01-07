@@ -139,7 +139,10 @@ export default function AuthModal({ isOpen, onClose, initialMode = "login" }) {
     try {
       if (isLogin) {
         // Try to login with credentials
-        const user = await loginWithCredentials(formData.email, formData.password);
+        const user = await loginWithCredentials(
+          formData.email,
+          formData.password,
+        );
         if (user) {
           // Use NextAuth signIn for session management
           const result = await signIn("credentials", {
