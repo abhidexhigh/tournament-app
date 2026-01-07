@@ -16,8 +16,6 @@ import { useTranslations } from "../../contexts/LocaleContext";
 function HostDashboardContent() {
   const { user } = useUser();
   const tProfile = useTranslations("profile");
-  const t = useTranslations("dashboard");
-  const tTournament = useTranslations("tournament");
   const [tournaments, setTournaments] = useState([]);
   const [stats, setStats] = useState({
     total: 0,
@@ -288,7 +286,7 @@ function HostDashboardContent() {
                       size="md"
                       className="w-full sm:w-auto"
                     >
-                      ✨ {t("createTournament")}
+                      ✨ Create Tournament
                     </Button>
                   </Link>
                 </div>
@@ -303,7 +301,7 @@ function HostDashboardContent() {
                     <div className="mb-3 flex h-11 w-11 items-center justify-center rounded-lg border border-white/15 bg-white/10 transition-transform duration-300 group-hover:scale-105 md:h-12 md:w-12">
                       <Image
                         src="/icons/002.webp"
-                        alt={t("totalTournaments")}
+                        alt="Total Tournaments"
                         width={26}
                         height={26}
                       />
@@ -312,7 +310,7 @@ function HostDashboardContent() {
                       {stats.total}
                     </div>
                     <div className="mt-1 text-[10px] font-medium tracking-wider text-gray-400 uppercase md:text-xs">
-                      {t("totalTournaments")}
+                      Total Tournaments
                     </div>
                   </div>
                 </div>
@@ -333,7 +331,7 @@ function HostDashboardContent() {
                       {stats.upcoming}
                     </div>
                     <div className="mt-1 text-[10px] font-medium tracking-wider text-gray-400 uppercase md:text-xs">
-                      {t("upcoming")}
+                      Upcoming
                     </div>
                   </div>
                 </div>
@@ -354,7 +352,7 @@ function HostDashboardContent() {
                       {stats.ongoing}
                     </div>
                     <div className="mt-1 text-[10px] font-medium tracking-wider text-gray-400 uppercase md:text-xs">
-                      {t("ongoing")}
+                      Ongoing
                     </div>
                   </div>
                 </div>
@@ -375,7 +373,7 @@ function HostDashboardContent() {
                       {stats.completed}
                     </div>
                     <div className="mt-1 text-[10px] font-medium tracking-wider text-gray-400 uppercase md:text-xs">
-                      {t("completed")}
+                      Completed
                     </div>
                   </div>
                 </div>
@@ -390,7 +388,7 @@ function HostDashboardContent() {
                 <span className="text-2xl">👑</span>
               </div>
               <h2 className="text-gold-gradient text-3xl font-bold">
-                {t("yourTournaments")}
+                Your Tournaments
               </h2>
             </div>
           </div>
@@ -403,14 +401,15 @@ function HostDashboardContent() {
                   <span className="text-6xl">🎮</span>
                 </div>
                 <h3 className="mb-3 text-3xl font-bold text-white">
-                  {t("noTournamentsYet")}
+                  No Tournaments Yet
                 </h3>
                 <p className="mx-auto mb-8 max-w-md text-lg text-gray-400">
-                  {t("createFirstTournamentDesc")}
+                  Create your first tournament and start hosting amazing
+                  competitions!
                 </p>
                 <Link href="/host/create-tournament">
                   <Button variant="primary" size="lg">
-                    ✨ {t("createYourFirstTournament")}
+                    ✨ Create Your First Tournament
                   </Button>
                 </Link>
               </div>
@@ -424,24 +423,24 @@ function HostDashboardContent() {
                     {/* Status Filter */}
                     <div className="relative">
                       <label className="mb-2 block text-sm font-medium text-gray-400">
-                        {t("filterByStatus")}
+                        Filter by Status
                       </label>
                       <select
                         value={activeTab}
                         onChange={(e) => setActiveTab(e.target.value)}
                         className="border-gold-dark/30 focus:border-gold focus:ring-gold/30 hover:border-gold/40 w-full cursor-pointer rounded-xl border bg-gradient-to-r from-black/40 to-black/20 px-4 py-3 text-sm font-medium text-white transition-all duration-300 focus:ring-2 focus:outline-none sm:w-48"
                       >
-                        <option value="all">{t("allTournaments")}</option>
-                        <option value="upcoming">{t("upcoming")}</option>
-                        <option value="ongoing">{t("ongoing")}</option>
-                        <option value="completed">{t("completed")}</option>
+                        <option value="all">All Tournaments</option>
+                        <option value="upcoming">Upcoming</option>
+                        <option value="ongoing">Ongoing</option>
+                        <option value="completed">Completed</option>
                       </select>
                     </div>
 
                     {/* Search Bar */}
                     <div className="flex-1">
                       <label className="mb-2 block text-sm font-medium text-gray-400">
-                        {t("search")}
+                        Search
                       </label>
                       <div className="group relative">
                         <div className="pointer-events-none absolute inset-y-0 left-0 z-10 flex items-center pl-4">
@@ -463,7 +462,7 @@ function HostDashboardContent() {
                           type="text"
                           value={searchQuery}
                           onChange={(e) => setSearchQuery(e.target.value)}
-                          placeholder={t("searchPlaceholder")}
+                          placeholder="Search by name, game..."
                           className="border-gold-dark/30 focus:border-gold focus:ring-gold/30 hover:border-gold/40 w-full rounded-xl border bg-gradient-to-r from-black/40 to-black/20 py-3 pr-11 pl-12 text-sm font-medium text-white placeholder-gray-400 transition-all duration-300 focus:ring-2 focus:outline-none"
                         />
                         {searchQuery && (

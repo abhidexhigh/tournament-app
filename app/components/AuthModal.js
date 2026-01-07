@@ -11,9 +11,9 @@ import {
   loginWithCredentials,
   registerUser,
   syncUserWithStorage,
+  hasUserRole,
 } from "../lib/authHelpers";
 import { useTranslations } from "../contexts/LocaleContext";
-import CSRFToken from "./CSRFToken";
 
 export default function AuthModal({ isOpen, onClose, initialMode = "login" }) {
   const [isLogin, setIsLogin] = useState(initialMode === "login");
@@ -63,16 +63,20 @@ export default function AuthModal({ isOpen, onClose, initialMode = "login" }) {
 
       // Sync with localStorage
       const user = syncUserWithStorage(session.user);
+      const justRegistered = localStorage.getItem("just_registered") === "true";
 
-      // Redirect to appropriate dashboard based on user role
-      if (user && user.type) {
+      // If user has a role and wasn't just registered, redirect to dashboard
+      if (hasUserRole(user) && !justRegistered) {
         router.push(
           user.type === "host" ? "/host/dashboard" : "/player/dashboard",
         );
         onClose();
       } else {
-        // Default to player dashboard if no role set
-        router.push("/player/dashboard");
+        // If no role or just registered, redirect to role selection
+        if (justRegistered) {
+          localStorage.removeItem("just_registered");
+        }
+        router.push("/select-role");
         onClose();
       }
     }
@@ -164,6 +168,9 @@ export default function AuthModal({ isOpen, onClose, initialMode = "login" }) {
           formData.password,
         );
         if (user) {
+          // Mark as just registered to force role selection
+          localStorage.setItem("just_registered", "true");
+
           // Sign in after registration
           const result = await signIn("credentials", {
             username: formData.email,
@@ -172,7 +179,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = "login" }) {
           });
 
           if (result?.ok) {
-            // Will redirect to player dashboard via useEffect
+            // Will redirect to role selection via useEffect
           }
         } else {
           setErrors({ email: "Email already exists or registration failed" });
@@ -190,7 +197,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = "login" }) {
     setLoading(true);
     try {
       await signIn("google", {
-        callbackUrl: "/player/dashboard",
+        callbackUrl: "/select-role",
       });
     } catch (error) {
       console.error("Google sign-in error:", error);
@@ -390,7 +397,6 @@ export default function AuthModal({ isOpen, onClose, initialMode = "login" }) {
 
             {/* Form */}
             <form onSubmit={handleCredentialsSubmit} className="space-y-4">
-              <CSRFToken />
               {!isLogin && (
                 <Input
                   label={t("username")}

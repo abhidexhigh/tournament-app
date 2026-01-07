@@ -3,10 +3,6 @@ import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../../../lib/authConfig";
 import { usersDb } from "../../../lib/database";
-import {
-  sanitizeWithLength,
-  sanitizeEmail,
-} from "../../../lib/sanitize";
 
 // GET /api/users/[id] - Get user by ID
 export async function GET(request, { params }) {
@@ -33,20 +29,8 @@ export async function GET(request, { params }) {
 // PUT /api/users/[id] - Update user
 export async function PUT(request, { params }) {
   try {
-    // Parse body first (before CSRF validation to avoid reading request twice)
-    const body = await request.json();
-    
-    // Validate CSRF token (pass body to avoid re-reading request)
-    const { validateCSRFRequest } = await import("../../../lib/csrfMiddleware");
-    const csrfValidation = await validateCSRFRequest(request, body);
-    if (!csrfValidation.valid) {
-      return NextResponse.json(
-        { success: false, error: csrfValidation.error || "CSRF token validation failed" },
-        { status: 403 },
-      );
-    }
-
     const { id } = await params;
+    const body = await request.json();
 
     // If updating user type, allow if it's the user themselves or an admin
     if (body.type !== undefined) {
@@ -79,26 +63,7 @@ export async function PUT(request, { params }) {
       }
     }
 
-    // Sanitize user input fields if they're being updated
-    const updateData = { ...body };
-    if (updateData.username !== undefined) {
-      updateData.username = sanitizeWithLength(updateData.username, 100);
-    }
-    if (updateData.email !== undefined) {
-      const sanitizedEmail = sanitizeEmail(updateData.email);
-      if (!sanitizedEmail) {
-        return NextResponse.json(
-          { success: false, error: "Invalid email format" },
-          { status: 400 },
-        );
-      }
-      updateData.email = sanitizedEmail;
-    }
-    if (updateData.avatar !== undefined) {
-      updateData.avatar = sanitizeWithLength(updateData.avatar, 50);
-    }
-
-    const updatedUser = await usersDb.update(id, updateData);
+    const updatedUser = await usersDb.update(id, body);
 
     if (!updatedUser) {
       return NextResponse.json(

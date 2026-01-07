@@ -6,14 +6,12 @@ import ProtectedRoute from "../../components/ProtectedRoute";
 import { tournamentsApi } from "../../lib/api";
 import { selectTournamentIcon } from "../../lib/iconSelector";
 import { useUser } from "../../contexts/UserContext";
-import { useTranslations } from "../../contexts/LocaleContext";
 import { getClanOptions, initializeClans } from "../../lib/clans";
 import { getEntryPriceOptions } from "../../lib/ticketConfig";
 import { CONVERSION_RATE, PRIMARY_CURRENCY } from "../../lib/currencyConfig";
 import DatePicker from "../../components/DatePicker";
 import TimePicker from "../../components/TimePicker";
 import SuccessModal from "../../components/SuccessModal";
-import CSRFToken from "../../components/CSRFToken";
 import {
   LuGamepad2,
   LuCalendarDays,
@@ -36,40 +34,17 @@ import { GiCrown, GiSilverBullet } from "react-icons/gi";
 import { MdDiamond } from "react-icons/md";
 import { FaMedal } from "react-icons/fa6";
 
-// Step definitions - will be translated in component
+// Step definitions
 const STEPS = [
-  {
-    id: 1,
-    titleKey: "stepBasics",
-    subtitleKey: "stepBasicsSubtitle",
-    icon: LuGamepad2,
-  },
-  {
-    id: 2,
-    titleKey: "stepSchedule",
-    subtitleKey: "stepScheduleSubtitle",
-    icon: LuCalendarDays,
-  },
-  {
-    id: 3,
-    titleKey: "stepPrizes",
-    subtitleKey: "stepPrizesSubtitle",
-    icon: TbMoneybag,
-  },
-  {
-    id: 4,
-    titleKey: "stepReview",
-    subtitleKey: "stepReviewSubtitle",
-    icon: LuCheck,
-  },
+  { id: 1, title: "Basics", subtitle: "Name & Format", icon: LuGamepad2 },
+  { id: 2, title: "Schedule", subtitle: "When & Who", icon: LuCalendarDays },
+  { id: 3, title: "Prizes", subtitle: "Rewards", icon: TbMoneybag },
+  { id: 4, title: "Review", subtitle: "Confirm", icon: LuCheck },
 ];
 
 function CreateTournamentContent() {
   const { user } = useUser();
   const router = useRouter();
-  const t = useTranslations("createTournament");
-  const tCommon = useTranslations("common");
-  const tRanks = useTranslations("ranks");
 
   const [currentStep, setCurrentStep] = useState(1);
   const [loading, setLoading] = useState(false);
@@ -185,38 +160,38 @@ function CreateTournamentContent() {
 
     switch (name) {
       case "title":
-        if (!value.trim()) return t("validation.titleRequired");
+        if (!value.trim()) return "Tournament title is required";
         return "";
       case "date":
-        if (!value) return t("validation.dateRequired");
+        if (!value) return "Tournament date is required";
         const selectedDate = new Date(value);
         const today = new Date();
         today.setHours(0, 0, 0, 0);
-        if (selectedDate < today) return t("validation.datePast");
+        if (selectedDate < today) return "Date cannot be in the past";
         return "";
       case "time":
-        if (!value) return t("validation.timeRequired");
+        if (!value) return "Tournament time is required";
         return "";
       case "maxPlayers":
         const maxPlayers = parseInt(value);
         if (currentData.tournamentType === "regular") {
-          if (!value || maxPlayers < 10) return t("validation.minPlayers");
-          if (maxPlayers > 100) return t("validation.maxPlayers");
+          if (!value || maxPlayers < 10) return "Minimum 10 players required";
+          if (maxPlayers > 100) return "Maximum 100 players allowed";
         } else if (currentData.tournamentType === "clan_battle") {
           if (!value || !clanPlayerOptions.includes(maxPlayers)) {
-            return t("validation.validPlayerCount");
+            return "Please select a valid player count";
           }
         }
         return "";
       case "minRank":
-        if (!value) return t("validation.minRankRequired");
+        if (!value) return "Minimum rank is required";
         return "";
       case "clan1_id":
         if (
           currentData.tournamentType === "clan_battle" &&
           currentData.clanBattleMode === "clan_selection"
         ) {
-          if (!value) return t("validation.clan1Required");
+          if (!value) return "First clan is required";
         }
         return "";
       case "clan2_id":
@@ -224,16 +199,16 @@ function CreateTournamentContent() {
           currentData.tournamentType === "clan_battle" &&
           currentData.clanBattleMode === "clan_selection"
         ) {
-          if (!value) return t("validation.clan2Required");
+          if (!value) return "Second clan is required";
           if (currentData.clan1_id && value === currentData.clan1_id) {
-            return t("validation.clansDifferent");
+            return "Clans must be different";
           }
         }
         return "";
       case "prizePool":
         const prizePool = parseInt(value);
-        if (!value || prizePool < 1) return t("validation.minPrizePool");
-        if (prizePool > 10000) return t("validation.maxPrizePool");
+        if (!value || prizePool < 1) return "Minimum prize pool is $1";
+        if (prizePool > 10000) return "Maximum prize pool is $10,000";
         return "";
       case "prizeSplitFirst":
       case "prizeSplitSecond":
@@ -251,35 +226,33 @@ function CreateTournamentContent() {
             name === "prizeSplitThird" ? value : currentData.prizeSplitThird,
           ) || 0;
         if (first + second + third >= 100)
-          return t("validation.top3SplitTooHigh");
+          return "Top 3 split must be less than 100%";
         return "";
       case "additionalPrizePositions":
         const positions = parseInt(value) || 0;
         const players = parseInt(currentData.maxPlayers) || 0;
         const maxAllowed = Math.max(0, players - 3);
-        if (positions < 0) return t("validation.positionsNegative");
+        if (positions < 0) return "Cannot be negative";
         if (players > 0 && positions > maxAllowed)
-          return t("validation.maxWinners", { max: maxAllowed });
+          return `Max ${maxAllowed} winners allowed`;
         const topThree =
           (parseInt(currentData.prizeSplitFirst) || 0) +
           (parseInt(currentData.prizeSplitSecond) || 0) +
           (parseInt(currentData.prizeSplitThird) || 0);
         if (positions > 0) {
           const perPos = (100 - topThree) / positions;
-          if (perPos < 0.1) return t("validation.tooManyPositions");
+          if (perPos < 0.1) return "Too many positions";
         }
         return "";
       case "entryFee":
         const fee = parseFloat(value);
-        if (fee < 0) return t("validation.entryFeeNegative");
-        if (fee > 10000) return t("validation.maxEntryFee");
+        if (fee < 0) return "Entry fee cannot be negative";
+        if (fee > 10000) return "Maximum entry fee is $10,000";
         return "";
       case "rules":
-        if (!value.trim()) return t("validation.rulesRequired");
+        if (!value.trim()) return "Tournament rules are required";
         if (value.length < 20)
-          return t("validation.rulesMinLength", {
-            remaining: 20 - value.length,
-          });
+          return `${20 - value.length} more characters needed`;
         return "";
       default:
         return "";
@@ -466,12 +439,12 @@ function CreateTournamentContent() {
         setCreatedTournamentTitle(formData.title);
         setShowSuccessModal(true);
       } else {
-        setErrors({ submit: t("validation.submitFailed") });
+        setErrors({ submit: "Failed to create tournament. Please try again." });
       }
     } catch (error) {
       console.error("Tournament creation error:", error);
       setErrors({
-        submit: error.message || t("validation.somethingWentWrong"),
+        submit: error.message || "Something went wrong. Please try again.",
       });
     } finally {
       setLoading(false);
@@ -492,26 +465,28 @@ function CreateTournamentContent() {
 
   // Rank options with icons
   const rankOptions = [
-    { value: "Silver", icon: GiSilverBullet, label: tRanks("silver") },
-    { value: "Gold", icon: FaTrophy, label: tRanks("gold") },
-    { value: "Platinum", icon: TbDiamond, label: tRanks("platinum") },
-    { value: "Diamond", icon: MdDiamond, label: tRanks("diamond") },
-    { value: "Master", icon: GiCrown, label: tRanks("master") },
+    { value: "Silver", icon: GiSilverBullet, label: "Silver" },
+    { value: "Gold", icon: FaTrophy, label: "Gold" },
+    { value: "Platinum", icon: TbDiamond, label: "Platinum" },
+    { value: "Diamond", icon: MdDiamond, label: "Diamond" },
+    { value: "Master", icon: GiCrown, label: "Master" },
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-[#000000ba] to-[#0a0a0f36]">
+    <div className="min-h-screen bg-gradient-to-b from-[#000000a1] to-[#0a0a0f36]">
       {/* Top Header Bar */}
-      <div className="sticky top-0 border-b border-white/5">
+      <div className="sticky top-0 z-50 border-b border-white/5 bg-[#0a0a0f]/95 backdrop-blur-xl">
         <div className="mx-auto flex max-w-4xl items-center justify-between px-4 py-3">
           <button
             onClick={() => router.push("/host/dashboard")}
             className="flex items-center gap-2 text-sm text-gray-400 transition-colors hover:text-white"
           >
             <span>←</span>
-            <span>{t("dashboard")}</span>
+            <span>Dashboard</span>
           </button>
-          <h1 className="text-lg font-semibold text-white">{t("title")}</h1>
+          <h1 className="text-lg font-semibold text-white">
+            Create Tournament
+          </h1>
           <div className="w-20" />
         </div>
       </div>
@@ -524,7 +499,7 @@ function CreateTournamentContent() {
             className="mb-4 text-xs text-purple-400/40 hover:text-purple-400"
           >
             <LuGamepad2 className="mr-1 inline h-3 w-3" />
-            {t("dev")}
+            Dev
           </button>
         )}
 
@@ -533,7 +508,7 @@ function CreateTournamentContent() {
           <div className="mb-6 rounded-2xl border border-purple-500/20 bg-purple-500/5 p-4">
             <div className="mb-3 flex items-center justify-between">
               <span className="text-sm font-medium text-purple-300">
-                {t("quickFill")}
+                Quick Fill
               </span>
               <button
                 onClick={() => setShowDevPanel(false)}
@@ -547,13 +522,13 @@ function CreateTournamentContent() {
                 onClick={() => fillPreset("regularFixed")}
                 className="flex-1 rounded-lg bg-purple-500/20 px-3 py-2 text-sm text-purple-300 transition-colors hover:bg-purple-500/30"
               >
-                {t("regularTournament")}
+                Regular Tournament
               </button>
               <button
                 onClick={() => fillPreset("clanBattle")}
                 className="flex-1 rounded-lg bg-purple-500/20 px-3 py-2 text-sm text-purple-300 transition-colors hover:bg-purple-500/30"
               >
-                {t("clanBattle")}
+                Clan Battle
               </button>
             </div>
           </div>
@@ -595,7 +570,7 @@ function CreateTournamentContent() {
                           : "text-gray-600"
                     }`}
                   >
-                    {t(step.titleKey)}
+                    {step.title}
                   </span>
                 </button>
                 {idx < STEPS.length - 1 && (
@@ -612,31 +587,30 @@ function CreateTournamentContent() {
 
         {/* Form Card */}
         <form onSubmit={handleSubmit}>
-          <CSRFToken />
-          <div className="rounded-2xl border border-white/10 bg-gradient-to-b from-black/[0.01] to-black/[0.1] p-6 backdrop-blur">
+          <div className="rounded-2xl border border-white/10 bg-gradient-to-b from-white/[0.07] to-transparent p-6 backdrop-blur">
             {/* Step 1: Basics */}
             {currentStep === 1 && (
               <div className="space-y-6">
                 <div className="text-center">
                   <h2 className="text-xl font-bold text-white">
-                    {t("tournamentBasics")}
+                    Tournament Basics
                   </h2>
                   <p className="mt-1 text-sm text-gray-500">
-                    {t("tournamentBasicsDesc")}
+                    Give your tournament a name and choose the format
                   </p>
                 </div>
 
                 {/* Tournament Name */}
                 <div>
                   <label className="mb-2 block text-sm font-medium text-gray-300">
-                    {t("tournamentName")} <span className="text-gold">*</span>
+                    Tournament Name <span className="text-gold">*</span>
                   </label>
                   <input
                     type="text"
                     name="title"
                     value={formData.title}
                     onChange={handleInputChange}
-                    placeholder={t("tournamentNamePlaceholder")}
+                    placeholder="e.g., Friday Night Showdown"
                     className={`w-full rounded-xl border ${
                       errors.title ? "border-red-500" : "border-white/10"
                     } focus:border-gold bg-white/5 px-4 py-3.5 text-white placeholder-gray-500 transition-colors focus:outline-none`}
@@ -651,7 +625,7 @@ function CreateTournamentContent() {
                 {/* Tournament Format */}
                 <div>
                   <label className="mb-3 block text-sm font-medium text-gray-300">
-                    {t("tournamentFormat")} <span className="text-gold">*</span>
+                    Tournament Format <span className="text-gold">*</span>
                   </label>
                   <div className="grid grid-cols-2 gap-3">
                     <button
@@ -672,11 +646,9 @@ function CreateTournamentContent() {
                       <div className="mb-2 flex items-center justify-center">
                         <FaTrophy className="text-gold h-8 w-8" />
                       </div>
-                      <div className="font-semibold text-white">
-                        {t("forChess")}
-                      </div>
+                      <div className="font-semibold text-white">FOR Chess</div>
                       <div className="mt-1 text-xs text-gray-400">
-                        {t("individualCompetition")}
+                        Individual competition
                       </div>
                       {formData.tournamentType === "regular" && (
                         <div className="bg-gold absolute top-3 right-3 flex h-6 w-6 items-center justify-center rounded-full">
@@ -704,10 +676,10 @@ function CreateTournamentContent() {
                         <LuSwords className="text-gold h-8 w-8" />
                       </div>
                       <div className="font-semibold text-white">
-                        {t("clanBattle")}
+                        Clan Battle
                       </div>
                       <div className="mt-1 text-xs text-gray-400">
-                        {t("teamVsTeam")}
+                        Team vs Team
                       </div>
                       {formData.tournamentType === "clan_battle" && (
                         <div className="bg-gold absolute top-3 right-3 flex h-6 w-6 items-center justify-center rounded-full">
@@ -723,7 +695,7 @@ function CreateTournamentContent() {
                   <div className="space-y-4 rounded-xl border border-white/10 bg-white/5 p-4">
                     <div>
                       <label className="mb-2 block text-sm font-medium text-gray-300">
-                        {t("teamAssignment")}
+                        Team Assignment
                       </label>
                       <div className="grid grid-cols-2 gap-2">
                         <button
@@ -741,7 +713,7 @@ function CreateTournamentContent() {
                           }`}
                         >
                           <TbTarget className="mr-1.5 inline h-4 w-4" />
-                          {t("autoBalance")}
+                          Auto Balance
                         </button>
                         <button
                           type="button"
@@ -758,7 +730,7 @@ function CreateTournamentContent() {
                           }`}
                         >
                           <TbUsersGroup className="mr-1.5 inline h-4 w-4" />
-                          {t("selectClans")}
+                          Select Clans
                         </button>
                       </div>
                     </div>
@@ -767,7 +739,7 @@ function CreateTournamentContent() {
                       <div className="grid grid-cols-2 gap-3">
                         <div>
                           <label className="mb-1 block text-xs text-gray-400">
-                            {t("teamA")}
+                            Team A
                           </label>
                           <select
                             name="clan1_id"
@@ -775,7 +747,7 @@ function CreateTournamentContent() {
                             onChange={handleInputChange}
                             className={`w-full rounded-lg border ${errors.clan1_id ? "border-red-500" : "border-white/10"} bg-white/5 px-3 py-2.5 text-sm text-white`}
                           >
-                            <option value="">{t("selectClan")}</option>
+                            <option value="">Select clan</option>
                             {clanOptions.map((opt) => (
                               <option key={opt.value} value={opt.value}>
                                 {opt.label}
@@ -790,7 +762,7 @@ function CreateTournamentContent() {
                         </div>
                         <div>
                           <label className="mb-1 block text-xs text-gray-400">
-                            {t("teamB")}
+                            Team B
                           </label>
                           <select
                             name="clan2_id"
@@ -798,7 +770,7 @@ function CreateTournamentContent() {
                             onChange={handleInputChange}
                             className={`w-full rounded-lg border ${errors.clan2_id ? "border-red-500" : "border-white/10"} bg-white/5 px-3 py-2.5 text-sm text-white`}
                           >
-                            <option value="">{t("selectClan")}</option>
+                            <option value="">Select clan</option>
                             {clanOptions.map((opt) => (
                               <option key={opt.value} value={opt.value}>
                                 {opt.label}
@@ -816,7 +788,7 @@ function CreateTournamentContent() {
 
                     <div>
                       <label className="mb-2 block text-sm font-medium text-gray-300">
-                        {t("prizeDistribution")}
+                        Prize Distribution
                       </label>
                       <div className="grid grid-cols-2 gap-2">
                         <button
@@ -834,7 +806,7 @@ function CreateTournamentContent() {
                           }`}
                         >
                           <TbMedal className="mr-1.5 inline h-4 w-4" />
-                          {t("individualRanking")}
+                          Individual Ranking
                         </button>
                         <button
                           type="button"
@@ -851,7 +823,7 @@ function CreateTournamentContent() {
                           }`}
                         >
                           <FaTrophy className="mr-1.5 inline h-4 w-4" />
-                          {t("winnerClanTakesAll")}
+                          Winner Clan Takes All
                         </button>
                       </div>
                     </div>
@@ -865,10 +837,10 @@ function CreateTournamentContent() {
               <div className="space-y-6">
                 <div className="text-center">
                   <h2 className="text-xl font-bold text-white">
-                    {t("scheduleAndPlayers")}
+                    Schedule & Players
                   </h2>
                   <p className="mt-1 text-sm text-gray-500">
-                    {t("scheduleAndPlayersDesc")}
+                    Set when it starts and who can join
                   </p>
                 </div>
 
@@ -876,7 +848,7 @@ function CreateTournamentContent() {
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <label className="mb-2 block text-sm font-medium text-gray-300">
-                      {t("date")} <span className="text-gold">*</span>
+                      Date <span className="text-gold">*</span>
                     </label>
                     <DatePicker
                       selectedDate={
@@ -899,7 +871,7 @@ function CreateTournamentContent() {
                           setErrors((prev) => ({ ...prev, date: "" }));
                         }
                       }}
-                      placeholder={t("pickDate")}
+                      placeholder="Pick a date"
                     />
                     {errors.date && (
                       <p className="mt-1.5 text-sm text-red-400">
@@ -909,7 +881,7 @@ function CreateTournamentContent() {
                   </div>
                   <div>
                     <label className="mb-2 block text-sm font-medium text-gray-300">
-                      {t("time")} <span className="text-gold">*</span>
+                      Time <span className="text-gold">*</span>
                     </label>
                     <TimePicker
                       selectedTime={formData.time}
@@ -917,7 +889,7 @@ function CreateTournamentContent() {
                         setFormData((prev) => ({ ...prev, time }));
                         setErrors((prev) => ({ ...prev, time: "" }));
                       }}
-                      placeholder={t("pickTime")}
+                      placeholder="Pick a time"
                     />
                     {errors.time && (
                       <p className="mt-1.5 text-sm text-red-400">
@@ -931,8 +903,8 @@ function CreateTournamentContent() {
                 <div>
                   <label className="mb-2 block text-sm font-medium text-gray-300">
                     {formData.tournamentType === "clan_battle"
-                      ? t("playersPerTeam")
-                      : t("maxPlayers")}{" "}
+                      ? "Players Per Team"
+                      : "Max Players"}{" "}
                     <span className="text-gold">*</span>
                   </label>
                   {formData.tournamentType === "clan_battle" ? (
@@ -961,7 +933,7 @@ function CreateTournamentContent() {
                           {formData.maxPlayers}
                         </span>
                         <span className="ml-2 text-sm text-gray-400">
-                          {t("perTeam")}
+                          per team
                         </span>
                       </div>
                       <button
@@ -998,7 +970,7 @@ function CreateTournamentContent() {
                   )}
                   {formData.tournamentType === "clan_battle" && (
                     <p className="mt-2 text-center text-sm text-gray-500">
-                      {t("totalPlayers")}{" "}
+                      Total players:{" "}
                       <span className="text-gold font-medium">
                         {parseInt(formData.maxPlayers) * 2}
                       </span>
@@ -1014,7 +986,7 @@ function CreateTournamentContent() {
                 {/* Min Rank */}
                 <div>
                   <label className="mb-2 block text-sm font-medium text-gray-300">
-                    {t("minimumRank")} <span className="text-gold">*</span>
+                    Minimum Rank <span className="text-gold">*</span>
                   </label>
                   <div className="grid grid-cols-5 gap-2">
                     {rankOptions.map((rank) => (
@@ -1034,7 +1006,7 @@ function CreateTournamentContent() {
                         <div className="flex justify-center">
                           <rank.icon className="text-gold h-5 w-5" />
                         </div>
-                        <div className="mt-1 text-[10px] text-gray-400 sm:text-[12px]">
+                        <div className="mt-1 text-[10px] text-gray-400">
                           {rank.label}
                         </div>
                       </button>
@@ -1054,17 +1026,17 @@ function CreateTournamentContent() {
               <div className="space-y-6">
                 <div className="text-center">
                   <h2 className="text-xl font-bold text-white">
-                    {t("prizesAndEntry")}
+                    Prizes & Entry
                   </h2>
                   <p className="mt-1 text-sm text-gray-500">
-                    {t("prizesAndEntryDesc")}
+                    Set up the prize pool and entry fee
                   </p>
                 </div>
 
                 {/* Prize Pool */}
                 <div>
                   <label className="mb-2 block text-sm font-medium text-gray-300">
-                    {t("prizePoolUSD")} <span className="text-gold">*</span>
+                    Prize Pool (USD) <span className="text-gold">*</span>
                   </label>
                   <div className="relative">
                     <span className="absolute top-1/2 left-4 -translate-y-1/2 text-lg text-gray-400">
@@ -1075,7 +1047,7 @@ function CreateTournamentContent() {
                       name="prizePool"
                       value={formData.prizePool}
                       onChange={handleInputChange}
-                      placeholder={t("prizePoolPlaceholder")}
+                      placeholder="500"
                       className={`w-full rounded-xl border ${errors.prizePool ? "border-red-500" : "border-white/10"} focus:border-gold bg-white/5 py-3.5 pr-4 pl-10 text-white focus:outline-none`}
                     />
                   </div>
@@ -1092,7 +1064,7 @@ function CreateTournamentContent() {
                     formData.clanPrizeMode === "individual") && (
                     <div className="from-gold/5 to-gold-dark/5 rounded-xl border border-white/10 bg-gradient-to-br p-4">
                       <div className="mb-3 text-sm text-gray-400">
-                        {t("prizeDistributionPreview")}
+                        Prize Distribution
                       </div>
                       <div className="space-y-3">
                         <div className="flex items-center gap-3">
@@ -1167,7 +1139,7 @@ function CreateTournamentContent() {
                         <div className="mt-4 border-t border-white/10 pt-4">
                           <div className="flex items-center justify-between">
                             <div className="text-sm text-gray-400">
-                              {t("remaining")}{" "}
+                              Remaining{" "}
                               <span className="text-gold">
                                 ${remainingPrize}
                               </span>{" "}
@@ -1175,7 +1147,7 @@ function CreateTournamentContent() {
                             </div>
                             <div className="flex items-center gap-2">
                               <span className="text-xs text-gray-500">
-                                {t("splitAmong")}
+                                Split among
                               </span>
                               <input
                                 type="number"
@@ -1190,7 +1162,7 @@ function CreateTournamentContent() {
                                 className="w-14 rounded-lg border border-white/10 bg-white/5 px-2 py-1 text-center text-sm text-white"
                               />
                               <span className="text-xs text-gray-500">
-                                {t("players")}
+                                players
                               </span>
                             </div>
                           </div>
@@ -1203,7 +1175,7 @@ function CreateTournamentContent() {
                                 remainingPrize /
                                   formData.additionalPrizePositions,
                               )}{" "}
-                              {t("each")}
+                              each
                             </p>
                           )}
                           {errors.additionalPrizePositions && (
@@ -1227,16 +1199,16 @@ function CreateTournamentContent() {
                         </div>
                         <div>
                           <h4 className="font-semibold text-white">
-                            {t("winnerTakesAll")}
+                            Winner Takes All
                           </h4>
                           <p className="text-sm text-gray-400">
-                            {t("prizeSplitEqually")}
+                            Prize split equally among winning clan members
                           </p>
                         </div>
                       </div>
                       <div className="mt-3 text-sm">
                         <span className="text-gray-400">
-                          {t("eachWinnerGets")}{" "}
+                          Each winner gets:{" "}
                         </span>
                         <span className="text-lg font-bold text-green-400">
                           $
@@ -1251,7 +1223,7 @@ function CreateTournamentContent() {
                 {/* Entry Fee */}
                 <div>
                   <label className="mb-2 block text-sm font-medium text-gray-300">
-                    {t("entryFeeUSD")}
+                    Entry Fee (USD)
                   </label>
                   <div className="grid grid-cols-5 gap-2">
                     {[0, 5, 10, 25, 50].map((fee) => (
@@ -1267,7 +1239,7 @@ function CreateTournamentContent() {
                             : "border-white/10 text-gray-400 hover:border-white/20"
                         }`}
                       >
-                        {fee === 0 ? tCommon("free") : `$${fee}`}
+                        {fee === 0 ? "Free" : `$${fee}`}
                       </button>
                     ))}
                   </div>
@@ -1277,7 +1249,7 @@ function CreateTournamentContent() {
                       name="entryFee"
                       value={formData.entryFee}
                       onChange={handleInputChange}
-                      placeholder={t("customAmount")}
+                      placeholder="Custom amount"
                       min={0}
                       className="focus:border-gold w-full rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm text-white focus:outline-none"
                     />
@@ -1288,7 +1260,7 @@ function CreateTournamentContent() {
                 <div>
                   <div className="mb-2 flex items-center justify-between">
                     <label className="text-sm font-medium text-gray-300">
-                      {t("rules")} <span className="text-gold">*</span>
+                      Rules <span className="text-gold">*</span>
                     </label>
                     <span
                       className={`text-xs ${formData.rules.length >= 20 ? "text-green-400" : "text-gray-500"}`}
@@ -1296,7 +1268,7 @@ function CreateTournamentContent() {
                       {formData.rules.length >= 20 ? (
                         <span className="flex items-center gap-1">
                           <HiCheckCircle className="h-3 w-3" />
-                          {t("good")}
+                          Good
                         </span>
                       ) : (
                         `${formData.rules.length}/20`
@@ -1308,7 +1280,7 @@ function CreateTournamentContent() {
                     value={formData.rules}
                     onChange={handleInputChange}
                     rows={4}
-                    placeholder={t("rulesPlaceholder")}
+                    placeholder="1. Be online 15 minutes before start&#10;2. No cheating or exploits&#10;3. Respect all players"
                     className={`w-full resize-none rounded-xl border ${errors.rules ? "border-red-500" : "border-white/10"} focus:border-gold bg-white/5 px-4 py-3 text-white placeholder-gray-600 focus:outline-none`}
                   />
                   {errors.rules && (
@@ -1325,10 +1297,10 @@ function CreateTournamentContent() {
               <div className="space-y-6">
                 <div className="text-center">
                   <h2 className="text-xl font-bold text-white">
-                    {t("reviewAndCreate")}
+                    Review & Create
                   </h2>
                   <p className="mt-1 text-sm text-gray-500">
-                    {t("reviewAndCreateDesc")}
+                    Make sure everything looks good
                   </p>
                 </div>
 
@@ -1345,12 +1317,12 @@ function CreateTournamentContent() {
                       </div>
                       <div>
                         <h3 className="font-semibold text-white">
-                          {formData.title || t("untitledTournament")}
+                          {formData.title || "Untitled Tournament"}
                         </h3>
                         <p className="text-sm text-gray-400">
                           {formData.tournamentType === "regular"
-                            ? t("forChess")
-                            : t("clanBattle")}{" "}
+                            ? "FOR Chess"
+                            : "Clan Battle"}{" "}
                           • {formData.game}
                         </p>
                       </div>
@@ -1360,9 +1332,7 @@ function CreateTournamentContent() {
                   {/* Basic Details Grid */}
                   <div className="grid grid-cols-2 gap-3">
                     <div className="rounded-xl border border-white/10 bg-white/5 p-3">
-                      <div className="text-xs text-gray-500">
-                        {t("dateAndTime")}
-                      </div>
+                      <div className="text-xs text-gray-500">Date & Time</div>
                       <div className="mt-1 font-medium text-white">
                         {formData.date
                           ? new Date(formData.date).toLocaleDateString()
@@ -1371,9 +1341,7 @@ function CreateTournamentContent() {
                       </div>
                     </div>
                     <div className="rounded-xl border border-white/10 bg-white/5 p-3">
-                      <div className="text-xs text-gray-500">
-                        {t("players")}
-                      </div>
+                      <div className="text-xs text-gray-500">Players</div>
                       <div className="mt-1 font-medium text-white">
                         {formData.tournamentType === "clan_battle"
                           ? `${formData.maxPlayers} per team (${parseInt(formData.maxPlayers) * 2} total)`
@@ -1381,9 +1349,7 @@ function CreateTournamentContent() {
                       </div>
                     </div>
                     <div className="rounded-xl border border-white/10 bg-white/5 p-3">
-                      <div className="text-xs text-gray-500">
-                        {t("minRank")}
-                      </div>
+                      <div className="text-xs text-gray-500">Min Rank</div>
                       <div className="mt-1 flex items-center gap-1.5 font-medium text-white">
                         {(() => {
                           const rank = rankOptions.find(
@@ -1402,13 +1368,11 @@ function CreateTournamentContent() {
                       </div>
                     </div>
                     <div className="rounded-xl border border-white/10 bg-white/5 p-3">
-                      <div className="text-xs text-gray-500">
-                        {t("entryFee")}
-                      </div>
+                      <div className="text-xs text-gray-500">Entry Fee</div>
                       <div className="mt-1 font-medium text-white">
                         {formData.entryFee > 0
                           ? `$${formData.entryFee}`
-                          : tCommon("free")}
+                          : "Free"}
                       </div>
                     </div>
                   </div>
@@ -1417,41 +1381,41 @@ function CreateTournamentContent() {
                   {formData.tournamentType === "clan_battle" && (
                     <div className="rounded-xl border border-white/10 bg-white/5 p-4">
                       <div className="mb-3 text-sm font-semibold text-gray-300">
-                        {t("clanBattleSettings")}
+                        Clan Battle Settings
                       </div>
                       <div className="grid grid-cols-2 gap-3">
                         <div>
                           <div className="text-xs text-gray-500">
-                            {t("teamAssignment")}
+                            Team Assignment
                           </div>
                           <div className="mt-1 flex items-center gap-1.5 text-sm font-medium text-white">
                             {formData.clanBattleMode === "auto_division" ? (
                               <>
                                 <TbTarget className="text-gold h-4 w-4" />
-                                {t("autoDivision")}
+                                Auto Division
                               </>
                             ) : (
                               <>
                                 <TbUsersGroup className="text-gold h-4 w-4" />
-                                {t("clanSelection")}
+                                Clan Selection
                               </>
                             )}
                           </div>
                         </div>
                         <div>
                           <div className="text-xs text-gray-500">
-                            {t("prizeDistribution")}
+                            Prize Distribution
                           </div>
                           <div className="mt-1 flex items-center gap-1.5 text-sm font-medium text-white">
                             {formData.clanPrizeMode === "individual" ? (
                               <>
                                 <TbMedal className="text-gold h-4 w-4" />
-                                {t("individualRanking")}
+                                Individual Ranking
                               </>
                             ) : (
                               <>
                                 <FaTrophy className="text-gold h-4 w-4" />
-                                {t("winnerClanTakesAll")}
+                                Winner Clan Takes All
                               </>
                             )}
                           </div>
@@ -1460,7 +1424,7 @@ function CreateTournamentContent() {
                           <>
                             <div>
                               <div className="text-xs text-gray-500">
-                                {t("teamA")}
+                                Team A
                               </div>
                               <div className="mt-1 text-sm font-medium text-white">
                                 {clanOptions.find(
@@ -1470,7 +1434,7 @@ function CreateTournamentContent() {
                             </div>
                             <div>
                               <div className="text-xs text-gray-500">
-                                {t("teamB")}
+                                Team B
                               </div>
                               <div className="mt-1 text-sm font-medium text-white">
                                 {clanOptions.find(
@@ -1488,19 +1452,19 @@ function CreateTournamentContent() {
                   <div className="rounded-xl border border-white/10 bg-white/5 p-4">
                     <div className="mb-3 flex items-center justify-between">
                       <div className="text-sm font-semibold text-gray-300">
-                        {t("prizePoolDetails")}
+                        Prize Pool Details
                       </div>
                       <div className="text-xs text-gray-500">
                         {formData.prizePoolType === "fixed"
-                          ? t("fixedPrize")
-                          : t("entryBased")}
+                          ? "Fixed Prize"
+                          : "Entry-Based"}
                       </div>
                     </div>
                     <div className="mb-3 flex items-center gap-2">
                       <TbMoneybag className="text-gold h-5 w-5" />
                       <div>
                         <div className="text-xs text-gray-500">
-                          {t("totalPrizePool")}
+                          Total Prize Pool
                         </div>
                         <div className="text-gold text-lg font-bold">
                           ${formData.prizePool || 0} USD
@@ -1513,14 +1477,14 @@ function CreateTournamentContent() {
                       formData.clanPrizeMode === "individual") && (
                       <div className="mt-4 space-y-2 border-t border-white/10 pt-4">
                         <div className="text-xs font-medium text-gray-400">
-                          {t("prizeDistribution")}
+                          Prize Distribution
                         </div>
                         <div className="grid grid-cols-3 gap-2">
                           <div className="rounded-lg border border-white/10 bg-white/5 p-2">
                             <div className="flex items-center gap-1.5">
                               <FaMedal className="text-gold h-4 w-4" />
                               <span className="text-xs text-gray-500">
-                                {t("firstPlace")}
+                                1st Place
                               </span>
                             </div>
                             <div className="text-gold mt-1 text-sm font-semibold">
@@ -1534,7 +1498,7 @@ function CreateTournamentContent() {
                             <div className="flex items-center gap-1.5">
                               <FaMedal className="h-4 w-4 text-gray-400" />
                               <span className="text-xs text-gray-500">
-                                {t("secondPlace")}
+                                2nd Place
                               </span>
                             </div>
                             <div className="mt-1 text-sm font-semibold text-gray-300">
@@ -1548,7 +1512,7 @@ function CreateTournamentContent() {
                             <div className="flex items-center gap-1.5">
                               <FaMedal className="h-4 w-4 text-orange-400" />
                               <span className="text-xs text-gray-500">
-                                {t("thirdPlace")}
+                                3rd Place
                               </span>
                             </div>
                             <div className="mt-1 text-sm font-semibold text-orange-400">
@@ -1563,24 +1527,22 @@ function CreateTournamentContent() {
                           <div className="mt-3 rounded-lg border border-white/10 bg-white/5 p-2">
                             <div className="flex items-center justify-between">
                               <div className="text-xs text-gray-500">
-                                {t("additionalWinners", {
-                                  end:
-                                    3 +
-                                    parseInt(formData.additionalPrizePositions),
-                                })}
+                                Additional Winners (4th -{" "}
+                                {3 +
+                                  parseInt(formData.additionalPrizePositions)}
+                                th)
                               </div>
                               <div className="text-sm font-medium text-white">
-                                {formData.additionalPrizePositions}{" "}
-                                {t("positions")}
+                                {formData.additionalPrizePositions} positions
                               </div>
                             </div>
                             <div className="mt-1 text-xs text-gray-400">
-                              ${remainingPrize} {t("splitEqually")} ($
+                              ${remainingPrize} split equally ($
                               {Math.floor(
                                 remainingPrize /
                                   formData.additionalPrizePositions,
                               )}{" "}
-                              {t("each")})
+                              each)
                             </div>
                           </div>
                         )}
@@ -1594,15 +1556,15 @@ function CreateTournamentContent() {
                           <div className="flex items-center gap-2">
                             <FaTrophy className="h-5 w-5 text-green-400" />
                             <div className="text-sm font-semibold text-white">
-                              {t("winnerClanTakesAll")}
+                              Winner Clan Takes All
                             </div>
                           </div>
                           <div className="mt-2 text-sm text-gray-300">
-                            {t("prizeSplitEqually")}
+                            Prize pool split equally among winning clan members
                           </div>
                           <div className="mt-2 text-sm">
                             <span className="text-gray-400">
-                              {t("eachWinnerGets")}{" "}
+                              Each winner gets:{" "}
                             </span>
                             <span className="text-gold font-bold">
                               $
@@ -1619,14 +1581,14 @@ function CreateTournamentContent() {
                   <div className="rounded-xl border border-white/10 bg-white/5 p-4">
                     <div className="mb-2 flex items-center justify-between">
                       <div className="text-xs font-semibold text-gray-400">
-                        {t("tournamentRules")}
+                        Tournament Rules
                       </div>
                       <div className="text-xs text-gray-500">
-                        {formData.rules.length} {t("characters")}
+                        {formData.rules.length} characters
                       </div>
                     </div>
                     <div className="text-sm whitespace-pre-wrap text-gray-300">
-                      {formData.rules || t("noRulesSpecified")}
+                      {formData.rules || "No rules specified"}
                     </div>
                   </div>
                 </div>
@@ -1651,7 +1613,7 @@ function CreateTournamentContent() {
                   onClick={prevStep}
                   className="flex-1 rounded-xl border border-white/10 py-3.5 text-sm font-medium text-white transition-colors hover:bg-white/5"
                 >
-                  {t("back")}
+                  ← Back
                 </button>
               )}
               {currentStep < 4 ? (
@@ -1660,7 +1622,7 @@ function CreateTournamentContent() {
                   onClick={nextStep}
                   className="from-gold to-gold-dark shadow-gold/20 hover:shadow-gold/30 flex-[2] rounded-xl bg-gradient-to-r py-3.5 text-sm font-semibold text-black shadow-lg transition-all"
                 >
-                  {t("continue")}
+                  Continue →
                 </button>
               ) : (
                 <button
@@ -1671,12 +1633,12 @@ function CreateTournamentContent() {
                   {loading ? (
                     <span className="flex items-center justify-center gap-2">
                       <LuClock className="h-4 w-4 animate-spin" />
-                      {t("creating")}
+                      Creating...
                     </span>
                   ) : (
                     <span className="flex items-center justify-center gap-2">
                       <FaTrophy className="h-4 w-4" />
-                      {t("createTournament")}
+                      Create Tournament
                     </span>
                   )}
                 </button>
@@ -1693,12 +1655,10 @@ function CreateTournamentContent() {
           setShowSuccessModal(false);
           router.push("/host/dashboard");
         }}
-        title={t("tournamentCreated")}
-        message={t("tournamentCreatedMessage", {
-          title: createdTournamentTitle,
-        })}
+        title="Tournament Created!"
+        message={`Your tournament "${createdTournamentTitle}" is now live. Players can discover and join it.`}
         emoji="🏆"
-        buttonText={t("goToDashboard")}
+        buttonText="Go to Dashboard"
         autoClose={true}
         autoCloseDelay={4000}
       />

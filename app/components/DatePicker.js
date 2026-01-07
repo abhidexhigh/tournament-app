@@ -87,14 +87,14 @@ export default function DatePicker({
     if (isOpen && containerRef.current) {
       const rect = containerRef.current.getBoundingClientRect();
       const dropdownWidth = compact ? 260 : 300;
-
+      
       // Check if dropdown would overflow right edge
       let left = compact ? rect.right - dropdownWidth : rect.left;
       if (left + dropdownWidth > window.innerWidth) {
         left = window.innerWidth - dropdownWidth - 10;
       }
       if (left < 10) left = 10;
-
+      
       setDropdownPosition({
         top: rect.bottom + window.scrollY + 8,
         left: left + window.scrollX,
@@ -225,120 +225,103 @@ export default function DatePicker({
   const days = getDaysInMonth(currentMonth);
 
   // Dropdown content rendered via portal
-  const dropdownContent =
-    isOpen && typeof document !== "undefined"
-      ? createPortal(
+  const dropdownContent = isOpen && typeof document !== "undefined" ? createPortal(
+    <div
+      ref={dropdownRef}
+      style={{
+        position: "absolute",
+        top: dropdownPosition.top,
+        left: dropdownPosition.left,
+        zIndex: 99999,
+      }}
+      className={`from-dark-card/98 via-dark-card/95 to-dark-card/98 border-gold-dark/40 animate-fadeIn overflow-hidden border bg-gradient-to-br shadow-2xl shadow-black/60 backdrop-blur-xl ${compact ? "w-[260px] rounded-xl" : "w-[300px] rounded-2xl border-2"}`}
+    >
+      {/* Calendar Header */}
+      <div className={`from-gold/10 to-gold/5 border-gold-dark/30 flex items-center justify-between border-b bg-gradient-to-r ${compact ? "px-3 py-2" : "px-4 py-3"}`}>
+        <button
+          type="button"
+          onClick={handlePrevMonth}
+          className={`hover:bg-gold/20 hover:text-gold rounded-lg text-gray-400 transition-all duration-200 ${compact ? "p-1" : "p-1.5"}`}
+        >
+          <ChevronLeftIcon />
+        </button>
+        <span className={`text-gold font-bold tracking-wide ${compact ? "text-xs" : "text-sm"}`}>
+          {MONTHS[currentMonth.getMonth()]} {currentMonth.getFullYear()}
+        </span>
+        <button
+          type="button"
+          onClick={handleNextMonth}
+          className={`hover:bg-gold/20 hover:text-gold rounded-lg text-gray-400 transition-all duration-200 ${compact ? "p-1" : "p-1.5"}`}
+        >
+          <ChevronRightIcon />
+        </button>
+      </div>
+
+      {/* Days of Week Header */}
+      <div className={`border-gold-dark/20 grid grid-cols-7 border-b ${compact ? "px-1.5 py-1.5" : "px-2 py-2"}`}>
+        {DAYS_OF_WEEK.map((day) => (
           <div
-            ref={dropdownRef}
-            style={{
-              position: "absolute",
-              top: dropdownPosition.top,
-              left: dropdownPosition.left,
-              zIndex: 99999,
-            }}
-            className={`from-dark-card/98 via-dark-card/95 to-dark-card/98 border-gold-dark/40 animate-fadeIn overflow-hidden border bg-gradient-to-br shadow-2xl shadow-black/60 backdrop-blur-xl ${compact ? "w-[260px] rounded-xl" : "w-[300px] rounded-2xl border-2"}`}
+            key={day}
+            className={`text-gold-dark text-center font-semibold tracking-wider uppercase ${compact ? "text-[10px]" : "text-xs"}`}
           >
-            {/* Calendar Header */}
-            <div
-              className={`from-gold/10 to-gold/5 border-gold-dark/30 flex items-center justify-between border-b bg-gradient-to-r ${compact ? "px-3 py-2" : "px-4 py-3"}`}
-            >
-              <button
-                type="button"
-                onClick={handlePrevMonth}
-                className={`hover:bg-gold/20 hover:text-gold rounded-lg text-gray-400 transition-all duration-200 ${compact ? "p-1" : "p-1.5"}`}
-              >
-                <ChevronLeftIcon />
-              </button>
-              <span
-                className={`text-gold font-bold tracking-wide ${compact ? "text-xs" : "text-sm"}`}
-              >
-                {MONTHS[currentMonth.getMonth()]} {currentMonth.getFullYear()}
-              </span>
-              <button
-                type="button"
-                onClick={handleNextMonth}
-                className={`hover:bg-gold/20 hover:text-gold rounded-lg text-gray-400 transition-all duration-200 ${compact ? "p-1" : "p-1.5"}`}
-              >
-                <ChevronRightIcon />
-              </button>
-            </div>
+            {day}
+          </div>
+        ))}
+      </div>
 
-            {/* Days of Week Header */}
-            <div
-              className={`border-gold-dark/20 grid grid-cols-7 border-b ${compact ? "px-1.5 py-1.5" : "px-2 py-2"}`}
-            >
-              {DAYS_OF_WEEK.map((day) => (
-                <div
-                  key={day}
-                  className={`text-gold-dark text-center font-semibold tracking-wider uppercase ${compact ? "text-[10px]" : "text-xs"}`}
-                >
-                  {day}
-                </div>
-              ))}
-            </div>
+      {/* Calendar Grid */}
+      <div className={`grid grid-cols-7 ${compact ? "gap-0.5 p-1.5" : "gap-1 p-2"}`}>
+        {days.map((dayInfo, index) => (
+          <button
+            key={index}
+            type="button"
+            onClick={() => handleDateSelect(dayInfo.date)}
+            className={`relative flex aspect-square items-center justify-center font-medium transition-all duration-200 ${compact ? "rounded-md text-xs" : "rounded-lg text-sm"} ${
+              !dayInfo.isCurrentMonth
+                ? "text-gray-600 hover:bg-white/5 hover:text-gray-400"
+                : isSelected(dayInfo.date)
+                  ? "from-gold to-gold/80 shadow-gold/30 scale-105 bg-gradient-to-br text-black shadow-lg"
+                  : isToday(dayInfo.date)
+                    ? "border-gold/50 bg-gold/10 text-gold border"
+                    : "hover:bg-gold/20 hover:text-gold text-gray-300"
+            }`}
+          >
+            {dayInfo.day}
+            {isToday(dayInfo.date) && !isSelected(dayInfo.date) && (
+              <span className={`bg-gold absolute rounded-full ${compact ? "bottom-0.5 h-0.5 w-0.5" : "bottom-1 h-1 w-1"}`} />
+            )}
+          </button>
+        ))}
+      </div>
 
-            {/* Calendar Grid */}
-            <div
-              className={`grid grid-cols-7 ${compact ? "gap-0.5 p-1.5" : "gap-1 p-2"}`}
-            >
-              {days.map((dayInfo, index) => (
-                <button
-                  key={index}
-                  type="button"
-                  onClick={() => handleDateSelect(dayInfo.date)}
-                  className={`relative flex aspect-square items-center justify-center font-medium transition-all duration-200 ${compact ? "rounded-md text-xs" : "rounded-lg text-sm"} ${
-                    !dayInfo.isCurrentMonth
-                      ? "text-gray-600 hover:bg-white/5 hover:text-gray-400"
-                      : isSelected(dayInfo.date)
-                        ? "from-gold to-gold/80 shadow-gold/30 scale-105 bg-gradient-to-br text-black shadow-lg"
-                        : isToday(dayInfo.date)
-                          ? "border-gold/50 bg-gold/10 text-gold border"
-                          : "hover:bg-gold/20 hover:text-gold text-gray-300"
-                  }`}
-                >
-                  {dayInfo.day}
-                  {isToday(dayInfo.date) && !isSelected(dayInfo.date) && (
-                    <span
-                      className={`bg-gold absolute rounded-full ${compact ? "bottom-0.5 h-0.5 w-0.5" : "bottom-1 h-1 w-1"}`}
-                    />
-                  )}
-                </button>
-              ))}
-            </div>
+      {/* Quick Actions Footer */}
+      <div className={`border-gold-dark/20 flex items-center justify-between gap-2 border-t ${compact ? "px-2 py-2" : "px-3 py-2.5"}`}>
+        <button
+          type="button"
+          onClick={() => handleDateSelect(new Date())}
+          className={`hover:bg-gold/20 text-gold rounded-lg font-semibold transition-all duration-200 ${compact ? "px-2 py-1 text-[10px]" : "px-3 py-1.5 text-xs"}`}
+        >
+          {t("today") || "Today"}
+        </button>
+        {compact && selectedDate && (
+          <span className="text-gold text-[10px] font-medium">
+            {formatDisplayDate(selectedDate)}
+          </span>
+        )}
+        <button
+          type="button"
+          onClick={handleClear}
+          className={`rounded-lg font-semibold text-gray-400 transition-all duration-200 hover:bg-white/10 hover:text-white ${compact ? "px-2 py-1 text-[10px]" : "px-3 py-1.5 text-xs"}`}
+        >
+          {t("clear") || "Clear"}
+        </button>
+      </div>
 
-            {/* Quick Actions Footer */}
-            <div
-              className={`border-gold-dark/20 flex items-center justify-between gap-2 border-t ${compact ? "px-2 py-2" : "px-3 py-2.5"}`}
-            >
-              <button
-                type="button"
-                onClick={() => handleDateSelect(new Date())}
-                className={`hover:bg-gold/20 text-gold rounded-lg font-semibold transition-all duration-200 ${compact ? "px-2 py-1 text-[10px]" : "px-3 py-1.5 text-xs"}`}
-              >
-                {t("today") || "Today"}
-              </button>
-              {compact && selectedDate && (
-                <span className="text-gold text-[10px] font-medium">
-                  {formatDisplayDate(selectedDate)}
-                </span>
-              )}
-              <button
-                type="button"
-                onClick={handleClear}
-                className={`rounded-lg font-semibold text-gray-400 transition-all duration-200 hover:bg-white/10 hover:text-white ${compact ? "px-2 py-1 text-[10px]" : "px-3 py-1.5 text-xs"}`}
-              >
-                {t("clear") || "Clear"}
-              </button>
-            </div>
-
-            {/* Glow Effect */}
-            <div
-              className={`from-gold/10 to-gold/10 pointer-events-none absolute inset-0 -z-10 bg-gradient-to-r via-yellow-600/10 opacity-50 blur-xl ${compact ? "rounded-xl" : "rounded-2xl"}`}
-            />
-          </div>,
-          document.body,
-        )
-      : null;
+      {/* Glow Effect */}
+      <div className={`from-gold/10 to-gold/10 pointer-events-none absolute inset-0 -z-10 bg-gradient-to-r via-yellow-600/10 opacity-50 blur-xl ${compact ? "rounded-xl" : "rounded-2xl"}`} />
+    </div>,
+    document.body
+  ) : null;
 
   // Compact mode trigger (icon only for mobile/tablet)
   if (compact) {
@@ -410,28 +393,21 @@ export default function DatePicker({
             </svg>
           </button>
         ) : (
-          <button
-            type="button"
-            onClick={() => setIsOpen(!isOpen)}
-            className="hover:text-gold text-gold ml-2 transition-colors duration-200 hover:scale-110"
-            aria-label="Open date picker"
+          <svg
+            className={`text-gold ml-2 h-5 w-5 transition-transform duration-300 ${
+              isOpen ? "rotate-180" : ""
+            }`}
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
           >
-            <svg
-              className={`h-5 w-5 transition-transform duration-300 ${
-                isOpen ? "rotate-180" : ""
-              }`}
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M19 9l-7 7-7-7"
-              />
-            </svg>
-          </button>
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M19 9l-7 7-7-7"
+            />
+          </svg>
         )}
       </div>
 

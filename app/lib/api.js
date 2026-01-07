@@ -6,120 +6,20 @@ const API_BASE_URL =
     ? process.env.NEXT_PUBLIC_API_URL || "/api"
     : "/api";
 
-// Get CSRF token from storage or fetch new one
-const getCSRFToken = async () => {
-  try {
-    // Try to get from sessionStorage first
-    const stored = sessionStorage.getItem("csrf_token");
-    if (stored) {
-      return stored;
-    }
-
-    // Fetch new token
-    const response = await fetch(`${API_BASE_URL}/csrf-token`, {
-      method: "GET",
-      credentials: "include",
-      cache: "no-store",
-    });
-
-    if (response.ok) {
-      const data = await response.json();
-      if (data.success && data.token) {
-        // Store in sessionStorage
-        if (typeof window !== "undefined") {
-          sessionStorage.setItem("csrf_token", data.token);
-        }
-        return data.token;
-      }
-    }
-  } catch (error) {
-    console.error("Failed to get CSRF token:", error);
-  }
-  return null;
-};
-
 // Generic API request function
 const apiRequest = async (endpoint, options = {}) => {
   try {
-    // Get CSRF token for non-GET requests
-    let csrfToken = null;
-    if (
-      options.method &&
-      options.method !== "GET" &&
-      options.method !== "HEAD" &&
-      options.method !== "OPTIONS"
-    ) {
-      csrfToken = await getCSRFToken();
-    }
-
-    const headers = {
-      "Content-Type": "application/json",
-      ...options.headers,
-    };
-
-    // Add CSRF token to headers
-    if (csrfToken) {
-      headers["X-CSRF-Token"] = csrfToken;
-    }
-
-    // Add CSRF token to body if it's a JSON request
-    let body = options.body;
-    if (csrfToken && body && typeof body === "string") {
-      try {
-        const bodyObj = JSON.parse(body);
-        bodyObj.csrfToken = csrfToken;
-        body = JSON.stringify(bodyObj);
-      } catch (e) {
-        // Body is not JSON, add to headers only
-      }
-    }
-
     const response = await fetch(`${API_BASE_URL}${endpoint}`, {
-      headers,
+      headers: {
+        "Content-Type": "application/json",
+        ...options.headers,
+      },
       ...options,
-      body,
     });
 
     const data = await response.json();
 
     if (!response.ok) {
-      // If CSRF token error, clear stored token and retry once
-      if (
-        response.status === 403 &&
-        (data.error?.includes("CSRF") || data.error?.includes("csrf"))
-      ) {
-        if (typeof window !== "undefined") {
-          sessionStorage.removeItem("csrf_token");
-        }
-        // Retry with new token (only once)
-        const newToken = await getCSRFToken();
-        if (newToken) {
-          const retryHeaders = {
-            ...headers,
-            "X-CSRF-Token": newToken,
-          };
-          let retryBody = body;
-          if (retryBody && typeof retryBody === "string") {
-            try {
-              const bodyObj = JSON.parse(retryBody);
-              bodyObj.csrfToken = newToken;
-              retryBody = JSON.stringify(bodyObj);
-            } catch (e) {
-              // Body is not JSON, keep original
-            }
-          }
-          const retryResponse = await fetch(`${API_BASE_URL}${endpoint}`, {
-            ...options,
-            headers: retryHeaders,
-            body: retryBody,
-          });
-          const retryData = await retryResponse.json();
-          if (!retryResponse.ok) {
-            throw new Error(retryData.error || "API request failed");
-          }
-          return retryData;
-        }
-      }
       throw new Error(data.error || "API request failed");
     }
 
@@ -147,9 +47,7 @@ export const usersApi = {
   // Get user by email
   getByEmail: async (email) => {
     try {
-      const response = await apiRequest(
-        `/users?email=${encodeURIComponent(email)}`,
-      );
+      const response = await apiRequest(`/users?email=${encodeURIComponent(email)}`);
       return response.data;
     } catch (error) {
       console.error("Error getting user by email:", error);

@@ -10,9 +10,6 @@ const nextConfig = {
     ],
   },
   async headers() {
-    // Determine if we're in production
-    const isProduction = process.env.NODE_ENV === "production";
-
     return [
       {
         // Apply security headers to all routes
@@ -50,18 +47,9 @@ const nextConfig = {
             key: "Content-Security-Policy",
             value: [
               "default-src 'self'",
-              // script-src: Use strict-dynamic for Next.js, allow Stripe
-              // 'strict-dynamic' allows scripts loaded by trusted scripts (Next.js pattern)
-              // unsafe-eval only in development (Next.js hot reload needs it)
-              `script-src 'self' 'strict-dynamic' ${
-                isProduction ? "" : "'unsafe-eval'"
-              } https://js.stripe.com https://checkout.stripe.com`,
-              // style-src: Remove unsafe-inline, allow Google Fonts stylesheets only
-              // Note: If you use inline styles (e.g., Tailwind), you may need to add 'unsafe-inline'
-              // but it's better to use external stylesheets or nonces
-              "style-src 'self' https://fonts.googleapis.com",
-              // img-src: Be specific instead of allowing all https:
-              "img-src 'self' data: blob: https://res.cloudinary.com https://flagcdn.com https://*.stripe.com",
+              "script-src 'self' 'unsafe-eval' 'unsafe-inline' https://js.stripe.com https://checkout.stripe.com",
+              "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+              "img-src 'self' data: https: blob: https://flagcdn.com",
               "font-src 'self' https://fonts.gstatic.com data:",
               "connect-src 'self' https://api.stripe.com https://*.stripe.com https://res.cloudinary.com",
               "frame-src 'self' https://js.stripe.com https://hooks.stripe.com https://checkout.stripe.com",

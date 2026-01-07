@@ -72,10 +72,10 @@ export default function Navbar() {
           </Link>
 
           {/* Desktop Navigation */}
-          <div className="hidden items-center space-x-6 md:mr-4 md:flex">
+          <div className="hidden items-center space-x-4 md:flex">
             <Link
               href="/"
-              className={`text-base font-medium transition-colors duration-300 ${
+              className={`text-sm font-medium transition-colors duration-300 ${
                 pathname === "/" ? "text-gold" : "hover:text-gold text-gray-300"
               }`}
             >
@@ -92,7 +92,7 @@ export default function Navbar() {
                         ? "/admin/dashboard"
                         : "/player/dashboard"
                   }
-                  className={`text-base font-medium transition-colors duration-300 ${
+                  className={`text-sm font-medium transition-colors duration-300 ${
                     pathname.includes("dashboard")
                       ? "text-gold"
                       : "hover:text-gold text-gray-300"
@@ -297,6 +297,16 @@ export default function Navbar() {
                   <LanguageSwitcher variant="icon" />
                 </div>
               </>
+            ) : status === "authenticated" && session?.user ? (
+              <div className="flex items-center space-x-4">
+                <Link
+                  href="/select-role"
+                  className="bg-gold-gradient text-dark-primary hover:shadow-gold/50 rounded-lg px-6 py-2 font-bold transition-all duration-300 hover:shadow-lg"
+                >
+                  {t("selectRole")}
+                </Link>
+                <LanguageSwitcher variant="icon" />
+              </div>
             ) : (
               <div className="flex items-center space-x-3">
                 <button
@@ -611,6 +621,14 @@ export default function Navbar() {
                       </svg>
                       {t("signOut")}
                     </button>
+                  ) : status === "authenticated" && session?.user ? (
+                    <Link
+                      href="/select-role"
+                      onClick={() => setIsMenuOpen(false)}
+                      className="block w-full rounded-xl bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-500 py-3.5 text-center font-bold text-black transition-all active:scale-[0.98]"
+                    >
+                      {t("selectRole")}
+                    </Link>
                   ) : (
                     <div className="grid grid-cols-2 gap-2">
                       <button

@@ -11,12 +11,12 @@ export const syncUserWithStorage = (sessionUser) => {
   let user = users.find((u) => u.email === sessionUser.email);
 
   if (!user) {
-    // New user from OAuth - create user as player by default
+    // New user from OAuth - create user without role
     user = {
       id: sessionUser.id || `user_${Date.now()}`,
       username: sessionUser.name || sessionUser.email.split("@")[0],
       email: sessionUser.email,
-      type: "player", // Default to player role
+      type: null, // Role to be set later
       diamonds: 1000,
       avatar: "🎮",
       provider: sessionUser.provider || "google",
@@ -71,9 +71,11 @@ export const updateUserRole = async (userId, role) => {
   }
 };
 
-// Check if user has a role (all users should have a role, default is "player")
+// Check if user has selected a role
 export const hasUserRole = (user) => {
-  // All users now have a role by default (player), so just check if user exists and has type
+  // A user has a role if type is set and is NOT 'player' (default for new users)
+  // OR if they explicitly chose 'player' in the select-role page.
+  // For now, let's stick to checking if it's not null/undefined.
   return user && user.type !== null && user.type !== undefined;
 };
 

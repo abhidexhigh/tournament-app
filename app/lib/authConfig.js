@@ -76,37 +76,7 @@ export const authOptions = {
   ],
   callbacks: {
     async jwt({ token, user, account }) {
-      // For Google OAuth, always fetch from database to get complete user data
-      if (account?.provider === "google" && (user?.email || token.email)) {
-        const email = user?.email || token.email;
-        try {
-          const result = await sql`
-            SELECT * FROM users WHERE email = ${email}
-          `;
-          if (result.rows.length > 0) {
-            const dbUser = result.rows[0];
-            token.id = dbUser.id;
-            token.email = dbUser.email;
-            token.name = dbUser.username;
-            token.type = dbUser.type || "player";
-            token.diamonds = dbUser.diamonds;
-            token.avatar = dbUser.avatar;
-            token.rank = dbUser.rank;
-            token.provider = account.provider;
-          } else if (user) {
-            // User not in DB yet (shouldn't happen if signIn callback worked, but handle it)
-            token.email = user.email;
-            token.name = user.name;
-            token.type = "player";
-            token.diamonds = 1000;
-            token.avatar = "🎮";
-            token.provider = account.provider;
-          }
-        } catch (error) {
-          console.error("Error fetching user in jwt callback:", error);
-        }
-      } else if (user) {
-        // For credentials provider, use user data directly
+      if (user) {
         token.id = user.id;
         token.email = user.email;
         token.name = user.name;
@@ -132,31 +102,6 @@ export const authOptions = {
       return session;
     },
     async signIn({ user, account, profile }) {
-      // For Google OAuth, create user in database if they don't exist
-      if (account?.provider === "google" && user?.email) {
-        try {
-          const existingUser = await sql`
-            SELECT * FROM users WHERE email = ${user.email}
-          `;
-
-          if (existingUser.rows.length === 0) {
-            // Create new user as player by default
-            const { usersDb } = await import("./database");
-            const username = user.name || user.email.split("@")[0];
-            await usersDb.create({
-              username,
-              email: user.email,
-              type: "player",
-              diamonds: 1000,
-              avatar: "🎮",
-            });
-            console.log("Created new OAuth user:", user.email);
-          }
-        } catch (error) {
-          console.error("Error creating OAuth user:", error);
-          // Don't block sign in if user creation fails
-        }
-      }
       // Allow sign in
       return true;
     },
