@@ -233,10 +233,14 @@ export default function XSSTestPage() {
                 sites attempt to submit forms on behalf of authenticated users.
               </p>
               <ul className="mt-1 ml-4 list-inside list-disc space-y-1 text-sm">
-                <li>CSRF tokens are automatically generated and included in forms</li>
+                <li>
+                  CSRF tokens are automatically generated and included in forms
+                </li>
                 <li>Tokens expire after 15 minutes for security</li>
                 <li>API routes validate tokens before processing requests</li>
-                <li>Tokens are stored securely and associated with user sessions</li>
+                <li>
+                  Tokens are stored securely and associated with user sessions
+                </li>
               </ul>
             </div>
             <div>
@@ -244,14 +248,17 @@ export default function XSSTestPage() {
               <ul className="mt-1 ml-4 list-inside list-disc space-y-1">
                 <li>Always sanitize user input on the server</li>
                 <li>
-                  Use React's built-in escaping (don't use
+                  Use React&apos;s built-in escaping (don&apos;t use
                   dangerouslySetInnerHTML)
                 </li>
                 <li>Validate and sanitize all form inputs</li>
                 <li>Use parameterized queries for database operations</li>
                 <li>Keep security headers up to date</li>
                 <li>Include CSRF tokens in all state-changing requests</li>
-                <li>Validate CSRF tokens on the server for all POST/PUT/DELETE requests</li>
+                <li>
+                  Validate CSRF tokens on the server for all POST/PUT/DELETE
+                  requests
+                </li>
               </ul>
             </div>
           </div>
