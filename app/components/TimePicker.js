@@ -354,7 +354,11 @@ export default function TimePicker({
         </div>
         {selectedTime ? (
           <button
-            onClick={handleClear}
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              handleClear(e);
+            }}
             className="hover:text-gold ml-2 text-gray-400 transition-colors duration-200 hover:scale-110"
             aria-label="Clear time"
           >

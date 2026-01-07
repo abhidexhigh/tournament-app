@@ -1,6 +1,11 @@
 // API route: /api/tournaments
 import { NextResponse } from "next/server";
 import { tournamentsDb, usersDb, transactionsDb } from "../../lib/database";
+import {
+  sanitizeForDatabase,
+  sanitizeWithLength,
+  sanitizeUrl,
+} from "../../lib/sanitize";
 
 // GET /api/tournaments - Get all tournaments
 export async function GET() {
@@ -18,7 +23,18 @@ export async function GET() {
 // POST /api/tournaments - Create new tournament
 export async function POST(request) {
   try {
+    // Parse body first (before CSRF validation to avoid reading request twice)
     const body = await request.json();
+    
+    // Validate CSRF token (pass body to avoid re-reading request)
+    const { validateCSRFRequest } = await import("../../lib/csrfMiddleware");
+    const csrfValidation = await validateCSRFRequest(request, body);
+    if (!csrfValidation.valid) {
+      return NextResponse.json(
+        { success: false, error: csrfValidation.error || "CSRF token validation failed" },
+        { status: 403 },
+      );
+    }
     const {
       title,
       game,
@@ -99,16 +115,40 @@ export async function POST(request) {
       }
     }
 
+    // Sanitize user input to prevent XSS attacks
+    const sanitizedTitle = sanitizeWithLength(title, 200);
+    const sanitizedGame = sanitizeWithLength(game, 100);
+    const sanitizedRules = sanitizeWithLength(rules, 5000); // Allow longer rules
+    
+    // Sanitize image URL - Cloudinary URLs can be 80-150+ characters
+    // Use URL-specific sanitization if it's a URL, otherwise use generic sanitization
+    let sanitizedImage = "🎮"; // Default
+    if (image) {
+      // If it's a URL, use URL sanitization (allows up to 500 chars)
+      if (image.startsWith("http://") || image.startsWith("https://")) {
+        const urlSanitized = sanitizeUrl(image);
+        if (urlSanitized) {
+          // Ensure it doesn't exceed database limit (VARCHAR(255))
+          sanitizedImage = urlSanitized.length > 255 ? urlSanitized.substring(0, 255) : urlSanitized;
+        }
+      } else {
+        // For emoji or short strings, use generic sanitization with length limit
+        sanitizedImage = sanitizeWithLength(image, 255) || "🎮";
+      }
+    }
+    
+    const sanitizedMinRank = min_rank ? sanitizeWithLength(min_rank, 50) : null;
+
     const tournamentData = {
-      title,
-      game,
+      title: sanitizedTitle,
+      game: sanitizedGame,
       date,
       time,
       max_players: parseInt(max_players),
       max_players_per_clan: max_players_per_clan
         ? parseInt(max_players_per_clan)
         : null,
-      min_rank: min_rank || null,
+      min_rank: sanitizedMinRank,
       prize_pool_type,
       prize_pool: parseInt(prize_pool),
       prize_pool_usd: parseFloat(prize_pool_usd) || 0,
@@ -119,8 +159,8 @@ export async function POST(request) {
         parseInt(body.additional_prize_positions) || 0,
       entry_fee: parseInt(entry_fee),
       entry_fee_usd: parseFloat(entry_fee_usd) || 0,
-      rules,
-      image: image || "🎮",
+      rules: sanitizedRules,
+      image: sanitizedImage,
       host_id,
       tournament_type: tournament_type || "regular",
       clan_battle_mode: clan_battle_mode || null,
