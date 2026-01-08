@@ -7,98 +7,8 @@ function generateNonce() {
   return Buffer.from(array).toString("base64");
 }
 
-// Get allowed origins for CORS
-function getAllowedOrigins() {
-  const origins = [
-    process.env.NEXTAUTH_URL,
-    process.env.NEXT_PUBLIC_BASE_URL,
-    process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : null,
-  ].filter(Boolean);
-
-  // In development, also allow localhost
-  if (process.env.NODE_ENV === "development") {
-    origins.push("http://localhost:3000", "http://127.0.0.1:3000");
-  }
-
-  return origins;
-}
-
-// Check if origin is allowed
-function isAllowedOrigin(origin) {
-  if (!origin) return true; // Same-origin requests have no Origin header
-  const allowedOrigins = getAllowedOrigins();
-  return allowedOrigins.some(
-    (allowed) => allowed && origin.toLowerCase() === allowed.toLowerCase(),
-  );
-}
-
 export function middleware(request) {
-  const { pathname } = request.nextUrl;
-  const origin = request.headers.get("origin");
-
-  // Handle API routes with CORS restrictions
-  if (pathname.startsWith("/api")) {
-    // Handle preflight OPTIONS requests
-    if (request.method === "OPTIONS") {
-      const response = new NextResponse(null, { status: 204 });
-
-      // Only set CORS headers if origin is allowed
-      if (isAllowedOrigin(origin)) {
-        if (origin) {
-          response.headers.set("Access-Control-Allow-Origin", origin);
-        }
-        response.headers.set(
-          "Access-Control-Allow-Methods",
-          "GET, POST, PUT, DELETE, OPTIONS",
-        );
-        response.headers.set(
-          "Access-Control-Allow-Headers",
-          "Content-Type, Authorization, X-CSRF-Token",
-        );
-        response.headers.set("Access-Control-Max-Age", "86400");
-        response.headers.set("Access-Control-Allow-Credentials", "true");
-      }
-
-      // Security headers for preflight
-      response.headers.set("X-Content-Type-Options", "nosniff");
-      response.headers.set("X-Frame-Options", "DENY");
-
-      return response;
-    }
-
-    // For actual API requests, validate origin
-    if (origin && !isAllowedOrigin(origin)) {
-      return new NextResponse(
-        JSON.stringify({ error: "CORS origin not allowed" }),
-        {
-          status: 403,
-          headers: {
-            "Content-Type": "application/json",
-            "X-Content-Type-Options": "nosniff",
-          },
-        },
-      );
-    }
-
-    // Create response for API routes with CORS headers
-    const response = NextResponse.next();
-
-    // Set CORS headers only for allowed origins
-    if (origin && isAllowedOrigin(origin)) {
-      response.headers.set("Access-Control-Allow-Origin", origin);
-      response.headers.set("Access-Control-Allow-Credentials", "true");
-    }
-
-    // Essential security headers for API routes
-    response.headers.set("X-Content-Type-Options", "nosniff");
-    response.headers.set("X-Frame-Options", "DENY");
-    response.headers.set("X-XSS-Protection", "1; mode=block");
-    response.headers.set("Referrer-Policy", "strict-origin-when-cross-origin");
-
-    return response;
-  }
-
-  // Generate a unique nonce for this request (non-API routes)
+  // Generate a unique nonce for this request
   const nonce = generateNonce();
 
   // Create response with nonce header for server components to read
@@ -209,13 +119,12 @@ export const config = {
   matcher: [
     /*
      * Match all request paths except for the ones starting with:
+     * - api (API routes)
      * - _next/static (static files)
      * - _next/image (image optimization files)
      * - favicon.ico (favicon file)
      * - public files (public folder)
-     *
-     * API routes ARE included for CORS and security header enforcement
      */
-    "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|mp4|webm)$).*)",
+    "/((?!api|_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|mp4|webm)$).*)",
   ],
 };
