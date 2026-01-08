@@ -1,5 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  poweredByHeader: false,
   // Enable experimental CSP nonce support
   // This allows Next.js to automatically inject nonces into inline scripts
   experimental: {
@@ -53,15 +54,13 @@ const nextConfig = {
           },
           {
             key: "Permissions-Policy",
-            value: "camera=(), microphone=(), geolocation=(), interest-cohort=()",
+            value:
+              "camera=(), microphone=(), geolocation=(), interest-cohort=()",
           },
           // API routes have a simpler CSP - no scripts needed
           {
             key: "Content-Security-Policy",
-            value: [
-              "default-src 'none'",
-              "frame-ancestors 'none'",
-            ].join("; "),
+            value: ["default-src 'none'", "frame-ancestors 'none'"].join("; "),
           },
         ],
       },
