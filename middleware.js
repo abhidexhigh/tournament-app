@@ -98,6 +98,15 @@ export function middleware(request) {
     "Permissions-Policy":
       "camera=(), microphone=(), geolocation=(), interest-cohort=()",
 
+    // Cross-Domain Policies - Prevent Adobe Flash/PDF cross-domain access
+    "X-Permitted-Cross-Domain-Policies": "none",
+
+    // Cross-Origin Opener Policy - Isolate browsing context
+    "Cross-Origin-Opener-Policy": "same-origin",
+
+    // Cross-Origin Resource Policy - Restrict resource loading to same-origin
+    "Cross-Origin-Resource-Policy": "same-origin",
+
     // Content Security Policy
     "Content-Security-Policy": cspDirectives.join("; "),
   };

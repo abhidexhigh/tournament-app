@@ -57,6 +57,18 @@ const nextConfig = {
             value:
               "camera=(), microphone=(), geolocation=(), interest-cohort=()",
           },
+          {
+            key: "X-Permitted-Cross-Domain-Policies",
+            value: "none",
+          },
+          {
+            key: "Cross-Origin-Opener-Policy",
+            value: "same-origin",
+          },
+          {
+            key: "Cross-Origin-Resource-Policy",
+            value: "same-origin",
+          },
           // API routes have a simpler CSP - no scripts needed
           {
             key: "Content-Security-Policy",
