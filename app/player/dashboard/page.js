@@ -177,14 +177,14 @@ function PlayerDashboardContent() {
       <div className="px-4 py-8 sm:px-6 lg:px-8">
         <div className="max-w-main mx-auto">
           {/* Profile + Stats Hero Section */}
-          <div className="border-gold-dark/20 bg-dark-gray-card/80 relative mb-8 overflow-hidden rounded-2xl border p-5 shadow-lg shadow-gray-800/30 backdrop-blur-sm sm:p-6 lg:p-8">
+          <div className="border-gold-dark/20 bg-dark-gray-card/80 relative mb-8 overflow-hidden rounded-2xl border p-5 shadow-lg shadow-gray-800/30 backdrop-blur-sm sm:px-6 sm:py-1 lg:px-8 lg:py-2">
             {/* Decorative elements */}
             <div className="bg-gold-dark/10 absolute top-0 right-0 h-40 w-40 rounded-full blur-3xl sm:h-64 sm:w-64"></div>
             <div className="bg-gold/5 absolute bottom-0 left-1/3 h-32 w-32 rounded-full blur-2xl sm:h-48 sm:w-48"></div>
 
             <div className="relative">
               {/* Profile Row */}
-              <div className="mb-6 flex flex-col gap-6 lg:mb-8 lg:flex-row lg:items-center lg:justify-between">
+              <div className="mt-6 mb-6 flex flex-col gap-6 lg:mt-8 lg:mb-8 lg:flex-row lg:items-center lg:justify-between">
                 {/* Left: Avatar + User Info */}
                 <div className="flex flex-col items-center gap-4 sm:flex-row sm:gap-5">
                   {/* Avatar */}
@@ -350,102 +350,138 @@ function PlayerDashboardContent() {
                   </div>
                 </div>
               </div>
-
-              {/* Stats Grid */}
-              <div className="grid grid-cols-2 gap-3 md:grid-cols-4 md:gap-4">
-                {/* Tournaments Joined Card */}
-                <div className="group hover:border-gold-dark/40 bg-dark-primary/60 hover:bg-dark-primary/80 relative overflow-hidden rounded-xl border border-white/10 p-4 transition-all duration-300 md:p-5">
-                  <div className="via-gold-dark/50 absolute top-0 right-0 left-0 h-[2px] bg-gradient-to-r from-transparent to-transparent"></div>
-                  <div className="flex flex-col items-center text-center">
-                    <div className="mb-3 flex h-11 w-11 items-center justify-center rounded-lg border border-white/15 bg-white/10 transition-transform duration-300 group-hover:scale-105 md:h-12 md:w-12">
-                      <Image
-                        src="/icons/002.webp"
-                        alt="Tournaments"
-                        width={26}
-                        height={26}
-                      />
-                    </div>
-                    <div className="text-gold-text text-2xl font-bold md:text-3xl">
-                      {stats.totalJoined}
-                    </div>
-                    <div className="mt-1 text-[10px] font-medium tracking-wider text-gray-400 uppercase md:text-xs">
-                      {t("tournaments")}
-                    </div>
-                  </div>
-                </div>
-
-                {/* Total Winnings Card */}
-                <div className="group hover:border-gold-dark/40 bg-dark-primary/60 hover:bg-dark-primary/80 relative overflow-hidden rounded-xl border border-white/10 p-4 transition-all duration-300 md:p-5">
-                  <div className="via-gold-dark/50 absolute top-0 right-0 left-0 h-[2px] bg-gradient-to-r from-transparent to-transparent"></div>
-                  <div className="flex flex-col items-center text-center">
-                    <div className="border-gold-dark/30 bg-gold-dark/15 mb-3 flex h-11 w-11 items-center justify-center rounded-lg border transition-transform duration-300 group-hover:scale-105 md:h-12 md:w-12">
-                      <Image
-                        src="/icons/004.webp"
-                        alt="Gold"
-                        width={26}
-                        height={26}
-                      />
-                    </div>
-                    <div className="text-gold text-2xl font-bold md:text-3xl">
-                      {stats.totalWinnings.toLocaleString()}
-                    </div>
-                    <div className="mt-1 text-[10px] font-medium tracking-wider text-gray-400 uppercase md:text-xs">
-                      {t("totalWinnings")}
-                    </div>
-                  </div>
-                </div>
-
-                {/* Wins Card */}
-                <div className="group hover:border-gold-dark/40 bg-dark-primary/60 hover:bg-dark-primary/80 relative overflow-hidden rounded-xl border border-white/10 p-4 transition-all duration-300 md:p-5">
-                  <div className="via-gold-dark/50 absolute top-0 right-0 left-0 h-[2px] bg-gradient-to-r from-transparent to-transparent"></div>
-                  <div className="flex flex-col items-center text-center">
-                    <div className="mb-3 flex h-11 w-11 items-center justify-center rounded-lg border border-white/15 bg-white/10 transition-transform duration-300 group-hover:scale-105 md:h-12 md:w-12">
-                      <Image
-                        src="/icons/003.webp"
-                        alt="Wins"
-                        width={26}
-                        height={26}
-                      />
-                    </div>
-                    <div className="text-gold-text text-2xl font-bold md:text-3xl">
-                      {stats.wins}
-                    </div>
-                    <div className="mt-1 text-[10px] font-medium tracking-wider text-gray-400 uppercase md:text-xs">
-                      {t("totalWins")}
-                    </div>
-                  </div>
-                </div>
-
-                {/* Top 3 Finishes Card */}
-                <div className="group hover:border-gold-dark/40 bg-dark-primary/60 hover:bg-dark-primary/80 relative overflow-hidden rounded-xl border border-white/10 p-4 transition-all duration-300 md:p-5">
-                  <div className="via-gold-dark/50 absolute top-0 right-0 left-0 h-[2px] bg-gradient-to-r from-transparent to-transparent"></div>
-                  <div className="flex flex-col items-center text-center">
-                    <div className="mb-3 flex h-11 w-11 items-center justify-center rounded-lg border border-white/15 bg-white/10 transition-transform duration-300 group-hover:scale-105 md:h-12 md:w-12">
-                      <Image
-                        src="/icons/001.webp"
-                        alt="Top 3 Finishes"
-                        width={26}
-                        height={26}
-                      />
-                    </div>
-                    <div className="text-gold-text text-2xl font-bold md:text-3xl">
-                      {stats.top3Finishes}
-                    </div>
-                    <div className="mt-1 text-[10px] font-medium tracking-wider text-gray-400 uppercase md:text-xs">
-                      {t("top3Finishes")}
-                    </div>
-                  </div>
-                </div>
-              </div>
             </div>
           </div>
 
           {/* Match History Section */}
           <div className="mb-8">
-            <div className="mb-6 flex items-center gap-3">
+            <div className="mb-6 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
               <h2 className="text-gold-text text-3xl font-bold">
                 {t("matchResults")}
               </h2>
+
+              {/* Stats - Mobile: Simple inline | Desktop: Cards */}
+              {/* Mobile Stats Row */}
+              <div className="border-gold-dark/20 bg-dark-primary/40 flex items-center justify-between rounded-xl border px-4 py-3 sm:hidden">
+                <div className="flex flex-col items-center">
+                  <span className="text-gold-text text-lg font-bold">
+                    {stats.totalJoined}
+                  </span>
+                  <span className="text-[9px] text-gray-400 uppercase">
+                    {t("tournaments")}
+                  </span>
+                </div>
+                <div className="h-8 w-px bg-white/10"></div>
+                <div className="flex flex-col items-center">
+                  <span className="text-gold text-lg font-bold">
+                    {stats.totalWinnings.toLocaleString()}
+                  </span>
+                  <span className="text-[9px] text-gray-400 uppercase">
+                    {t("totalWinnings")}
+                  </span>
+                </div>
+                <div className="h-8 w-px bg-white/10"></div>
+                <div className="flex flex-col items-center">
+                  <span className="text-gold-text text-lg font-bold">
+                    {stats.wins}
+                  </span>
+                  <span className="text-[9px] text-gray-400 uppercase">
+                    {t("totalWins")}
+                  </span>
+                </div>
+                <div className="h-8 w-px bg-white/10"></div>
+                <div className="flex flex-col items-center">
+                  <span className="text-gold-text text-lg font-bold">
+                    {stats.top3Finishes}
+                  </span>
+                  <span className="text-[9px] text-gray-400 uppercase">
+                    Top 3
+                  </span>
+                </div>
+              </div>
+
+              {/* Desktop Stats Cards */}
+              <div className="hidden sm:flex sm:flex-wrap sm:items-center sm:gap-3">
+                {/* Tournaments Joined */}
+                <div className="group hover:border-gold-dark/40 bg-dark-primary/60 hover:bg-dark-primary/80 flex items-center gap-2 rounded-xl border border-white/10 px-3 py-2 transition-all duration-300">
+                  <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg border border-white/15 bg-white/10 transition-transform duration-300 group-hover:scale-105">
+                    <Image
+                      src="/icons/002.webp"
+                      alt="Tournaments"
+                      width={20}
+                      height={20}
+                    />
+                  </div>
+                  <div>
+                    <div className="text-gold-text text-lg font-bold">
+                      {stats.totalJoined}
+                    </div>
+                    <div className="text-xs font-medium text-gray-400 uppercase">
+                      {t("tournaments")}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Total Winnings */}
+                <div className="group hover:border-gold-dark/40 bg-dark-primary/60 hover:bg-dark-primary/80 flex items-center gap-2 rounded-xl border border-white/10 px-3 py-2 transition-all duration-300">
+                  <div className="border-gold-dark/30 bg-gold-dark/15 flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg border transition-transform duration-300 group-hover:scale-105">
+                    <Image
+                      src="/icons/004.webp"
+                      alt="Gold"
+                      width={20}
+                      height={20}
+                    />
+                  </div>
+                  <div>
+                    <div className="text-gold text-lg font-bold">
+                      {stats.totalWinnings.toLocaleString()}
+                    </div>
+                    <div className="text-xs font-medium text-gray-400 uppercase">
+                      {t("totalWinnings")}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Wins */}
+                <div className="group hover:border-gold-dark/40 bg-dark-primary/60 hover:bg-dark-primary/80 flex items-center gap-2 rounded-xl border border-white/10 px-3 py-2 transition-all duration-300">
+                  <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg border border-white/15 bg-white/10 transition-transform duration-300 group-hover:scale-105">
+                    <Image
+                      src="/icons/003.webp"
+                      alt="Wins"
+                      width={20}
+                      height={20}
+                    />
+                  </div>
+                  <div>
+                    <div className="text-gold-text text-lg font-bold">
+                      {stats.wins}
+                    </div>
+                    <div className="text-xs font-medium text-gray-400 uppercase">
+                      {t("totalWins")}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Top 3 Finishes */}
+                <div className="group hover:border-gold-dark/40 bg-dark-primary/60 hover:bg-dark-primary/80 flex items-center gap-2 rounded-xl border border-white/10 px-3 py-2 transition-all duration-300">
+                  <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg border border-white/15 bg-white/10 transition-transform duration-300 group-hover:scale-105">
+                    <Image
+                      src="/icons/001.webp"
+                      alt="Top 3 Finishes"
+                      width={20}
+                      height={20}
+                    />
+                  </div>
+                  <div>
+                    <div className="text-gold-text text-lg font-bold">
+                      {stats.top3Finishes}
+                    </div>
+                    <div className="text-xs font-medium text-gray-400 uppercase">
+                      {t("top3Finishes")}
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
             <MatchHistory matches={matches} playerId={user?.id} />
           </div>

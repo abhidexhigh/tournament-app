@@ -31,55 +31,7 @@ const nextConfig = {
   // CSP headers are handled by middleware.js for dynamic nonce support
   // Static headers for non-CSP security headers only
   async headers() {
-    // Get production domain for CORS (fallback for local dev)
-    const productionDomain =
-      process.env.NEXT_PUBLIC_APP_URL ||
-      "https://tournament-app-two.vercel.app";
-
     return [
-      {
-        // Apply security headers to static assets (fonts, media, etc.)
-        // This overrides Vercel's default Access-Control-Allow-Origin: *
-        source: "/_next/static/:path*",
-        headers: [
-          {
-            key: "X-Content-Type-Options",
-            value: "nosniff",
-          },
-          {
-            key: "X-Permitted-Cross-Domain-Policies",
-            value: "none",
-          },
-          {
-            key: "Cross-Origin-Resource-Policy",
-            value: "same-site",
-          },
-          // Override Vercel's default Access-Control-Allow-Origin: *
-          // Restrict to same-site to prevent cross-domain font loading
-          {
-            key: "Access-Control-Allow-Origin",
-            value: productionDomain,
-          },
-        ],
-      },
-      {
-        // Apply security headers to public static files
-        source: "/:path((?:fonts|images|icons).*)",
-        headers: [
-          {
-            key: "X-Content-Type-Options",
-            value: "nosniff",
-          },
-          {
-            key: "X-Permitted-Cross-Domain-Policies",
-            value: "none",
-          },
-          {
-            key: "Cross-Origin-Resource-Policy",
-            value: "same-site",
-          },
-        ],
-      },
       {
         // Apply security headers to API routes (middleware doesn't cover these)
         source: "/api/:path*",

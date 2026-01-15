@@ -153,14 +153,14 @@ function HostDashboardContent() {
       <div className="px-4 py-8 sm:px-6 lg:px-8">
         <div className="max-w-main mx-auto">
           {/* Profile + Stats Hero Section */}
-          <div className="border-gold-dark/20 bg-dark-gray-card/80 relative mb-8 overflow-hidden rounded-2xl border p-5 shadow-lg shadow-gray-800/30 backdrop-blur-sm sm:p-6 lg:p-8">
+          <div className="border-gold-dark/20 bg-dark-gray-card/80 relative mb-8 overflow-hidden rounded-2xl border p-5 shadow-lg shadow-gray-800/30 backdrop-blur-sm sm:px-6 sm:py-1 lg:px-8 lg:py-2">
             {/* Decorative elements */}
             <div className="bg-gold-dark/10 absolute top-0 right-0 h-40 w-40 rounded-full blur-3xl sm:h-64 sm:w-64"></div>
             <div className="bg-gold/5 absolute bottom-0 left-1/3 h-32 w-32 rounded-full blur-2xl sm:h-48 sm:w-48"></div>
 
             <div className="relative">
               {/* Profile Row */}
-              <div className="mb-6 flex flex-col gap-6 lg:mb-8 lg:flex-row lg:items-center lg:justify-between">
+              <div className="mt-6 mb-6 flex flex-col gap-6 lg:mt-8 lg:mb-8 lg:flex-row lg:items-center lg:justify-between">
                 {/* Left: Avatar + User Info */}
                 <div className="flex flex-col items-center gap-4 sm:flex-row sm:gap-5">
                   {/* Avatar */}
@@ -293,105 +293,143 @@ function HostDashboardContent() {
                   </Link>
                 </div>
               </div>
-
-              {/* Stats Grid */}
-              <div className="grid grid-cols-2 gap-3 md:grid-cols-4 md:gap-4">
-                {/* Total Tournaments Card */}
-                <div className="group hover:border-gold-dark/40 bg-dark-primary/60 hover:bg-dark-primary/80 relative overflow-hidden rounded-xl border border-white/10 p-4 transition-all duration-300 md:p-5">
-                  <div className="via-gold-dark/50 absolute top-0 right-0 left-0 h-[2px] bg-gradient-to-r from-transparent to-transparent"></div>
-                  <div className="flex flex-col items-center text-center">
-                    <div className="mb-3 flex h-11 w-11 items-center justify-center rounded-lg border border-white/15 bg-white/10 transition-transform duration-300 group-hover:scale-105 md:h-12 md:w-12">
-                      <Image
-                        src="/icons/002.webp"
-                        alt={t("totalTournaments")}
-                        width={26}
-                        height={26}
-                      />
-                    </div>
-                    <div className="text-gold-text text-2xl font-bold md:text-3xl">
-                      {stats.total}
-                    </div>
-                    <div className="mt-1 text-[10px] font-medium tracking-wider text-gray-400 uppercase md:text-xs">
-                      {t("totalTournaments")}
-                    </div>
-                  </div>
-                </div>
-
-                {/* Upcoming Card */}
-                <div className="group hover:border-gold-dark/40 bg-dark-primary/60 hover:bg-dark-primary/80 relative overflow-hidden rounded-xl border border-white/10 p-4 transition-all duration-300 md:p-5">
-                  <div className="via-gold-dark/50 absolute top-0 right-0 left-0 h-[2px] bg-gradient-to-r from-transparent to-transparent"></div>
-                  <div className="flex flex-col items-center text-center">
-                    <div className="mb-3 flex h-11 w-11 items-center justify-center rounded-lg border border-white/15 bg-white/10 transition-transform duration-300 group-hover:scale-105 md:h-12 md:w-12">
-                      <Image
-                        src="/icons/004.webp"
-                        alt="Upcoming"
-                        width={26}
-                        height={26}
-                      />
-                    </div>
-                    <div className="text-gold-text text-2xl font-bold md:text-3xl">
-                      {stats.upcoming}
-                    </div>
-                    <div className="mt-1 text-[10px] font-medium tracking-wider text-gray-400 uppercase md:text-xs">
-                      {t("upcoming")}
-                    </div>
-                  </div>
-                </div>
-
-                {/* Ongoing Card */}
-                <div className="group hover:border-gold-dark/40 bg-dark-primary/60 hover:bg-dark-primary/80 relative overflow-hidden rounded-xl border border-white/10 p-4 transition-all duration-300 md:p-5">
-                  <div className="via-gold-dark/50 absolute top-0 right-0 left-0 h-[2px] bg-gradient-to-r from-transparent to-transparent"></div>
-                  <div className="flex flex-col items-center text-center">
-                    <div className="mb-3 flex h-11 w-11 items-center justify-center rounded-lg border border-white/15 bg-white/10 transition-transform duration-300 group-hover:scale-105 md:h-12 md:w-12">
-                      <Image
-                        src="/icons/003.webp"
-                        alt="Ongoing"
-                        width={26}
-                        height={26}
-                      />
-                    </div>
-                    <div className="text-gold-text text-2xl font-bold md:text-3xl">
-                      {stats.ongoing}
-                    </div>
-                    <div className="mt-1 text-[10px] font-medium tracking-wider text-gray-400 uppercase md:text-xs">
-                      {t("ongoing")}
-                    </div>
-                  </div>
-                </div>
-
-                {/* Completed Card */}
-                <div className="group hover:border-gold-dark/40 bg-dark-primary/60 hover:bg-dark-primary/80 relative overflow-hidden rounded-xl border border-white/10 p-4 transition-all duration-300 md:p-5">
-                  <div className="via-gold-dark/50 absolute top-0 right-0 left-0 h-[2px] bg-gradient-to-r from-transparent to-transparent"></div>
-                  <div className="flex flex-col items-center text-center">
-                    <div className="mb-3 flex h-11 w-11 items-center justify-center rounded-lg border border-white/15 bg-white/10 transition-transform duration-300 group-hover:scale-105 md:h-12 md:w-12">
-                      <Image
-                        src="/icons/001.webp"
-                        alt="Completed"
-                        width={26}
-                        height={26}
-                      />
-                    </div>
-                    <div className="text-gold-text text-2xl font-bold md:text-3xl">
-                      {stats.completed}
-                    </div>
-                    <div className="mt-1 text-[10px] font-medium tracking-wider text-gray-400 uppercase md:text-xs">
-                      {t("completed")}
-                    </div>
-                  </div>
-                </div>
-              </div>
             </div>
           </div>
 
           {/* Tournaments List */}
           <div className="mb-6">
-            <div className="mb-2 flex items-center gap-3">
-              <div className="from-gold/30 to-gold/10 border-gold/20 flex h-12 w-12 items-center justify-center rounded-xl border bg-gradient-to-br">
-                <span className="text-2xl">👑</span>
+            <div className="mb-2 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+              <div className="flex items-center gap-3">
+                <div className="from-gold/30 to-gold/10 border-gold/20 flex h-12 w-12 items-center justify-center rounded-xl border bg-gradient-to-br">
+                  <span className="text-2xl">👑</span>
+                </div>
+                <h2 className="text-gold-gradient text-3xl font-bold">
+                  {t("yourTournaments")}
+                </h2>
               </div>
-              <h2 className="text-gold-gradient text-3xl font-bold">
-                {t("yourTournaments")}
-              </h2>
+
+              {/* Stats - Mobile: Simple inline | Desktop: Cards */}
+              {/* Mobile Stats Row */}
+              <div className="border-gold-dark/20 bg-dark-primary/40 flex items-center justify-between rounded-xl border px-4 py-3 sm:hidden">
+                <div className="flex flex-col items-center">
+                  <span className="text-gold-text text-lg font-bold">
+                    {stats.total}
+                  </span>
+                  <span className="text-[9px] text-gray-400 uppercase">
+                    Total
+                  </span>
+                </div>
+                <div className="h-8 w-px bg-white/10"></div>
+                <div className="flex flex-col items-center">
+                  <span className="text-gold text-lg font-bold">
+                    {stats.upcoming}
+                  </span>
+                  <span className="text-[9px] text-gray-400 uppercase">
+                    {t("upcoming")}
+                  </span>
+                </div>
+                <div className="h-8 w-px bg-white/10"></div>
+                <div className="flex flex-col items-center">
+                  <span className="text-gold-text text-lg font-bold">
+                    {stats.ongoing}
+                  </span>
+                  <span className="text-[9px] text-gray-400 uppercase">
+                    {t("ongoing")}
+                  </span>
+                </div>
+                <div className="h-8 w-px bg-white/10"></div>
+                <div className="flex flex-col items-center">
+                  <span className="text-gold-text text-lg font-bold">
+                    {stats.completed}
+                  </span>
+                  <span className="text-[9px] text-gray-400 uppercase">
+                    {t("completed")}
+                  </span>
+                </div>
+              </div>
+
+              {/* Desktop Stats Cards */}
+              <div className="hidden sm:flex sm:flex-wrap sm:items-center sm:gap-3">
+                {/* Total Tournaments */}
+                <div className="group hover:border-gold-dark/40 bg-dark-primary/60 hover:bg-dark-primary/80 flex items-center gap-2 rounded-xl border border-white/10 px-3 py-2 transition-all duration-300">
+                  <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg border border-white/15 bg-white/10 transition-transform duration-300 group-hover:scale-105">
+                    <Image
+                      src="/icons/002.webp"
+                      alt={t("totalTournaments")}
+                      width={20}
+                      height={20}
+                    />
+                  </div>
+                  <div>
+                    <div className="text-gold-text text-lg font-bold">
+                      {stats.total}
+                    </div>
+                    <div className="text-xs font-medium text-gray-400 uppercase">
+                      {t("totalTournaments")}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Upcoming */}
+                <div className="group hover:border-gold-dark/40 bg-dark-primary/60 hover:bg-dark-primary/80 flex items-center gap-2 rounded-xl border border-white/10 px-3 py-2 transition-all duration-300">
+                  <div className="border-gold-dark/30 bg-gold-dark/15 flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg border transition-transform duration-300 group-hover:scale-105">
+                    <Image
+                      src="/icons/004.webp"
+                      alt="Upcoming"
+                      width={20}
+                      height={20}
+                    />
+                  </div>
+                  <div>
+                    <div className="text-gold text-lg font-bold">
+                      {stats.upcoming}
+                    </div>
+                    <div className="text-xs font-medium text-gray-400 uppercase">
+                      {t("upcoming")}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Ongoing */}
+                <div className="group hover:border-gold-dark/40 bg-dark-primary/60 hover:bg-dark-primary/80 flex items-center gap-2 rounded-xl border border-white/10 px-3 py-2 transition-all duration-300">
+                  <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg border border-white/15 bg-white/10 transition-transform duration-300 group-hover:scale-105">
+                    <Image
+                      src="/icons/003.webp"
+                      alt="Ongoing"
+                      width={20}
+                      height={20}
+                    />
+                  </div>
+                  <div>
+                    <div className="text-gold-text text-lg font-bold">
+                      {stats.ongoing}
+                    </div>
+                    <div className="text-xs font-medium text-gray-400 uppercase">
+                      {t("ongoing")}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Completed */}
+                <div className="group hover:border-gold-dark/40 bg-dark-primary/60 hover:bg-dark-primary/80 flex items-center gap-2 rounded-xl border border-white/10 px-3 py-2 transition-all duration-300">
+                  <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg border border-white/15 bg-white/10 transition-transform duration-300 group-hover:scale-105">
+                    <Image
+                      src="/icons/001.webp"
+                      alt="Completed"
+                      width={20}
+                      height={20}
+                    />
+                  </div>
+                  <div>
+                    <div className="text-gold-text text-lg font-bold">
+                      {stats.completed}
+                    </div>
+                    <div className="text-xs font-medium text-gray-400 uppercase">
+                      {t("completed")}
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
 
