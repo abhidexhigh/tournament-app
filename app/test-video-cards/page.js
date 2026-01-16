@@ -3,6 +3,18 @@
 import { useState, useRef, useEffect, useCallback, memo, useMemo } from "react";
 import Image from "next/image";
 
+// Summoning videos from public/summoningVideos folder (landscape)
+const summoningVideos = [
+  "/summoningVideos/Assassin_Armory_V5.mp4",
+  "/summoningVideos/Bone_Dragon_Armory_V10.mp4",
+  "/summoningVideos/Canon_Armory_V3.mp4",
+  "/summoningVideos/Dwarf_Armory_V2.mp4",
+  "/summoningVideos/Eastern_Dragon_Armory_V4.mp4",
+  "/summoningVideos/Elemental_Dragon_Armory_V5.mp4",
+  "/summoningVideos/Fairy_Dragon_Armory_V3.mp4",
+  "/summoningVideos/Hellhound_Armory_V2.mp4",
+];
+
 // Local video files from public/cardVideos folder (133 files)
 const localVideoCards = [
   "/cardVideos/Amazon Dark Loop N.mp4",
@@ -279,7 +291,7 @@ const VideoCard = memo(function VideoCard({
   return (
     <div
       ref={cardRef}
-      className="relative transition-all duration-300 hover:scale-105 hover:shadow-2xl"
+      className="relative transition-all duration-300 hover:scale-[1.01] hover:shadow-2xl"
       style={{
         width: layoutMode === "grid" ? "100%" : `${computedCardWidth}px`,
         height: `${cardHeight}px`,
@@ -473,6 +485,9 @@ const ToggleControl = memo(function ToggleControl({
 });
 
 export default function TestVideoCards() {
+  // Tab state - "characters" or "summoning"
+  const [activeTab, setActiveTab] = useState("characters");
+
   // Control states - use consistent initial value for SSR, update on mount
   const [cardsPerRow, setCardsPerRow] = useState(2); // Start with mobile default for SSR consistency
   const [hasManuallySetCards, setHasManuallySetCards] = useState(false); // Track if user manually changed cards per row
@@ -491,7 +506,7 @@ export default function TestVideoCards() {
   const [backgroundColor, setBackgroundColor] = useState("#0a0a0f");
   const [cardBgColor, setCardBgColor] = useState("#1a1a24");
   const [showBorder, setShowBorder] = useState(true);
-  const [borderColor, setBorderColor] = useState("#8b5cf6");
+  const [borderColor, setBorderColor] = useState("#d3af37");
   const [borderWidth, setBorderWidth] = useState(2);
   const [playOnHover, setPlayOnHover] = useState(false);
   const [showOverlay, setShowOverlay] = useState(true);
@@ -560,9 +575,14 @@ export default function TestVideoCards() {
       ? Math.floor((containerWidth - gap * (cardsPerRow - 1)) / cardsPerRow)
       : cardWidth;
 
+  // Get current video source based on active tab
+  const currentVideoSource =
+    activeTab === "characters" ? localVideoCards : summoningVideos;
+
   // Filter videos (memoized)
-  const filteredVideos = localVideoCards
+  const filteredVideos = currentVideoSource
     .filter((url) => {
+      if (activeTab === "summoning") return true; // No element filter for summoning
       if (filterType === "all") return true;
       return getElementType(url).toLowerCase() === filterType.toLowerCase();
     })
@@ -572,7 +592,7 @@ export default function TestVideoCards() {
         .toLowerCase()
         .includes(searchQuery.toLowerCase());
     })
-    .slice(0, maxVideos);
+    .slice(0, activeTab === "summoning" ? summoningVideos.length : maxVideos);
 
   // Aspect ratio presets
   const aspectRatios = {
@@ -602,15 +622,53 @@ export default function TestVideoCards() {
       {/* Header */}
       <div className="sticky top-0 z-50 border-b border-gray-800 bg-gray-900/95 backdrop-blur-sm">
         <div className="container mx-auto px-3 py-3 sm:px-4 sm:py-4">
+          {/* Tab Switcher */}
+          <div className="mb-3 flex gap-2">
+            <button
+              onClick={() => {
+                setActiveTab("characters");
+                // Reset to square aspect ratio for character cards
+                setAspectRatio("1:1");
+              }}
+              className={`rounded-lg px-4 py-2 text-sm font-medium transition-all ${
+                activeTab === "characters"
+                  ? "bg-purple-600 text-white shadow-lg shadow-purple-500/30"
+                  : "bg-gray-800 text-gray-400 hover:bg-gray-700 hover:text-white"
+              }`}
+            >
+              🃏 Character Cards
+            </button>
+            <button
+              onClick={() => {
+                setActiveTab("summoning");
+                // Switch to landscape aspect ratio for summoning videos
+                setAspectRatio("16:9");
+                setCardsPerRow(2);
+                setHasManuallySetCards(true);
+              }}
+              className={`rounded-lg px-4 py-2 text-sm font-medium transition-all ${
+                activeTab === "summoning"
+                  ? "bg-amber-600 text-white shadow-lg shadow-amber-500/30"
+                  : "bg-gray-800 text-gray-400 hover:bg-gray-700 hover:text-white"
+              }`}
+            >
+              ✨ Summoning Videos
+            </button>
+          </div>
+
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex items-center justify-between">
               <div>
                 <h1 className="text-lg font-bold text-white sm:text-2xl">
-                  Character Cards
+                  {activeTab === "characters"
+                    ? "Character Cards"
+                    : "Summoning Videos"}
                 </h1>
                 <p className="text-xs text-gray-400 sm:text-sm">
-                  Showing {filteredVideos.length} of {localVideoCards.length}{" "}
-                  characters
+                  Showing {filteredVideos.length} of {currentVideoSource.length}{" "}
+                  {activeTab === "characters"
+                    ? "characters"
+                    : "summoning animations"}
                 </p>
               </div>
               {/* Mobile Controls Toggle */}
@@ -629,18 +687,20 @@ export default function TestVideoCards() {
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="border-gold-dark/30 focus:border-gold min-w-0 flex-1 rounded-lg border bg-black/30 px-3 py-2 text-sm text-white placeholder-gray-500 focus:outline-none sm:w-64 sm:flex-none sm:px-4 sm:text-base"
               />
-              <select
-                value={filterType}
-                onChange={(e) => setFilterType(e.target.value)}
-                className="border-gold-dark/30 focus:border-gold rounded-lg border bg-black/30 px-2 py-2 text-sm text-white focus:outline-none sm:px-4 sm:text-base"
-              >
-                <option value="all">All</option>
-                <option value="fire">🔥 Fire</option>
-                <option value="water">💧 Water</option>
-                <option value="dark">🌑 Dark</option>
-                <option value="light">✨ Light</option>
-                <option value="storm">⚡ Storm</option>
-              </select>
+              {activeTab === "characters" && (
+                <select
+                  value={filterType}
+                  onChange={(e) => setFilterType(e.target.value)}
+                  className="border-gold-dark/30 focus:border-gold rounded-lg border bg-black/30 px-2 py-2 text-sm text-white focus:outline-none sm:px-4 sm:text-base"
+                >
+                  <option value="all">All</option>
+                  <option value="fire">🔥 Fire</option>
+                  <option value="water">💧 Water</option>
+                  <option value="dark">🌑 Dark</option>
+                  <option value="light">✨ Light</option>
+                  <option value="storm">⚡ Storm</option>
+                </select>
+              )}
             </div>
           </div>
         </div>
@@ -732,13 +792,15 @@ export default function TestVideoCards() {
               max={48}
               unit="px"
             />
-            <RangeControl
-              label="Max Videos"
-              value={maxVideos}
-              onChange={setMaxVideos}
-              min={1}
-              max={localVideoCards.length}
-            />
+            {activeTab === "characters" && (
+              <RangeControl
+                label="Max Videos"
+                value={maxVideos}
+                onChange={setMaxVideos}
+                min={1}
+                max={localVideoCards.length}
+              />
+            )}
           </ControlSection>
 
           {/* Size Controls */}
@@ -879,30 +941,32 @@ export default function TestVideoCards() {
             )}
           </ControlSection>
 
-          {/* Gold Frame Controls */}
-          <ControlSection title="🖼️ Gold Frame">
-            <ToggleControl
-              label="Use Gold Frame"
-              checked={useGoldFrame}
-              onChange={setUseGoldFrame}
-            />
-            {useGoldFrame && (
-              <RangeControl
-                label="Video Padding"
-                value={videoPadding}
-                onChange={setVideoPadding}
-                min={0}
-                max={30}
-                unit="px"
+          {/* Gold Frame Controls - Only for Character Cards */}
+          {activeTab === "characters" && (
+            <ControlSection title="🖼️ Gold Frame">
+              <ToggleControl
+                label="Use Gold Frame"
+                checked={useGoldFrame}
+                onChange={setUseGoldFrame}
               />
-            )}
-            {useGoldFrame && (
-              <div className="rounded-lg bg-amber-500/10 p-2 text-xs text-amber-400">
-                💡 Video padding controls how far the video sits inside the
-                frame
-              </div>
-            )}
-          </ControlSection>
+              {useGoldFrame && (
+                <RangeControl
+                  label="Video Padding"
+                  value={videoPadding}
+                  onChange={setVideoPadding}
+                  min={0}
+                  max={30}
+                  unit="px"
+                />
+              )}
+              {useGoldFrame && (
+                <div className="rounded-lg bg-amber-500/10 p-2 text-xs text-amber-400">
+                  💡 Video padding controls how far the video sits inside the
+                  frame
+                </div>
+              )}
+            </ControlSection>
+          )}
 
           {/* Overlay Controls */}
           <ControlSection title="✨ Overlay & Title">
@@ -926,11 +990,13 @@ export default function TestVideoCards() {
               checked={showTitle}
               onChange={setShowTitle}
             />
-            <ToggleControl
-              label="Show Element Icon"
-              checked={showElementIcon}
-              onChange={setShowElementIcon}
-            />
+            {activeTab === "characters" && (
+              <ToggleControl
+                label="Show Element Icon"
+                checked={showElementIcon}
+                onChange={setShowElementIcon}
+              />
+            )}
           </ControlSection>
 
           {/* Reset Button */}
@@ -952,7 +1018,7 @@ export default function TestVideoCards() {
               setBackgroundColor("#0a0a0f");
               setCardBgColor("#1a1a24");
               setShowBorder(true);
-              setBorderColor("#8b5cf6");
+              setBorderColor("#d3af37");
               setBorderWidth(2);
               setPlayOnHover(false);
               setShowOverlay(true);
@@ -1042,7 +1108,9 @@ export default function TestVideoCards() {
                   cardHeight={cardHeight}
                   computedCardWidth={computedCardWidth}
                   layoutMode={layoutMode}
-                  useGoldFrame={useGoldFrame}
+                  useGoldFrame={
+                    activeTab === "characters" ? useGoldFrame : false
+                  }
                   videoPadding={videoPadding}
                   borderRadius={borderRadius}
                   cardBgColor={cardBgColor}
@@ -1058,7 +1126,9 @@ export default function TestVideoCards() {
                   showOverlay={showOverlay}
                   overlayOpacity={overlayOpacity}
                   showTitle={showTitle}
-                  showElementIcon={showElementIcon}
+                  showElementIcon={
+                    activeTab === "characters" ? showElementIcon : false
+                  }
                   goldFrameUrl={goldFrameUrl}
                 />
               ))}
@@ -1078,7 +1148,9 @@ export default function TestVideoCards() {
                   cardHeight={cardHeight}
                   computedCardWidth={computedCardWidth}
                   layoutMode={layoutMode}
-                  useGoldFrame={useGoldFrame}
+                  useGoldFrame={
+                    activeTab === "characters" ? useGoldFrame : false
+                  }
                   videoPadding={videoPadding}
                   borderRadius={borderRadius}
                   cardBgColor={cardBgColor}
@@ -1094,7 +1166,9 @@ export default function TestVideoCards() {
                   showOverlay={showOverlay}
                   overlayOpacity={overlayOpacity}
                   showTitle={showTitle}
-                  showElementIcon={showElementIcon}
+                  showElementIcon={
+                    activeTab === "characters" ? showElementIcon : false
+                  }
                   goldFrameUrl={goldFrameUrl}
                 />
               ))}
