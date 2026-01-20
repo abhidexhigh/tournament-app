@@ -556,7 +556,7 @@ export default function Navbar() {
                             : t("dashboard")}
                         </Link>
 
-                        <Link
+                        {/* <Link
                           href="/profile"
                           onClick={() => setIsMenuOpen(false)}
                           className={`flex items-center gap-3 rounded-xl px-4 py-3 text-[15px] font-medium transition-all active:scale-[0.98] ${
@@ -579,7 +579,7 @@ export default function Navbar() {
                             />
                           </svg>
                           {t("profile")}
-                        </Link>
+                        </Link> */}
                       </>
                     )}
                   </nav>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 import { useRouter } from "next/navigation";
 import { signIn, useSession } from "next-auth/react";
@@ -32,6 +32,10 @@ export default function AuthModal({ isOpen, onClose, initialMode = "login" }) {
   const tCommon = useTranslations("common");
   const tNav = useTranslations("nav");
 
+  // Triple-tap detection for mobile (e.detail doesn't work on iOS)
+  const tapCountRef = useRef(0);
+  const tapTimerRef = useRef(null);
+
   // Handle mounting for portal
   useEffect(() => {
     setMounted(true);
@@ -45,7 +49,15 @@ export default function AuthModal({ isOpen, onClose, initialMode = "login" }) {
       setFormData({ username: "", email: "", password: "" });
       setErrors({});
       setShowQuickLogin(false);
+      tapCountRef.current = 0;
     }
+
+    // Cleanup tap timer on close/unmount
+    return () => {
+      if (tapTimerRef.current) {
+        clearTimeout(tapTimerRef.current);
+      }
+    };
   }, [isOpen, initialMode]);
 
   // Handle session changes - Only redirect when modal is open (during login process)
@@ -104,6 +116,35 @@ export default function AuthModal({ isOpen, onClose, initialMode = "login" }) {
     if (errors[name]) {
       setErrors((prev) => ({ ...prev, [name]: "" }));
     }
+  };
+
+  // Handle triple-tap for both desktop and mobile
+  const handleTitleTap = (e) => {
+    // Desktop: use e.detail for triple-click
+    if (e.detail === 3) {
+      setShowQuickLogin((prev) => !prev);
+      return;
+    }
+
+    // Mobile: track taps manually since e.detail doesn't work reliably on iOS
+    tapCountRef.current += 1;
+
+    // Clear any existing timer
+    if (tapTimerRef.current) {
+      clearTimeout(tapTimerRef.current);
+    }
+
+    // Check for triple tap
+    if (tapCountRef.current >= 3) {
+      setShowQuickLogin((prev) => !prev);
+      tapCountRef.current = 0;
+      return;
+    }
+
+    // Reset tap count after 500ms of no taps
+    tapTimerRef.current = setTimeout(() => {
+      tapCountRef.current = 0;
+    }, 500);
   };
 
   const validateForm = () => {
@@ -274,16 +315,12 @@ export default function AuthModal({ isOpen, onClose, initialMode = "login" }) {
               </svg>
             </button>
 
-            {/* Secret Quick Login Trigger - Triple click the title */}
+            {/* Secret Quick Login Trigger - Triple tap/click the title */}
             <div className="mb-8 text-center">
               <h2
                 className="text-gold-gradient cursor-pointer text-2xl font-bold transition-opacity select-none hover:opacity-80 sm:text-3xl"
-                onClick={(e) => {
-                  if (e.detail === 3) {
-                    setShowQuickLogin(!showQuickLogin);
-                  }
-                }}
-                title="Triple-click for quick access"
+                onClick={handleTitleTap}
+                title="Triple-tap for quick access"
               >
                 {isLogin ? t("welcomeBack") : t("joinTheArena")}
               </h2>
