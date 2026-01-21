@@ -370,6 +370,7 @@ export const tournamentsDb = {
         rules: "rules",
         image: "image",
         status: "status",
+        cancelled_by: "cancelled_by",
         participants: "participants",
         winner_first: "winner_first",
         winner_second: "winner_second",

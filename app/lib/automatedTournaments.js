@@ -589,9 +589,9 @@ export const cancelUnfilledTournaments = async (pool) => {
           }
         }
 
-        // Mark tournament as cancelled
+        // Mark tournament as cancelled by system
         await pool.query(
-          `UPDATE tournaments SET status = 'cancelled', updated_at = NOW() WHERE id = $1`,
+          `UPDATE tournaments SET status = 'cancelled', cancelled_by = 'system', updated_at = NOW() WHERE id = $1`,
           [tournament.id],
         );
 
@@ -603,13 +603,13 @@ export const cancelUnfilledTournaments = async (pool) => {
           level: tournament.automated_level,
         });
       } else if (participantCount === 0) {
-        // No participants - just mark as cancelled, no refunds needed
+        // No participants - just mark as cancelled by system, no refunds needed
         console.log(
           `[Scheduler] Cancelling empty tournament: ${tournament.title} (0/${maxPlayers} players)`,
         );
 
         await pool.query(
-          `UPDATE tournaments SET status = 'cancelled', updated_at = NOW() WHERE id = $1`,
+          `UPDATE tournaments SET status = 'cancelled', cancelled_by = 'system', updated_at = NOW() WHERE id = $1`,
           [tournament.id],
         );
 

@@ -272,6 +272,19 @@ export const tournamentsApi = {
   updateStatus: async (id, status) => {
     return tournamentsApi.update(id, { status });
   },
+
+  // Cancel tournament and refund participants
+  cancelTournament: async (id, hostId) => {
+    const response = await apiRequest(`/tournaments/${id}`, {
+      method: "DELETE",
+      body: JSON.stringify({ host_id: hostId }),
+    });
+    // Format the tournament dates in the response
+    if (response.data) {
+      response.data = formatTournamentDates(response.data);
+    }
+    return response;
+  },
 };
 
 // Transactions API functions

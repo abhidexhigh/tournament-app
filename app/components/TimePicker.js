@@ -190,7 +190,7 @@ export default function TimePicker({
           <div className="flex flex-col items-center">
             <button
               type="button"
-              onClick={() => handleHourChange(1)}
+              onClick={() => handleHourChange(-1)}
               className={`hover:bg-gold/20 hover:text-gold rounded-lg text-gray-400 transition-all ${compact ? "p-1" : "p-1.5"}`}
             >
               <ChevronUpIcon />
@@ -200,7 +200,7 @@ export default function TimePicker({
             </span>
             <button
               type="button"
-              onClick={() => handleHourChange(-1)}
+              onClick={() => handleHourChange(1)}
               className={`hover:bg-gold/20 hover:text-gold rounded-lg text-gray-400 transition-all ${compact ? "p-1" : "p-1.5"}`}
             >
               <ChevronDownIcon />
@@ -213,7 +213,7 @@ export default function TimePicker({
           <div className="flex flex-col items-center">
             <button
               type="button"
-              onClick={() => handleMinuteChange(1)}
+              onClick={() => handleMinuteChange(-1)}
               className={`hover:bg-gold/20 hover:text-gold rounded-lg text-gray-400 transition-all ${compact ? "p-1" : "p-1.5"}`}
             >
               <ChevronUpIcon />
@@ -223,7 +223,7 @@ export default function TimePicker({
             </span>
             <button
               type="button"
-              onClick={() => handleMinuteChange(-1)}
+              onClick={() => handleMinuteChange(1)}
               className={`hover:bg-gold/20 hover:text-gold rounded-lg text-gray-400 transition-all ${compact ? "p-1" : "p-1.5"}`}
             >
               <ChevronDownIcon />

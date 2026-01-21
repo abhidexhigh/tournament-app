@@ -32,6 +32,7 @@ import ParticipantsTab from "../../components/tournament/ParticipantsTab";
 import RulesTab from "../../components/tournament/RulesTab";
 import TournamentDetailsSkeleton from "../../components/skeletons/TournamentDetailsSkeleton";
 import TopupModal from "../../components/TopupModal";
+import CancelConfirmationModal from "../../components/tournament/CancelConfirmationModal";
 import { useToast } from "../../components/Toast";
 import { useTranslations } from "../../contexts/LocaleContext";
 
@@ -61,6 +62,7 @@ export default function TournamentDetailsPage() {
   const [host, setHost] = useState(null);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [showTopupModal, setShowTopupModal] = useState(false);
+  const [showCancelModal, setShowCancelModal] = useState(false);
 
   // Set default payment method based on currency mode and display_type
   useEffect(() => {
@@ -438,6 +440,30 @@ export default function TournamentDetailsPage() {
     }
   };
 
+  const handleCancelTournament = async () => {
+    setLoading(true);
+
+    try {
+      const result = await tournamentsApi.cancelTournament(tournament.id, user.id);
+      setTournament(result.data);
+      setShowCancelModal(false);
+      
+      // Refresh user data in case they were a participant and got refunded
+      await refreshUser();
+
+      toast.success(
+        result.refundedCount > 0
+          ? `Tournament cancelled! ${result.refundedCount} participant(s) refunded. 💰`
+          : "Tournament cancelled successfully!"
+      );
+    } catch (error) {
+      console.error("Failed to cancel tournament:", error);
+      toast.error(error.message || "Failed to cancel tournament");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   // Show loading state
   if (initialLoading) {
     return <TournamentDetailsSkeleton />;
@@ -575,6 +601,7 @@ export default function TournamentDetailsPage() {
           onJoin={handleJoinButtonClick}
           onStart={handleStartTournament}
           onDeclareWinners={() => setShowWinnerModal(true)}
+          onCancel={() => setShowCancelModal(true)}
         />
 
         {/* Tabbed Content */}
@@ -615,6 +642,15 @@ export default function TournamentDetailsPage() {
           isOpen={showTopupModal}
           onClose={() => setShowTopupModal(false)}
           user={user}
+        />
+
+        {/* Cancel Tournament Confirmation Modal */}
+        <CancelConfirmationModal
+          isOpen={showCancelModal}
+          onClose={() => setShowCancelModal(false)}
+          onConfirm={handleCancelTournament}
+          tournament={tournament}
+          loading={loading}
         />
       </div>
     </div>

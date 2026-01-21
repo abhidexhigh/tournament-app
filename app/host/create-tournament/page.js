@@ -93,12 +93,12 @@ function CreateTournamentContent() {
     minRank: "",
     prizePoolType: "fixed",
     prizePool: "",
-    prizeSplitFirst: 10,
-    prizeSplitSecond: 7,
-    prizeSplitThird: 5,
+    prizeSplitFirst: 50,
+    prizeSplitSecond: 25,
+    prizeSplitThird: 10,
     additionalPrizePositions: 12,
     entryFee: 0,
-    rules: "",
+    rules: "1. All players must be online 15 minutes before start.\n2. No cheating or exploits allowed.\n3. Disconnections will be handled by admins.\n4. Finals will be best of 3.\n5. All decisions by admins are final.",
   });
 
   const clanPlayerOptions = [12, 18, 24, 30];
@@ -129,9 +129,9 @@ function CreateTournamentContent() {
       minRank: "Gold",
       prizePoolType: "fixed",
       prizePool: "1000",
-      prizeSplitFirst: 15,
-      prizeSplitSecond: 10,
-      prizeSplitThird: 7,
+      prizeSplitFirst: 50,
+      prizeSplitSecond: 25,
+      prizeSplitThird: 10,
       additionalPrizePositions: 12,
       entryFee: 5,
       rules:
@@ -152,9 +152,9 @@ function CreateTournamentContent() {
       minRank: "Platinum",
       prizePoolType: "fixed",
       prizePool: "1500",
-      prizeSplitFirst: 12,
-      prizeSplitSecond: 8,
-      prizeSplitThird: 5,
+      prizeSplitFirst: 25,
+      prizeSplitSecond: 15,
+      prizeSplitThird: 10,
       additionalPrizePositions: 15,
       entryFee: 8,
       rules:
@@ -661,6 +661,9 @@ function CreateTournamentContent() {
                           ...formData,
                           tournamentType: "regular",
                           maxPlayers: "100",
+                          prizeSplitFirst: 50,
+                          prizeSplitSecond: 25,
+                          prizeSplitThird: 10,
                         })
                       }
                       className={`relative rounded-2xl border-2 p-5 text-left transition-all ${
@@ -692,6 +695,9 @@ function CreateTournamentContent() {
                           ...formData,
                           tournamentType: "clan_battle",
                           maxPlayers: "12",
+                          prizeSplitFirst: 25,
+                          prizeSplitSecond: 15,
+                          prizeSplitThird: 10,
                         })
                       }
                       className={`relative rounded-2xl border-2 p-5 text-left transition-all ${
@@ -1017,34 +1023,62 @@ function CreateTournamentContent() {
                     {t("minimumRank")} <span className="text-gold">*</span>
                   </label>
                   <div className="grid grid-cols-5 gap-2">
-                    {rankOptions.map((rank) => (
-                      <button
-                        key={rank.value}
-                        type="button"
-                        onClick={() => {
-                          setFormData({ ...formData, minRank: rank.value });
-                          setErrors((prev) => ({ ...prev, minRank: "" }));
-                        }}
-                        className={`rounded-xl border p-3 text-center transition-all ${
-                          formData.minRank === rank.value
-                            ? "border-gold bg-gold/10"
-                            : "border-white/10 hover:border-white/20"
-                        }`}
-                      >
-                        <div className="flex justify-center">
-                          <rank.icon className="text-gold h-5 w-5" />
-                        </div>
-                        <div className="mt-1 text-[10px] text-gray-400 sm:text-[12px]">
-                          {rank.label}
-                        </div>
-                      </button>
-                    ))}
+                    {rankOptions.map((rank) => {
+                      const isHostRank = user?.rank === rank.value;
+                      const isSelected = formData.minRank === rank.value;
+                      return (
+                        <button
+                          key={rank.value}
+                          type="button"
+                          onClick={() => {
+                            setFormData({ ...formData, minRank: rank.value });
+                            setErrors((prev) => ({ ...prev, minRank: "" }));
+                          }}
+                          className={`relative rounded-xl border p-3 text-center transition-all ${
+                            isSelected
+                              ? "border-gold bg-gold/10"
+                              : isHostRank
+                                ? "border-green-500/50 bg-green-500/10"
+                                : "border-white/10 hover:border-white/20"
+                          }`}
+                        >
+                          {isHostRank && (
+                            <div className="absolute -top-1.5 left-1/2 -translate-x-1/2 rounded-full bg-green-500 px-1.5 py-0.5 text-[8px] font-bold text-black">
+                              {t("yourRank")}
+                            </div>
+                          )}
+                          <div className="flex justify-center">
+                            <rank.icon className={`h-5 w-5 ${isHostRank && !isSelected ? "text-green-400" : "text-gold"}`} />
+                          </div>
+                          <div className={`mt-1 text-[10px] sm:text-[12px] ${isHostRank && !isSelected ? "text-green-400" : "text-gray-400"}`}>
+                            {rank.label}
+                          </div>
+                        </button>
+                      );
+                    })}
                   </div>
                   {errors.minRank && (
                     <p className="mt-1.5 text-sm text-red-400">
                       {errors.minRank}
                     </p>
                   )}
+                  {/* Warning if host can't join their own tournament */}
+                  {formData.minRank && user?.rank && (() => {
+                    const rankOrder = ["Silver", "Gold", "Platinum", "Diamond", "Master"];
+                    const hostRankIndex = rankOrder.indexOf(user.rank);
+                    const selectedRankIndex = rankOrder.indexOf(formData.minRank);
+                    if (selectedRankIndex > hostRankIndex) {
+                      return (
+                        <div className="mt-3 flex items-start gap-2 rounded-lg border border-amber-500/30 bg-amber-500/10 p-3">
+                          <LuTriangleAlert className="h-4 w-4 flex-shrink-0 text-amber-400 mt-0.5" />
+                          <p className="text-xs text-amber-300">
+                            {t("rankWarning", { selectedRank: formData.minRank, yourRank: user.rank })}
+                          </p>
+                        </div>
+                      );
+                    }
+                    return null;
+                  })()}
                 </div>
               </div>
             )}
@@ -1303,11 +1337,59 @@ function CreateTournamentContent() {
                       )}
                     </span>
                   </div>
+                  
+                  {/* Common Rules Presets */}
+                  <div className="mb-3">
+                    <div className="mb-2 text-xs text-gray-500">{t("quickRulesPresets")}</div>
+                    <div className="flex flex-wrap gap-2">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setFormData(prev => ({ ...prev, rules: t("rulesPresets.standard") }));
+                          setErrors(prev => ({ ...prev, rules: "" }));
+                        }}
+                        className="rounded-lg border border-white/10 bg-white/5 px-3 py-1.5 text-xs text-gray-300 transition-all hover:border-gold/50 hover:bg-gold/10 hover:text-gold"
+                      >
+                        {t("standardRules")}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setFormData(prev => ({ ...prev, rules: t("rulesPresets.competitive") }));
+                          setErrors(prev => ({ ...prev, rules: "" }));
+                        }}
+                        className="rounded-lg border border-white/10 bg-white/5 px-3 py-1.5 text-xs text-gray-300 transition-all hover:border-gold/50 hover:bg-gold/10 hover:text-gold"
+                      >
+                        {t("competitiveRules")}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setFormData(prev => ({ ...prev, rules: t("rulesPresets.casual") }));
+                          setErrors(prev => ({ ...prev, rules: "" }));
+                        }}
+                        className="rounded-lg border border-white/10 bg-white/5 px-3 py-1.5 text-xs text-gray-300 transition-all hover:border-gold/50 hover:bg-gold/10 hover:text-gold"
+                      >
+                        {t("casualRules")}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setFormData(prev => ({ ...prev, rules: t("rulesPresets.clanBattle") }));
+                          setErrors(prev => ({ ...prev, rules: "" }));
+                        }}
+                        className="rounded-lg border border-white/10 bg-white/5 px-3 py-1.5 text-xs text-gray-300 transition-all hover:border-gold/50 hover:bg-gold/10 hover:text-gold"
+                      >
+                        {t("clanBattleRules")}
+                      </button>
+                    </div>
+                  </div>
+
                   <textarea
                     name="rules"
                     value={formData.rules}
                     onChange={handleInputChange}
-                    rows={4}
+                    rows={6}
                     placeholder={t("rulesPlaceholder")}
                     className={`w-full resize-none rounded-xl border ${errors.rules ? "border-red-500" : "border-white/10"} focus:border-gold bg-white/5 px-4 py-3 text-white placeholder-gray-600 focus:outline-none`}
                   />
@@ -1316,6 +1398,7 @@ function CreateTournamentContent() {
                       {errors.rules}
                     </p>
                   )}
+                  <p className="mt-1.5 text-xs text-gray-500">{t("rulesEditHint")}</p>
                 </div>
               </div>
             )}

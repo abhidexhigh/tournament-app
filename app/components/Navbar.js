@@ -60,31 +60,54 @@ export default function Navbar() {
   }, []);
 
   return (
-    <nav className="bg-dark-secondary border-gold-dark/20 bg-opacity-90 sticky top-0 z-50 border-b backdrop-blur-lg">
-      <div className="max-w-main mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex h-16 items-center justify-between">
-          {/* Logo */}
-          <Link href="/" className="group flex items-center space-x-2">
-            <span className="text-3xl">⚔️</span>
-            <span className="text-gold-gradient text-2xl font-bold">
-              Force of Rune
-            </span>
-          </Link>
+    <nav className="sticky top-0 z-50">
+      {/* Main Navbar Container */}
+      <div className="relative bg-gradient-to-b from-[#1a1a24] via-[#14141c] to-[#0f0f15] border-b border-gold/20 shadow-[0_4px_30px_rgba(212,175,55,0.1)]">
+        {/* Decorative top accent line */}
+        <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-gold/60 to-transparent" />
+        
+        <div className="max-w-main mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex h-16 items-center justify-between">
+            <div className="flex items-center space-x-8">
+              {/* Logo */}
+              <Link href="/" className="group relative flex items-center space-x-3">
+                {/* Logo glow effect */}
+                <div className="absolute -inset-2 bg-gold/10 rounded-full blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                <div className="relative flex items-center justify-center w-10 h-10 rounded-lg bg-gradient-to-br from-gold/20 to-amber-900/20 border border-gold/30 group-hover:border-gold/50 transition-all duration-300">
+                  <span className="text-2xl group-hover:scale-110 transition-transform duration-300">⚔️</span>
+                </div>
+                <div className="relative">
+                  <span className="text-xl font-bold bg-gradient-to-r from-amber-200 via-yellow-300 to-amber-400 bg-clip-text text-transparent tracking-wide">
+                    Force of Rune
+                  </span>
+                  <div className="absolute -bottom-1 left-0 right-0 h-[1px] bg-gradient-to-r from-gold/50 via-gold/20 to-transparent scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left" />
+                </div>
+              </Link>
 
-          {/* Desktop Navigation */}
-          <div className="hidden items-center space-x-6 md:mr-4 md:flex">
-            <Link
-              href="/"
-              className={`text-base font-medium transition-colors duration-300 ${
-                pathname === "/" ? "text-gold" : "hover:text-gold text-gray-300"
-              }`}
-            >
-              {t("tournaments")}
-            </Link>
+              {/* Nav Divider */}
+              <div className="hidden md:block h-6 w-[1px] bg-gradient-to-b from-transparent via-gold/30 to-transparent" />
 
-            {user && user.type ? (
+              {/* Tournaments Link */}
+              <Link
+                href="/"
+                className={`hidden md:flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold tracking-wide transition-all duration-300 ${
+                  pathname === "/"
+                    ? "bg-gold/15 text-gold border border-gold/30 shadow-[0_0_15px_rgba(212,175,55,0.15)]"
+                    : "text-gray-300 hover:text-gold hover:bg-white/5 border border-transparent"
+                }`}
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16.5 18.75h-9m9 0a3 3 0 013 3h-15a3 3 0 013-3m9 0v-3.375c0-.621-.503-1.125-1.125-1.125h-.871M7.5 18.75v-3.375c0-.621.504-1.125 1.125-1.125h.872m5.007 0H9.497m5.007 0a7.454 7.454 0 01-.982-3.172M9.497 14.25a7.454 7.454 0 00.981-3.172M5.25 4.236c-.982.143-1.954.317-2.916.52A6.003 6.003 0 007.73 9.728M5.25 4.236V4.5c0 2.108.966 3.99 2.48 5.228M5.25 4.236V2.721C7.456 2.41 9.71 2.25 12 2.25c2.291 0 4.545.16 6.75.47v1.516M7.73 9.728a6.726 6.726 0 002.748 1.35m8.272-6.842V4.5c0 2.108-.966 3.99-2.48 5.228m2.48-5.492a46.32 46.32 0 012.916.52 6.003 6.003 0 01-5.395 4.972m0 0a6.726 6.726 0 01-2.749 1.35m0 0a6.772 6.772 0 01-3.044 0" />
+                </svg>
+                {t("tournaments")}
+              </Link>
+            </div>
+
+            {/* Desktop Navigation */}
+            <div className="hidden items-center space-x-4 md:flex">
+              {user && user.type ? (
               <>
-                <Link
+                {/* <Link
                   href={
                     user.type === "host"
                       ? "/host/dashboard"
@@ -101,20 +124,25 @@ export default function Navbar() {
                   {user.type === "game_owner"
                     ? t("adminDashboard")
                     : t("dashboard")}
-                </Link>
+                </Link> */}
 
                 {/* Currency Balance - Clickable (hide for admin) */}
                 {user.type !== "game_owner" && (
                   <button
                     onClick={() => setIsTopupModalOpen(true)}
-                    className="from-gold/20 to-gold/5 border-gold/40 hover:border-gold hover:bg-gold/30 hover:shadow-gold/30 group flex items-center space-x-2 rounded-lg border bg-gradient-to-br px-3 py-1.5 transition-all duration-300 hover:shadow-lg"
+                    className="group relative flex items-center space-x-2 rounded-xl bg-gradient-to-r from-gold/15 via-amber-900/10 to-gold/5 border border-gold/30 hover:border-gold/60 px-4 py-2 transition-all duration-300 hover:shadow-[0_0_20px_rgba(212,175,55,0.2)] overflow-hidden"
                   >
-                    <span className="text-lg transition-transform duration-200 group-hover:scale-110">
+                    {/* Shimmer effect */}
+                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-gold/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700" />
+                    <span className="relative text-lg transition-transform duration-200 group-hover:scale-110">
                       {getPrimaryCurrency().emoji}
                     </span>
-                    <span className="text-gold text-sm font-bold">
+                    <span className="relative text-gold text-sm font-bold tracking-wide">
                       {getUserBalanceDisplay(user).formatted}
                     </span>
+                    <svg className="relative w-4 h-4 text-gold/60 group-hover:text-gold transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                    </svg>
                   </button>
                 )}
 
@@ -124,28 +152,35 @@ export default function Navbar() {
                     onClick={() =>
                       setIsProfileDropdownOpen(!isProfileDropdownOpen)
                     }
-                    className="from-dark-card to-dark-secondary border-gold-dark/30 hover:border-gold/50 hover:shadow-gold/20 group flex items-center space-x-2 rounded-xl border bg-gradient-to-br px-2 py-1 transition-all duration-300 hover:shadow-lg"
+                    className="group relative flex items-center space-x-2.5 rounded-xl bg-gradient-to-br from-[#1e1e2a] to-[#16161e] border border-gold/20 hover:border-gold/40 px-3 py-1.5 transition-all duration-300 hover:shadow-[0_0_20px_rgba(212,175,55,0.15)]"
                   >
-                    {user.avatar &&
-                    (user.avatar.startsWith("http") ||
-                      user.avatar.startsWith("/")) ? (
-                      <Image
-                        src={user.avatar}
-                        alt="User Avatar"
-                        width={28}
-                        height={28}
-                        className="rounded-full"
-                      />
-                    ) : (
-                      <div className="bg-gold/10 flex h-7 w-7 items-center justify-center rounded-full text-lg">
-                        {user.avatar || "👤"}
-                      </div>
-                    )}
-                    <p className="text-gold text-sm font-semibold">
+                    {/* Active indicator ring */}
+                    <div className="absolute -inset-[1px] rounded-xl bg-gradient-to-r from-gold/0 via-gold/30 to-gold/0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 -z-10 blur-sm" />
+                    
+                    <div className="relative">
+                      {user.avatar &&
+                      (user.avatar.startsWith("http") ||
+                        user.avatar.startsWith("/")) ? (
+                        <Image
+                          src={user.avatar}
+                          alt="User Avatar"
+                          width={30}
+                          height={30}
+                          className="rounded-full ring-2 ring-gold/30 group-hover:ring-gold/50 transition-all"
+                        />
+                      ) : (
+                        <div className="bg-gradient-to-br from-gold/20 to-amber-900/20 flex h-[30px] w-[30px] items-center justify-center rounded-full text-lg ring-2 ring-gold/30 group-hover:ring-gold/50 transition-all">
+                          {user.avatar || "👤"}
+                        </div>
+                      )}
+                      {/* Online indicator */}
+                      <div className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 bg-emerald-500 rounded-full border-2 border-[#16161e]" />
+                    </div>
+                    <p className="text-gray-200 group-hover:text-gold text-sm font-semibold transition-colors">
                       {user.username}
                     </p>
                     <svg
-                      className={`text-gold h-4 w-4 transition-transform duration-300 ${
+                      className={`text-gold/60 group-hover:text-gold h-4 w-4 transition-all duration-300 ${
                         isProfileDropdownOpen ? "rotate-180" : ""
                       }`}
                       fill="none"
@@ -163,77 +198,106 @@ export default function Navbar() {
 
                   {/* Dropdown Menu */}
                   {isProfileDropdownOpen && (
-                    <div className="bg-dark-card border-gold-dark/30 animate-fadeIn absolute right-0 z-50 mt-2 w-72 overflow-hidden rounded-xl border shadow-2xl">
+                    <div className="absolute right-0 z-50 mt-3 w-80 overflow-hidden rounded-2xl border border-gold/20 bg-gradient-to-b from-[#1a1a24] to-[#12121a] shadow-[0_20px_60px_rgba(0,0,0,0.5),0_0_30px_rgba(212,175,55,0.1)] animate-fadeIn">
+                      {/* Decorative top border */}
+                      <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-gold/50 to-transparent" />
+                      
                       {/* User Info Header */}
-                      <div className="from-gold/20 via-gold/10 border-gold-dark/30 border-b bg-gradient-to-br to-transparent px-4 py-2">
-                        <div className="flex items-center space-x-3">
-                          {user.avatar &&
-                          (user.avatar.startsWith("http") ||
-                            user.avatar.startsWith("/")) ? (
-                            <Image
-                              src={user.avatar}
-                              alt="User Avatar"
-                              width={56}
-                              height={56}
-                              className="rounded-full"
-                            />
-                          ) : (
-                            <div className="bg-gold/10 flex h-14 w-14 items-center justify-center rounded-full text-3xl">
-                              {user.avatar || "👤"}
+                      <div className="border-b border-gold/10">
+                        <Link 
+                          href={
+                            user.type === "host"
+                              ? "/host/dashboard"
+                              : user.type === "game_owner"
+                                ? "/admin/dashboard"
+                                : "/player/dashboard"
+                          }
+                          className="group relative block px-5 py-4 transition-all hover:bg-gold/5"
+                        >
+                          <div className="flex items-center space-x-4">
+                            <div className="relative">
+                              {user.avatar &&
+                              (user.avatar.startsWith("http") ||
+                                user.avatar.startsWith("/")) ? (
+                                <Image
+                                  src={user.avatar}
+                                  alt="User Avatar"
+                                  width={56}
+                                  height={56}
+                                  className="rounded-xl ring-2 ring-gold/30 group-hover:ring-gold/50 transition-all"
+                                />
+                              ) : (
+                                <div className="bg-gradient-to-br from-gold/20 to-amber-900/20 flex h-14 w-14 items-center justify-center rounded-xl text-3xl ring-2 ring-gold/30 group-hover:ring-gold/50 transition-all">
+                                  {user.avatar || "👤"}
+                                </div>
+                              )}
+                              <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-emerald-500 rounded-full border-2 border-[#1a1a24]" />
                             </div>
-                          )}
-                          <div>
-                            <p className="text-lg font-bold text-white">
-                              {user.username}
-                            </p>
-                            <p className="text-xs text-gray-400 capitalize">
-                              {user.type}
-                            </p>
+                            <div className="flex-1 min-w-0">
+                              <p className="text-lg font-bold text-white group-hover:text-gold transition-colors truncate">
+                                {user.username}
+                              </p>
+                              <div className="flex items-center gap-2 mt-0.5">
+                                <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider bg-gold/10 text-gold/80 border border-gold/20">
+                                  {user.type}
+                                </span>
+                              </div>
+                            </div>
+                            <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-gold/10 text-gold/60 group-hover:text-gold group-hover:bg-gold/20 transition-all">
+                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                              </svg>
+                            </div>
                           </div>
-                        </div>
+                        </Link>
                       </div>
 
                       {/* Wallet Balance Section (hide for admin) */}
                       {user.type !== "game_owner" && (
-                        <div className="border-gold-dark/20 border-b p-4">
+                        <div className="border-b border-gold/10 p-4">
                           <button
                             type="button"
                             onClick={() => setIsTopupModalOpen(true)}
-                            className="group border-gold/30 from-gold/10 hover:border-gold/50 hover:from-gold/15 hover:shadow-gold/10 focus-visible:ring-gold/50 flex w-full cursor-pointer items-center justify-between rounded-lg border bg-gradient-to-r via-amber-900/10 to-transparent px-4 py-3 transition-all duration-200 hover:via-amber-900/15 hover:shadow-lg focus-visible:ring-2 focus-visible:outline-none active:scale-[0.98]"
+                            className="group relative w-full overflow-hidden rounded-xl border border-gold/20 bg-gradient-to-r from-gold/10 via-amber-900/10 to-gold/5 p-4 transition-all duration-300 hover:border-gold/40 hover:shadow-[0_0_25px_rgba(212,175,55,0.15)] focus-visible:ring-2 focus-visible:ring-gold/50 focus-visible:outline-none active:scale-[0.98]"
                           >
-                            <div className="flex items-center gap-3">
-                              <div className="bg-gold/20 text-gold flex h-10 w-10 items-center justify-center rounded-lg">
-                                <span className="text-xl">
-                                  {getPrimaryCurrency().emoji}
-                                </span>
+                            {/* Shimmer effect */}
+                            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-gold/5 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
+                            
+                            <div className="relative flex items-center justify-between">
+                              <div className="flex items-center gap-3">
+                                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-gold/20 to-amber-800/20 border border-gold/30">
+                                  <span className="text-2xl">
+                                    {getPrimaryCurrency().emoji}
+                                  </span>
+                                </div>
+                                <div className="text-left">
+                                  <p className="text-[10px] font-bold tracking-widest text-gray-500 uppercase">
+                                    {tWallet("walletBalance")}
+                                  </p>
+                                  <p className="text-xl font-bold bg-gradient-to-r from-amber-200 via-yellow-300 to-amber-400 bg-clip-text text-transparent">
+                                    {getUserBalanceDisplay(user).formatted}
+                                  </p>
+                                </div>
                               </div>
-                              <div className="text-left">
-                                <p className="text-xs font-semibold tracking-wider text-gray-400 uppercase">
-                                  {tWallet("walletBalance")}
-                                </p>
-                                <p className="text-gold text-lg font-bold">
-                                  {getUserBalanceDisplay(user).formatted}
-                                </p>
+                              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gold/20 text-gold group-hover:bg-gold group-hover:text-black transition-all duration-300">
+                                <svg
+                                  className="h-5 w-5"
+                                  fill="none"
+                                  stroke="currentColor"
+                                  viewBox="0 0 24 24"
+                                >
+                                  <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth={2.5}
+                                    d="M12 4v16m8-8H4"
+                                  />
+                                </svg>
                               </div>
-                            </div>
-                            <div className="bg-gold/20 text-gold group-hover:bg-gold/30 flex h-8 w-8 items-center justify-center rounded-lg transition-colors">
-                              <svg
-                                className="h-5 w-5"
-                                fill="none"
-                                stroke="currentColor"
-                                viewBox="0 0 24 24"
-                              >
-                                <path
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  strokeWidth={2.5}
-                                  d="M12 4v16m8-8H4"
-                                />
-                              </svg>
                             </div>
                           </button>
                           {!SINGLE_CURRENCY_MODE && (
-                            <div className="bg-dark-secondary/30 mt-2 flex items-center justify-between rounded-lg px-3 py-2">
+                            <div className="mt-3 flex items-center justify-between rounded-xl bg-purple-500/10 border border-purple-500/20 px-4 py-2.5">
                               <div className="flex items-center gap-2">
                                 <span className="text-lg">🎫</span>
                                 <span className="text-sm font-semibold text-gray-300">
@@ -249,20 +313,20 @@ export default function Navbar() {
                       )}
 
                       {/* Menu Items */}
-                      <div className="py-2">
+                      <div className="p-3">
                         <Link
                           href="/profile"
                           onClick={() => setIsProfileDropdownOpen(false)}
-                          className="hover:bg-gold/10 group flex hidden items-center space-x-3 px-4 py-3 transition-colors duration-200"
+                          className="group hidden items-center gap-3 rounded-xl px-4 py-3 transition-all duration-200 hover:bg-gold/10"
                         >
-                          <span className="text-xl transition-transform duration-200 group-hover:scale-110">
-                            👤
-                          </span>
+                          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gold/10 text-gold/80 group-hover:bg-gold/20 transition-colors">
+                            <span className="text-lg">👤</span>
+                          </div>
                           <div>
-                            <p className="text-gold text-sm font-medium">
+                            <p className="text-sm font-semibold text-gray-200 group-hover:text-gold transition-colors">
                               {tMenu("myProfile")}
                             </p>
-                            <p className="text-xs text-gray-400">
+                            <p className="text-xs text-gray-500">
                               {tMenu("viewEditProfile")}
                             </p>
                           </div>
@@ -273,16 +337,18 @@ export default function Navbar() {
                             handleLogout();
                             setIsProfileDropdownOpen(false);
                           }}
-                          className="group flex w-full items-center space-x-3 px-4 py-3 transition-colors duration-200 hover:bg-red-500/10"
+                          className="group flex w-full items-center gap-3 rounded-xl px-4 py-3 transition-all duration-200 hover:bg-red-500/10 border border-transparent hover:border-red-500/20"
                         >
-                          <span className="text-xl transition-transform duration-200 group-hover:scale-110">
-                            🚪
-                          </span>
+                          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-red-500/10 text-red-400 group-hover:bg-red-500/20 transition-colors">
+                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15m3 0l3-3m0 0l-3-3m3 3H9" />
+                            </svg>
+                          </div>
                           <div className="text-left">
-                            <p className="text-sm font-medium text-red-400">
+                            <p className="text-sm font-semibold text-red-400">
                               {t("logout")}
                             </p>
-                            <p className="text-xs text-gray-400">
+                            <p className="text-xs text-gray-500">
                               {tMenu("signOutAccount")}
                             </p>
                           </div>
@@ -293,9 +359,8 @@ export default function Navbar() {
                 </div>
 
                 {/* Language Switcher - Last item */}
-                <div className="border-gold-dark/30 border-l pl-4">
-                  <LanguageSwitcher variant="icon" />
-                </div>
+                <div className="h-6 w-[1px] bg-gradient-to-b from-transparent via-gold/30 to-transparent" />
+                <LanguageSwitcher variant="icon" />
               </>
             ) : (
               <div className="flex items-center space-x-3">
@@ -304,33 +369,36 @@ export default function Navbar() {
                     setAuthModalMode("login");
                     setIsAuthModalOpen(true);
                   }}
-                  className="text-gold border-gold-dark/50 hover:bg-gold/10 hover:border-gold rounded-lg border px-5 py-2 font-semibold transition-all duration-300"
+                  className="relative group text-gray-300 hover:text-gold border border-gold/30 hover:border-gold/60 rounded-xl px-5 py-2 font-semibold transition-all duration-300 hover:shadow-[0_0_15px_rgba(212,175,55,0.15)] overflow-hidden"
                 >
-                  {t("login")}
+                  <div className="absolute inset-0 bg-gradient-to-r from-gold/0 via-gold/5 to-gold/0 opacity-0 group-hover:opacity-100 transition-opacity" />
+                  <span className="relative">{t("login")}</span>
                 </button>
                 <button
                   onClick={() => {
                     setAuthModalMode("register");
                     setIsAuthModalOpen(true);
                   }}
-                  className="bg-gold-gradient text-dark-primary hover:shadow-gold/50 rounded-lg px-5 py-2 font-bold transition-all duration-300 hover:shadow-lg"
+                  className="relative group bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-500 text-black rounded-xl px-5 py-2 font-bold transition-all duration-300 hover:shadow-[0_0_25px_rgba(212,175,55,0.4)] overflow-hidden"
                 >
-                  {t("register")}
+                  <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0 -translate-x-full group-hover:translate-x-full transition-transform duration-500" />
+                  <span className="relative">{t("register")}</span>
                 </button>
+                <div className="h-6 w-[1px] bg-gradient-to-b from-transparent via-gold/30 to-transparent" />
                 <LanguageSwitcher variant="icon" />
               </div>
             )}
           </div>
 
           {/* Mobile: Language Switcher + Menu Button */}
-          <div className="flex items-center gap-2 md:hidden">
+          <div className="flex items-center gap-3 md:hidden">
             <LanguageSwitcher variant="icon" />
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="text-gold focus:outline-none"
+              className="relative flex items-center justify-center w-10 h-10 rounded-xl border border-gold/30 bg-gradient-to-br from-gold/10 to-transparent text-gold hover:border-gold/50 hover:shadow-[0_0_15px_rgba(212,175,55,0.2)] transition-all duration-300"
             >
               <svg
-                className="h-6 w-6"
+                className="h-5 w-5"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -355,22 +423,30 @@ export default function Navbar() {
           </div>
         </div>
       </div>
-      <div className="-mt-3 hidden h-3 w-full items-center justify-between md:flex">
+      
+      {/* Decorative bottom border */}
+      <div className="relative h-[3px] bg-gradient-to-r from-transparent via-gold/40 to-transparent">
+        {/* <div className="absolute left-1/2 -translate-x-1/2 -top-1 w-2 h-2 bg-gold/60 rotate-45" /> */}
+      </div>
+      
+      {/* Optional: Bottom ornament images */}
+      {/* <div className="-mt-2 hidden h-3 w-full items-center justify-between md:flex pointer-events-none">
         <Image
           src="/images/nav-border-left.webp"
           alt="Navbar Background"
-          className="h-3 w-[30%]"
+          className="h-3 w-[30%] opacity-60"
           width={1000}
           height={100}
         />
         <Image
           src="/images/nav-border-right.webp"
           alt="Navbar Background"
-          className="h-3 w-[30%]"
+          className="h-3 w-[30%] opacity-60"
           width={1000}
           height={100}
         />
-      </div>
+      </div> */}
+    </div>
 
       {/* Mobile Navigation - Modern Bottom Sheet Style (Portal) */}
       {mounted &&
@@ -390,44 +466,59 @@ export default function Navbar() {
                 isMenuOpen ? "translate-x-0" : "translate-x-full"
               }`}
             >
-              <div className="relative flex h-full flex-col overflow-hidden border-l border-white/10 bg-[#0d0d12]/95 backdrop-blur-xl">
+              <div className="relative flex h-full flex-col overflow-hidden border-l border-gold/20 bg-gradient-to-b from-[#1a1a24] via-[#14141c] to-[#0f0f15]">
                 {/* Decorative gradient orbs */}
-                <div className="bg-gold/10 pointer-events-none absolute -top-20 -right-20 h-40 w-40 rounded-full blur-3xl" />
-                <div className="pointer-events-none absolute top-1/3 -left-10 h-32 w-32 rounded-full bg-amber-600/8 blur-2xl" />
-                <div className="bg-gold/5 pointer-events-none absolute right-10 bottom-20 h-24 w-24 rounded-full blur-2xl" />
+                <div className="bg-gold/15 pointer-events-none absolute -top-20 -right-20 h-40 w-40 rounded-full blur-3xl" />
+                <div className="pointer-events-none absolute top-1/3 -left-10 h-32 w-32 rounded-full bg-amber-600/10 blur-2xl" />
+                <div className="bg-gold/10 pointer-events-none absolute right-10 bottom-20 h-24 w-24 rounded-full blur-2xl" />
 
                 {/* Header */}
-                <div className="relative flex items-center justify-between px-5 py-4">
-                  <div className="flex items-center gap-2.5">
-                    <span className="text-2xl">⚔️</span>
-                    <span className="bg-gradient-to-r from-amber-200 via-yellow-300 to-amber-400 bg-clip-text text-lg font-bold tracking-tight text-transparent">
-                      Force of Rune
-                    </span>
-                  </div>
-                  <button
-                    onClick={() => setIsMenuOpen(false)}
-                    className="flex h-9 w-9 items-center justify-center rounded-full bg-white/5 text-gray-400 transition-all hover:bg-white/10 hover:text-white active:scale-95"
-                  >
-                    <svg
-                      className="h-5 w-5"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
+                <div className="relative border-b border-gold/10">
+                  <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-gold/40 to-transparent" />
+                  <div className="flex items-center justify-between px-5 py-4">
+                    <div className="flex items-center gap-3">
+                      <div className="flex items-center justify-center w-9 h-9 rounded-lg bg-gradient-to-br from-gold/20 to-amber-900/20 border border-gold/30">
+                        <span className="text-xl">⚔️</span>
+                      </div>
+                      <span className="bg-gradient-to-r from-amber-200 via-yellow-300 to-amber-400 bg-clip-text text-lg font-bold tracking-tight text-transparent">
+                        Force of Rune
+                      </span>
+                    </div>
+                    <button
+                      onClick={() => setIsMenuOpen(false)}
+                      className="flex h-9 w-9 items-center justify-center rounded-xl border border-gold/20 bg-gold/5 text-gold/60 transition-all hover:bg-gold/10 hover:text-gold hover:border-gold/40 active:scale-95"
                     >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M6 18L18 6M6 6l12 12"
-                      />
-                    </svg>
-                  </button>
+                      <svg
+                        className="h-5 w-5"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M6 18L18 6M6 6l12 12"
+                        />
+                      </svg>
+                    </button>
+                  </div>
                 </div>
 
                 {/* User Profile Card - Only when logged in */}
                 {user && user.type && (
-                  <div className="mx-4 mb-2 rounded-2xl border border-white/[0.06] bg-gradient-to-br from-white/[0.04] to-transparent p-4">
-                    <div className="flex items-center gap-3">
+                  <div className="mx-4 mt-4 mb-2 rounded-2xl border border-gold/15 bg-gradient-to-br from-gold/5 via-transparent to-transparent overflow-hidden">
+                    <Link
+                      href={
+                        user.type === "host"
+                          ? "/host/dashboard"
+                          : user.type === "game_owner"
+                            ? "/admin/dashboard"
+                            : "/player/dashboard"
+                      }
+                      onClick={() => setIsMenuOpen(false)}
+                      className="group flex items-center gap-3 p-4 transition-all active:bg-gold/5"
+                    >
                       <div className="relative">
                         {user.avatar &&
                         (user.avatar.startsWith("http") ||
@@ -437,24 +528,29 @@ export default function Navbar() {
                             alt="Avatar"
                             width={48}
                             height={48}
-                            className="ring-gold/30 h-12 w-12 rounded-full ring-2"
+                            className="h-12 w-12 rounded-xl ring-2 ring-gold/30 transition-all group-active:ring-gold/50"
                           />
                         ) : (
-                          <div className="bg-gold/10 ring-gold/30 flex h-12 w-12 items-center justify-center rounded-full text-2xl ring-2">
+                          <div className="bg-gradient-to-br from-gold/20 to-amber-900/20 ring-gold/30 flex h-12 w-12 items-center justify-center rounded-xl text-2xl ring-2 transition-all group-active:ring-gold/50">
                             {user.avatar || "👤"}
                           </div>
                         )}
-                        <div className="absolute -right-0.5 -bottom-0.5 h-3.5 w-3.5 rounded-full border-2 border-[#0d0d12] bg-emerald-500" />
+                        <div className="absolute -right-0.5 -bottom-0.5 h-3.5 w-3.5 rounded-full border-2 border-[#1a1a24] bg-emerald-500" />
                       </div>
                       <div className="min-w-0 flex-1">
-                        <p className="truncate text-[15px] font-semibold text-white">
+                        <p className="truncate text-[15px] font-semibold text-white group-active:text-gold transition-colors">
                           {user.username}
                         </p>
-                        <p className="text-xs font-medium text-gray-500 capitalize">
+                        <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider bg-gold/10 text-gold/80 border border-gold/20">
                           {user.type}
-                        </p>
+                        </span>
                       </div>
-                    </div>
+                      <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-gold/10 text-gold/60 group-active:text-gold transition-colors">
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                        </svg>
+                      </div>
+                    </Link>
 
                     {/* Wallet Balance - Inline compact (hide for admin) */}
                     {user.type !== "game_owner" && (
@@ -463,17 +559,22 @@ export default function Navbar() {
                           setIsTopupModalOpen(true);
                           setIsMenuOpen(false);
                         }}
-                        className="border-gold/20 from-gold/10 mt-3 flex w-full items-center justify-between rounded-xl border bg-gradient-to-r via-amber-900/10 to-transparent px-3.5 py-2.5 transition-all active:scale-[0.98]"
+                        className="mx-4 mb-4 flex w-[calc(100%-2rem)] items-center justify-between rounded-xl border border-gold/20 bg-gradient-to-r from-gold/10 via-amber-900/10 to-transparent px-4 py-3 transition-all active:scale-[0.98] hover:border-gold/30"
                       >
-                        <div className="flex items-center gap-2">
-                          <span className="text-xl">
-                            {getPrimaryCurrency().emoji}
-                          </span>
-                          <span className="text-gold text-lg font-bold">
-                            {getUserBalanceDisplay(user).formatted}
-                          </span>
+                        <div className="flex items-center gap-3">
+                          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-gold/20 to-amber-900/20 border border-gold/30">
+                            <span className="text-xl">
+                              {getPrimaryCurrency().emoji}
+                            </span>
+                          </div>
+                          <div className="text-left">
+                            <p className="text-[10px] font-bold tracking-widest text-gray-500 uppercase">Balance</p>
+                            <span className="text-gold text-lg font-bold">
+                              {getUserBalanceDisplay(user).formatted}
+                            </span>
+                          </div>
                         </div>
-                        <div className="bg-gold/20 text-gold flex h-7 w-7 items-center justify-center rounded-full">
+                        <div className="bg-gold/20 text-gold flex h-8 w-8 items-center justify-center rounded-lg transition-colors">
                           <svg
                             className="h-4 w-4"
                             fill="none"
@@ -494,30 +595,33 @@ export default function Navbar() {
                 )}
 
                 {/* Navigation Links */}
-                <div className="flex-1 overflow-y-auto px-4 py-3">
+                <div className="flex-1 overflow-y-auto px-4 py-4">
+                  <p className="text-[10px] font-bold tracking-widest text-gray-500 uppercase px-4 mb-2">Navigation</p>
                   <nav className="space-y-1">
                     <Link
                       href="/"
                       onClick={() => setIsMenuOpen(false)}
-                      className={`flex items-center gap-3 rounded-xl px-4 py-3 text-[15px] font-medium transition-all active:scale-[0.98] ${
+                      className={`flex items-center gap-3 rounded-xl px-4 py-3 text-[15px] font-semibold transition-all active:scale-[0.98] ${
                         pathname === "/"
-                          ? "bg-gold/15 text-gold"
-                          : "text-gray-300 hover:bg-white/5"
+                          ? "bg-gold/15 text-gold border border-gold/30 shadow-[0_0_15px_rgba(212,175,55,0.1)]"
+                          : "text-gray-300 hover:bg-gold/5 border border-transparent"
                       }`}
                     >
-                      <svg
-                        className="h-5 w-5"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={1.5}
-                          d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m5.231 13.481L15 17.25m-4.5-15H5.625c-.621 0-1.125.504-1.125 1.125v16.5c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9zm3.75 11.625a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z"
-                        />
-                      </svg>
+                      <div className={`flex h-9 w-9 items-center justify-center rounded-lg ${pathname === "/" ? "bg-gold/20" : "bg-white/5"}`}>
+                        <svg
+                          className="h-5 w-5"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={1.5}
+                            d="M16.5 18.75h-9m9 0a3 3 0 013 3h-15a3 3 0 013-3m9 0v-3.375c0-.621-.503-1.125-1.125-1.125h-.871M7.5 18.75v-3.375c0-.621.504-1.125 1.125-1.125h.872m5.007 0H9.497m5.007 0a7.454 7.454 0 01-.982-3.172M9.497 14.25a7.454 7.454 0 00.981-3.172M5.25 4.236c-.982.143-1.954.317-2.916.52A6.003 6.003 0 007.73 9.728M5.25 4.236V4.5c0 2.108.966 3.99 2.48 5.228M5.25 4.236V2.721C7.456 2.41 9.71 2.25 12 2.25c2.291 0 4.545.16 6.75.47v1.516M7.73 9.728a6.726 6.726 0 002.748 1.35m8.272-6.842V4.5c0 2.108-.966 3.99-2.48 5.228m2.48-5.492a46.32 46.32 0 012.916.52 6.003 6.003 0 01-5.395 4.972m0 0a6.726 6.726 0 01-2.749 1.35m0 0a6.772 6.772 0 01-3.044 0"
+                          />
+                        </svg>
+                      </div>
                       {t("tournaments")}
                     </Link>
 
@@ -532,61 +636,39 @@ export default function Navbar() {
                                 : "/player/dashboard"
                           }
                           onClick={() => setIsMenuOpen(false)}
-                          className={`flex items-center gap-3 rounded-xl px-4 py-3 text-[15px] font-medium transition-all active:scale-[0.98] ${
+                          className={`flex items-center gap-3 rounded-xl px-4 py-3 text-[15px] font-semibold transition-all active:scale-[0.98] ${
                             pathname.includes("dashboard")
-                              ? "bg-gold/15 text-gold"
-                              : "text-gray-300 hover:bg-white/5"
+                              ? "bg-gold/15 text-gold border border-gold/30 shadow-[0_0_15px_rgba(212,175,55,0.1)]"
+                              : "text-gray-300 hover:bg-gold/5 border border-transparent"
                           }`}
                         >
-                          <svg
-                            className="h-5 w-5"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={1.5}
-                              d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z"
-                            />
-                          </svg>
+                          <div className={`flex h-9 w-9 items-center justify-center rounded-lg ${pathname.includes("dashboard") ? "bg-gold/20" : "bg-white/5"}`}>
+                            <svg
+                              className="h-5 w-5"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={1.5}
+                                d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z"
+                              />
+                            </svg>
+                          </div>
                           {user.type === "game_owner"
                             ? t("adminDashboard")
                             : t("dashboard")}
                         </Link>
-
-                        {/* <Link
-                          href="/profile"
-                          onClick={() => setIsMenuOpen(false)}
-                          className={`flex items-center gap-3 rounded-xl px-4 py-3 text-[15px] font-medium transition-all active:scale-[0.98] ${
-                            pathname === "/profile"
-                              ? "bg-gold/15 text-gold"
-                              : "text-gray-300 hover:bg-white/5"
-                          }`}
-                        >
-                          <svg
-                            className="h-5 w-5"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={1.5}
-                              d="M17.982 18.725A7.488 7.488 0 0012 15.75a7.488 7.488 0 00-5.982 2.975m11.963 0a9 9 0 10-11.963 0m11.963 0A8.966 8.966 0 0112 21a8.966 8.966 0 01-5.982-2.275M15 9.75a3 3 0 11-6 0 3 3 0 016 0z"
-                            />
-                          </svg>
-                          {t("profile")}
-                        </Link> */}
                       </>
                     )}
                   </nav>
                 </div>
 
                 {/* Bottom Section */}
-                <div className="relative border-t border-white/[0.06] px-4 py-4">
+                <div className="relative border-t border-gold/10 px-4 py-4">
+                  <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-gold/20 to-transparent" />
                   {user && user.type ? (
                     /* Logout Button */
                     <button
@@ -594,7 +676,7 @@ export default function Navbar() {
                         handleLogout();
                         setIsMenuOpen(false);
                       }}
-                      className="flex w-full items-center justify-center gap-2 rounded-xl border border-red-500/20 bg-red-500/10 py-3 text-sm font-medium text-red-400 transition-all hover:bg-red-500/15 active:scale-[0.98]"
+                      className="flex w-full items-center justify-center gap-2 rounded-xl border border-red-500/20 bg-gradient-to-r from-red-500/10 to-red-600/5 py-3.5 text-sm font-semibold text-red-400 transition-all hover:bg-red-500/15 hover:border-red-500/30 active:scale-[0.98]"
                     >
                       <svg
                         className="h-4 w-4"
@@ -612,14 +694,14 @@ export default function Navbar() {
                       {t("signOut")}
                     </button>
                   ) : (
-                    <div className="grid grid-cols-2 gap-2">
+                    <div className="grid grid-cols-2 gap-3">
                       <button
                         onClick={() => {
                           setAuthModalMode("login");
                           setIsAuthModalOpen(true);
                           setIsMenuOpen(false);
                         }}
-                        className="border-gold/30 bg-gold/5 text-gold hover:bg-gold/10 rounded-xl border py-3 text-center text-sm font-semibold transition-all active:scale-[0.98]"
+                        className="relative overflow-hidden border border-gold/30 bg-gradient-to-r from-gold/10 to-transparent text-gold hover:border-gold/50 rounded-xl py-3.5 text-center text-sm font-semibold transition-all active:scale-[0.98]"
                       >
                         {t("login")}
                       </button>
@@ -629,9 +711,10 @@ export default function Navbar() {
                           setIsAuthModalOpen(true);
                           setIsMenuOpen(false);
                         }}
-                        className="rounded-xl bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-500 py-3 text-center text-sm font-bold text-black transition-all active:scale-[0.98]"
+                        className="relative overflow-hidden rounded-xl bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-500 py-3.5 text-center text-sm font-bold text-black transition-all active:scale-[0.98] shadow-[0_0_20px_rgba(212,175,55,0.3)]"
                       >
-                        {t("createAccount")}
+                        <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0 -translate-x-full hover:translate-x-full transition-transform duration-500" />
+                        <span className="relative">{t("createAccount")}</span>
                       </button>
                     </div>
                   )}
