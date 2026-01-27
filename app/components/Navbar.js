@@ -488,6 +488,7 @@ export default function Navbar() {
                     </div>
                     <button
                       onClick={() => setIsMenuOpen(false)}
+                      aria-label="Close menu"
                       className="flex h-9 w-9 items-center justify-center rounded-xl border border-gold/20 bg-gold/5 text-gold/60 transition-all hover:bg-gold/10 hover:text-gold hover:border-gold/40 active:scale-95"
                     >
                       <svg

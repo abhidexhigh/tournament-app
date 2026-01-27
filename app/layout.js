@@ -15,13 +15,14 @@ export const metadata = {
   title: "Force of Rune - Tournament Platform",
   description:
     "Join competitive Force of Rune tournaments and win amazing prizes",
-  // Viewport optimization for mobile
-  viewport: {
-    width: "device-width",
-    initialScale: 1,
-    maximumScale: 5,
-    viewportFit: "cover",
-  },
+};
+
+// Viewport configuration (separate export in Next.js 13+)
+export const viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 5,
+  viewportFit: "cover",
 };
 
 export default async function RootLayout({ children }) {
