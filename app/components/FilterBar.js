@@ -272,6 +272,8 @@ export default function FilterBar({
                   setIsMobileSearchOpen(!isMobileSearchOpen);
                   setIsMobileDateOpen(false);
                 }}
+                aria-label={isMobileSearchOpen ? "Close search" : "Open search"}
+                aria-expanded={isMobileSearchOpen}
                 className={`mobile-search-container relative flex h-12 w-12 items-center justify-center rounded-xl border transition-all duration-200 active:scale-95 lg:hidden ${
                   isMobileSearchOpen || searchQuery
                     ? "border-gold bg-gold/20 text-gold"

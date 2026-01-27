@@ -52,7 +52,7 @@ export default async function RootLayout({ children }) {
         />
         
         {/* Preconnect to external domains for faster resource loading */}
-        <link rel="preconnect" href="https://res.cloudinary.com" />
+        <link rel="preconnect" href="https://res.cloudinary.com" crossOrigin="anonymous" />
         <link rel="dns-prefetch" href="https://res.cloudinary.com" />
       </head>
       <body className={`${inter.variable} antialiased`}>

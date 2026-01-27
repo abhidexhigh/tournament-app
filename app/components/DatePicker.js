@@ -245,6 +245,7 @@ export default function DatePicker({
               <button
                 type="button"
                 onClick={handlePrevMonth}
+                aria-label="Previous month"
                 className={`hover:bg-gold/20 hover:text-gold rounded-lg text-gray-400 transition-all duration-200 ${compact ? "p-1" : "p-1.5"}`}
               >
                 <ChevronLeftIcon />
@@ -257,6 +258,7 @@ export default function DatePicker({
               <button
                 type="button"
                 onClick={handleNextMonth}
+                aria-label="Next month"
                 className={`hover:bg-gold/20 hover:text-gold rounded-lg text-gray-400 transition-all duration-200 ${compact ? "p-1" : "p-1.5"}`}
               >
                 <ChevronRightIcon />
@@ -348,6 +350,8 @@ export default function DatePicker({
         <button
           type="button"
           onClick={() => setIsOpen(!isOpen)}
+          aria-label={selectedDate ? `Selected date: ${formatDisplayDate(selectedDate)}. Click to change` : "Select date"}
+          aria-expanded={isOpen}
           className={`relative flex h-12 w-12 items-center justify-center rounded-xl border transition-all duration-200 active:scale-95 ${
             isOpen || selectedDate
               ? "border-gold bg-gold/20 text-gold"

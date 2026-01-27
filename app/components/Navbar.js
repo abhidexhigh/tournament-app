@@ -395,6 +395,8 @@ export default function Navbar() {
             <LanguageSwitcher variant="icon" />
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
+              aria-label={isMenuOpen ? "Close menu" : "Open menu"}
+              aria-expanded={isMenuOpen}
               className="relative flex items-center justify-center w-10 h-10 rounded-xl border border-gold/30 bg-gradient-to-br from-gold/10 to-transparent text-gold hover:border-gold/50 hover:shadow-[0_0_15px_rgba(212,175,55,0.2)] transition-all duration-300"
             >
               <svg

@@ -4,7 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import Badge from "./Badge";
 import CountdownTimer, { useCountdown } from "./CountdownTimer";
-import { getTournamentIcon } from "../lib/iconSelector";
+import { getTournamentIcon, getOptimizedCloudinaryUrl } from "../lib/iconSelector";
 import { LuCalendarDays, LuUsers, LuClock, LuTrophy } from "react-icons/lu";
 import { TbMoneybag } from "react-icons/tb";
 import {
@@ -101,14 +101,15 @@ export default function TournamentCard({ tournament }) {
                     typeof icon === "string" && icon.startsWith("http");
 
                   if (isImageUrl) {
+                    // Optimize for 56px display (h-14 w-14)
+                    const optimizedIcon = getOptimizedCloudinaryUrl(icon, 56, 56);
                     return (
                       <Image
-                        src={icon}
+                        src={optimizedIcon}
                         alt={`${tournament.title} icon`}
-                        width={96}
-                        height={96}
+                        width={56}
+                        height={56}
                         className="h-14 w-14 object-contain"
-                        unoptimized
                       />
                     );
                   }
@@ -264,14 +265,15 @@ export default function TournamentCard({ tournament }) {
                     typeof icon === "string" && icon.startsWith("http");
 
                   if (isImageUrl) {
+                    // Optimize for 64px display (h-16 w-16)
+                    const optimizedIcon = getOptimizedCloudinaryUrl(icon, 64, 64);
                     return (
                       <Image
-                        src={icon}
+                        src={optimizedIcon}
                         alt={`${tournament.title} icon`}
-                        width={96}
-                        height={96}
+                        width={64}
+                        height={64}
                         className="h-16 w-16 object-contain"
-                        unoptimized
                       />
                     );
                   }
@@ -467,14 +469,16 @@ export default function TournamentCard({ tournament }) {
                     typeof icon === "string" && icon.startsWith("http");
 
                   if (isImageUrl) {
+                    // Optimize for 96px display (h-20/h-24 = 80-96px, using max)
+                    const optimizedIcon = getOptimizedCloudinaryUrl(icon, 96, 96);
                     return (
                       <Image
-                        src={icon}
+                        src={optimizedIcon}
                         alt={`${tournament.title} icon`}
                         width={96}
                         height={96}
                         className="h-20 w-20 object-contain 2xl:h-24 2xl:w-24"
-                        unoptimized
+                        priority
                       />
                     );
                   }

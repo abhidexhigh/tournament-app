@@ -4,7 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import Badge from "./Badge";
 import CountdownTimer from "./CountdownTimer";
-import { getTournamentIcon } from "../lib/iconSelector";
+import { getTournamentIcon, getOptimizedCloudinaryUrl } from "../lib/iconSelector";
 import {
   LuUsers,
   LuClock,
@@ -24,6 +24,8 @@ export default function MobileTournamentCard({ tournament }) {
 
   const icon = getTournamentIcon(tournament);
   const isImageUrl = typeof icon === "string" && icon.startsWith("http");
+  // Optimize Cloudinary image URL for mobile display (40x40 display size)
+  const optimizedIcon = isImageUrl ? getOptimizedCloudinaryUrl(icon, 40, 40) : icon;
 
   // Get accent gradient color based on status
   const getAccentGradient = () => {
@@ -66,12 +68,11 @@ export default function MobileTournamentCard({ tournament }) {
               <div className="flex h-14 w-14 items-center justify-center rounded-xl border border-white/10 bg-gradient-to-br from-white/10 to-white/5">
                 {isImageUrl ? (
                   <Image
-                    src={icon}
+                    src={optimizedIcon}
                     alt={`${tournament.title} icon`}
                     width={40}
                     height={40}
                     className="h-10 w-10 object-contain"
-                    unoptimized
                   />
                 ) : (
                   <span className="text-3xl">{icon}</span>
