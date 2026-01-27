@@ -90,7 +90,7 @@ export default function Navbar() {
               {/* Tournaments Link */}
               <Link
                 href="/"
-                className={`hidden md:flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold tracking-wide transition-all duration-300 ${
+                className={`hidden md:flex items-center gap-2 px-4 py-2 rounded-lg text-base font-semibold tracking-wide transition-all duration-300 ${
                   pathname === "/"
                     ? "bg-gold/15 text-gold border border-gold/30 shadow-[0_0_15px_rgba(212,175,55,0.15)]"
                     : "text-gray-300 hover:text-gold hover:bg-white/5 border border-transparent"
@@ -452,9 +452,9 @@ export default function Navbar() {
       {mounted &&
         createPortal(
           <div className="md:hidden">
-            {/* Backdrop Overlay with blur */}
+            {/* Backdrop Overlay - using solid background instead of backdrop-blur for iOS performance */}
             <div
-              className={`fixed inset-0 z-[9998] bg-black/80 backdrop-blur-md transition-all duration-300 ${
+              className={`fixed inset-0 z-[9998] bg-black/90 transition-all duration-300 ${
                 isMenuOpen ? "opacity-100" : "pointer-events-none opacity-0"
               }`}
               onClick={() => setIsMenuOpen(false)}

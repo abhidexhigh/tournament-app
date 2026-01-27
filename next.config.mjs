@@ -1,6 +1,10 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   poweredByHeader: false,
+  
+  // Enable compression for smaller bundle sizes
+  compress: true,
+  
   // Enable experimental CSP nonce support
   // This allows Next.js to automatically inject nonces into inline scripts
   experimental: {
@@ -8,7 +12,14 @@ const nextConfig = {
     serverActions: {
       bodySizeLimit: "2mb",
     },
+    // Optimize package imports for faster builds and smaller bundles
+    optimizePackageImports: [
+      "react-icons",
+      "date-fns",
+      "lodash",
+    ],
   },
+  
   images: {
     remotePatterns: [
       {

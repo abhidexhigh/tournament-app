@@ -177,108 +177,59 @@ function PlayerDashboardContent() {
       <div className="px-4 py-8 sm:px-6 lg:px-8">
         <div className="max-w-main mx-auto">
           {/* Profile + Stats Hero Section */}
-          <div className="border-gold-dark/20 bg-dark-gray-card/80 relative mb-8 overflow-hidden rounded-2xl border p-5 shadow-lg shadow-gray-800/30 backdrop-blur-sm sm:px-6 sm:py-1 lg:px-8 lg:py-2">
+          <div className="border-gold-dark/20 bg-dark-gray-card/80 relative mb-8 overflow-hidden rounded-2xl border p-4 shadow-lg shadow-gray-800/30 backdrop-blur-sm sm:p-6 lg:px-8 lg:py-6">
             {/* Decorative elements */}
             <div className="bg-gold-dark/10 absolute top-0 right-0 h-40 w-40 rounded-full blur-3xl sm:h-64 sm:w-64"></div>
             <div className="bg-gold/5 absolute bottom-0 left-1/3 h-32 w-32 rounded-full blur-2xl sm:h-48 sm:w-48"></div>
 
             <div className="relative">
-              {/* Profile Row */}
-              <div className="mt-6 mb-6 flex flex-col gap-6 lg:mt-8 lg:mb-8 lg:flex-row lg:items-center lg:justify-between">
-                {/* Left: Avatar + User Info */}
-                <div className="flex flex-col items-center gap-4 sm:flex-row sm:gap-5">
+              {/* Mobile Layout */}
+              <div className="sm:hidden">
+                {/* Mobile: Avatar + Name Header */}
+                <div className="mb-4 flex items-center gap-4">
                   {/* Avatar */}
                   <div className="relative flex-shrink-0">
                     <div className="bg-gold-gradient absolute -inset-1 rounded-full opacity-75 blur"></div>
-                    <div className="border-gold-dark/50 relative h-16 w-16 overflow-hidden rounded-full border-2 sm:h-20 sm:w-20">
+                    <div className="border-gold-dark/50 relative h-16 w-16 overflow-hidden rounded-full border-2">
                       {user.avatar &&
                       (user.avatar.startsWith("http") ||
                         user.avatar.startsWith("/")) ? (
                         <Image
                           src={user.avatar}
                           alt="Avatar"
-                          width={80}
-                          height={80}
+                          width={64}
+                          height={64}
                           className="h-full w-full object-cover"
                         />
                       ) : (
-                        <div className="bg-gold/10 flex h-full w-full items-center justify-center text-3xl sm:text-4xl">
+                        <div className="bg-gold/10 flex h-full w-full items-center justify-center text-2xl">
                           {user.avatar || "👤"}
                         </div>
                       )}
                     </div>
-                    {/* <div className="border-dark-primary bg-gold text-dark-primary absolute -right-1 -bottom-1 flex h-6 w-6 items-center justify-center rounded-full border-2 text-[10px] font-bold sm:h-7 sm:w-7">
-                      P
-                    </div> */}
                   </div>
 
                   {/* User Info */}
-                  <div className="text-center sm:text-left">
-                    <h1 className="text-gold-gradient mb-1 text-xl font-bold tracking-tight sm:text-2xl">
+                  <div className="min-w-0 flex-1">
+                    <h1 className="text-gold-gradient truncate text-lg font-bold tracking-tight">
                       {user.username}
                     </h1>
-                    <p className="mb-2 text-sm text-white/40">{user.email}</p>
-                    <div className="flex flex-wrap items-center justify-center gap-2 sm:justify-start">
-                      <span className="bg-gold-dark/20 text-gold-light rounded-full px-3 py-1 text-xs font-medium capitalize">
-                        {user.type === "host" ? "🎮 " : "⚔️ "}
-                        {tProfile(user.type) || user.type}
-                      </span>
-                      {/* {user.rank && (
-                        <span
-                          className={`bg-dark-primary/50 rounded-full px-3 py-1 text-xs font-medium ${getRankColor(user.rank)}`}
-                        >
-                          {user.rank}
-                        </span>
-                      )} */}
-                    </div>
+                    <p className="mb-1 truncate text-xs text-white/40">{user.email}</p>
+                    <span className="bg-gold-dark/20 text-gold-light inline-flex rounded-full px-2 py-0.5 text-[10px] font-medium capitalize">
+                      {user.type === "host" ? "🎮 " : "⚔️ "}
+                      {tProfile(user.type) || user.type}
+                    </span>
                   </div>
                 </div>
 
-                {/* Right: Game ID, Rank, Clan Info */}
-                <div className="flex flex-wrap items-center justify-center gap-3 lg:justify-end">
-                  {/* Game ID */}
-                  <div className="border-gold-dark/30 bg-dark-primary/50 flex items-center gap-3 rounded-xl border px-4 py-3">
-                    <div className="bg-gold-dark/20 text-gold flex h-9 w-9 items-center justify-center rounded-lg">
-                      <svg
-                        className="h-4 w-4"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={1.5}
-                          d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"
-                        />
-                      </svg>
-                    </div>
-                    <div>
-                      <p className="text-[10px] tracking-widest text-white/40 uppercase">
-                        {tProfile("gameId") || "Game ID"}
-                      </p>
-                      <p className="font-mono text-sm text-white">
-                        {user?.gameId || tProfile("notSet") || "Not set"}
-                      </p>
-                    </div>
-                  </div>
-
-                  {/* Rank */}
-                  <div className="border-gold-dark/30 bg-dark-primary/50 flex items-center gap-3 rounded-xl border px-4 py-3">
-                    {user?.rank && getRankEmblem(user.rank) ? (
-                      <div className="h-9 w-9 flex-shrink-0">
-                        <Image
-                          src={getRankEmblem(user.rank)}
-                          alt={user.rank}
-                          width={36}
-                          height={36}
-                          className="h-full w-full object-contain"
-                        />
-                      </div>
-                    ) : (
-                      <div className="bg-gold-dark/20 text-gold flex h-9 w-9 items-center justify-center rounded-lg">
+                {/* Mobile: Game ID, Rank, Clan Grid */}
+                <div className="mb-4 grid grid-cols-3 gap-2">
+                  {/* Game ID Card */}
+                  <div className="border-gold-dark/30 bg-dark-primary/60 rounded-xl border p-2.5">
+                    <div className="mb-1.5 flex items-center justify-center">
+                      <div className="bg-gold-dark/20 text-gold flex h-7 w-7 items-center justify-center rounded-lg">
                         <svg
-                          className="h-4 w-4"
+                          className="h-3.5 w-3.5"
                           fill="none"
                           stroke="currentColor"
                           viewBox="0 0 24 24"
@@ -287,44 +238,71 @@ function PlayerDashboardContent() {
                             strokeLinecap="round"
                             strokeLinejoin="round"
                             strokeWidth={1.5}
-                            d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"
+                            d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"
                           />
                         </svg>
                       </div>
-                    )}
-                    <div>
-                      <p className="text-[10px] tracking-widest text-white/40 uppercase">
-                        {tProfile("rank") || "Rank"}
-                      </p>
-                      <p
-                        className={`text-sm font-semibold ${user?.rank ? getRankColor(user.rank) : "text-white/50"}`}
-                      >
-                        {user?.rank || tProfile("notSet") || "Not set"}
-                      </p>
                     </div>
+                    <p className="mb-0.5 text-center text-[8px] font-medium tracking-wider text-white/50 uppercase">
+                      {tProfile("gameId") || "Game ID"}
+                    </p>
+                    <p className="truncate text-center font-mono text-xs font-semibold text-white">
+                      {user?.gameId || "-"}
+                    </p>
                   </div>
 
-                  {/* Clan */}
-                  <div className="border-gold-dark/30 bg-dark-primary/50 flex items-center gap-3 rounded-xl border px-4 py-3">
-                    {userClans.length > 0 ? (
-                      <>
-                        <span className="text-2xl">
+                  {/* Rank Card */}
+                  <div className="border-gold-dark/30 bg-dark-primary/60 rounded-xl border p-2.5">
+                    <div className="mb-1.5 flex items-center justify-center">
+                      {user?.rank && getRankEmblem(user.rank) ? (
+                        <div className="h-7 w-7 flex-shrink-0">
+                          <Image
+                            src={getRankEmblem(user.rank)}
+                            alt={user.rank}
+                            width={28}
+                            height={28}
+                            className="h-full w-full object-contain"
+                          />
+                        </div>
+                      ) : (
+                        <div className="bg-gold-dark/20 text-gold flex h-7 w-7 items-center justify-center rounded-lg">
+                          <svg
+                            className="h-3.5 w-3.5"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={1.5}
+                              d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"
+                            />
+                          </svg>
+                        </div>
+                      )}
+                    </div>
+                    <p className="mb-0.5 text-center text-[8px] font-medium tracking-wider text-white/50 uppercase">
+                      {tProfile("rank") || "Rank"}
+                    </p>
+                    <p
+                      className={`truncate text-center text-xs font-semibold ${user?.rank ? getRankColor(user.rank) : "text-white/50"}`}
+                    >
+                      {user?.rank || "-"}
+                    </p>
+                  </div>
+
+                  {/* Clan Card */}
+                  <div className="border-gold-dark/30 bg-dark-primary/60 rounded-xl border p-2.5">
+                    <div className="mb-1.5 flex items-center justify-center">
+                      {userClans.length > 0 ? (
+                        <span className="text-xl">
                           {userClans[0].emblem || "🏰"}
                         </span>
-                        <div>
-                          <p className="text-[10px] tracking-widest text-white/40 uppercase">
-                            {tProfile("clan") || "Clan"}
-                          </p>
-                          <p className="text-sm font-semibold text-white">
-                            {userClans[0].name}
-                          </p>
-                        </div>
-                      </>
-                    ) : (
-                      <>
-                        <div className="bg-gold-dark/20 text-gold flex h-9 w-9 items-center justify-center rounded-lg">
+                      ) : (
+                        <div className="bg-gold-dark/20 text-gold flex h-7 w-7 items-center justify-center rounded-lg">
                           <svg
-                            className="h-4 w-4"
+                            className="h-3.5 w-3.5"
                             fill="none"
                             stroke="currentColor"
                             viewBox="0 0 24 24"
@@ -337,16 +315,194 @@ function PlayerDashboardContent() {
                             />
                           </svg>
                         </div>
-                        <div>
-                          <p className="text-[10px] tracking-widest text-white/40 uppercase">
-                            {tProfile("clan") || "Clan"}
-                          </p>
-                          <p className="text-sm text-white/50">
-                            {tProfile("noClanJoined") || "No clan"}
-                          </p>
+                      )}
+                    </div>
+                    <p className="mb-0.5 text-center text-[8px] font-medium tracking-wider text-white/50 uppercase">
+                      {tProfile("clan") || "Clan"}
+                    </p>
+                    <p className="truncate text-center text-xs font-semibold text-white">
+                      {userClans.length > 0 ? userClans[0].name : "-"}
+                    </p>
+                  </div>
+                </div>
+
+                {/* Mobile: Quick Stats */}
+                <div className="border-gold-dark/20 bg-dark-primary/40 grid grid-cols-4 gap-1 rounded-xl border p-2">
+                  <div className="flex flex-col items-center justify-center py-2">
+                    <span className="text-gold-text text-lg font-bold">{stats.totalJoined}</span>
+                    <span className="text-[7px] font-medium text-gray-500 uppercase">{t("tournaments")}</span>
+                  </div>
+                  <div className="flex flex-col items-center justify-center border-l border-white/10 py-2">
+                    <span className="text-gold text-lg font-bold">{stats.totalWinnings.toLocaleString()}</span>
+                    <span className="text-[7px] font-medium text-gray-500 uppercase">{t("totalWinnings")}</span>
+                  </div>
+                  <div className="flex flex-col items-center justify-center border-l border-white/10 py-2">
+                    <span className="text-emerald-400 text-lg font-bold">{stats.wins}</span>
+                    <span className="text-[7px] font-medium text-gray-500 uppercase">{t("totalWins")}</span>
+                  </div>
+                  <div className="flex flex-col items-center justify-center border-l border-white/10 py-2">
+                    <span className="text-blue-400 text-lg font-bold">{stats.top3Finishes}</span>
+                    <span className="text-[7px] font-medium text-gray-500 uppercase">Top 3</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Desktop/Tablet Layout */}
+              <div className="hidden sm:block">
+                <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
+                  {/* Left: Avatar + User Info */}
+                  <div className="flex items-center gap-5">
+                    {/* Avatar */}
+                    <div className="relative flex-shrink-0">
+                      <div className="bg-gold-gradient absolute -inset-1 rounded-full opacity-75 blur"></div>
+                      <div className="border-gold-dark/50 relative h-20 w-20 overflow-hidden rounded-full border-2">
+                        {user.avatar &&
+                        (user.avatar.startsWith("http") ||
+                          user.avatar.startsWith("/")) ? (
+                          <Image
+                            src={user.avatar}
+                            alt="Avatar"
+                            width={80}
+                            height={80}
+                            className="h-full w-full object-cover"
+                          />
+                        ) : (
+                          <div className="bg-gold/10 flex h-full w-full items-center justify-center text-4xl">
+                            {user.avatar || "👤"}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* User Info */}
+                    <div>
+                      <h1 className="text-gold-gradient mb-1 text-2xl font-bold tracking-tight">
+                        {user.username}
+                      </h1>
+                      <p className="mb-2 text-sm text-white/40">{user.email}</p>
+                      <div className="flex flex-wrap items-center gap-2">
+                        <span className="bg-gold-dark/20 text-gold-light rounded-full px-3 py-1 text-xs font-medium capitalize">
+                          {user.type === "host" ? "🎮 " : "⚔️ "}
+                          {tProfile(user.type) || user.type}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Right: Game ID, Rank, Clan Info */}
+                  <div className="flex flex-wrap items-center justify-start gap-3 lg:justify-end">
+                    {/* Game ID */}
+                    <div className="border-gold-dark/30 bg-dark-primary/50 flex items-center gap-3 rounded-xl border px-4 py-3">
+                      <div className="bg-gold-dark/20 text-gold flex h-9 w-9 items-center justify-center rounded-lg">
+                        <svg
+                          className="h-4 w-4"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={1.5}
+                            d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"
+                          />
+                        </svg>
+                      </div>
+                      <div>
+                        <p className="text-[10px] tracking-widest text-white/40 uppercase">
+                          {tProfile("gameId") || "Game ID"}
+                        </p>
+                        <p className="font-mono text-sm text-white">
+                          {user?.gameId || tProfile("notSet") || "Not set"}
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Rank */}
+                    <div className="border-gold-dark/30 bg-dark-primary/50 flex items-center gap-3 rounded-xl border px-4 py-3">
+                      {user?.rank && getRankEmblem(user.rank) ? (
+                        <div className="h-9 w-9 flex-shrink-0">
+                          <Image
+                            src={getRankEmblem(user.rank)}
+                            alt={user.rank}
+                            width={36}
+                            height={36}
+                            className="h-full w-full object-contain"
+                          />
                         </div>
-                      </>
-                    )}
+                      ) : (
+                        <div className="bg-gold-dark/20 text-gold flex h-9 w-9 items-center justify-center rounded-lg">
+                          <svg
+                            className="h-4 w-4"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={1.5}
+                              d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"
+                            />
+                          </svg>
+                        </div>
+                      )}
+                      <div>
+                        <p className="text-[10px] tracking-widest text-white/40 uppercase">
+                          {tProfile("rank") || "Rank"}
+                        </p>
+                        <p
+                          className={`text-sm font-semibold ${user?.rank ? getRankColor(user.rank) : "text-white/50"}`}
+                        >
+                          {user?.rank || tProfile("notSet") || "Not set"}
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Clan */}
+                    <div className="border-gold-dark/30 bg-dark-primary/50 flex items-center gap-3 rounded-xl border px-4 py-3">
+                      {userClans.length > 0 ? (
+                        <>
+                          <span className="text-2xl">
+                            {userClans[0].emblem || "🏰"}
+                          </span>
+                          <div>
+                            <p className="text-[10px] tracking-widest text-white/40 uppercase">
+                              {tProfile("clan") || "Clan"}
+                            </p>
+                            <p className="text-sm font-semibold text-white">
+                              {userClans[0].name}
+                            </p>
+                          </div>
+                        </>
+                      ) : (
+                        <>
+                          <div className="bg-gold-dark/20 text-gold flex h-9 w-9 items-center justify-center rounded-lg">
+                            <svg
+                              className="h-4 w-4"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={1.5}
+                                d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
+                              />
+                            </svg>
+                          </div>
+                          <div>
+                            <p className="text-[10px] tracking-widest text-white/40 uppercase">
+                              {tProfile("clan") || "Clan"}
+                            </p>
+                            <p className="text-sm text-white/50">
+                              {tProfile("noClanJoined") || "No clan"}
+                            </p>
+                          </div>
+                        </>
+                      )}
+                    </div>
                   </div>
                 </div>
               </div>
@@ -359,46 +515,6 @@ function PlayerDashboardContent() {
               <h2 className="text-gold-text text-3xl font-bold">
                 {t("matchResults")}
               </h2>
-
-              {/* Stats - Mobile: Simple inline | Desktop: Cards */}
-              {/* Mobile Stats Row */}
-              <div className="border-gold-dark/20 bg-dark-primary/40 flex items-center justify-between rounded-xl border px-4 py-3 sm:hidden">
-                <div className="flex flex-col items-center">
-                  <span className="text-gold-text text-lg font-bold">
-                    {stats.totalJoined}
-                  </span>
-                  <span className="text-[9px] text-gray-400 uppercase">
-                    {t("tournaments")}
-                  </span>
-                </div>
-                <div className="h-8 w-px bg-white/10"></div>
-                <div className="flex flex-col items-center">
-                  <span className="text-gold text-lg font-bold">
-                    {stats.totalWinnings.toLocaleString()}
-                  </span>
-                  <span className="text-[9px] text-gray-400 uppercase">
-                    {t("totalWinnings")}
-                  </span>
-                </div>
-                <div className="h-8 w-px bg-white/10"></div>
-                <div className="flex flex-col items-center">
-                  <span className="text-gold-text text-lg font-bold">
-                    {stats.wins}
-                  </span>
-                  <span className="text-[9px] text-gray-400 uppercase">
-                    {t("totalWins")}
-                  </span>
-                </div>
-                <div className="h-8 w-px bg-white/10"></div>
-                <div className="flex flex-col items-center">
-                  <span className="text-gold-text text-lg font-bold">
-                    {stats.top3Finishes}
-                  </span>
-                  <span className="text-[9px] text-gray-400 uppercase">
-                    Top 3
-                  </span>
-                </div>
-              </div>
 
               {/* Desktop Stats Cards */}
               <div className="hidden sm:flex sm:flex-wrap sm:items-center sm:gap-3">

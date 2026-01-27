@@ -1,6 +1,7 @@
 @import "tailwindcss";
 
-/* Cerapro Font Family */
+/* Cerapro Font Family - Optimized loading strategy */
+/* Critical fonts: swap immediately, show fallback until loaded */
 @font-face {
   font-family: "Cerapro";
   src: url("/fonts/cerapro/CERAPRO-REGULAR.ttf") format("truetype");
@@ -11,10 +12,20 @@
 
 @font-face {
   font-family: "Cerapro";
+  src: url("/fonts/cerapro/CERAPRO-BOLD.ttf") format("truetype");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Non-critical fonts: optional - use if cached, otherwise skip */
+/* This prevents layout shift and speeds up initial render */
+@font-face {
+  font-family: "Cerapro";
   src: url("/fonts/cerapro/CERAPRO-REGULARITALIC.ttf") format("truetype");
   font-weight: 400;
   font-style: italic;
-  font-display: swap;
+  font-display: optional;
 }
 
 @font-face {
@@ -22,7 +33,7 @@
   src: url("/fonts/cerapro/CERAPRO-MEDIUM.ttf") format("truetype");
   font-weight: 500;
   font-style: normal;
-  font-display: swap;
+  font-display: optional;
 }
 
 @font-face {
@@ -30,15 +41,7 @@
   src: url("/fonts/cerapro/CERAPRO-MEDIUMITALIC.ttf") format("truetype");
   font-weight: 500;
   font-style: italic;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: "Cerapro";
-  src: url("/fonts/cerapro/CERAPRO-BOLD.ttf") format("truetype");
-  font-weight: 700;
-  font-style: normal;
-  font-display: swap;
+  font-display: optional;
 }
 
 @theme inline {
@@ -97,12 +100,8 @@
 }
 
 body {
-  /* background: var(--background); */
-  background-image: url("/images/tournaments-bg.webp");
-  background-size: cover;
-  background-position: bottom;
-  background-repeat: no-repeat;
-  background-attachment: fixed;
+  /* Solid background color as fallback */
+  background-color: #0a0a0f;
   color: var(--foreground);
   font-family:
     "Cerapro",
@@ -116,10 +115,35 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  /* Optimize text rendering on mobile */
+  text-rendering: optimizeSpeed;
+}
+
+/* 
+ * Fixed background using pseudo-element - iOS performant alternative
+ * This achieves the same visual effect as background-attachment: fixed
+ * but uses GPU-accelerated position: fixed instead
+ */
+body::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  background-image: url("/images/tournaments-bg.webp");
+  background-size: cover;
+  background-position: bottom;
+  background-repeat: no-repeat;
+  /* GPU acceleration for smooth scrolling on iOS */
+  will-change: transform;
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
 }
 
 /* Dashboard-specific background */
-body.dashboard-bg {
+body.dashboard-bg::before {
   background-image: url("/images/dashboard-bg.webp");
   background-position: center;
 }
@@ -161,6 +185,15 @@ body.dashboard-bg {
   background: rgba(0, 0, 0, 0.4);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
+}
+
+/* Disable expensive backdrop-filter on touch devices (iOS/Android) for performance */
+@media (hover: none) and (pointer: coarse) {
+  .glass-effect {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    background: rgba(0, 0, 0, 0.85);
+  }
 }
 
 /* Golden glow effect */
@@ -205,23 +238,23 @@ body.dashboard-bg {
   left: 0;
   right: 0;
   height: 1px;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    #ffb70022,
-    transparent,
-    transparent,
-    transparent
-  );
+  background: linear-gradient(90deg,
+      transparent,
+      #ffb70022,
+      transparent,
+      transparent,
+      transparent);
   background-size: 200% 100%;
   /* animation: shimmer 3s ease-in-out infinite; */
 }
 
 @keyframes shimmer {
+
   0%,
   100% {
     background-position: 0% 50%;
   }
+
   50% {
     background-position: 100% 50%;
   }
@@ -232,6 +265,7 @@ body.dashboard-bg {
     opacity: 0;
     transform: translateY(-10px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -247,6 +281,7 @@ body.dashboard-bg {
     opacity: 0;
     transform: translateY(30px) scale(0.95);
   }
+
   to {
     opacity: 1;
     transform: translateY(0) scale(1);
@@ -262,6 +297,7 @@ body.dashboard-bg {
     opacity: 0;
     transform: translateY(-10px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -292,12 +328,10 @@ body.dashboard-bg {
   right: 12px;
   width: 2px;
   height: 80%;
-  background: linear-gradient(
-    to bottom,
-    rgb(208 135 0),
-    rgb(253 244 150),
-    rgb(208 135 0)
-  );
+  background: linear-gradient(to bottom,
+      rgb(208 135 0),
+      rgb(253 244 150),
+      rgb(208 135 0));
   border-radius: 40%;
   opacity: 0.5;
   transition: opacity 0.3s ease;
@@ -316,11 +350,9 @@ body.dashboard-bg {
   justify-content: center;
   width: 60px;
   height: 60px;
-  background: radial-gradient(
-    circle,
-    rgba(255, 184, 0, 0.1) 0%,
-    rgba(255, 184, 0, 0.02) 70%
-  );
+  background: radial-gradient(circle,
+      rgba(255, 184, 0, 0.1) 0%,
+      rgba(255, 184, 0, 0.02) 70%);
   border-radius: 50%;
   border: 2px solid rgba(255, 184, 0, 0.2);
   transition: all 0.4s ease;
@@ -344,11 +376,9 @@ body.dashboard-bg {
   /* transform: scale(1.1) rotate(5deg); */
   border-color: rgba(255, 184, 0, 0.5);
   box-shadow: 0 0 30px rgba(255, 184, 0, 0.3);
-  background: radial-gradient(
-    circle,
-    rgba(255, 184, 0, 0.15) 0%,
-    rgba(255, 184, 0, 0.03) 70%
-  );
+  background: radial-gradient(circle,
+      rgba(255, 184, 0, 0.15) 0%,
+      rgba(255, 184, 0, 0.03) 70%);
 }
 
 /* Prize display box - Elevated Mini Card */
@@ -446,16 +476,14 @@ body.dashboard-bg {
 }
 
 .chamfered-div {
-  clip-path: polygon(
-    6px 0,
-    calc(100% - 6px) 0,
-    100% 6px,
-    100% calc(100% - 6px),
-    calc(100% - 6px) 100%,
-    6px 100%,
-    0 calc(100% - 6px),
-    0 6px
-  );
+  clip-path: polygon(6px 0,
+      calc(100% - 6px) 0,
+      100% 6px,
+      100% calc(100% - 6px),
+      calc(100% - 6px) 100%,
+      6px 100%,
+      0 calc(100% - 6px),
+      0 6px);
 }
 
 /* ============================================
@@ -531,7 +559,7 @@ body.dashboard-bg {
   padding-bottom: 8px;
 }
 
-.horizontal-scroll > * {
+.horizontal-scroll>* {
   scroll-snap-align: start;
   flex-shrink: 0;
 }
@@ -558,11 +586,9 @@ body.dashboard-bg {
   .tournament-card:hover .tournament-icon {
     border-color: rgba(255, 184, 0, 0.2);
     box-shadow: none;
-    background: radial-gradient(
-      circle,
-      rgba(255, 184, 0, 0.1) 0%,
-      rgba(255, 184, 0, 0.02) 70%
-    );
+    background: radial-gradient(circle,
+        rgba(255, 184, 0, 0.1) 0%,
+        rgba(255, 184, 0, 0.02) 70%);
   }
 
   .tournament-card:hover .prize-display {
@@ -809,4 +835,83 @@ input[type="number"]::-webkit-inner-spin-button {
 input[type="number"] {
   -moz-appearance: textfield;
   appearance: textfield;
+}
+
+/* ============================================
+   iOS/MOBILE PERFORMANCE OPTIMIZATIONS
+   ============================================ */
+
+/* Reduce backdrop-filter usage on mobile for better performance */
+@media (hover: none) and (pointer: coarse) {
+
+  /* Disable all backdrop-blur effects on mobile */
+  .backdrop-blur-sm,
+  .backdrop-blur,
+  .backdrop-blur-md,
+  .backdrop-blur-lg,
+  .backdrop-blur-xl,
+  .backdrop-blur-2xl,
+  .backdrop-blur-3xl {
+    --tw-backdrop-blur: none !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+
+  /* Provide solid background fallbacks for elements that use backdrop-blur */
+  [class*="backdrop-blur"] {
+    background-color: rgba(0, 0, 0, 0.9) !important;
+  }
+
+  /* Optimize animations on mobile */
+  .animate-fadeIn {
+    animation-duration: 0.15s;
+  }
+
+  .animate-slideUp {
+    animation-duration: 0.2s;
+  }
+
+  .animate-slideDown {
+    animation-duration: 0.15s;
+  }
+
+  /* Reduce transition duration on mobile for snappier feel */
+  * {
+    transition-duration: 0.15s !important;
+  }
+
+  /* Exception for intentionally slow transitions */
+  .transition-slow {
+    transition-duration: 0.3s !important;
+  }
+}
+
+/* Force GPU acceleration for fixed elements on iOS */
+@supports (-webkit-touch-callout: none) {
+
+  .fixed,
+  .sticky {
+    -webkit-transform: translateZ(0);
+    transform: translateZ(0);
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+  }
+}
+
+/* Optimize rendering for smoother scrolling on iOS */
+html {
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Reduce paint complexity on mobile */
+@media (max-width: 639px) {
+
+  /* Simplify shadows on mobile */
+  .shadow-2xl {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
+  }
+
+  .shadow-lg {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25) !important;
+  }
 }
