@@ -11,8 +11,9 @@ export const revalidate = 30;
  * Generate metadata for SEO
  */
 export async function generateMetadata({ params }) {
+  const { id } = await params;
   try {
-    const match = await matchesDb.getById(params.id);
+    const match = await matchesDb.getById(id);
     
     if (!match) {
       return {
@@ -51,7 +52,8 @@ async function getMatchData(id) {
  * Fetches match data on the server for faster LCP
  */
 export default async function MatchDetailsPage({ params }) {
-  const match = await getMatchData(params.id);
+  const { id } = await params;
+  const match = await getMatchData(id);
 
   return <MatchDetailsContent initialMatch={match} />;
 }

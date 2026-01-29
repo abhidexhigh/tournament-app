@@ -12,8 +12,9 @@ export const revalidate = 30;
  * Generate metadata for SEO
  */
 export async function generateMetadata({ params }) {
+  const { id } = await params;
   try {
-    const tournament = await tournamentsDb.getById(params.id);
+    const tournament = await tournamentsDb.getById(id);
     
     if (!tournament) {
       return {
@@ -93,7 +94,8 @@ async function getTournamentData(id) {
  * Fetches tournament data on the server for faster LCP and better SEO
  */
 export default async function TournamentDetailsPage({ params }) {
-  const { tournament, host } = await getTournamentData(params.id);
+  const { id } = await params;
+  const { tournament, host } = await getTournamentData(id);
 
   return (
     <TournamentDetailsContent 
