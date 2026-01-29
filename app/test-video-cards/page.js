@@ -22,6 +22,7 @@ const summoningVideos = [
   "/summoningVideos/Titan_Armory_V11_UI.mp4",
   "/summoningVideos/Valkyrie Armory V6.mp4",
   "/summoningVideos/Vampire_Armory_V4.mp4",
+  "/summoningVideos/Eastern_Dragon_Armory_V7_UI.mp4",
 ];
 
 // Local video files from public/cardVideos folder (133 files)
